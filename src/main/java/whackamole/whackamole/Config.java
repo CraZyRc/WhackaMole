@@ -100,7 +100,7 @@ class YMLFile {
     public void save() {
         try {
             this.FileConfig.save(this.file);
-            this.logger.info("Saved File: %s".formatted(this.file.getName()));
+            this.logger.success("Saved File: %s".formatted(this.file.getName()));
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -109,7 +109,7 @@ class YMLFile {
     public void load() {
         try {
             this.FileConfig.load(this.file);
-            this.logger.info("Loaded YAML file: %s".formatted(this.file.getName()));
+            this.logger.success("Loaded YAML file: %s".formatted(this.file.getName()));
         } catch (Exception e) {
             this.createFile();
         }
@@ -126,9 +126,9 @@ class YMLFile {
     
     public void createFile() {
         try {
-            this.logger.info("Creating Folder/file: %s".formatted(this.file.getName()));
+            this.logger.success("Creating Folder/file: %s".formatted(this.file.getName()));
             if (this.file.getParentFile().mkdirs()) {
-                this.save();
+                this.file.createNewFile();
                 this.load();
             }
         } catch (Exception e) {
