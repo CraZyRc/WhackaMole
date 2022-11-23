@@ -1,5 +1,6 @@
 name: Feature Request
 description: Suggest new ideas/improvements.
+labels: Feature Request
 
 body:
   - type: 'markdown'
