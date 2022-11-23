@@ -21,7 +21,7 @@ public final class GamesManager implements Listener {
     public void loadGames() {
         File GamesFolder = this.config.gamesData;
         this.logger.info("Loading Games...");
-        for (String i : GamesFolder.list()) {
+        for (File i : GamesFolder.listFiles()) {
             try {
                 this.addGame(i);
                 this.logger.success("..." + i + " Successfully loaded!");

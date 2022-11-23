@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -33,9 +34,9 @@ public class GameHandler implements Listener {
     public Integer pointsPerKill = 1;
     private World world;
 
-    public GameHandler(String ConfigName) {
-        this.gameName = ConfigName;
-        this.createGameFile();
+    public GameHandler(File ConfigName) throws Exception {
+        this.gameFile = ConfigName;
+        this.gameConfig.load(this.gameFile);
         this.getValues();
     }
 
