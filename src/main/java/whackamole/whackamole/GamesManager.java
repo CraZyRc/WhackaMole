@@ -34,7 +34,7 @@ public final class GamesManager implements Listener {
         for (File i : GamesFolder.listFiles()) {
             try {
                 this.addGame(i);
-                this.logger.success("..." + i + " Successfully loaded!");
+                this.logger.success("..." + i.getName() + " Successfully loaded!");
             } catch (Exception e) {
                 this.logger.error(e.getMessage());
                 e.printStackTrace();
@@ -68,7 +68,7 @@ public final class GamesManager implements Listener {
 
     public void removeGame(GameHandler game) {
         this.games.remove(game);
-
+        game.deleteSave();
         this.logger.info(game + " ...Successfully removed!");
     }
 
@@ -97,7 +97,7 @@ public final class GamesManager implements Listener {
     @EventHandler
     public void playerMoveEvent(PlayerMoveEvent event) {
         for (GameHandler gameHandler : games) {
-            if (gameHandler.grid.onGrid(event.getTo())) {
+            if (gameHandler.onGrid(event.getTo())) {
 //                this.logger.info("On Grid: " + gameHandler.gameName);
             }
         }

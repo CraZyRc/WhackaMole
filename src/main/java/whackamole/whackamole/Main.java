@@ -6,33 +6,19 @@ import dev.jorel.commandapi.CommandAPIConfig;
 import dev.jorel.commandapi.arguments.BooleanArgument;
 import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
 
 public final class Main extends JavaPlugin {
 
-    public FileConfiguration configFile;
-    public Config config;
+    public Config config = Config.getInstance();
     public Logger logger = Logger.getInstance();
     public GamesManager gameManager;
-
-    private FileConfiguration gameConfig = new YamlConfiguration();
-
 
     @Override
     public void onLoad() {
         Logger.Prefix = this.getDescription().getPrefix();
-        
-        this.configFile = this.createConfig();
-        this.config = Config.getInstance(this.configFile);
-
         CommandAPI.onLoad(new CommandAPIConfig().verboseOutput(true));
 
         new CommandAPICommand("WhackaMole")
@@ -41,10 +27,10 @@ public final class Main extends JavaPlugin {
                         .withPermission(this.config.PERM_CREATE)
                         .withArguments(new StringArgument("Game Name"))
                         .executesPlayer((player, args) -> {
-                            if (!(player.hasPermission(this.config.PERM_ALL) || player.hasPermission(this.config.PERM_CREATE))) {
-                                player.sendMessage(this.config.PREFIX + this.config.NO_PERM);
-                                return;
-                            }
+//                            if (!(player.hasPermission(this.config.PERM_ALL) || player.hasPermission(this.config.PERM_CREATE))) {
+//                                player.sendMessage(this.config.PREFIX + this.config.NO_PERM);
+//                                return;
+//                            }
                             try {
                                 String gameName = (String) args[0];
                                 this.gameManager.addGame(gameName, new Grid(player.getWorld(), player));
@@ -59,10 +45,10 @@ public final class Main extends JavaPlugin {
                         .withPermission(this.config.PERM_REMOVE)
                         .executesPlayer((player, args) -> {
                             GameHandler game = this.gameManager.getOnGrid(player);
-                            if (!(player.hasPermission(this.config.PERM_ALL) || player.hasPermission(this.config.PERM_REMOVE))) {
-                                player.sendMessage(this.config.PREFIX + this.config.NO_PERM);
-                                return;
-                            }
+//                            if (!(player.hasPermission(this.config.PERM_ALL) || player.hasPermission(this.config.PERM_REMOVE))) {
+//                                player.sendMessage(this.config.PREFIX + this.config.NO_PERM);
+//                                return;
+//                            }
                             if (game != null) {
                                     this.gameManager.removeGame(game);
                             } else {throw CommandAPI.fail(this.config.PREFIX + "Please stand on the game Grid you wish to remove");
@@ -77,9 +63,9 @@ public final class Main extends JavaPlugin {
                                     GameHandler game = this.gameManager.getOnGrid(player);
                                     if (game != null) {
                                         game.cashHats = (Boolean) args[0];
-                                        game.setValues();
+                                        game.saveGame();
                                         player.sendMessage(this.config.PREFIX + "Successfully changed the Cash-Hats value to: " + ChatColor.AQUA + args[0]);
-                                     } else {
+                                    } else {
                                         this.logger.error("Player settings change failed: Player is not standing on a game grid");
                                         throw CommandAPI.fail(this.config.PREFIX + "Please stand on the game Grid to edit the game grid");
                                     }
@@ -91,7 +77,7 @@ public final class Main extends JavaPlugin {
                                     GameHandler game = this.gameManager.getOnGrid(player);
                                     if (game != null) {
                                         game.Interval = (Integer) args[0];
-                                        game.setValues();
+                                        game.saveGame();
                                         player.sendMessage(this.config.PREFIX + "Successfully changed the Interval value to: " + ChatColor.AQUA + args[0]);
                                     } else {
                                         this.logger.error("Player settings change failed: Player is not standing on a game grid");
@@ -105,7 +91,7 @@ public final class Main extends JavaPlugin {
                                     GameHandler game = this.gameManager.getOnGrid(player);
                                     if (game != null) {
                                         game.pointsPerKill = (Integer) args[0];
-                                        game.setValues();
+                                        game.saveGame();
                                         player.sendMessage(this.config.PREFIX + "Successfully changed the points eanred per kill value to: " + ChatColor.AQUA + args[0]);
                                     } else {
                                         this.logger.error("Player settings change failed: Player is not standing on a game grid");
@@ -128,30 +114,6 @@ public final class Main extends JavaPlugin {
         this.gameManager = new GamesManager();
         this.getServer().getPluginManager().registerEvents(this.gameManager, this);
         CommandAPI.onEnable(this);
-        this.logger.info(this.getDataFolder().getPath());
-
-    }
-
-    private FileConfiguration createConfig() {
-        this.logger.info("Loading Config...");
-        File configFile = new File(this.getDataFolder(), "config.yml");
-        if (!configFile.exists()) {
-            configFile.getParentFile().mkdirs();
-            this.saveResource("config.yml", false);
-        }
-        FileConfiguration config = new YamlConfiguration();
-
-        try {
-            config.load(configFile);
-        } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
-            this.logger.error(ChatColor.DARK_RED + "...Config failed to load!");
-            Bukkit.getPluginManager().disablePlugin(this);
-        }
-
-        this.logger.success("...Successfully loaded the config!");
-
-        return config;
     }
 
     @Override

@@ -2,14 +2,16 @@ package whackamole.whackamole;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 public final class Config {
 
     private static Config Instance;
-    public FileConfiguration configFile;
+    public YMLFile configFile;
     public String PREFIX;
     public List<?> MOLEBLOCK;
     public List<?> SUBBLOCK;
@@ -21,11 +23,7 @@ public final class Config {
     public File gamesData = new File("./plugins/WhackaMole/Games/");
 
     private Config() {
-    }
-
-    private Config(FileConfiguration config) {
-        this.configFile = config;
-        this.setup();
+        this.configFile = new YMLFile("plugins/WhackaMole/config.yml");
     }
 
     public void setup() {
@@ -41,7 +39,7 @@ public final class Config {
 
     public static Config getInstance(FileConfiguration config) {
         if (Config.Instance == null) {
-            Config.Instance = new Config(config);
+            Config.Instance = new Config();
             return Config.Instance;
         }
         return Config.Instance;
@@ -54,4 +52,88 @@ public final class Config {
         }
         return Config.Instance;
     }
+}
+
+class YMLFile {
+    public FileConfiguration FileConfig = new YamlConfiguration();
+    public File file;
+    private Logger logger = Logger.getInstance();
+
+    public YMLFile(File folder, String child) throws FileNotFoundException {
+        if (!folder.isDirectory()) throw new FileNotFoundException("Did not pass a Folder file: %s".formatted(folder.getName()));
+        this.file = new File(folder, child);
+        this.load();
+    }
+    public YMLFile(String folder, String child) {
+        this.file = new File(folder, child);
+        this.load();
+    }
+    public YMLFile(String path) {
+        this.file = new File(path);
+        this.load();
+    }
+    public YMLFile(File file) {
+        this.file = file;
+        this.load();
+    }
+
+    public Object get(String path) {
+        return this.FileConfig.get(path);
+    }
+    public String getString(String path) {
+        return this.FileConfig.getString(path);
+    }
+    public Boolean getBoolean(String path) {
+        return this.FileConfig.getBoolean(path);
+    }
+    public Integer getInt(String path) {
+        return this.FileConfig.getInt(path);
+    }
+    public List<?> getList(String path) {
+        return this.FileConfig.getList(path);
+    }
+
+    public void set (String path, Object value) {
+        this.FileConfig.set(path, value);
+    }
+
+    public void save() {
+        try {
+            this.FileConfig.save(this.file);
+            this.logger.info("Saved File: %s".formatted(this.file.getName()));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void load() {
+        try {
+            this.FileConfig.load(this.file);
+            this.logger.info("Loaded YAML file: %s".formatted(this.file.getName()));
+        } catch (Exception e) {
+            this.createFile();
+        }
+    }
+    public void remove() {
+        try {
+            String fileName = this.file.getName();
+            this.file.delete();
+            this.logger.success("deleted file: %s".formatted(fileName));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void createFile() {
+        try {
+            this.logger.info("Creating Folder/file: %s".formatted(this.file.getName()));
+            if (this.file.getParentFile().mkdirs()) {
+                this.save();
+                this.load();
+            }
+        } catch (Exception e) {
+            this.logger.error("Failed to create Folder/File: %s".formatted(this.file.getName()));
+            e.printStackTrace();
+        }
+    } 
 }

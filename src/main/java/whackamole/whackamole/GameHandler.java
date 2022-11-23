@@ -4,14 +4,11 @@ package whackamole.whackamole;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,31 +17,31 @@ public class GameHandler implements Listener {
     private boolean debug = false;
     private Logger logger = Logger.getInstance();
     private Config config = Config.getInstance();
+    private YMLFile gameConfig;    
 
-    private File gameFile;
-    private FileConfiguration gameConfig = new YamlConfiguration();    
-    boolean gamesLoaded = false;
+    private World world;
+    private Grid grid;
 
     public String gameName;
-    private World world;
-    public Grid grid;
     public Boolean cashHats = true;
     public Integer Interval = 20;
     public Integer pointsPerKill = 1;
     private World world;
 
-    public GameHandler(File ConfigName) throws Exception {
-        this.gameFile = ConfigName;
-        this.gameConfig.load(this.gameFile);
-        this.getValues();
+    public GameHandler(YMLFile configFile) throws Exception {
+        this.gameConfig = configFile;
+        this.loadGame();
+    }
+    public GameHandler(File configFile) throws Exception {
+        this.gameConfig = new YMLFile(configFile);
+        this.loadGame();
     }
 
-    public GameHandler(String gameName, Grid grid) {
+    public GameHandler(String gameName, Grid grid) throws FileNotFoundException {
         this.gameName = gameName;
+        this.gameConfig = new YMLFile(this.config.gamesData, gameName + ".yml");
         this.grid = grid;
-        // is een nieuwe game, sla settings en grid op in een nieuwe file
-        this.createGameFile();
-        this.setValues();
+        this.saveGame();
     }
 
     public boolean onGrid(Player player) {
@@ -65,61 +62,37 @@ public class GameHandler implements Listener {
 
     }
 
-    // create gamefile
-    public void createGameFile() {
-        gameFile = new File(this.config.gamesData, this.gameName + ".yml");
-        if (!gameFile.exists()) {
-            this.logger.info("Creating Gamefiles...");
-            gameFile.getParentFile().mkdirs();
-            try {
-                this.gameConfig.save(this.gameFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    public void saveGame() {
 
-        try {
-            gameConfig.load(gameFile);
-        } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
-            this.logger.error("GameFile failed to load");
-            return;
-        }
-        this.logger.success("...Gamefile succesfully created");
-
+        this.gameConfig.FileConfig.options().setHeader(Arrays.asList(
+                "###########################################################",
+                " ^------------------------------------------------------^ #",
+                " |                       GameFile                       | #",
+                " <------------------------------------------------------> #",
+                "###########################################################",
+                "NOTE: you can edit the Properties to change the game rules",
+                "NOTE: Do not touch the Field Data!"));
+        this.gameConfig.set("Properties.Name", this.gameName);
+        this.gameConfig.set("Properties.World", this.grid.world.getName());
+        this.gameConfig.set("Properties.CashHats", this.cashHats);
+        this.gameConfig.set("Properties.Interval", this.Interval);
+        this.gameConfig.set("Properties.Points per Kill", this.pointsPerKill);
+        this.gameConfig.set("Field Data.World", this.grid.world.getName());
+        this.gameConfig.set("Field Data.Grid", this.grid.Serialize());
+        this.gameConfig.save();
     }
 
+    public void loadGame() {
+        this.world  = Bukkit.getWorld(this.gameConfig.getString("Field Data.World"));
+        this.grid   = Grid.Deserialize(this.world, (List<List<Integer>>) this.gameConfig.getList("Field Data.Grid"));
 
-    public void setValues() {
-
-        try {
-            this.gameConfig.options().setHeader(Arrays.asList(
-                    "###########################################################",
-                    " ^------------------------------------------------------^ #",
-                    " |                       GameFile                       | #",
-                    " <------------------------------------------------------> #",
-                    "###########################################################",
-                    "NOTE: you can edit the Properties to change the game rules",
-                    "NOTE: Do not touch the Field Data!"));
-            this.gameConfig.set("Properties.Name", this.gameName);
-            this.gameConfig.set("Properties.CashHats", this.cashHats);
-            this.gameConfig.set("Properties.Interval", this.Interval);
-            this.gameConfig.set("Properties.Points per Kill", this.pointsPerKill);
-            this.gameConfig.set("Field Data.World", this.grid.world.getName());
-            this.gameConfig.set("Field Data.Grid", this.grid.Serialize());
-            this.gameConfig.save(this.gameFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        this.gameName       = this.gameConfig.getString("Properties.Name");
+        this.cashHats       = this.gameConfig.getBoolean("properties." + "CashHats");
+        this.Interval       = this.gameConfig.getInt("properties." + "Interval");
+        this.pointsPerKill  = this.gameConfig.getInt("properties." + "Points per Kill");
     }
 
-    public void getValues() {
-        this.gameName = (String) this.gameConfig.get("Properties.Name");
-        this.world = Bukkit.getWorld((String) this.gameConfig.get("Field Data.World"));
-        this.grid = Grid.Deserialize(this.world, (List<List<Integer>>) this.gameConfig.getList("Field Data.Grid"));
-        this.cashHats = this.gameConfig.getBoolean("properties." + "CashHats");
-        this.Interval = this.gameConfig.getInt("properties." + "Interval");
-        this.pointsPerKill = this.gameConfig.getInt("properties." + "Points per Kill");
+    public void deleteSave() {
+        this.gameConfig.remove();
     }
 }
