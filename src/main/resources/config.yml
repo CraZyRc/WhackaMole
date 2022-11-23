@@ -1,0 +1,56 @@
+############################################################
+# ^------------------------------------------------------^ #
+# |                       Notes                          | #
+# <------------------------------------------------------> #
+############################################################
+
+Version: ${project.version}
+
+# Welcome to the config file, here you can adjust the output lines of the plugin.
+# the lines must be in YAML format, so it doesn't accept tabs, only spaces
+# And you need to make sure you have "escaped" all apostrophes in your text: If you want to write "don't", for example, write "don''t" instead (note the doubled apostrophe)
+
+
+
+############################################################
+# ^------------------------------------------------------^ #
+# |                  The Written code                    | #
+# <------------------------------------------------------> #
+############################################################
+
+#The list of blocks the game can spawn on (generally what the surface blocks will be of the game, the visible layer of the game)
+Blocklist:
+  - SMOKER
+  - RESPAWN_ANCHOR
+  - REINFORCED_DEEPSLATE
+  - DISPENCER
+  - DROPPER
+  - END_PORTAL_FRAME
+
+#The list of blocks you can use for the second layer of the game
+Sub-List:
+  - BROWN_MUSHROOM_BLOCK
+  - MUSHROOM
+  - VERDANT_FROGLIGHT
+
+# Maximum size of a created field
+Max playfield: 49
+
+# The message that displays when the player has insufficient permissions
+No Permission: "&4You do not seem to have the right permissions!"
+
+
+
+############################################################
+# ^------------------------------------------------------^ #
+# |                  Permission Nodes                    | #
+# <------------------------------------------------------> #
+############################################################
+
+# All permissions start with "WAM."
+Every permission: "*"
+
+Commands:
+  Create: "create"
+  Play: "Play"
+  Settings: "Settings"

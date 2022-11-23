@@ -1,0 +1,8 @@
+name: WhackaMole
+version: '${project.version}'
+main: whackamole.whackamole.Main
+api-version: 1.19
+prefix: WAM
+authors: [ CraZy ]
+description: Whack a Mole plugin
+website: https://www.planetminecraft.com/member/cra-zy/
