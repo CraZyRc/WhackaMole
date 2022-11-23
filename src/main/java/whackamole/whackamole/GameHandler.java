@@ -9,6 +9,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -34,6 +35,7 @@ public class GameHandler {
     private boolean debug = false;
     private Logger logger = Logger.getInstance();
     private Config config = Config.getInstance();
+    private Econ econ = Econ.getInstance();
     public Player gamePlayer;
     public int Score = 0;
     private ItemStack axe;
@@ -99,9 +101,8 @@ public class GameHandler {
         @Override
         public void run() {
             Player player = gamePlayer;
-            BaseComponent[] actionMessage = new ComponentBuilder().append(ComponentSerializer.parse(config.ACTIONTEXT)).create();
-            actionMessage += new ComponentBuilder().append(Config.);
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, actionMessage);
+            BaseComponent[] actionMessage = new ComponentBuilder().append(ComponentSerializer.parse(config.ACTIONTEXT)).append((Config.color("&2&l ") + Score)).create();
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, actionMessage );
 
             Random random = new Random();
             int index = random.nextInt(grid.grid.size());
@@ -130,6 +131,9 @@ public class GameHandler {
             this.ID1 = -1;
             this.gamePlayer.getInventory().removeItem(axe);
             this.gamePlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(""));
+            econ.econ.depositPlayer(gamePlayer, Score);
+            this.Score = 0;
+
         }
     }
     public void saveGame() {

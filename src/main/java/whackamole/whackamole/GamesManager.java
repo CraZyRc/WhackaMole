@@ -18,9 +18,6 @@ import java.security.spec.ECField;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -31,7 +28,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-
+import org.bukkit.scoreboard.Score;
 
 
 public final class GamesManager implements Listener {
@@ -148,11 +145,14 @@ public final class GamesManager implements Listener {
     @EventHandler
     public void onHit(EntityDamageByEntityEvent e) {
         if (e.getDamager().getType() == EntityType.PLAYER) {
+            gameloop:
             for (GameHandler game : this.games) {
                 if (e.getDamager() == game.gamePlayer) {
                     for (Mole mole : game.moleList) {
                         if (e.getEntity() == mole.mole) {
                             mole.index = 40;
+                            game.Score++;
+                            break gameloop;
                         }
                     }
 
@@ -166,23 +166,4 @@ public final class GamesManager implements Listener {
             gameHandler.toggleArmorStands();
         }
     }
-    public static String color(String message) {
-        Pattern pattern = Pattern.compile("#[a-fA-f0-9]{6}");
-        Matcher matcher = pattern.matcher(message);
-        while (matcher.find()) {
-            String hexCode = message.substring(matcher.start(), matcher.end());
-            String replaceSharp = hexCode.replace('#','x');
-
-            char[] ch = replaceSharp.toCharArray();
-            StringBuilder builder = new StringBuilder("");
-            for (char c : ch) {
-                builder.append("&" + c);
-            }
-
-            message = message.replace(hexCode, builder.toString());
-            matcher = pattern.matcher(message);
-        }
-        return ChatColor.translateAlternateColorCodes('&', message);
-    }
-
 }

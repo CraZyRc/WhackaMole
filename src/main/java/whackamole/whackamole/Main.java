@@ -15,8 +15,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin {
 
-    public Config config;
-    public Logger logger = Logger.getInstance();
+    private Config config;
+    private Logger logger = Logger.getInstance();
+    private Econ econ = Econ.getInstance();
     public GamesManager gameManager;
     public static Plugin plugin;
 
@@ -120,6 +121,15 @@ public final class Main extends JavaPlugin {
         this.gameManager = new GamesManager();
         this.getServer().getPluginManager().registerEvents(this.gameManager, this);
         CommandAPI.onEnable(this);
+        if (!econ.setupEconomy(this)) {
+            logger.error(String.format("Disabled due to lack of Vault dependency!", this.getDescription().getName()));
+            this.getServer().getPluginManager().disablePlugin(this);
+            CommandAPI.unregister("WhackaMole", true);
+            CommandAPI.unregister("WAM", true);
+            CommandAPI.unregister("Whack", true);
+        } else {
+            this.logger.success("Done! V" + getDescription().getVersion());
+        }
     }
 
     @Override

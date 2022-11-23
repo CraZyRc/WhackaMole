@@ -8,6 +8,8 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class Config {
 
@@ -39,14 +41,32 @@ public final class Config {
         this.MOLEBLOCK      = this.configFile.getList("Blocklist");
         this.SUBBLOCK       = this.configFile.getList("Sub-List");
         this.ACTIONTEXT     = this.configFile.getString("Actionbar Message");
-        this.HAMMERNAME     = GamesManager.color(this.configFile.getString("Hammer Name"));
-        this.NO_PERM        = this.PREFIX + GamesManager.color(this.configFile.getString("No Permission"));
+        this.HAMMERNAME     = Config.color(this.configFile.getString("Hammer Name"));
+        this.NO_PERM        = this.PREFIX + Config.color(this.configFile.getString("No Permission"));
         this.PERM_ALL       = "WAM." + this.configFile.getString("Every permission");
         this.PERM_CREATE    = "WAM." + this.configFile.getString("Commands.Create");
         this.PERM_REMOVE    = "WAM." + this.configFile.getString("Commands.Remove");
         this.PERM_SETTINGS  = "WAM." + this.configFile.getString("Commands.Settings");
     }
 
+    public static String color(String message) {
+        Pattern pattern = Pattern.compile("#[a-fA-f0-9]{6}");
+        Matcher matcher = pattern.matcher(message);
+        while (matcher.find()) {
+            String hexCode = message.substring(matcher.start(), matcher.end());
+            String replaceSharp = hexCode.replace('#', 'x');
+
+            char[] ch = replaceSharp.toCharArray();
+            StringBuilder builder = new StringBuilder("");
+            for (char c : ch) {
+                builder.append("&" + c);
+            }
+
+            message = message.replace(hexCode, builder.toString());
+            matcher = pattern.matcher(message);
+        }
+        return ChatColor.translateAlternateColorCodes('&', message);
+    }
 
     public static Config getInstance(Plugin main) {
         if (Config.Instance == null) {
@@ -100,7 +120,9 @@ class YMLFile {
     public Integer getInt(String path) {
         return this.FileConfig.getInt(path);
     }
-    public Long getLong(String path) {return this.FileConfig.getLong(path);}
+    public Long getLong(String path) {
+        return this.FileConfig.getLong(path);
+    }
     public List<?> getList(String path) {
         return this.FileConfig.getList(path);
     }
