@@ -28,10 +28,12 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        this.gameManager = new GamesManager();
         Logger.Prefix = this.getDescription().getPrefix();
+        
         this.configFile = this.createConfig();
         this.config = Config.getInstance(this.configFile);
+
+        this.gameManager = new GamesManager();
         CommandAPI.onLoad(new CommandAPIConfig().verboseOutput(true));
 
         new CommandAPICommand("WhackaMole")
@@ -93,7 +95,6 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(this.gameManager, this);
-        this.loadGames();
         CommandAPI.onEnable(this);
 
     }
@@ -118,33 +119,6 @@ public final class Main extends JavaPlugin {
         this.logger.success("...Successfully loaded the config!");
 
         return config;
-    }
-
-    public void loadGames() {
-        for (String key : this.config.gamesData.list()) {
-            File gameFile = new File("./plugins/WhackaMole/Games/" + key);
-            this.logger.info(key + " Successfully located");
-
-            this.gameConfig = YamlConfiguration.loadConfiguration(gameFile);
-
-            try {
-                this.gameConfig.load(gameFile);
-                this.logger.success(gameFile + " Loaded!");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (InvalidConfigurationException e) {
-                throw new RuntimeException(e);
-            }
-            String gameName = (String) this.gameConfig.get("Properties.Name");
-            this.logger.info(gameName);
-
-
-            GameHandler game = new GameHandler(gameName);
-            gameManager.games.add(game);
-
-            this.logger.info(game.gameName + " Game successfully loaded");
-            return;
-        }
     }
 
     @Override

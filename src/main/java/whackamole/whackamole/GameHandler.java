@@ -67,7 +67,7 @@ public class GameHandler implements Listener {
 
     // create gamefile
     public void createGameFile() {
-        gameFile = new File(this.config.gamesData + this.gameName + ".yml");
+        gameFile = new File(this.config.gamesData, this.gameName + ".yml");
         if (!gameFile.exists()) {
             this.logger.info("Creating Gamefiles...");
             gameFile.getParentFile().mkdirs();

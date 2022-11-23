@@ -17,7 +17,7 @@ public final class Config {
     public String PERM_ALL;
     public String PERM_CREATE;
     public String PERM_SETTINGS;
-    public File gamesData = new File("./plugins/WhackaMole/Games");
+    public File gamesData = new File("./plugins/WhackaMole/Games/");
 
     private Config() {
     }

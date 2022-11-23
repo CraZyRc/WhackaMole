@@ -14,16 +14,22 @@ public final class GamesManager implements Listener {
     private Logger logger = Logger.getInstance();
     public List<GameHandler> games = new ArrayList<>();
 
+    public GamesManager() {
+        this.loadGames();
+    }
+
     public void loadGames() {
         File GamesFolder = this.config.gamesData;
+        this.logger.info("Loading Games...");
         for (String i : GamesFolder.list()) {
             try {
                 this.addGame(i);
+                this.logger.success("..." + i + " Successfully loaded!");
             } catch (Exception e) {
-                this.logger.error(e.getMessage());
+                this.logger.error(e.getStackTrace().toString());
             }
         }
-    } 
+    }
 
     public void addGame(GameHandler game) throws Exception {
         if (this.nameExists(game.gameName)) {
@@ -40,7 +46,9 @@ public final class GamesManager implements Listener {
     }
 
     public boolean nameExists(String name) {
+        this.logger.info(name);
         for (GameHandler gameHandler : games) {
+            this.logger.info(gameHandler.gameName);
             if (gameHandler.gameName == name) {
                 return true;
             }
