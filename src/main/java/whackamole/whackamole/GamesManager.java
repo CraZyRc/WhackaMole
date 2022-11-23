@@ -49,10 +49,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+<<<<<<< HEAD
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+=======
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerQuitEvent;
+>>>>>>> 2f10a80 (Beta release:)
 
 
 public final class GamesManager implements Listener {
@@ -114,7 +119,7 @@ public final class GamesManager implements Listener {
     private boolean gameExists(String name) {
         this.logger.info(name);
         for (Game game : games) {
-            if (game.name.toLowerCase().equals(name.toLowerCase())) {
+            if (game.name.equalsIgnoreCase(name)) {
                 return true;
             }
         }
@@ -155,9 +160,24 @@ public final class GamesManager implements Listener {
         this.games.add(new Game(gameName, grid));
     }
 
+<<<<<<< HEAD
     public void removeGame(Game game) {
         this.logger.info(game.name + " ...Successfully removed!");
         this.games.remove(game);
+=======
+    public void unloadGames(boolean saveGames) {
+        for (Game game : games) {
+            game.unload(saveGames);
+        }
+        this.games.clear();
+    }
+
+    
+    public void removeGame(Game game) {
+        game.deleteSave();
+        this.games.remove(game);
+        this.logger.info(game + " ...Successfully removed!");
+>>>>>>> 2f10a80 (Beta release:)
     }
 
 
@@ -181,6 +201,7 @@ public final class GamesManager implements Listener {
         @Override
         public void run() {
             for (Game game : GamesManager.this.games) {
+                game.run();
                 game.moleUpdater();
             }
 
@@ -194,6 +215,13 @@ public final class GamesManager implements Listener {
         }
     };
 
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent e) {
+        Player player = e.getPlayer();
+        for (Game game : games) {
+            if (game.gamePlayer == player) game.onPlayerExit(player);
+        }
+    }
     @EventHandler
     public void playerMoveEvent(PlayerMoveEvent event) {
         for (Game game : games) {

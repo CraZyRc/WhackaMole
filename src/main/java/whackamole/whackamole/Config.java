@@ -9,8 +9,6 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
-// import net.minecraft.world.level.material.Material;
-
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -44,6 +42,7 @@ public final class Config {
     public String PERM_CREATE;
     public String PERM_REMOVE;
     public String PERM_SETTINGS;
+    public String PERM_PLAY;
     public String ECONOMY;
     public String OBJECTIVE;
     public Double FiELD_MARGIN_X;
@@ -52,6 +51,11 @@ public final class Config {
 
     public ItemStack PLAYER_AXE; 
     public ItemStack MOLE_SKULL; 
+<<<<<<< HEAD
+=======
+    public ItemStack JACKPOT_SKULL;
+    public ItemStack TICKET;
+>>>>>>> 2f10a80 (Beta release:)
 
     private Config(Plugin main) {
         if(!new File("./plugins/WhackaMole/config.yml").exists())
@@ -104,6 +108,7 @@ public final class Config {
         this.PERM_RELOAD        = "WAM." + this.configFile.getString("Commands.Reload");
         this.PERM_CREATE        = "WAM." + this.configFile.getString("Commands.Create");
         this.PERM_REMOVE        = "WAM." + this.configFile.getString("Commands.Remove");
+        this.PERM_PLAY          = "WAM." + this.configFile.getString("Commands.Play");
         this.PERM_SETTINGS      = "WAM." + this.configFile.getString("Commands.Settings");
 >>>>>>> 0d00087 (Commands:)
     }
@@ -140,7 +145,15 @@ public final class Config {
 
         this.PLAYER_AXE = axe;
         this.MOLE_SKULL = this.getSkull(
+<<<<<<< HEAD
             "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxMjUwM2Q2MWM0OWY3MDFmZWU4NjdkNzkzZjFkY2M1MjJlNGQ3YzVjNDFhNjhmMjk1MTU3OWYyNGU3Y2IyYSJ9fX0=");
+=======
+                "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxMjUwM2Q2MWM0OWY3MDFmZWU4NjdkNzkzZjFkY2M1MjJlNGQ3YzVjNDFhNjhmMjk1MTU3OWYyNGU3Y2IyYSJ9fX0=");
+        this.JACKPOT_SKULL = this.getSkull(
+                "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlkZGZiMDNjOGY3Zjc4MDA5YjgzNDRiNzgzMGY0YTg0MThmYTRiYzBlYjMzN2EzMzA1OGFiYjdhMDVlOTNlMSJ9fX0=");
+
+
+>>>>>>> 2f10a80 (Beta release:)
     }
 
     private ItemStack getSkull(String url) {
@@ -214,16 +227,16 @@ class YMLFile {
     public String getString(String path) {
         return this.FileConfig.getString(path);
     }
-    public Boolean getBoolean(String path) {
+    public boolean getBoolean(String path) {
         return this.FileConfig.getBoolean(path);
     }
-    public Integer getInt(String path) {
+    public int getInt(String path) {
         return this.FileConfig.getInt(path);
     }
-    public Double getDouble(String path) {
+    public double getDouble(String path) {
         return this.FileConfig.getDouble(path);
     }
-    public Long getLong(String path) {
+    public long getLong(String path) {
         return this.FileConfig.getLong(path);
     }
     public List<?> getList(String path) {
@@ -247,7 +260,6 @@ class YMLFile {
     public void load() {
         try {
             this.FileConfig.load(this.file);
-            this.logger.success("...%s Successfully loaded!".formatted(file.getName()));
         } catch (Exception e) {
             this.createFile();
         }

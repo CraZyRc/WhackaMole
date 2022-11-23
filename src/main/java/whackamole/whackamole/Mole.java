@@ -2,14 +2,14 @@ package whackamole.whackamole;
 
 import java.util.EnumSet;
 
+import org.bukkit.Sound;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.checkerframework.checker.signedness.qual.Unsigned;
 
 
 public class Mole {
-    
-    private Logger logger = Logger.getInstance();
+
     private Config config = Config.getInstance();
     
     public MoleType type;
@@ -32,10 +32,16 @@ public class Mole {
 
 
     public Entity mole;
-    
-    public int index = 0;
+    private double maxY;
+    private double minY;
+    private double moveSpeed;
 
-    public Mole(MoleType type, ArmorStand e) {
+
+    public Mole(MoleType type, ArmorStand e, double moveSpeed) {
+        this.moveSpeed = moveSpeed;
+        this.maxY = e.getLocation().getY() + 1;
+        this.minY = e.getLocation().getY();
+
         this.type = type;
         this.mole = switch(type) {
             case Debug -> {
@@ -48,6 +54,7 @@ public class Mole {
             case Mole -> {
                 e.setGravity(false);
                 e.setInvulnerable(false);
+                e.setInvisible(true);
                 e.getEquipment().setHelmet(this.config.MOLE_SKULL);
 
                 yield e;
@@ -55,8 +62,9 @@ public class Mole {
             case Jackpot -> {
                 e.setGravity(false);
                 e.setInvulnerable(false);
-                e.getEquipment().setHelmet(this.config.MOLE_SKULL);
-                
+                e.setInvisible(true);
+                e.getEquipment().setHelmet(this.config.JACKPOT_SKULL);
+
                 yield e;
             }
         };
@@ -73,21 +81,19 @@ public class Mole {
                         this.unload();
                     }
                     case MovingUp -> {
-                        if(this.index <= 20)  {
-                            this.move(0.05);
-                            this.index++;
+                        if(this.mole.getLocation().getY() < this.maxY)  {
+                            this.move(this.moveSpeed);
                         }
                         else this.state = MoleState.MovingDown;
                     }
                     case MovingDown -> {
-                        if(this.index <= 40) {
-                            this.move(-0.05);
-                            this.index++;
+                        if(this.mole.getLocation().getY() > this.minY) {
+                            this.move(-this.moveSpeed);
                         }
                         else this.state = MoleState.Missed;
+
                     }
                     case Hidden -> {
-                        this.index = 0;
                         return false;
                     }
                 }
@@ -95,7 +101,6 @@ public class Mole {
         }
         return true;
     }
-
     private void move(double y) {
         this.mole.teleport(this.mole.getLocation().add(0, y, 0));
     }
@@ -111,13 +116,6 @@ public class Mole {
         return this.mole == e;
     }
 
-    public void unload() {
-        this.mole.remove();
-    }
+    public void unload() { try { this.mole.remove();} catch (Exception e) {}}
 
-    @Override
-    protected void finalize() throws Throwable {
-        this.logger.info("Deleting mole with type: " + this.type);
-        this.unload();
-    }
 }

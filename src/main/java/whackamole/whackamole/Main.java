@@ -38,5 +38,11 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
+<<<<<<< HEAD
+=======
+        if(this.manager != null) {
+            this.manager.unloadGames(true);
+        }
+>>>>>>> 2f10a80 (Beta release:)
     }
 }

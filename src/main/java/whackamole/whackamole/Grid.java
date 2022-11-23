@@ -46,7 +46,10 @@ class Grid {
 
     public Grid(World world, Player player) throws Exception {
         this.world = world;
+<<<<<<< HEAD
         // TODO: Start block lookup downwards
+=======
+>>>>>>> 2f10a80 (Beta release:)
         Block startBlock = world.getBlockAt(player.getLocation().subtract(0, 1, 0));
         this.grid = this.findGrid(startBlock);
     }
@@ -115,7 +118,7 @@ class Grid {
 
     public void spawnArmorStands() {
         for (Block block : this.grid) {
-            this.spawnEntity(block, MoleType.Debug);
+            this.spawnEntity(block, MoleType.Debug, 0);
         }
     }
 
@@ -124,32 +127,46 @@ class Grid {
     }
 
 
-    public void spawnRandomEntity(MoleType type) {
+    public void spawnRandomEntity(MoleType type, double moleSpeed) {
         Random random = new Random();
         int index = random.nextInt(this.grid.size());
-        this.spawnEntity(this.grid.get(index), type);
+        this.spawnEntity(this.grid.get(index), type, moleSpeed);
     }
 
-    public void spawnEntity(Block block, MoleType type) {
-        this.spawnEntity(block.getLocation().clone().add(0.5, 0, 0.5), type);
+    public void spawnEntity(Block block, MoleType type, double moleSpeed) {
+        this.spawnEntity(block.getLocation().clone().add(0.5, -1.5, 0.5), type, moleSpeed);
     }
-    public void spawnEntity(Location loc, MoleType type) {
+    public void spawnEntity(Location loc, MoleType type, double moleSpeed) {
         this.entityList.add(
             new Mole(
                 type,
-                (ArmorStand) this.world.spawnEntity(loc, EntityType.ARMOR_STAND)
+                (ArmorStand) this.world.spawnEntity(loc, EntityType.ARMOR_STAND),
+                moleSpeed
             )
         );
     }
 
     public void removeEntities() {
+        for (int i = this.entityList.size() -1; i >= 0; i--) {
+            this.entityList.get(i).unload();
+        }
         this.entityList.clear();
     }
     public void removeEntities(MoleState state) {
-        this.entityList.removeIf(mole -> {return mole.state == state;});
+        for (int i = this.entityList.size() -1; i >= 0; i--) {
+            if (this.entityList.get(i).state == state) {
+                this.entityList.get(i).unload();
+                this.entityList.remove(i);
+            }
+        }
     }
     public void removeEntities(MoleType type) {
-        this.entityList.removeIf(mole -> {return mole.type == type;});
+        for (int i = this.entityList.size() -1; i >= 0; i--) {
+            if (this.entityList.get(i).type == type) {
+                this.entityList.get(i).unload();
+                this.entityList.remove(i);
+            }
+        }
     }
 
 
@@ -164,14 +181,14 @@ class Grid {
     }
 
 
-    public boolean handleHitEvent(Entity e) {
+    public MoleType handleHitEvent(Entity e) {
         for(Mole mole : this.entityList) {
             if(mole.equals(e) && mole.isMoving()) {
                 mole.state = MoleState.Hit;
-                return true;
+                return mole.type;
             }
         }
-        return false;
+        return null;
     }
 
 

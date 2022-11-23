@@ -99,10 +99,21 @@ public class Econ {
     }
 
     public void depositPlayer(Player player, double amount) {
+<<<<<<< HEAD
         switch (this.currencyType) {
             case VAULT          ->          econ.depositPlayer(player, amount);
             case SCOREBOARD     ->          this.addScore(this.getScore(player), amount);
         }
+=======
+        try {
+            switch (this.currencyType) {
+                case VAULT          ->          econ.depositPlayer(player, amount);
+                case SCOREBOARD     ->          this.addScore(this.getScore(player), amount);
+                case NULL           ->          {}
+            }
+        } catch (Exception e) {}
+
+>>>>>>> 2f10a80 (Beta release:)
     }
 
     public Score getScore(Player player) {
