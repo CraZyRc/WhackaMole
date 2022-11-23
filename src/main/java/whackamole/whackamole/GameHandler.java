@@ -97,7 +97,9 @@ public class GameHandler {
             if (playerOnGrid && !this.cooldownSendList.contains(player.getUniqueId())) {
                 this.cooldownSendList.add(player.getUniqueId());
             } else if (!playerOnGrid && this.cooldownSendList.contains(player.getUniqueId())) {
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder().append("").create());
                 this.cooldownSendList.remove(player.getUniqueId());
+
             }
         }
         return playerOnGrid;
@@ -143,10 +145,10 @@ public class GameHandler {
     public void Start(Player player) {
         if (!this.Running && this.ID1 == -1) {
             this.gamePlayer = player;
+            gameLost = false;
             this.ID1 = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, this.Runner, this.Interval * 20L, this.Interval * 20L);
             this.Running = true;
             this.moleMissed = 0;
-            gameLost = false;
             player.getInventory().addItem(this.axe);
         }
     }
@@ -184,6 +186,7 @@ public class GameHandler {
                 logger.error("No payment method has been set, please see the game file");
             }
             this.Score = 0;
+            this.gamePlayer = null;
         }
     }
     public void saveGame() {

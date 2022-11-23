@@ -27,6 +27,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -127,10 +128,11 @@ public final class GamesManager implements Listener {
             if (gameHandler.onGrid(event.getPlayer())) {
                 if (!gameHandler.hasCooldown(event.getPlayer().getUniqueId())) {
                     gameHandler.Start(event.getPlayer());
+                    break;
                 }
             } else if (gameHandler.gamePlayer == event.getPlayer()) {
                 gameHandler.Stop();
-                event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder().append("").create());
+            break;
             }
         }
     }
@@ -159,7 +161,6 @@ public final class GamesManager implements Listener {
                         } else if (gameHandler.cooldownSendList.contains(cooldownPlayer.getKey()) && !gameHandler.gameLost) {
                             BaseComponent[] resetMessage = new ComponentBuilder().append(Config.color("&4&lGAME OVER !&f&l please buy a new ticket or wait. Time left: &a&l") + gameHandler.formatCooldown(cooldownPlayer.getValue())).create();
                             Bukkit.getPlayer(cooldownPlayer.getKey()).spigot().sendMessage(ChatMessageType.ACTION_BAR, resetMessage);
-
                         }
                     }
                 }
@@ -180,6 +181,7 @@ public final class GamesManager implements Listener {
                     for (Mole mole : game.moleList) {
                         if (e.getEntity() == mole.mole) {
                             mole.hit = true;
+                            game.gamePlayer.playSound(game.gamePlayer, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
                             game.Score = game.Score + game.pointsPerKill;
                             break gameloop;
                         }

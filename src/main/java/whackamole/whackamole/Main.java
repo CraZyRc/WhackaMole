@@ -62,9 +62,13 @@ public final class Main extends JavaPlugin {
                 .withSubcommand(new CommandAPICommand("buy")
                         .executesPlayer((player, args) -> {
                             GameHandler game = this.gameManager.getOnGrid(player);
-                            game.removeCooldown(player.getUniqueId());
-                            econ.econ.withdrawPlayer(player, game.ticketCost);
-                            player.sendMessage(this.config.PREFIX + "Cooldown removed!");
+                            if (econ.econ.has(player, 15)) {
+                                game.removeCooldown(player.getUniqueId());
+                                econ.econ.withdrawPlayer(player, game.ticketCost);
+                                player.sendMessage(this.config.PREFIX + "Cooldown removed!");
+                            } else {
+                                player.sendMessage(this.config.PREFIX + ChatColor.RED + "Insufficient funds !");
+                            }
                         })
                 )
                 .withSubcommand(new CommandAPICommand("settings")
