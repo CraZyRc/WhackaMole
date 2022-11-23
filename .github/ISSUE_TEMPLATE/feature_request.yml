@@ -58,7 +58,3 @@ body:
             System.out.println("Awesome!");
         }
       render: java
-  - type: 'textarea'
-    attributes:
-      description: |-
-        Yes this has been utterly stolen from the [Citizens2](https://github.com/CitizensDev/Citizens2/blob/master/.github/ISSUE_TEMPLATE/feature_request.yml) repository
