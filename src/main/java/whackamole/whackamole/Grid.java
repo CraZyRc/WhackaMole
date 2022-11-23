@@ -26,8 +26,9 @@ class Grid {
 
     private Config config = Config.getInstance();
     private Logger logger = Logger.getInstance();
+
     public ArrayList<Block> grid;
-    private World world;
+    public World world;
     private ArrayList<Entity> debuglist = new ArrayList<>();
 
     public Grid(World world, ArrayList<Block> grid) {
@@ -125,9 +126,11 @@ class Grid {
         return outList;
     }
 
-    public void Deserialize(List<List<Integer>> grid) {
-        for (List<Integer> loc : grid) {
-            this.grid.add(this.world.getBlockAt(loc.get(0), loc.get(1), loc.get(2)));
+    public static Grid Deserialize(World world, List<List<Integer>> data) {
+        ArrayList<Block> grid = new ArrayList<>();
+        for (List<Integer> loc : data) {
+            grid.add(world.getBlockAt(loc.get(0), loc.get(1), loc.get(2)));
         }
+        return new Grid(world, grid);
     }
 }

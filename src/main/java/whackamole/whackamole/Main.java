@@ -8,7 +8,6 @@ import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -16,8 +15,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public final class Main extends JavaPlugin {
 
@@ -124,8 +121,7 @@ public final class Main extends JavaPlugin {
     }
 
     public void loadGames() {
-        File dataFolder = new File("./plugins/WhackaMole/Games");
-        for (String key : dataFolder.list()) {
+        for (String key : this.config.gamesData.list()) {
             File gameFile = new File("./plugins/WhackaMole/Games/" + key);
             this.logger.info(key + " Successfully located");
 

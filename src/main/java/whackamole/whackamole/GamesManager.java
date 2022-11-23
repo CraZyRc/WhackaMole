@@ -14,6 +14,17 @@ public final class GamesManager implements Listener {
     private Logger logger = Logger.getInstance();
     public List<GameHandler> games = new ArrayList<>();
 
+    public void loadGames() {
+        File GamesFolder = this.config.gamesData;
+        for (String i : GamesFolder.list()) {
+            try {
+                this.addGame(i);
+            } catch (Exception e) {
+                this.logger.error(e.getMessage());
+            }
+        }
+    } 
+
     public void addGame(GameHandler game) throws Exception {
         if (this.nameExists(game.gameName)) {
             throw new Exception("Grid with name {0} already exists!".formatted(game.gameName));

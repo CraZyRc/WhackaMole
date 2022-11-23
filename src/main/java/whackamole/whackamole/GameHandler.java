@@ -1,7 +1,9 @@
 package whackamole.whackamole;
 
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -17,19 +19,24 @@ public class GameHandler implements Listener {
 
     private boolean debug = false;
     private Logger logger = Logger.getInstance();
+    private Config config = Config.getInstance();
 
     private File gameFile;
-    private FileConfiguration gameConfig = new YamlConfiguration();
+    private FileConfiguration gameConfig = new YamlConfiguration();    
     boolean gamesLoaded = false;
 
     public String gameName;
+    public String gameWorld;
     public Grid grid;
     public Boolean cashHats = true;
     public Integer Interval = 20;
     public Integer pointsPerKill = 1;
+    private World world;
 
     public GameHandler(String ConfigName) {
         this.gameName = ConfigName;
+        this.createGameFile();
+        this.getValues();
     }
 
     public GameHandler(String gameName, Grid grid) {
@@ -60,7 +67,7 @@ public class GameHandler implements Listener {
 
     // create gamefile
     public void createGameFile() {
-        gameFile = new File("./plugins/WhackaMole/Games", this.gameName + ".yml");
+        gameFile = new File(this.config.gamesData + this.gameName + ".yml");
         if (!gameFile.exists()) {
             this.logger.info("Creating Gamefiles...");
             gameFile.getParentFile().mkdirs();
@@ -84,6 +91,7 @@ public class GameHandler implements Listener {
 
 
     public void setValues() {
+
         try {
             this.gameConfig.options().setHeader(Arrays.asList(
                     "###########################################################",
@@ -94,6 +102,7 @@ public class GameHandler implements Listener {
                     "NOTE: you can edit the Properties to change the game rules",
                     "NOTE: Do not touch the Field Data!"));
             this.gameConfig.set("Properties.Name", this.gameName);
+            this.gameConfig.set("Properties.World", this.grid.world.getName());
             this.gameConfig.set("Properties.CashHats", this.cashHats);
             this.gameConfig.set("Properties.Interval", this.Interval);
             this.gameConfig.set("Properties.Points per Kill", this.pointsPerKill);
@@ -107,6 +116,7 @@ public class GameHandler implements Listener {
 
     public void getValues() {
         this.gameName = (String) this.gameConfig.get("Properties.Name");
+        this.gameWorld = (String) this.gameConfig.get("Properties.World");
         this.grid.Deserialize((List<List<Integer>>) this.gameConfig.getList("Field Data"));
         this.cashHats = this.gameConfig.getBoolean("properties." + "CashHats");
         this.Interval = this.gameConfig.getInt("properties." + "Interval");
