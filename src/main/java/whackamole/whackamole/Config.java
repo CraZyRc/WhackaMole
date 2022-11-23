@@ -3,6 +3,7 @@ package whackamole.whackamole;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,9 +23,11 @@ public final class Config {
     public String PERM_SETTINGS;
     public File gamesData = new File("./plugins/WhackaMole/Games/");
 
-    private Config() {
-        this.configFile = new YMLFile("plugins/WhackaMole/config.yml");
+    private Config(Plugin main, String path) {
+        main.saveResource("config.yml", false);
+        this.configFile = new YMLFile(path);
     }
+    private Config() {}
 
     public void setup() {
         this.PREFIX         = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
@@ -37,9 +40,9 @@ public final class Config {
         this.PERM_SETTINGS  = "WAM." + this.configFile.getString("Commands.Settings");
     }
 
-    public static Config getInstance(FileConfiguration config) {
+    public static Config getInstance(Plugin main, String config) {
         if (Config.Instance == null) {
-            Config.Instance = new Config();
+            Config.Instance = new Config(main, config);
             return Config.Instance;
         }
         return Config.Instance;
@@ -128,7 +131,6 @@ class YMLFile {
         try {
             this.logger.success("Creating Folder/file: %s".formatted(this.file.getName()));
             if (this.file.getParentFile().mkdirs()) {
-                this.file.createNewFile();
                 this.load();
             }
         } catch (Exception e) {

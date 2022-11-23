@@ -12,14 +12,16 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin {
 
-    public Config config = Config.getInstance();
+    public Config config;
     public Logger logger = Logger.getInstance();
     public GamesManager gameManager;
 
     @Override
     public void onLoad() {
         Logger.Prefix = this.getDescription().getPrefix();
+        this.config = Config.getInstance(this, this.getDataFolder() + "/config.yml");
         CommandAPI.onLoad(new CommandAPIConfig().verboseOutput(true));
+        this.logger.info(this.config.PERM_CREATE);
 
         new CommandAPICommand("WhackaMole")
                 .withAliases("WAM", "Whack")
@@ -27,10 +29,10 @@ public final class Main extends JavaPlugin {
                         .withPermission(this.config.PERM_CREATE)
                         .withArguments(new StringArgument("Game Name"))
                         .executesPlayer((player, args) -> {
-//                            if (!(player.hasPermission(this.config.PERM_ALL) || player.hasPermission(this.config.PERM_CREATE))) {
-//                                player.sendMessage(this.config.PREFIX + this.config.NO_PERM);
-//                                return;
-//                            }
+                            if (!(player.hasPermission(this.config.PERM_ALL) || player.hasPermission(this.config.PERM_CREATE))) {
+                                player.sendMessage(this.config.PREFIX + this.config.NO_PERM);
+                                return;
+                            }
                             try {
                                 String gameName = (String) args[0];
                                 this.gameManager.addGame(gameName, new Grid(player.getWorld(), player));
@@ -45,10 +47,10 @@ public final class Main extends JavaPlugin {
                         .withPermission(this.config.PERM_REMOVE)
                         .executesPlayer((player, args) -> {
                             GameHandler game = this.gameManager.getOnGrid(player);
-//                            if (!(player.hasPermission(this.config.PERM_ALL) || player.hasPermission(this.config.PERM_REMOVE))) {
-//                                player.sendMessage(this.config.PREFIX + this.config.NO_PERM);
-//                                return;
-//                            }
+                            if (!(player.hasPermission(this.config.PERM_ALL) || player.hasPermission(this.config.PERM_REMOVE))) {
+                                player.sendMessage(this.config.PREFIX + this.config.NO_PERM);
+                                return;
+                            }
                             if (game != null) {
                                     this.gameManager.removeGame(game);
                             } else {throw CommandAPI.fail(this.config.PREFIX + "Please stand on the game Grid you wish to remove");
