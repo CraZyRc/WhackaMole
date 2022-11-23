@@ -2,22 +2,25 @@ package whackamole.whackamole;
 
 import java.util.EnumSet;
 
-import org.bukkit.Sound;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+<<<<<<< HEAD
 import org.checkerframework.checker.signedness.qual.Unsigned;
+=======
+import org.bukkit.inventory.EquipmentSlot;
+>>>>>>> 0f64a75 (SNAPSHOT -V1 :)
 
 
 public class Mole {
 
-    private Config config = Config.getInstance();
-    
+    private final Config config = Config.getInstance();
+
     public MoleType type;
     public enum MoleType {
-        Debug,
+        Null,
         Mole,
         Jackpot
-    };
+    }
 
     public MoleState state = MoleState.MovingUp; 
     public enum MoleState {
@@ -44,26 +47,20 @@ public class Mole {
 
         this.type = type;
         this.mole = switch(type) {
-            case Debug -> {
-                e.setGravity(false);
-                e.setInvulnerable(true);
-                Mole.move(e, 1.5);
-
-                yield e;
-            }
+            case Null -> e;
             case Mole -> {
                 e.setGravity(false);
-                e.setInvulnerable(false);
                 e.setInvisible(true);
                 e.getEquipment().setHelmet(this.config.MOLE_SKULL);
+                e.addEquipmentLock(EquipmentSlot.HEAD, ArmorStand.LockType.REMOVING_OR_CHANGING);
 
                 yield e;
             }
             case Jackpot -> {
                 e.setGravity(false);
-                e.setInvulnerable(false);
                 e.setInvisible(true);
                 e.getEquipment().setHelmet(this.config.JACKPOT_SKULL);
+                e.addEquipmentLock(EquipmentSlot.HEAD, ArmorStand.LockType.REMOVING_OR_CHANGING);
 
                 yield e;
             }
@@ -72,12 +69,11 @@ public class Mole {
 
     public boolean update() {
         switch (this.type) {
-            case Debug -> {}
+            case Null -> {}
             case Mole, Jackpot -> {
                 switch (this.state) {
                     case Hit, Missed -> {
                         this.state = MoleState.Hidden;
-                        // ? Or Reset moles position
                         this.unload();
                     }
                     case MovingUp -> {
@@ -103,9 +99,6 @@ public class Mole {
     }
     private void move(double y) {
         this.mole.teleport(this.mole.getLocation().add(0, y, 0));
-    }
-    private static void move(Entity e, double y) {
-        e.teleport(e.getLocation().add(0, y, 0));
     }
 
     public boolean isMoving() {

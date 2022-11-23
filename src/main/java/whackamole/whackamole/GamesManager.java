@@ -48,6 +48,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+<<<<<<< HEAD
+=======
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+>>>>>>> 0f64a75 (SNAPSHOT -V1 :)
 import org.bukkit.event.player.PlayerInteractEvent;
 <<<<<<< HEAD
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -63,6 +69,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public final class GamesManager implements Listener {
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     private Config config = Config.getInstance();
 
@@ -70,6 +77,15 @@ public final class GamesManager implements Listener {
     private Logger logger = Logger.getInstance();
 
     public List<Game> games = new ArrayList<>();
+=======
+    private final Config config = Config.getInstance();
+
+    private final Logger logger = Logger.getInstance();
+
+    private List<Game> games = new ArrayList<>();
+    private int runnableTickCounter = 0;
+    
+>>>>>>> 0f64a75 (SNAPSHOT -V1 :)
     private static GamesManager Instance;
     public ItemStack ticket;
     public GamesManager() {
@@ -79,7 +95,7 @@ public final class GamesManager implements Listener {
     public GamesManager(Main main) {
         this.Ticket();
         this.loadGames();
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(main, Tick, 1l, 1l);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(main, Tick, 1L, 1L);
     }
     public static GamesManager getInstance() {
         if (GamesManager.Instance == null) {
@@ -132,6 +148,7 @@ public final class GamesManager implements Listener {
 >>>>>>> 0d00087 (Commands:)
     }
 
+<<<<<<< HEAD
     public void addGame(Game game) throws Exception {
         if (this.gameExists(game.name)) {
             throw new Exception("Grid with name %s already exists!".formatted(game.name));
@@ -149,15 +166,22 @@ public final class GamesManager implements Listener {
 >>>>>>> cffe322 (change :))
         this.games.add(new GameHandler(gameName));
 =======
+=======
+    public void addGame(File gameName) {
+>>>>>>> 0f64a75 (SNAPSHOT -V1 :)
         this.games.add(new Game(gameName));
 >>>>>>> 2b9819f (Econ :)
     }
+<<<<<<< HEAD
 >>>>>>> 461f3dd (updated: addGame method)
     public void addGame(String gameName, Grid grid) throws Exception {
+=======
+    public void addGame(String gameName, Grid grid, Player player) throws Exception {
+>>>>>>> 0f64a75 (SNAPSHOT -V1 :)
         if (this.gameExists(gameName)) {
             throw new Exception("Grid with name %s already exists!".formatted(ChatColor.YELLOW + gameName + ChatColor.WHITE));
         }
-        this.games.add(new Game(gameName, grid));
+        this.games.add(new Game(gameName, grid, player));
     }
 
 <<<<<<< HEAD
@@ -176,8 +200,11 @@ public final class GamesManager implements Listener {
     public void removeGame(Game game) {
         game.deleteSave();
         this.games.remove(game);
+<<<<<<< HEAD
         this.logger.info(game + " ...Successfully removed!");
 >>>>>>> 2f10a80 (Beta release:)
+=======
+>>>>>>> 0f64a75 (SNAPSHOT -V1 :)
     }
 
 
@@ -189,30 +216,19 @@ public final class GamesManager implements Listener {
         }
         return null;
     }
-
-    public void toggleArmorStands() {
-        for (Game game : games) {
-            game.toggleArmorStands();
+    Runnable Tick = () -> {
+        for (Game game : GamesManager.this.games) {
+            game.run();
+            game.moleUpdater();
         }
-    }
 
-    int runnableTickCounter = 0;
-    Runnable Tick = new Runnable() {
-        @Override
-        public void run() {
+        if (GamesManager.this.runnableTickCounter >= 20) {
+            GamesManager.this.runnableTickCounter = 0;
             for (Game game : GamesManager.this.games) {
-                game.run();
-                game.moleUpdater();
+                game.displayActionBar();
             }
-
-            if (GamesManager.this.runnableTickCounter >= 20) {
-                GamesManager.this.runnableTickCounter = 0;
-                for (Game game : GamesManager.this.games) {
-                    game.displayActionBar();
-                }
-            }
-            GamesManager.this.runnableTickCounter++;
         }
+        GamesManager.this.runnableTickCounter++;
     };
 
     @EventHandler
@@ -241,16 +257,29 @@ public final class GamesManager implements Listener {
     public void onHit(EntityDamageByEntityEvent e) {
         if (e.getDamager().getType() == EntityType.PLAYER) {
             for (Game game : this.games) {
-                if(game.handleHitEvent((Player) e.getDamager(), e.getEntity())) {
-                    e.setDamage(0);
-                    e.setCancelled(true);
+                if(game.handleHitEvent(e)) {
                     break;
                 }
             }
         }
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+    @EventHandler
+    public void itemDrop(PlayerDropItemEvent e) {
+        if (e.getItemDrop().getItemStack().equals(this.config.PLAYER_AXE)) {
+            e.setCancelled(true);
+        }
+    }
+    @EventHandler
+    private void itemMove(InventoryClickEvent e) {
+        if (e.getCurrentItem().equals(this.config.PLAYER_AXE)) {
+            e.setCancelled(true);
+        }
+    }
+>>>>>>> 0f64a75 (SNAPSHOT -V1 :)
 
     @EventHandler
     public void ticketUse(PlayerInteractEvent e) {

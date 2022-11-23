@@ -6,9 +6,9 @@
 
 Version: ${project.version}
 
-# Welcome to the config file, here you can adjust the output lines of the plugin.
-# the lines must be in YAML format, so it doesn't accept tabs, only spaces
-# And you need to make sure you have "escaped" all apostrophes in your text: If you want to write "don't", for example, write "don''t" instead (note the doubled apostrophe)
+# Welcome to the config file, here you can adjust the general settings of the plugin.
+# the lines must be in YAML format, so it doesn't accept tabs, only spaces.
+# And you need to make sure you have "escaped" all apostrophes in your text: If you want to write "don't", for example, write "don''t" instead (note the doubled apostrophe).
 
 
 
@@ -18,30 +18,14 @@ Version: ${project.version}
 # <------------------------------------------------------> #
 ############################################################
 
-
-#The list of blocks the game can spawn on (generally what the surface blocks will be of the game, the visible layer of the game)
-Blocklist:
-  - SMOKER
-  - RESPAWN_ANCHOR
-  - REINFORCED_DEEPSLATE
-  - DISPENCER
-  - DROPPER
-  - END_PORTAL_FRAME
-
-#The list of blocks you can use for the second layer of the game
-Sub-List:
-  - BROWN_MUSHROOM_BLOCK
-  - MUSHROOM
-  - VERDANT_FROGLIGHT
-
-# Maximum size of a created field.
-Max playfield: 49
-
+# This section is about customisable text.
+# Please do note that some text messages have to be in Json.
+# If you don't know how to write in Json, here's a tutorial: https://minecraft.fandom.com/wiki/Raw_JSON_text_format.
 
 # The message to display on the Actionbar (accepts only Json).
 Actionbar Message:
   - '[{"text":""},{"text":"[","Bold":true,"color":"#000000"},{"text":"W","bold":true,"color":"#ffd700"},{"text":"h","bold":true,"color":"#ffce00"},{"text":"a","bold":true,"color":"#ffc600"},{"text":"c","bold":true,"color":"#ffbe00"},{"text":"k","bold":true,"color":"#ffb600"},{"text":"a","bold":true,"color":"#ffae00"},{"text":"M","bold":true,"color":"#ffa600"},{"text":"o","bold":true,"color":"#ff9e00"},{"text":"l","bold":true,"color":"#ff9600"},{"text":"e","bold":true,"color":"#ff8e00"},{"text":"] ","Bold":true,"color":"#000000"},{"text":"Your score is:","bold":true,"color":"#55ffff"}]'
-# Name of the hammer (accepts color codes and hex colors (for hex, please use: &x&R&R&G&G&B&B)
+# Name of the hammer (accepts color codes and hex colors).
 Hammer Name: "&0&l[&6&lWAM&0&l] #28c000&lS#2fca00&lM#37d500&lA#3edf00&lS#46ea00&lH#4df400&lE#55ff00&lR"
 
 
@@ -80,11 +64,33 @@ Ticket Price: 15
 # <------------------------------------------------------> #
 ############################################################
 
-Field:
- Margin:
-    width: 1.4
-    height: 2.0
+# Here you will find the general options regarding game creation.
 
+
+#The list of blocks the game can spawn on (generally what the surface blocks will be of the game, the visible layer of the game).
+Blocklist:
+  - SMOKER
+  - RESPAWN_ANCHOR
+  - REINFORCED_DEEPSLATE
+  - DISPENCER
+  - DROPPER
+  - END_PORTAL_FRAME
+
+#The list of blocks you can use for the second layer of the game
+Sub-List:
+  - BROWN_MUSHROOM_BLOCK
+  - MUSHROOM
+  - VERDANT_FROGLIGHT
+
+# Maximum size of a created field.
+Max playfield: 25
+
+# To what range does the game extend horizontally and vertically?
+# NOTE: set the height to '2.0' to make it so the player doesn't exit the game by jumping.
+# NOTE: if you keep the width under '1.0' the player will exit the field when the player steps off the field, to add a little margin, make sure this is higher than '1.0'.
+Field extension:
+  width: 1.4
+  height: 2.0
 
 
 ############################################################
@@ -94,10 +100,10 @@ Field:
 ############################################################
 
 Commands:
-  Reload: "Reload"
+  Play: "Play"
   Buy: "Buy"
   Use Reset Ticket: "Use"
   Create: "create"
-  Remove: "Remove"
-  Play: "Play"
+  Reload: "Reload"
   Settings: "Settings"
+  Remove: "Remove"

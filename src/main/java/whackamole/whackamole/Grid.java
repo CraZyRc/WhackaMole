@@ -5,13 +5,14 @@ import java.util.*;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
 import org.bukkit.util.Vector;
 
 import whackamole.whackamole.Mole.*;
 
 class Grid {
-    private static ArrayList<Vector> neighborList = new ArrayList<Vector>() {
+    private static ArrayList<Vector> neighborList = new ArrayList<>() {
         {
             add(new Vector(1, 0, -1)); // * topleft
             add(new Vector(1, 0, 0)); // * top
@@ -26,8 +27,12 @@ class Grid {
         }
     };
 
+<<<<<<< HEAD
     private Config config = Config.getInstance();
     private Logger logger = Logger.getInstance();
+=======
+    private final Config config = Config.getInstance();
+>>>>>>> 0f64a75 (SNAPSHOT -V1 :)
 
     public ArrayList<Mole> entityList = new ArrayList<>();
 
@@ -39,11 +44,6 @@ class Grid {
         this.grid = grid;
     }
 
-    public Grid(World world, Block startBlock) throws Exception {
-        this.world = world;
-        this.grid = this.findGrid(startBlock);
-    }
-
     public Grid(World world, Player player) throws Exception {
         this.world = world;
 <<<<<<< HEAD
@@ -51,12 +51,6 @@ class Grid {
 =======
 >>>>>>> 2f10a80 (Beta release:)
         Block startBlock = world.getBlockAt(player.getLocation().subtract(0, 1, 0));
-        this.grid = this.findGrid(startBlock);
-    }
-
-    public Grid(World world, Location loc) throws Exception {
-        this.world = world;
-        Block startBlock = world.getBlockAt(loc);
         this.grid = this.findGrid(startBlock);
     }
 
@@ -73,12 +67,14 @@ class Grid {
                 continue;
             }
             ArrayList<Block> queueAdd = this.getNeighbors(block);
-            queueAdd.removeIf(s -> returnList.contains(s));
+            queueAdd.removeIf(returnList::contains);
             queue.addAll(queueAdd);
         }
 
         if (returnList.isEmpty()) {
             throw new Exception("Failed to find a grid, make sure you're standing on the game field");
+        } else if (returnList.size() > this.config.FIELD_MAX_SIZE) {
+            throw new Exception("Failed to create grid, the field is bigger then the allowed size");
         }
         return returnList;
     }
@@ -114,27 +110,16 @@ class Grid {
         }
         return false;
     }
-    
-
-    public void spawnArmorStands() {
-        for (Block block : this.grid) {
-            this.spawnEntity(block, MoleType.Debug, 0);
-        }
-    }
-
-    public void removeArmorStands() {
-        this.removeEntities(MoleType.Debug);
-    }
 
 
-    public void spawnRandomEntity(MoleType type, double moleSpeed) {
+    public void spawnRandomEntity(MoleType type, double moleSpeed, BlockFace Rotation) {
         Random random = new Random();
         int index = random.nextInt(this.grid.size());
-        this.spawnEntity(this.grid.get(index), type, moleSpeed);
+        this.spawnEntity(this.grid.get(index), type, moleSpeed, Rotation);
     }
 
-    public void spawnEntity(Block block, MoleType type, double moleSpeed) {
-        this.spawnEntity(block.getLocation().clone().add(0.5, -1.5, 0.5), type, moleSpeed);
+    public void spawnEntity(Block block, MoleType type, double moleSpeed, BlockFace Rotation) {
+        this.spawnEntity(block.getLocation().clone().add(0.5, -1.5, 0.5).setDirection(Rotation.getDirection()), type, moleSpeed);
     }
     public void spawnEntity(Location loc, MoleType type, double moleSpeed) {
         this.entityList.add(
@@ -160,14 +145,6 @@ class Grid {
             }
         }
     }
-    public void removeEntities(MoleType type) {
-        for (int i = this.entityList.size() -1; i >= 0; i--) {
-            if (this.entityList.get(i).type == type) {
-                this.entityList.get(i).unload();
-                this.entityList.remove(i);
-            }
-        }
-    }
 
 
     public int entityUpdate() {
@@ -181,11 +158,10 @@ class Grid {
     }
 
 
-    public MoleType handleHitEvent(Entity e) {
+    public Mole handleHitEvent(Entity e) {
         for(Mole mole : this.entityList) {
             if(mole.equals(e) && mole.isMoving()) {
-                mole.state = MoleState.Hit;
-                return mole.type;
+                return mole;
             }
         }
         return null;
@@ -209,8 +185,18 @@ class Grid {
 
     public static Grid Deserialize(World world, List<List<Integer>> data) {
         ArrayList<Block> grid = new ArrayList<>();
+<<<<<<< HEAD
         for (List<Integer> loc : data) {
             grid.add(world.getBlockAt(loc.get(0), loc.get(1), loc.get(2)));
+=======
+        for (Object datum : data) {
+            List<?> loc = (List<?>) datum;
+            grid.add(world.getBlockAt(
+                    (Integer) loc.get(0),
+                    (Integer) loc.get(1),
+                    (Integer) loc.get(2)
+            ));
+>>>>>>> 0f64a75 (SNAPSHOT -V1 :)
         }
         return new Grid(world, grid);
     }

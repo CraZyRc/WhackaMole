@@ -47,6 +47,7 @@ public final class Config {
     public String OBJECTIVE;
     public Double FiELD_MARGIN_X;
     public Double FiELD_MARGIN_Y;
+    public int FIELD_MAX_SIZE;
     public File gamesData = new File("./plugins/WhackaMole/Games/");
 
     public ItemStack PLAYER_AXE; 
@@ -110,7 +111,14 @@ public final class Config {
         this.PERM_REMOVE        = "WAM." + this.configFile.getString("Commands.Remove");
         this.PERM_PLAY          = "WAM." + this.configFile.getString("Commands.Play");
         this.PERM_SETTINGS      = "WAM." + this.configFile.getString("Commands.Settings");
+<<<<<<< HEAD
 >>>>>>> 0d00087 (Commands:)
+=======
+
+        this.FIELD_MAX_SIZE     = this.configFile.getInt("Max playfield");
+        this.FiELD_MARGIN_X     = this.configFile.getDouble("Field extension.width");
+        this.FiELD_MARGIN_Y     = this.configFile.getDouble("Field extension.height");
+>>>>>>> 0f64a75 (SNAPSHOT -V1 :)
     }
 
     public static String color(String message) {
@@ -201,17 +209,14 @@ public final class Config {
 class YMLFile {
     public FileConfiguration FileConfig = new YamlConfiguration();
     public File file;
-    private Logger logger = Logger.getInstance();
+    private final Logger logger = Logger.getInstance();
 
     public YMLFile(File folder, String child) throws FileNotFoundException {
         if (!folder.isDirectory()) throw new FileNotFoundException("Did not pass a Folder file: %s".formatted(folder.getName()));
         this.file = new File(folder, child);
         this.load();
     }
-    public YMLFile(String folder, String child) {
-        this.file = new File(folder, child);
-        this.load();
-    }
+
     public YMLFile(String path) {
         this.file = new File(path);
         this.load();
@@ -221,9 +226,6 @@ class YMLFile {
         this.load();
     }
 
-    public Object get(String path) {
-        return this.FileConfig.get(path);
-    }
     public String getString(String path) {
         return this.FileConfig.getString(path);
     }
@@ -235,9 +237,6 @@ class YMLFile {
     }
     public double getDouble(String path) {
         return this.FileConfig.getDouble(path);
-    }
-    public long getLong(String path) {
-        return this.FileConfig.getLong(path);
     }
     public List<?> getList(String path) {
         return this.FileConfig.getList(path);

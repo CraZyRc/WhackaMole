@@ -6,6 +6,12 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
+<<<<<<< HEAD
+=======
+import org.bukkit.block.BlockFace;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import whackamole.whackamole.Mole.*;
+>>>>>>> 0f64a75 (SNAPSHOT -V1 :)
 
 import org.bukkit.*;
 import org.bukkit.entity.*;
@@ -23,17 +29,18 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 
 public class Game {
+    public final BlockFace[] Directions = {BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST};
 
-    private Logger  logger  = Logger.getInstance();
-    private Config  config  = Config.getInstance();
-    private Econ    econ    = Econ.getInstance();
+    private final Logger  logger  = Logger.getInstance();
+    private final Config  config  = Config.getInstance();
+    private final Econ    econ    = Econ.getInstance();
 
     private YMLFile gameConfig;
     public  String  name;
     
     public HashMap<UUID, Long> cooldown         = new HashMap<>();
     private HashMap<UUID, Integer> missedMoles  = new HashMap<>();
-    public ArrayList<UUID>  cooldownSendList    = new ArrayList<>();
+    private ArrayList<UUID>  cooldownSendList    = new ArrayList<>();
     
     public Player gamePlayer;
     private World world;
@@ -88,6 +95,7 @@ public class Game {
     private Random random = new Random();
 
     public boolean Jackpot = true;
+    public BlockFace spawnRotation;
     public double Interval = 1;
     public double spawnChance = 100;
     public int jackpotSpawn = 1;
@@ -97,16 +105,15 @@ public class Game {
     private int difficultyScore = 1;
     public int pointsPerKill = 1;
     public int maxMissed = 3;
+    public String Cooldown = "24:00:00";
     public double moleSpeedScaled;
     public double intervalScaled;
     public double spawnChanceScaled;
 >>>>>>> 2f10a80 (Beta release:)
     
-    public int Score = 0;
-    public int moleMissed = 0;
-    public boolean Running = false;
-    public boolean gameLost = false;
-    private boolean debug = false;
+    private int Score = 0;
+    private int moleMissed = 0;
+    private boolean Running = false;
     private int runnableIdentifier = -1;
 <<<<<<< HEAD
     
@@ -116,6 +123,7 @@ public class Game {
 =======
     private int Tick = 0;
 
+<<<<<<< HEAD
 >>>>>>> 2f10a80 (Beta release:)
 
     public Game(YMLFile configFile) throws Exception {
@@ -123,10 +131,15 @@ public class Game {
         this.loadGame();
     }
     public Game(File configFile) throws Exception {
+=======
+    public Game(File configFile) {
+>>>>>>> 0f64a75 (SNAPSHOT -V1 :)
         this.gameConfig = new YMLFile(configFile);
         this.loadGame();
     }
-    public Game(String name, Grid grid) throws FileNotFoundException {
+    public Game(String name, Grid grid, Player player) throws FileNotFoundException {
+//        this.spawnRotation = player.getFacing().getOppositeFace();
+        this.spawnRotation = Directions[Math.round(player.getLocation().getYaw()/45) & 0x7];
         this.name = formatName(name);
         this.gameConfig = new YMLFile(this.config.gamesData, this.name + ".yml");
         this.grid = grid;
@@ -154,19 +167,15 @@ public class Game {
         return playerOnGrid;
     }
 
-    public boolean onGrid(Location loc) { return this.grid.onGrid(loc); }
-
 
     public void Start(Player player) {
-        if (!this.Running && this.runnableIdentifier == -1 && player.hasPermission(this.config.PERM_PLAY)) {
+        if (!this.Running && this.runnableIdentifier == -1 && player.hasPermission(this.config.PERM_PLAY) && this.placeAxe(player)) {
             this.moleSpeedScaled = this.moleSpeed;
             this.intervalScaled = this.Interval;
             this.spawnChanceScaled = this.spawnChance;
             this.gamePlayer = player;
             this.moleMissed = 0;
-            this.gameLost = false;
             this.Running = true;
-            player.getInventory().addItem(this.config.PLAYER_AXE);
         }
     }
 
@@ -187,8 +196,12 @@ public class Game {
             if (this.Score > 0 || this.moleMissed == this.maxMissed) {
 =======
             if (this.Score > 0 || this.moleMissed >= this.maxMissed) {
+<<<<<<< HEAD
 >>>>>>> 2f10a80 (Beta release:)
                 this.setCooldown(gamePlayer.getUniqueId());
+=======
+                this.setCooldown(gamePlayer.getUniqueId(), this.parseTime(this.Cooldown));
+>>>>>>> 0f64a75 (SNAPSHOT -V1 :)
                 if (this.moleMissed >= this.maxMissed) this.missedMoles.put(this.gamePlayer.getUniqueId(), moleMissed);
             }
             if (econ.currencyType != Econ.Currency.NULL) {
@@ -280,38 +293,50 @@ public class Game {
 
         }
     }
+    private boolean placeAxe(Player player) {
+        if (!player.getInventory().getItemInMainHand().equals(Material.AIR)) {
+            if (player.getInventory().firstEmpty() == -1) {
+                player.sendMessage(this.config.PREFIX + "Inventory full, please empty a slot to play the game");
+                this.setCooldown(player.getUniqueId(), 10000L);
+                return false;
+            } else {
+                player.getInventory().setItem(player.getInventory().firstEmpty(), player.getInventory().getItemInMainHand());
+                player.getInventory().setItemInMainHand(this.config.PLAYER_AXE);
+                return true;
+            }
+        } else return false;
+    }
 
     public void onPlayerExit(Player player) {
-        if (this.missedMoles.containsKey(player.getUniqueId())) this.missedMoles.remove(player.getUniqueId());
+        this.missedMoles.remove(player.getUniqueId());
         if (Running) this.Stop();
 >>>>>>> 2f10a80 (Beta release:)
     }
 
 
-    public void toggleArmorStands() {
-        this.debug = !this.debug;
-        if (this.debug) {
-            this.grid.spawnArmorStands();
-        } else {
-            this.grid.removeArmorStands();
-        }
-    }
-
-
     public boolean hasCooldown(UUID player) {
-        if (this.cooldown.containsKey(player) && this.cooldown.get(player) > System.currentTimeMillis()) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.cooldown.containsKey(player) && this.cooldown.get(player) > System.currentTimeMillis();
     }
 
-    public void setCooldown(UUID player) {
+    private void setCooldown(UUID player, Long Cooldown) {
         if (!hasCooldown(player)) {
-            this.cooldown.put(player, System.currentTimeMillis() + 86400000);
+            this.cooldown.put(player, System.currentTimeMillis() + Cooldown);
         }
     }
-    
+    private Long parseTime(String time) {
+        if (time == null || time.isEmpty()) {
+            logger.error("Cooldown has improperly been set, correct format is HH:mm:ss");
+            return 0L;
+        }
+
+        String[] fields = time.split(":");
+        Long Hour = Long.parseLong(fields[0])*3600000;
+        Long Minutes = Long.parseLong(fields[1])*60000;
+        Long Seconds = Long.parseLong(fields[2])*1000;
+        return Hour + Minutes + Seconds;
+
+    }
+
     public void removeCooldown(UUID player) {
         this.cooldown.remove(player);
     }
@@ -388,27 +413,30 @@ public class Game {
         }
         this.moleMissed += missed;
         if (moleMissed >= maxMissed) {
-            this.gameLost = true;
             this.Stop();
         }
     }
 
-    public boolean handleHitEvent(Player player, Entity e) {
+    public boolean handleHitEvent(EntityDamageByEntityEvent e) {
         if(!this.Running) return false;
-        if(player != this.gamePlayer) return false;
+        Player player = (Player) e.getDamager();
+        Mole mole = this.grid.handleHitEvent(e.getEntity());
 
-        MoleType Type = this.grid.handleHitEvent(e);
+        if (mole == null) return false;
+        if (player != this.gamePlayer || !player.getInventory().getItemInMainHand().equals(this.config.PLAYER_AXE)) {
+            e.setCancelled(true);
+            return true;
+        }
 
-        if (Type == MoleType.Mole) {
+        if (mole.type == MoleType.Mole) {
             this.Score = this.Score + this.pointsPerKill;
-        } else if (Type == MoleType.Jackpot) {
+        } else if (mole.type == MoleType.Jackpot) {
             this.Score = this.Score + (this.pointsPerKill*3);
         }
-        this.gamePlayer.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+        this.gamePlayer.playSound(e.getDamager().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
         this.difficultyPoints++;
         if (Game.this.difficultyPoints == Game.this.difficultyScore) setSpeedScale();
-
-
+        mole.state = MoleState.Hit;
         return true;
     }
 
@@ -423,12 +451,12 @@ public class Game {
                 if (DROP <= Game.this.spawnChanceScaled) {
                     if (Game.this.Jackpot) {
                         if (DROP <= Game.this.jackpotSpawn) {
-                            this.grid.spawnRandomEntity(MoleType.Jackpot, Speed);
+                            this.grid.spawnRandomEntity(MoleType.Jackpot, Speed, spawnRotation);
                         } else {
-                            this.grid.spawnRandomEntity(MoleType.Mole, Speed);
+                            this.grid.spawnRandomEntity(MoleType.Mole, Speed, spawnRotation);
                         }
                     } else {
-                        this.grid.spawnRandomEntity(MoleType.Mole, Speed);
+                        this.grid.spawnRandomEntity(MoleType.Mole, Speed, spawnRotation);
                     }
                 }
                 Tick = 0;
@@ -436,7 +464,7 @@ public class Game {
         }
 
     }
-    public void setSpeedScale() {
+    private void setSpeedScale() {
         double Scaler = 1 + (this.difficultyScale/100);
         this.moleSpeedScaled = roundupDouble(this.moleSpeedScaled / Scaler);
         this.intervalScaled = roundupDouble(this.intervalScaled / Scaler);
@@ -460,17 +488,20 @@ public class Game {
                 "",
                 "EXPLANATION:",
                 "Name = name (make sure this is the same as the Filename)",
+                "Direction = What direction the moles spawning should be facing",
                 "Jackpot = enable the chance that a special mole will spawn giving triple the points if hit",
                 "Jackpot spawn chance = the chance per mole spawn for a jackpot",
                 "Game lost = the amount of moles not hit before the game ends",
                 "Points per kill = how many points should be rewarded per kill",
                 "Spawn rate = per how many seconds the mole has a chance of spawning",
                 "Spawn chance = percentage of successful spawn per spawn rate",
-                "Mole speed = how quick the mole should appear and disappear (1 = mole disappears after 1 second)",
+                "Mole speed = how quick the mole should move up and down (the lower the quicker)",
                 "Difficulty scaling = by how many percent the game should become more difficult (every x moles hit makes the game ..% more difficult)",
                 "Difficulty increase = per how many moles hit the game difficulty should increase",
+                "Cooldown = the cooldown when a player loses the game (HH:mm:ss)",
                 "That is all, enjoy messing around :)"));
         this.gameConfig.set("Properties.Name", this.name);
+        this.gameConfig.set("Properties.Direction", this.spawnRotation.name());
         this.gameConfig.set("Properties.Jackpot", this.Jackpot);
         this.gameConfig.set("Properties.Jackpot spawn chance", this.jackpotSpawn);
         this.gameConfig.set("Properties.Game lost", this.maxMissed);
@@ -480,6 +511,7 @@ public class Game {
         this.gameConfig.set("Properties.Mole speed", this.moleSpeed);
         this.gameConfig.set("Properties.Difficulty scaling", this.difficultyScale);
         this.gameConfig.set("Properties.Difficulty increase", this.difficultyScore);
+        this.gameConfig.set("Properties.Cooldown", this.Cooldown);
         this.gameConfig.set("Field Data.World", this.grid.world.getName());
         this.gameConfig.set("Field Data.Grid", this.grid.Serialize());
         this.gameConfig.save();
@@ -489,6 +521,7 @@ public class Game {
         this.world              = Bukkit.getWorld(this.gameConfig.getString("Field Data.World"));
         this.grid               = Grid.Deserialize(this.world, this.gameConfig.getList("Field Data.Grid"));
         this.name               = this.gameConfig.getString("Properties.Name");
+        this.spawnRotation      = BlockFace.valueOf(this.gameConfig.getString("Properties.Direction"));
         this.Jackpot            = this.gameConfig.getBoolean("Properties.Jackpot");
         this.jackpotSpawn       = this.gameConfig.getInt("Properties.Jackpot spawn chance");
         this.maxMissed          = this.gameConfig.getInt("Properties.Game lost");
@@ -498,7 +531,8 @@ public class Game {
         this.moleSpeed          = this.gameConfig.getDouble("Properties.Mole speed");
         this.difficultyScale    = this.gameConfig.getDouble("Properties.Difficulty scaling");
         this.difficultyScore    = this.gameConfig.getInt("Properties.Difficulty increase");
-        this.logger.success(this.name + " successfully loaded!");
+        this.Cooldown           = this.gameConfig.getString("Properties.Cooldown");
+        this.logger.success("Loaded File: %s".formatted(this.gameConfig.file.getName()));
     }
 
     public void unload(boolean saveGame) {
@@ -508,6 +542,7 @@ public class Game {
     }
 
     public void deleteSave() {
+        this.Stop();
         this.gameConfig.remove();
     }
 
