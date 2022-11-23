@@ -19,9 +19,8 @@ public final class Main extends JavaPlugin {
     @Override
     public void onLoad() {
         Logger.Prefix = this.getDescription().getPrefix();
-        this.config = Config.getInstance(this, this.getDataFolder() + "/config.yml");
+        this.config = Config.getInstance(this);
         CommandAPI.onLoad(new CommandAPIConfig().verboseOutput(true));
-        this.logger.info(this.config.PERM_CREATE);
 
         new CommandAPICommand("WhackaMole")
                 .withAliases("WAM", "Whack")
@@ -94,7 +93,7 @@ public final class Main extends JavaPlugin {
                                     if (game != null) {
                                         game.pointsPerKill = (Integer) args[0];
                                         game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + "Successfully changed the points eanred per kill value to: " + ChatColor.AQUA + args[0]);
+                                        player.sendMessage(this.config.PREFIX + "Successfully changed the points earned per kill value to: " + ChatColor.AQUA + args[0]);
                                     } else {
                                         this.logger.error("Player settings change failed: Player is not standing on a game grid");
                                         throw CommandAPI.fail(this.config.PREFIX + "Please stand on the game Grid to edit the game grid");

@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.w3c.dom.DOMStringList;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,9 +12,12 @@ import java.util.List;
 
 public final class Config {
 
+    int index;
     private static Config Instance;
     public YMLFile configFile;
     public String PREFIX;
+    public List<String> ACTIONTEXT;
+    public String HAMMERNAME;
     public List<?> MOLEBLOCK;
     public List<?> SUBBLOCK;
     public String NO_PERM;
@@ -22,10 +26,13 @@ public final class Config {
     public String PERM_REMOVE;
     public String PERM_SETTINGS;
     public File gamesData = new File("./plugins/WhackaMole/Games/");
+    private Logger logger;
 
-    private Config(Plugin main, String path) {
-        main.saveResource("config.yml", false);
-        this.configFile = new YMLFile(path);
+    private Config(Plugin main) {
+        if(!new File("./plugins/WhackaMole/config.yml").exists())
+            main.saveResource("config.yml", false);
+        
+        this.configFile = new YMLFile("./plugins/WhackaMole/config.yml");
         this.setup();
     }
     private Config() {}
@@ -34,16 +41,28 @@ public final class Config {
         this.PREFIX         = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
         this.MOLEBLOCK      = this.configFile.getList("Blocklist");
         this.SUBBLOCK       = this.configFile.getList("Sub-List");
-        this.NO_PERM        = this.PREFIX + this.configFile.getString("No Permission");
+        this.ACTIONTEXT     = this.configFile.FileConfig.getStringList("Actionbar Message");
+        this.HAMMERNAME     = this.configFile.getString("Hammer Name");
+        this.NO_PERM        = this.PREFIX + this.configFile.getString(GamesManager.color("No Permission"));
         this.PERM_ALL       = "WAM." + this.configFile.getString("Every permission");
         this.PERM_CREATE    = "WAM." + this.configFile.getString("Commands.Create");
         this.PERM_REMOVE    = "WAM." + this.configFile.getString("Commands.Remove");
         this.PERM_SETTINGS  = "WAM." + this.configFile.getString("Commands.Settings");
+        this.index = this.ACTIONTEXT.size();
     }
 
-    public static Config getInstance(Plugin main, String config) {
+    public String getNext() {
+        this.index++;
+        if (index >= this.ACTIONTEXT.size()) {
+            this.logger.info(index + "");
+            index = 0;
+        }
+        return this.ACTIONTEXT.get(this.index);
+    }
+
+    public static Config getInstance(Plugin main) {
         if (Config.Instance == null) {
-            Config.Instance = new Config(main, config);
+            Config.Instance = new Config(main);
             return Config.Instance;
         }
         return Config.Instance;
@@ -59,28 +78,24 @@ public final class Config {
 }
 
 class YMLFile {
-    public FileConfiguration FileConfig;
+    public FileConfiguration FileConfig = new YamlConfiguration();
     public File file;
     private Logger logger = Logger.getInstance();
 
     public YMLFile(File folder, String child) throws FileNotFoundException {
         if (!folder.isDirectory()) throw new FileNotFoundException("Did not pass a Folder file: %s".formatted(folder.getName()));
-        this.FileConfig = new YamlConfiguration();
         this.file = new File(folder, child);
         this.load();
     }
     public YMLFile(String folder, String child) {
-        this.FileConfig = new YamlConfiguration();
         this.file = new File(folder, child);
         this.load();
     }
     public YMLFile(String path) {
-        this.FileConfig = new YamlConfiguration();
         this.file = new File(path);
         this.load();
     }
     public YMLFile(File file) {
-        this.FileConfig = new YamlConfiguration();
         this.file = file;
         this.load();
     }
@@ -117,7 +132,7 @@ class YMLFile {
     public void load() {
         try {
             this.FileConfig.load(this.file);
-            this.logger.success("Loaded YAML file: %s".formatted(this.file.getName()));
+            this.logger.success("...%s Successfully loaded!".formatted(file.getName()));
         } catch (Exception e) {
             this.createFile();
         }

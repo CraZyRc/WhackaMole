@@ -83,9 +83,8 @@ public class GameHandler implements Listener {
     }
 
     public void loadGame() {
-        this.world  = Bukkit.getWorld(this.gameConfig.getString("Field Data.World"));
-        this.grid   = Grid.Deserialize(this.world, (List<List<Integer>>) this.gameConfig.getList("Field Data.Grid"));
-
+        this.world           = Bukkit.getWorld(this.gameConfig.getString("Field Data.World"));
+        this.grid           = Grid.Deserialize(this.world, (List<List<Integer>>) this.gameConfig.getList("Field Data.Grid"));
         this.gameName       = this.gameConfig.getString("Properties.Name");
         this.cashHats       = this.gameConfig.getBoolean("properties." + "CashHats");
         this.Interval       = this.gameConfig.getInt("properties." + "Interval");
