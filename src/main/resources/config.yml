@@ -23,8 +23,7 @@ Version: ${project.version}
 # If you don't know how to write in Json, here's a tutorial: https://minecraft.fandom.com/wiki/Raw_JSON_text_format.
 
 # The message to display on the Actionbar (accepts only Json).
-Actionbar Message:
-  - '[{"text":""},{"text":"[","Bold":true,"color":"#000000"},{"text":"W","bold":true,"color":"#ffd700"},{"text":"h","bold":true,"color":"#ffce00"},{"text":"a","bold":true,"color":"#ffc600"},{"text":"c","bold":true,"color":"#ffbe00"},{"text":"k","bold":true,"color":"#ffb600"},{"text":"a","bold":true,"color":"#ffae00"},{"text":"M","bold":true,"color":"#ffa600"},{"text":"o","bold":true,"color":"#ff9e00"},{"text":"l","bold":true,"color":"#ff9600"},{"text":"e","bold":true,"color":"#ff8e00"},{"text":"] ","Bold":true,"color":"#000000"},{"text":"Your score is:","bold":true,"color":"#55ffff"}]'
+Actionbar Message: '[{"text":""},{"text":"[","Bold":true,"color":"#000000"},{"text":"W","bold":true,"color":"#ffd700"},{"text":"h","bold":true,"color":"#ffce00"},{"text":"a","bold":true,"color":"#ffc600"},{"text":"c","bold":true,"color":"#ffbe00"},{"text":"k","bold":true,"color":"#ffb600"},{"text":"a","bold":true,"color":"#ffae00"},{"text":"M","bold":true,"color":"#ffa600"},{"text":"o","bold":true,"color":"#ff9e00"},{"text":"l","bold":true,"color":"#ff9600"},{"text":"e","bold":true,"color":"#ff8e00"},{"text":"] ","Bold":true,"color":"#000000"},{"text":"Your score is:","bold":true,"color":"#55ffff"}]'
 # Name of the hammer (accepts color codes and hex colors).
 Hammer Name: "&0&l[&6&lWAM&0&l] #28c000&lS#2fca00&lM#37d500&lA#3edf00&lS#46ea00&lH#4df400&lE#55ff00&lR"
 
@@ -43,13 +42,12 @@ Economy: SCOREBOARD
 
 # What is the Scoreboard objective name that runs as your economy?
 # Leave '' if you run VAULT.
-Scoreboard Objective: EXAMPLE
+Scoreboard Objective: ''
 
 # For Vault users, you can specify the name of your economy currency (max 2 entries, first one is singular and second plural).
 # The name of your server currency:
 Singular Currency: "Dollar"
 Plural Currency: "Dollars"
-
 
 # Symbol of server currency.
 Currency Symbol: $
@@ -60,14 +58,20 @@ Ticket Price: 15
 
 ############################################################
 # ^------------------------------------------------------^ #
-# |                    Field options                     | #
+# |                     Game options                     | #
 # <------------------------------------------------------> #
 ############################################################
 
-# Here you will find the general options regarding game creation.
+# Here you will find the general options regarding game creation and playability.
 
+# For sounds, please refer to the Sound enum to see the Java equivalent of the minecraft sound: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html.
+# What sound should be played when a mole has been hit.
+HitSound: BLOCK_NOTE_BLOCK_BIT
 
-#The list of blocks the game can spawn on (generally what the surface blocks will be of the game, the visible layer of the game).
+# What sound should be played when a mole is missed.
+MissedSound: BLOCK_NOTE_BLOCK_BASS
+
+# The list of blocks the game can spawn on (generally what the surface blocks will be of the game, the visible layer of the game).
 Blocklist:
   - SMOKER
   - RESPAWN_ANCHOR

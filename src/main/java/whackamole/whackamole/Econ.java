@@ -39,10 +39,10 @@ public class Econ {
             case SCOREBOARD   -> {
                 if (!this.setupScoreboard(this.config.OBJECTIVE)) {
                     this.logger.error("Invalid objective in Config");
+                    this.currencyType = Currency.NULL;
                 }
             }
         }
-
     }
 
     public static Econ getInstance(Main main) {
@@ -75,7 +75,7 @@ public class Econ {
     }
 
     public boolean setupScoreboard(String objective) {
-        if (!(this.config.OBJECTIVE == null)) {
+        if (Objects.requireNonNull(Bukkit.getScoreboardManager()).getMainScoreboard().getObjective(objective) != null) {
             this.Objective = Objects.requireNonNull(Bukkit.getScoreboardManager()).getMainScoreboard().getObjective(objective);
             return true;
         } else {

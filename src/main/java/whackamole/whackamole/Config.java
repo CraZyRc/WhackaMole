@@ -26,6 +26,8 @@ import java.util.regex.Pattern;
 public final class Config {
 
     private static Config Instance;
+    private static Logger logger = Logger.getInstance();
+    private String configVersion;
     public YMLFile configFile;
     public String PREFIX;
     public String CURRENCY_SING;
@@ -34,6 +36,8 @@ public final class Config {
     public int TICKETPRICE;
     public String ACTIONTEXT;
     public String HAMMERNAME;
+    public Sound HITSOUND;
+    public Sound MISSSOUND;
     public List<?> MOLEBLOCK;
     public List<?> SUBBLOCK;
     public String PERM_TICKET_USE;
@@ -59,17 +63,17 @@ public final class Config {
 >>>>>>> 2f10a80 (Beta release:)
 
     private Config(Plugin main) {
-        if(!new File("./plugins/WhackaMole/config.yml").exists())
-            main.saveResource("config.yml", false);
-        if (!gamesData.exists()) {
-            gamesData.mkdirs();
-        }
-
+        if (!new File("./plugins/WhackaMole/config.yml").exists()) main.saveResource("config.yml", false);
+        if (!gamesData.exists()) gamesData.mkdirs();
         this.configFile = new YMLFile("./plugins/WhackaMole/config.yml");
         this.setup();
         this.loadNBTData();
+        if (!this.configVersion.equals(main.getDescription().getVersion())) {
+            this.logger.warning("Running old config, please update the config, config version: " + this.configVersion + " | new version: " + main.getDescription().getVersion());
+        }
     }
     private Config() {}
+
 
     public void setup() {
 <<<<<<< HEAD
@@ -94,12 +98,15 @@ public final class Config {
         this.FiELD_MARGIN_Y = this.configFile.getDouble("Field.Margin.Y");
 =======
         this.PREFIX             = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
+        this.configVersion      = this.configFile.getString("Version");
         this.ECONOMY            = this.configFile.getString("Economy");
         this.OBJECTIVE          = this.configFile.getString("Scoreboard Objective");
         this.CURRENCY_SING      = this.configFile.getString("Singular Currency");
         this.CURRENCY_PLUR      = this.configFile.getString("Plural Currency");
         this.SYMBOL             = this.configFile.getString("Currency Symbol");
         this.TICKETPRICE        = this.configFile.getInt("Ticket Price");
+        this.HITSOUND           = this.configFile.getSound("HitSound");
+        this.MISSSOUND          = this.configFile.getSound("MissedSound");
         this.MOLEBLOCK          = this.configFile.getList("Blocklist");
         this.SUBBLOCK           = this.configFile.getList("Sub-List");
         this.ACTIONTEXT         = this.configFile.getString("Actionbar Message");
@@ -241,6 +248,7 @@ class YMLFile {
     public List<?> getList(String path) {
         return this.FileConfig.getList(path);
     }
+    public Sound getSound(String path) { return Sound.valueOf(this.FileConfig.getString(path));}
 
 
     public void set (String path, Object value) {

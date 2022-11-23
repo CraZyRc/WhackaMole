@@ -77,6 +77,7 @@ public class Commands {
                 .withSubcommand(new CommandAPICommand("buy")
                         .withPermission(this.config.PERM_BUY)
                         .executesPlayer((player, args) -> {
+<<<<<<< HEAD
                             if (econ.has(player, this.config.TICKETPRICE)) {
                                 if (this.buyConfirmation(player.getUniqueId())) {
 <<<<<<< HEAD
@@ -86,17 +87,28 @@ public class Commands {
 =======
                                     if (player.getInventory().firstEmpty() == -1) {
                                         player.sendMessage(this.config.PREFIX + "Inventory full, please empty a slot to buy this item");
+=======
+                            if (this.econ.currencyType != Econ.Currency.NULL) {
+                                if (this.econ.has(player, this.config.TICKETPRICE)) {
+                                    if (this.buyConfirmation(player.getUniqueId())) {
+                                        if (player.getInventory().firstEmpty() == -1) {
+                                            player.sendMessage(this.config.PREFIX + "Inventory full, please empty a slot to buy this item");
+                                        } else {
+                                            player.getInventory().addItem(this.config.TICKET);
+                                            econ.withdrawPlayer(player, this.config.TICKETPRICE);
+                                            player.sendMessage(this.config.PREFIX + "Ticket bought! removed " + ChatColor.AQUA + this.config.SYMBOL + this.config.TICKETPRICE + " " + ChatColor.WHITE + this.config.CURRENCY_PLUR);
+                                        }
+>>>>>>> 646e2ae (STABLE v1.1 :)
                                     } else {
-                                        player.getInventory().addItem(this.config.TICKET);
-                                        econ.withdrawPlayer(player, this.config.TICKETPRICE);
-                                        player.sendMessage(this.config.PREFIX + "Ticket bought! removed " + ChatColor.AQUA + this.config.SYMBOL + this.config.TICKETPRICE + " " + ChatColor.WHITE + this.config.CURRENCY_PLUR);
+                                        player.sendMessage(this.config.PREFIX + "Reset ticket costs: " + ChatColor.AQUA + this.config.SYMBOL + this.config.TICKETPRICE + " " + ChatColor.WHITE + this.config.CURRENCY_PLUR + ". To confirm, please re-enter: " + ChatColor.AQUA + "/wam buy" + ChatColor.WHITE + ". Offer stands for 10s");
                                     }
 >>>>>>> 0f64a75 (SNAPSHOT -V1 :)
                                 } else {
-                                    player.sendMessage(this.config.PREFIX + "Reset ticket costs: " + ChatColor.AQUA + this.config.SYMBOL + this.config.TICKETPRICE + " " + ChatColor.WHITE + this.config.CURRENCY_PLUR + ". To confirm, please re-enter: " + ChatColor.AQUA + "/wam buy" + ChatColor.WHITE + ". Offer stands for 10s");
+                                    player.sendMessage(this.config.PREFIX + ChatColor.RED + "Insufficient funds !");
                                 }
                             } else {
-                                player.sendMessage(this.config.PREFIX + ChatColor.RED + "Insufficient funds !");
+                                player.sendMessage(this.config.PREFIX + ChatColor.DARK_RED + "Economy error, see console");
+                                this.logger.error("Unable to buy ticket due to invalid economy set in config");
                             }
                         })
                 )

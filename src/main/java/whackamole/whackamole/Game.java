@@ -138,7 +138,6 @@ public class Game {
         this.loadGame();
     }
     public Game(String name, Grid grid, Player player) throws FileNotFoundException {
-//        this.spawnRotation = player.getFacing().getOppositeFace();
         this.spawnRotation = Directions[Math.round(player.getLocation().getYaw()/45) & 0x7];
         this.name = formatName(name);
         this.gameConfig = new YMLFile(this.config.gamesData, this.name + ".yml");
@@ -169,13 +168,18 @@ public class Game {
 
 
     public void Start(Player player) {
-        if (!this.Running && this.runnableIdentifier == -1 && player.hasPermission(this.config.PERM_PLAY) && this.placeAxe(player)) {
-            this.moleSpeedScaled = this.moleSpeed;
-            this.intervalScaled = this.Interval;
-            this.spawnChanceScaled = this.spawnChance;
-            this.gamePlayer = player;
-            this.moleMissed = 0;
-            this.Running = true;
+        if (this.econ.currencyType != Econ.Currency.NULL) {
+            if (!this.Running && this.runnableIdentifier == -1 && player.hasPermission(this.config.PERM_PLAY) && this.placeAxe(player)) {
+                this.moleSpeedScaled = this.moleSpeed;
+                this.intervalScaled = this.Interval;
+                this.spawnChanceScaled = this.spawnChance;
+                this.gamePlayer = player;
+                this.moleMissed = 0;
+                this.Running = true;
+            }
+        } else {
+            this.logger.error("Could not start game due to invalid economy set in config");
+            this.setCooldown(player.getUniqueId(), 10000L);
         }
     }
 
@@ -204,6 +208,7 @@ public class Game {
 >>>>>>> 0f64a75 (SNAPSHOT -V1 :)
                 if (this.moleMissed >= this.maxMissed) this.missedMoles.put(this.gamePlayer.getUniqueId(), moleMissed);
             }
+<<<<<<< HEAD
             if (econ.currencyType != Econ.Currency.NULL) {
                 econ.depositPlayer(gamePlayer, this.Score);
                 if (this.Score == 1) {
@@ -284,6 +289,15 @@ public class Game {
     private void deleteSave() {
         this.gameConfig.remove();
 =======
+=======
+            econ.depositPlayer(gamePlayer, this.Score);
+            if (this.Score == 1) {
+                gamePlayer.sendMessage(this.config.PREFIX + "You've been rewarded " + ChatColor.AQUA + this.config.SYMBOL + this.Score + ChatColor.WHITE + " " + this.config.CURRENCY_SING);
+            } else if (this.Score > 1) {
+                gamePlayer.sendMessage(this.config.PREFIX + "You've been rewarded " + ChatColor.AQUA + this.config.SYMBOL + this.Score + ChatColor.WHITE + " " + this.config.CURRENCY_PLUR);
+            } else {
+                gamePlayer.sendMessage(this.config.PREFIX + "No moles hit, " + ChatColor.AQUA +  this.config.SYMBOL + "0 " + this.config.CURRENCY_PLUR + ChatColor.WHITE + " rewarded");
+>>>>>>> 646e2ae (STABLE v1.1 :)
             }
             this.moleSpeedScaled = this.moleSpeed;
             this.intervalScaled = this.Interval;
@@ -358,7 +372,7 @@ public class Game {
     public void displayActionBar() {
         if(this.Running) {
             BaseComponent[] actionMessage = new ComponentBuilder()
-                    .append(ComponentSerializer.parse(config.ACTIONTEXT))
+                    .append(ComponentSerializer.parse(this.config.ACTIONTEXT))
                     .append((Config.color("&2&l ") + this.Score))
                     .create();
             this.gamePlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, actionMessage);
@@ -386,7 +400,11 @@ public class Game {
 =======
             else if(this.cooldownSendList.contains(cooldownEntry.getKey()) && Bukkit.getPlayer(cooldownEntry.getKey()) != null) {
                 BaseComponent[] resetMessage;
-                if (this.missedMoles.containsKey(cooldownEntry.getKey())) {
+                if (this.econ.currencyType == Econ.Currency.NULL) {
+                    resetMessage = new ComponentBuilder()
+                            .append(Config.color("&4&l! GAME ERROR !&f&l please see console"))
+                            .create();
+                } else if (this.missedMoles.containsKey(cooldownEntry.getKey())) {
                     resetMessage = new ComponentBuilder()
                             .append(Config.color("&l"
                                     + this.missedMoles.get(cooldownEntry.getKey())
@@ -408,7 +426,7 @@ public class Game {
     public void moleUpdater() {
         int missed = this.grid.entityUpdate();
         if (missed > 0) {
-            this.gamePlayer.playSound(gamePlayer.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
+            this.gamePlayer.playSound(gamePlayer.getLocation(), this.config.MISSSOUND, 1, 1);
             this.gamePlayer.sendMessage(this.config.PREFIX + "Mole missed, " + (this.moleMissed + missed) + "/" + this.maxMissed);
         }
         this.moleMissed += missed;
@@ -433,7 +451,7 @@ public class Game {
         } else if (mole.type == MoleType.Jackpot) {
             this.Score = this.Score + (this.pointsPerKill*3);
         }
-        this.gamePlayer.playSound(e.getDamager().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+        this.gamePlayer.playSound(e.getDamager().getLocation(), this.config.HITSOUND, 1, 1);
         this.difficultyPoints++;
         if (Game.this.difficultyPoints == Game.this.difficultyScore) setSpeedScale();
         mole.state = MoleState.Hit;
@@ -482,24 +500,29 @@ public class Game {
                 " |                       GameFile                       | #",
                 " <------------------------------------------------------> #",
                 "###########################################################",
-                "NOTE: you can edit the Properties to change the game rules",
-                "NOTE: you can change properties with a decimal to a value with decimal, those without decimal should stay without decimal",
-                "NOTE: Do not touch the Field Data!",
+                " NOTE: you can edit the Properties to change the game rules",
+                " NOTE: you can change properties with a decimal to a value with decimal, those without decimal should stay without decimal",
+                " NOTE: Do not touch the Field Data!",
                 "",
-                "EXPLANATION:",
-                "Name = name (make sure this is the same as the Filename)",
-                "Direction = What direction the moles spawning should be facing",
-                "Jackpot = enable the chance that a special mole will spawn giving triple the points if hit",
-                "Jackpot spawn chance = the chance per mole spawn for a jackpot",
-                "Game lost = the amount of moles not hit before the game ends",
-                "Points per kill = how many points should be rewarded per kill",
-                "Spawn rate = per how many seconds the mole has a chance of spawning",
-                "Spawn chance = percentage of successful spawn per spawn rate",
-                "Mole speed = how quick the mole should move up and down (the lower the quicker)",
-                "Difficulty scaling = by how many percent the game should become more difficult (every x moles hit makes the game ..% more difficult)",
-                "Difficulty increase = per how many moles hit the game difficulty should increase",
-                "Cooldown = the cooldown when a player loses the game (HH:mm:ss)",
-                "That is all, enjoy messing around :)"));
+                "",
+                "###########################################################",
+                " ^------------------------------------------------------^ #",
+                " |                      Explanation                     | #",
+                " <------------------------------------------------------> #",
+                "###########################################################",
+                " Name = name (make sure this is the same as the Filename)",
+                " Direction = What direction the moles spawning should be facing",
+                " Jackpot = enable the chance that a special mole will spawn giving triple the points if hit",
+                " Jackpot spawn chance = the chance per mole spawn for a jackpot",
+                " Game lost = the amount of moles not hit before the game ends",
+                " Points per kill = how many points should be rewarded per kill",
+                " Spawn rate = per how many seconds the mole has a chance of spawning",
+                " Spawn chance = percentage of successful spawn per spawn rate",
+                " Mole speed = how quick the mole should move up and down (the lower the quicker)",
+                " Difficulty scaling = by how many percent the game should become more difficult (every x moles hit makes the game ..% more difficult)",
+                " Difficulty increase = per how many moles hit the game difficulty should increase",
+                " Cooldown = the cooldown when a player loses the game (HH:mm:ss)",
+                " That is all, enjoy messing around :)"));
         this.gameConfig.set("Properties.Name", this.name);
         this.gameConfig.set("Properties.Direction", this.spawnRotation.name());
         this.gameConfig.set("Properties.Jackpot", this.Jackpot);

@@ -285,7 +285,13 @@ public final class GamesManager implements Listener {
     public void ticketUse(PlayerInteractEvent e) {
         Player player = e.getPlayer();
         Game game = this.getOnGrid(player);
+<<<<<<< HEAD
         if (player.getInventory().getItemInMainHand().equals(ticket) && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+=======
+        if (player.getInventory().getItemInMainHand().isSimilar(this.config.TICKET)
+            && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)
+        ) {
+>>>>>>> 646e2ae (STABLE v1.1 :)
             if (player.hasPermission(this.config.PERM_TICKET_USE)) {
                 if (game == null) {
                     player.sendMessage(this.config.PREFIX + ChatColor.DARK_RED + "Stand on the game you wish to reset !");
