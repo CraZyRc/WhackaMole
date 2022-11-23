@@ -1,5 +1,6 @@
 name: Bug Report
 description: Use this form to report a bug with Citizens.
+labels: Feature Request
 
 body:
   - type: 'markdown'
@@ -16,6 +17,7 @@ body:
         Include the outputs of `/version` and `/version Citizens` in the respective fields.
   - type: 'textarea'
     attributes:
+      label: '/version'
       description: 'Include the **complete** output of the `/version` command here.'
       placeholder: 'This server is running ...'
       render: txt
@@ -23,6 +25,7 @@ body:
       required: true
   - type: 'textarea'
     attributes:
+      label: '/version WhackaMole'
       description: 'Include the **complete** output of the `/version WhackaMole` command here.'
       placeholder: 'WhackaMole Version ...'
       render: txt
