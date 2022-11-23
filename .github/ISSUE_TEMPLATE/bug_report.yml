@@ -1,6 +1,6 @@
 name: Bug Report
 description: Use this form to report a bug with Citizens.
-labels: Feature Request
+labels: Discovered Bug
 
 body:
   - type: 'markdown'
