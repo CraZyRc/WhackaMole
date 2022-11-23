@@ -13,6 +13,7 @@ import java.io.File;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.security.spec.ECField;
 >>>>>>> 1e62199 (change :))
 =======
@@ -23,11 +24,15 @@ import java.util.List;
 import java.text.SimpleDateFormat;
 =======
 >>>>>>> 86f74e4 (Changed: files cleanup)
+=======
+import java.text.SimpleDateFormat;
+>>>>>>> cfd2e6f (Config:)
 import java.util.*;
 >>>>>>> de8c408 (Grid:)
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -155,6 +160,10 @@ public final class GamesManager implements Listener {
             if (runnableTickCounter >= 20) {
                 runnableTickCounter = 0;
                 for (GameHandler gameHandler : games) {
+                    if (gameHandler.Running) {
+                        BaseComponent[] actionMessage = new ComponentBuilder().append(ComponentSerializer.parse(config.ACTIONTEXT)).append((Config.color("&2&l ") + gameHandler.Score)).create();
+                        gameHandler.gamePlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, actionMessage);
+                    }
                     for (Map.Entry<UUID, Long> cooldownPlayer : gameHandler.cooldown.entrySet()) {
                         if (!gameHandler.hasCooldown(cooldownPlayer.getKey())) {
                             gameHandler.removeCooldown(cooldownPlayer.getKey());

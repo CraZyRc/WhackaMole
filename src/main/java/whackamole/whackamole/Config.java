@@ -29,6 +29,8 @@ public final class Config {
     public String PERM_CREATE;
     public String PERM_REMOVE;
     public String PERM_SETTINGS;
+    public String ECONOMY;
+    public String OBJECTIVE;
     public File gamesData = new File("./plugins/WhackaMole/Games/");
 
     private Config(Plugin main) {
@@ -45,6 +47,8 @@ public final class Config {
 
     public void setup() {
         this.PREFIX         = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
+        this.ECONOMY        = this.configFile.getString("Economy");
+        this.OBJECTIVE      = this.configFile.getString("Scoreboard Objective");
         this.CURRENCY       = this.configFile.getString("Server Currency");
         this.SYMBOL         = this.configFile.getString("Currency Symbol");
         this.TICKETPRICE    = this.configFile.getInt("Ticket Price");
@@ -68,7 +72,7 @@ public final class Config {
             String replaceSharp = hexCode.replace('#', 'x');
 
             char[] ch = replaceSharp.toCharArray();
-            StringBuilder builder = new StringBuilder("");
+            StringBuilder builder = new StringBuilder();
             for (char c : ch) {
                 builder.append("&" + c);
             }

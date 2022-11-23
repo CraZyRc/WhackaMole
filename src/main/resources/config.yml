@@ -57,7 +57,7 @@ Hammer Name: "&0&l[&6&lWAM&0&l] &x&2&8&c&0&0&0&lS&x&2&f&c&a&0&0&lM&x&3&7&d&5&0&0
 # If so then you can make it so the minigame adds the points to your economy balance.
 # If your server does not use an economy plugin but uses a scoreboard, then this is also possible.
 # Please select whether you'd like to be paid by "VAULT" or a "SCOREBOARD".
-Payment Method: SCOREBOARD
+Economy: SCOREBOARD
 
 # What is the Scoreboard objective name that runs as your economy?
 # Leave '' if you run VAULT.

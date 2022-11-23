@@ -1,6 +1,7 @@
 package whackamole.whackamole;
 
 
+import com.google.protobuf.StringValue;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.md_5.bungee.api.ChatMessageType;
@@ -8,7 +9,10 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
+import net.milkbowl.vault.chat.Chat;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
+import org.bukkit.block.Skull;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemFlag;
@@ -68,9 +72,13 @@ public class GameHandler {
     public int moleMissed = 0;
 >>>>>>> 86f74e4 (Changed: files cleanup)
     private int ID1 = -1;
+<<<<<<< HEAD
 >>>>>>> c865bc2 (Game starter:)
     private boolean Running = false;
 >>>>>>> e262bdb (Game starter:)
+=======
+    public boolean Running = false;
+>>>>>>> cfd2e6f (Config:)
 
     public GameHandler(YMLFile configFile) throws Exception {
         this.gameConfig = configFile;
@@ -122,8 +130,6 @@ public class GameHandler {
     Runnable Runner = new Runnable() {
         @Override
         public void run() {
-            BaseComponent[] actionMessage = new ComponentBuilder().append(ComponentSerializer.parse(config.ACTIONTEXT)).append((Config.color("&2&l ") + Score)).create();
-            gamePlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, actionMessage );
 
             Random random = new Random();
             int index = random.nextInt(grid.grid.size());
@@ -149,7 +155,7 @@ public class GameHandler {
             this.ID1 = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, this.Runner, this.Interval * 20L, this.Interval * 20L);
             this.Running = true;
             this.moleMissed = 0;
-            player.getInventory().addItem(GameHandler.axe);
+            player.getInventory().addItem(this.axe);
         }
     }
 
@@ -158,7 +164,7 @@ public class GameHandler {
             Bukkit.getScheduler().cancelTask(ID1);
             this.Running = false;
             this.ID1 = -1;
-            this.gamePlayer.getInventory().removeItem(GameHandler.axe);
+            this.gamePlayer.getInventory().removeItem(this.axe);
             this.gamePlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(""));
             this.setCooldown(gamePlayer.getUniqueId());
 
@@ -250,7 +256,7 @@ public class GameHandler {
         axeMeta.setDisplayName(this.config.HAMMERNAME);
         axe.setItemMeta(axeMeta);
 
-        GameHandler.axe = axe;
+        this.axe = axe;
 
     }
 
