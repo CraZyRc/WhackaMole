@@ -14,6 +14,7 @@ import java.io.File;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.security.spec.ECField;
 >>>>>>> 1e62199 (change :))
 =======
@@ -27,6 +28,8 @@ import java.text.SimpleDateFormat;
 =======
 import java.text.SimpleDateFormat;
 >>>>>>> cfd2e6f (Config:)
+=======
+>>>>>>> 2b9819f (Econ :)
 import java.util.*;
 >>>>>>> de8c408 (Grid:)
 
@@ -53,7 +56,7 @@ public final class GamesManager implements Listener {
 >>>>>>> e262bdb (Game starter:)
     private Logger logger = Logger.getInstance();
 
-    public List<GameHandler> games = new ArrayList<>();
+    public List<Game> games = new ArrayList<>();
 
     public GamesManager() {
         this.loadGames();
@@ -77,7 +80,7 @@ public final class GamesManager implements Listener {
         }
     }
 
-    public void addGame(GameHandler game) throws Exception {
+    public void addGame(Game game) throws Exception {
         if (this.nameExists(game.gameName)) {
             throw new Exception("Grid with name %s already exists!".formatted(game.gameName));
         }
@@ -90,18 +93,22 @@ public final class GamesManager implements Listener {
     public void addGame(File gameName) {
 =======
     public void addGame(File gameName) throws Exception {
+<<<<<<< HEAD
 >>>>>>> cffe322 (change :))
         this.games.add(new GameHandler(gameName));
+=======
+        this.games.add(new Game(gameName));
+>>>>>>> 2b9819f (Econ :)
     }
 >>>>>>> 461f3dd (updated: addGame method)
     public void addGame(String gameName, Grid grid) throws Exception {
         if (this.nameExists(gameName)) {
             throw new Exception("Grid with name %s already exists!".formatted(ChatColor.YELLOW + gameName + ChatColor.WHITE));
         }
-        this.games.add(new GameHandler(gameName, grid));
+        this.games.add(new Game(gameName, grid));
     }
 
-    public void removeGame(GameHandler game) {
+    public void removeGame(Game game) {
         this.games.remove(game);
         game.deleteSave();
         this.logger.info(game + " ...Successfully removed!");
@@ -109,19 +116,19 @@ public final class GamesManager implements Listener {
 
     public boolean nameExists(String name) {
         this.logger.info(name);
-        for (GameHandler gameHandler : games) {
-            this.logger.info(gameHandler.gameName);
-            if (gameHandler.gameName.equals(name)) {
+        for (Game game : games) {
+            this.logger.info(game.gameName);
+            if (game.gameName.equals(name)) {
                 return true;
             }
         }
         return false;
     }
 
-    public GameHandler getOnGrid(Player player) {
-        for (GameHandler gameHandler : games) {
-            if (gameHandler.onGrid(player)) {
-                return gameHandler;
+    public Game getOnGrid(Player player) {
+        for (Game game : games) {
+            if (game.onGrid(player)) {
+                return game;
             }
         }
         return null;
@@ -132,14 +139,14 @@ public final class GamesManager implements Listener {
     @EventHandler
     public void playerMoveEvent(PlayerMoveEvent event) {
 
-        for (GameHandler gameHandler : games) {
-            if (gameHandler.onGrid(event.getPlayer())) {
-                if (!gameHandler.hasCooldown(event.getPlayer().getUniqueId())) {
-                    gameHandler.Start(event.getPlayer());
+        for (Game game : games) {
+            if (game.onGrid(event.getPlayer())) {
+                if (!game.hasCooldown(event.getPlayer().getUniqueId())) {
+                    game.Start(event.getPlayer());
                     break;
                 }
-            } else if (gameHandler.gamePlayer == event.getPlayer()) {
-                gameHandler.Stop();
+            } else if (game.gamePlayer == event.getPlayer()) {
+                game.Stop();
             break;
             }
         }
@@ -149,29 +156,29 @@ public final class GamesManager implements Listener {
     Runnable Tick = new Runnable() {
         @Override
         public void run() {
-            for (GameHandler gameHandler : games) {
-                for (int i = gameHandler.moleList.size() -1; i >= 0 ; i--) {
-                    Mole mole = gameHandler.moleList.get(i);
+            for (Game game : games) {
+                for (int i = game.moleList.size() -1; i >= 0 ; i--) {
+                    Mole mole = game.moleList.get(i);
                     if (!(mole.Update())) {
-                        gameHandler.moleList.remove(i);
+                        game.moleList.remove(i);
                     }
                 }
             }
             if (runnableTickCounter >= 20) {
                 runnableTickCounter = 0;
-                for (GameHandler gameHandler : games) {
-                    if (gameHandler.Running) {
-                        BaseComponent[] actionMessage = new ComponentBuilder().append(ComponentSerializer.parse(config.ACTIONTEXT)).append((Config.color("&2&l ") + gameHandler.Score)).create();
-                        gameHandler.gamePlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, actionMessage);
+                for (Game game : games) {
+                    if (game.Running) {
+                        BaseComponent[] actionMessage = new ComponentBuilder().append(ComponentSerializer.parse(config.ACTIONTEXT)).append((Config.color("&2&l ") + game.Score)).create();
+                        game.gamePlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, actionMessage);
                     }
-                    for (Map.Entry<UUID, Long> cooldownPlayer : gameHandler.cooldown.entrySet()) {
-                        if (!gameHandler.hasCooldown(cooldownPlayer.getKey())) {
-                            gameHandler.removeCooldown(cooldownPlayer.getKey());
-                        }else if (gameHandler.cooldownSendList.contains(cooldownPlayer.getKey()) && gameHandler.gameLost) {
-                            BaseComponent[] resetMessage = new ComponentBuilder().append(Config.color("&l" + gameHandler.moleMissed + " moles missed: &4&lGAME OVER&f&l, please buy a new ticket or wait. Time left: &a&l") + gameHandler.formatCooldown(cooldownPlayer.getValue())).create();
+                    for (Map.Entry<UUID, Long> cooldownPlayer : game.cooldown.entrySet()) {
+                        if (!game.hasCooldown(cooldownPlayer.getKey())) {
+                            game.removeCooldown(cooldownPlayer.getKey());
+                        }else if (game.cooldownSendList.contains(cooldownPlayer.getKey()) && game.gameLost) {
+                            BaseComponent[] resetMessage = new ComponentBuilder().append(Config.color("&l" + game.moleMissed + " moles missed: &4&lGAME OVER&f&l, please buy a new ticket or wait. Time left: &a&l") + game.formatCooldown(cooldownPlayer.getValue())).create();
                             Bukkit.getPlayer(cooldownPlayer.getKey()).spigot().sendMessage(ChatMessageType.ACTION_BAR, resetMessage);
-                        } else if (gameHandler.cooldownSendList.contains(cooldownPlayer.getKey()) && !gameHandler.gameLost) {
-                            BaseComponent[] resetMessage = new ComponentBuilder().append(Config.color("&4&lGAME OVER !&f&l please buy a new ticket or wait. Time left: &a&l") + gameHandler.formatCooldown(cooldownPlayer.getValue())).create();
+                        } else if (game.cooldownSendList.contains(cooldownPlayer.getKey()) && !game.gameLost) {
+                            BaseComponent[] resetMessage = new ComponentBuilder().append(Config.color("&4&lGAME OVER !&f&l please buy a new ticket or wait. Time left: &a&l") + game.formatCooldown(cooldownPlayer.getValue())).create();
                             Bukkit.getPlayer(cooldownPlayer.getKey()).spigot().sendMessage(ChatMessageType.ACTION_BAR, resetMessage);
                         }
                     }
@@ -188,8 +195,8 @@ public final class GamesManager implements Listener {
     public void onHit(EntityDamageByEntityEvent e) {
         if (e.getDamager().getType() == EntityType.PLAYER) {
             gameloop:
-            for (GameHandler game : this.games) {
-                if (e.getDamager() == game.gamePlayer && game.gamePlayer.getInventory().getItemInMainHand().equals(GameHandler.axe)) {
+            for (Game game : this.games) {
+                if (e.getDamager() == game.gamePlayer && game.gamePlayer.getInventory().getItemInMainHand().equals(Game.axe)) {
                     for (Mole mole : game.moleList) {
                         if (e.getEntity() == mole.mole) {
                             mole.hit = true;
@@ -206,8 +213,8 @@ public final class GamesManager implements Listener {
 
 
     public void toggleArmorStands() {
-        for (GameHandler gameHandler : games) {
-            gameHandler.toggleArmorStands();
+        for (Game game : games) {
+            game.toggleArmorStands();
         }
     }
 }

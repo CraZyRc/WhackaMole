@@ -1,18 +1,12 @@
 package whackamole.whackamole;
 
 
-import com.google.protobuf.StringValue;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
-import net.milkbowl.vault.chat.Chat;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
-import org.bukkit.block.Skull;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemFlag;
@@ -29,7 +23,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scoreboard.Score;
 
 
-public class GameHandler {
+public class Game {
 
     private boolean debug = false;
     private Logger logger = Logger.getInstance();
@@ -80,18 +74,18 @@ public class GameHandler {
     public boolean Running = false;
 >>>>>>> cfd2e6f (Config:)
 
-    public GameHandler(YMLFile configFile) throws Exception {
+    public Game(YMLFile configFile) throws Exception {
         this.gameConfig = configFile;
         this.loadGame();
         this.loadNBTData();
     }
-    public GameHandler(File configFile) throws Exception {
+    public Game(File configFile) throws Exception {
         this.gameConfig = new YMLFile(configFile);
         this.loadGame();
         this.loadNBTData();
     }
 
-    public GameHandler(String gameName, Grid grid) throws FileNotFoundException {
+    public Game(String gameName, Grid grid) throws FileNotFoundException {
         this.gameName = gameName;
         this.gameConfig = new YMLFile(this.config.gamesData, gameName + ".yml");
         this.grid = grid;
@@ -135,7 +129,7 @@ public class GameHandler {
             int index = random.nextInt(grid.grid.size());
             Location location = grid.grid.get(index).getLocation().clone().add(0.5, -1.5, 0.5);
             mole = (ArmorStand) gamePlayer.getWorld().spawnEntity(location, EntityType.ARMOR_STAND);
-            moleList.add(new Mole(GameHandler.this, mole));
+            moleList.add(new Mole(Game.this, mole));
             mole.setGravity(false);
             mole.setInvisible(true);
             mole.getEquipment().setHelmet(getSkull("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxMjUwM2Q2MWM0OWY3MDFmZWU4NjdkNzkzZjFkY2M1MjJlNGQ3YzVjNDFhNjhmMjk1MTU3OWYyNGU3Y2IyYSJ9fX0="));
@@ -208,9 +202,6 @@ public class GameHandler {
                 "",
                 "EXPLANATION:",
                 "Name = Gamename (make sure this is the same as the Filename)",
-                "Type = set this either to 'VAULT' or to 'SCORE'",
-                "    - VAULT means that the points get on your economy account (this requires Vault and a Economy plugin)",
-                "    - SCORE means that the points will de added to a scoreboard objective (in this case, make sure to add the objective name)",
                 "CashHats = a chance of 0.1% that a special mole will spawn giving a bigger reward",
                 "Interval = XXXXXXXXXXXXXXXXXXXXXXXX",
                 "Game lost = the amount of moles not hit before the game ends",
@@ -218,8 +209,6 @@ public class GameHandler {
                 "That is all, enjoy messing around :)",
                 ""));
         this.gameConfig.set("Properties.Name", this.gameName);
-        this.gameConfig.set("Properties.Type", this.gameType);
-        this.gameConfig.set("Properties.Objective", this.scoreObjective);
         this.gameConfig.set("Properties.CashHats", this.cashHats);
         this.gameConfig.set("Properties.Interval", this.Interval);
         this.gameConfig.set("Properties.Game lost", this.maxMissed);
@@ -234,8 +223,6 @@ public class GameHandler {
         this.world           = Bukkit.getWorld(this.gameConfig.getString("Field Data.World"));
         this.grid           = Grid.Deserialize(this.world, (List<List<Integer>>) this.gameConfig.getList("Field Data.Grid"));
         this.gameName       = this.gameConfig.getString("Properties.Name");
-        this.gameType       = this.gameConfig.getString("Properties.Type");
-        this.scoreObjective = this.gameConfig.getString("Properties.Objective");
         this.cashHats       = this.gameConfig.getBoolean("Properties.CashHats");
         this.Interval       = this.gameConfig.getLong("Properties.Interval");
         this.maxMissed      = this.gameConfig.getInt("Properties.Game lost");

@@ -7,13 +7,13 @@ public class Mole {
     private Logger logger = Logger.getInstance();
     private Config config = Config.getInstance();
 
-    private GameHandler game;
+    private Game game;
     public Entity mole;
     
     public int index = 0;
     public boolean hit = false;
 
-    public Mole(GameHandler game, Entity e) {
+    public Mole(Game game, Entity e) {
         this.game = game;
         this.mole = e;
     }

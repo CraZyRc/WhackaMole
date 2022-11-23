@@ -13,14 +13,15 @@ public final class Main extends JavaPlugin {
 
     private Config config;
     private Logger logger = Logger.getInstance();
-    private Econ econ = Econ.getInstance();
-    public GamesManager gameManager;
+    private Econ econ;
+    public GamesManager manager;
     public static Plugin plugin;
 
     @Override
     public void onLoad() {
         Logger.Prefix = this.getDescription().getPrefix();
         this.config = Config.getInstance(this);
+        this.econ = Econ.getInstance(this);
         CommandAPI.onLoad(new CommandAPIConfig().verboseOutput(false));
         Main.plugin = this;
 
@@ -36,7 +37,7 @@ public final class Main extends JavaPlugin {
                             }
                             try {
                                 String gameName = (String) args[0];
-                                this.gameManager.addGame(gameName, new Grid(player.getWorld(), player));
+                                this.manager.addGame(gameName, new Grid(player.getWorld(), player));
                                 player.sendMessage(this.config.PREFIX + "Game succesfully created, feel free to play around with the settings (" + ChatColor.AQUA + "/WAM settings" + ChatColor.WHITE + ")");
                             } catch (Exception e) {
                                 this.logger.error(e.getMessage());
@@ -47,24 +48,23 @@ public final class Main extends JavaPlugin {
                 .withSubcommand(new CommandAPICommand("remove")
                         .withPermission(this.config.PERM_REMOVE)
                         .executesPlayer((player, args) -> {
-                            GameHandler game = this.gameManager.getOnGrid(player);
+                            Game game = this.manager.getOnGrid(player);
                             if (!(player.hasPermission(this.config.PERM_ALL) || player.hasPermission(this.config.PERM_REMOVE))) {
                                 player.sendMessage(this.config.PREFIX + this.config.NO_PERM);
                                 return;
                             }
                             if (game != null) {
-                                    this.gameManager.removeGame(game);
-//                                    GameHandler.Stop();
+                                    this.manager.removeGame(game);
                             } else {throw CommandAPI.fail(this.config.PREFIX + "Please stand on the game game you wish to remove");
                             }
                         })
                 )
                 .withSubcommand(new CommandAPICommand("buy")
                         .executesPlayer((player, args) -> {
-                            GameHandler game = this.gameManager.getOnGrid(player);
-                            if (econ.econ.has(player, 15)) {
+                            Game game = this.manager.getOnGrid(player);
+                            if (econ.has(player, 15)) {
                                 game.removeCooldown(player.getUniqueId());
-                                econ.econ.withdrawPlayer(player, game.ticketCost);
+                                econ.withdrawPlayer(player, game.ticketCost);
                                 player.sendMessage(this.config.PREFIX + "Cooldown removed!");
                             } else {
                                 player.sendMessage(this.config.PREFIX + ChatColor.RED + "Insufficient funds !");
@@ -76,7 +76,7 @@ public final class Main extends JavaPlugin {
                         .withSubcommand(new CommandAPICommand("cash-hat")
                                 .withArguments(new BooleanArgument("true/false"))
                                 .executesPlayer((player, args) -> {
-                                    GameHandler game = this.gameManager.getOnGrid(player);
+                                    Game game = this.manager.getOnGrid(player);
                                     if (game != null) {
                                         game.cashHats = (Boolean) args[0];
                                         game.saveGame();
@@ -90,7 +90,7 @@ public final class Main extends JavaPlugin {
                         .withSubcommand(new CommandAPICommand("Interval")
                                 .withArguments(new LongArgument("Interval"))
                                 .executesPlayer((player, args) -> {
-                                    GameHandler game = this.gameManager.getOnGrid(player);
+                                    Game game = this.manager.getOnGrid(player);
                                     if (game != null) {
                                         game.Interval = (Long) args[0];
                                         game.saveGame();
@@ -101,24 +101,10 @@ public final class Main extends JavaPlugin {
                                     }
                                 })
                         )
-                        .withSubcommand(new CommandAPICommand("Type")
-                                .withArguments(new StringArgument("VAULT"))
-                                .executesPlayer((player, args) -> {
-                                    GameHandler game = this.gameManager.getOnGrid(player);
-                                    if (game != null) {
-                                        game.gameType = (String) args[0];
-                                        game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + "Successfully changed the gametype value to: " + ChatColor.AQUA + args[0]);
-                                    } else {
-                                        this.logger.error("Player settings change failed: Player is not standing on a game grid");
-                                        throw CommandAPI.fail(this.config.PREFIX + "Please stand on the game Grid to edit the game grid");
-                                    }
-                                })
-                        )
                         .withSubcommand(new CommandAPICommand("killpoints")
                                 .withArguments(new IntegerArgument("Points"))
                                 .executesPlayer((player, args) -> {
-                                    GameHandler game = this.gameManager.getOnGrid(player);
+                                    Game game = this.manager.getOnGrid(player);
                                     if (game != null) {
                                         game.pointsPerKill = (Integer) args[0];
                                         game.saveGame();
@@ -133,7 +119,7 @@ public final class Main extends JavaPlugin {
 
                 .withSubcommand(new CommandAPICommand("toggle")
                         .executes((sender, args) ->{
-                            this.gameManager.toggleArmorStands();
+                            this.manager.toggleArmorStands();
                         })
                 )
                 .withSubcommand(new CommandAPICommand("reload")
@@ -147,12 +133,9 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.gameManager = new GamesManager();
-        this.getServer().getPluginManager().registerEvents(this.gameManager, this);
+        this.manager = new GamesManager();
+        this.getServer().getPluginManager().registerEvents(this.manager, this);
         CommandAPI.onEnable(this);
-        if (!econ.setupEconomy(this)) {
-            logger.warning(String.format("Disabled due to lack of Vault dependency! (missing Economy plugin)", this.getDescription().getName()));
-        }
         this.logger.success("Done! V" + getDescription().getVersion());
     }
 
