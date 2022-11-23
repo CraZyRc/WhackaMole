@@ -12,6 +12,7 @@ import java.awt.*;
 import java.io.File;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.security.spec.ECField;
 >>>>>>> 1e62199 (change :))
 =======
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 =======
 import java.text.SimpleDateFormat;
+=======
+>>>>>>> 86f74e4 (Changed: files cleanup)
 import java.util.*;
 >>>>>>> de8c408 (Grid:)
 
@@ -156,7 +159,7 @@ public final class GamesManager implements Listener {
                         if (!gameHandler.hasCooldown(cooldownPlayer.getKey())) {
                             gameHandler.removeCooldown(cooldownPlayer.getKey());
                         }else if (gameHandler.cooldownSendList.contains(cooldownPlayer.getKey()) && gameHandler.gameLost) {
-                            BaseComponent[] resetMessage = new ComponentBuilder().append(Config.color("&l" + GameHandler.moleMissed + " moles missed: &4&lGAME OVER&f&l, please buy a new ticket or wait. Time left: &a&l") + gameHandler.formatCooldown(cooldownPlayer.getValue())).create();
+                            BaseComponent[] resetMessage = new ComponentBuilder().append(Config.color("&l" + gameHandler.moleMissed + " moles missed: &4&lGAME OVER&f&l, please buy a new ticket or wait. Time left: &a&l") + gameHandler.formatCooldown(cooldownPlayer.getValue())).create();
                             Bukkit.getPlayer(cooldownPlayer.getKey()).spigot().sendMessage(ChatMessageType.ACTION_BAR, resetMessage);
                         } else if (gameHandler.cooldownSendList.contains(cooldownPlayer.getKey()) && !gameHandler.gameLost) {
                             BaseComponent[] resetMessage = new ComponentBuilder().append(Config.color("&4&lGAME OVER !&f&l please buy a new ticket or wait. Time left: &a&l") + gameHandler.formatCooldown(cooldownPlayer.getValue())).create();

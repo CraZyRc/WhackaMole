@@ -4,8 +4,9 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 public class Econ {
-    private static Econ instance;
     private Logger logger = Logger.getInstance();
+    private static Econ instance;
+    
     public Economy econ = null;
 
 

@@ -1,7 +1,6 @@
 package whackamole.whackamole;
 
 
-import com.google.protobuf.StringValue;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.md_5.bungee.api.ChatMessageType;
@@ -9,10 +8,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
-import net.milkbowl.vault.chat.Chat;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
-import org.bukkit.block.Skull;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemFlag;
@@ -60,13 +56,17 @@ public class GameHandler {
 =======
 =======
     public boolean cashHats = true;
-    public static boolean gameLost = false;
+    public boolean gameLost = false;
     public long Interval = 20L;
     public int pointsPerKill = 1;
     public int ticketCost = 15;
     public int maxMissed = 3;
+<<<<<<< HEAD
     public static int moleMissed = 0;
 >>>>>>> de8c408 (Grid:)
+=======
+    public int moleMissed = 0;
+>>>>>>> 86f74e4 (Changed: files cleanup)
     private int ID1 = -1;
 >>>>>>> c865bc2 (Game starter:)
     private boolean Running = false;
@@ -129,7 +129,7 @@ public class GameHandler {
             int index = random.nextInt(grid.grid.size());
             Location location = grid.grid.get(index).getLocation().clone().add(0.5, -1.5, 0.5);
             mole = (ArmorStand) gamePlayer.getWorld().spawnEntity(location, EntityType.ARMOR_STAND);
-            moleList.add(new Mole(mole));
+            moleList.add(new Mole(GameHandler.this, mole));
             mole.setGravity(false);
             mole.setInvisible(true);
             mole.getEquipment().setHelmet(getSkull("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxMjUwM2Q2MWM0OWY3MDFmZWU4NjdkNzkzZjFkY2M1MjJlNGQ3YzVjNDFhNjhmMjk1MTU3OWYyNGU3Y2IyYSJ9fX0="));
@@ -149,7 +149,7 @@ public class GameHandler {
             this.ID1 = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, this.Runner, this.Interval * 20L, this.Interval * 20L);
             this.Running = true;
             this.moleMissed = 0;
-            player.getInventory().addItem(this.axe);
+            player.getInventory().addItem(GameHandler.axe);
         }
     }
 
@@ -158,7 +158,7 @@ public class GameHandler {
             Bukkit.getScheduler().cancelTask(ID1);
             this.Running = false;
             this.ID1 = -1;
-            this.gamePlayer.getInventory().removeItem(this.axe);
+            this.gamePlayer.getInventory().removeItem(GameHandler.axe);
             this.gamePlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(""));
             this.setCooldown(gamePlayer.getUniqueId());
 
@@ -250,7 +250,7 @@ public class GameHandler {
         axeMeta.setDisplayName(this.config.HAMMERNAME);
         axe.setItemMeta(axeMeta);
 
-        this.axe = axe;
+        GameHandler.axe = axe;
 
     }
 
