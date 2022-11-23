@@ -16,6 +16,7 @@ public final class Config {
     public String NO_PERM;
     public String PERM_ALL;
     public String PERM_CREATE;
+    public String PERM_REMOVE;
     public String PERM_SETTINGS;
     public File gamesData = new File("./plugins/WhackaMole/Games/");
 
@@ -33,8 +34,9 @@ public final class Config {
         this.SUBBLOCK       = this.configFile.getList("Sub-List");
         this.NO_PERM        = this.PREFIX + this.configFile.getString("No Permission");
         this.PERM_ALL       = "WAM." + this.configFile.getString("Every permission");
-        this.PERM_CREATE    = "WAM." + this.configFile.getString("Command.Create");
-        this.PERM_SETTINGS  = "WAM." + this.configFile.getString("Command.Settings");
+        this.PERM_CREATE    = "WAM." + this.configFile.getString("Commands.Create");
+        this.PERM_REMOVE    = "WAM." + this.configFile.getString("Commands.Remove");
+        this.PERM_SETTINGS  = "WAM." + this.configFile.getString("Commands.Settings");
     }
 
     public static Config getInstance(FileConfiguration config) {

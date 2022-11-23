@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -103,11 +102,11 @@ public class GameHandler implements Listener {
                     "NOTE: you can edit the Properties to change the game rules",
                     "NOTE: Do not touch the Field Data!"));
             this.gameConfig.set("Properties.Name", this.gameName);
-            this.gameConfig.set("Properties.World", this.grid.world.getName());
             this.gameConfig.set("Properties.CashHats", this.cashHats);
             this.gameConfig.set("Properties.Interval", this.Interval);
             this.gameConfig.set("Properties.Points per Kill", this.pointsPerKill);
-            this.gameConfig.set("Field Data", this.grid.Serialize());
+            this.gameConfig.set("Field Data.World", this.grid.world.getName());
+            this.gameConfig.set("Field Data.Grid", this.grid.Serialize());
             this.gameConfig.save(this.gameFile);
         } catch (IOException e) {
             e.printStackTrace();
@@ -117,8 +116,8 @@ public class GameHandler implements Listener {
 
     public void getValues() {
         this.gameName = (String) this.gameConfig.get("Properties.Name");
-        this.world = Bukkit.getWorld((String) this.gameConfig.get("Properties.World"));
-        this.grid = Grid.Deserialize(this.world, (List<List<Integer>>) this.gameConfig.getList("Field Data"));
+        this.world = Bukkit.getWorld((String) this.gameConfig.get("Field Data.World"));
+        this.grid = Grid.Deserialize(this.world, (List<List<Integer>>) this.gameConfig.getList("Field Data.Grid"));
         this.cashHats = this.gameConfig.getBoolean("properties." + "CashHats");
         this.Interval = this.gameConfig.getInt("properties." + "Interval");
         this.pointsPerKill = this.gameConfig.getInt("properties." + "Points per Kill");

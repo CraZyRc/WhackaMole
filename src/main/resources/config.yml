@@ -52,5 +52,6 @@ Every permission: "*"
 
 Commands:
   Create: "create"
+  Remove: "Remove"
   Play: "Play"
   Settings: "Settings"
