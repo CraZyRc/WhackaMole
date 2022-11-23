@@ -26,6 +26,7 @@ public final class Config {
     private Config(Plugin main, String path) {
         main.saveResource("config.yml", false);
         this.configFile = new YMLFile(path);
+        this.setup();
     }
     private Config() {}
 
@@ -58,24 +59,28 @@ public final class Config {
 }
 
 class YMLFile {
-    public FileConfiguration FileConfig = new YamlConfiguration();
+    public FileConfiguration FileConfig;
     public File file;
     private Logger logger = Logger.getInstance();
 
     public YMLFile(File folder, String child) throws FileNotFoundException {
         if (!folder.isDirectory()) throw new FileNotFoundException("Did not pass a Folder file: %s".formatted(folder.getName()));
+        this.FileConfig = new YamlConfiguration();
         this.file = new File(folder, child);
         this.load();
     }
     public YMLFile(String folder, String child) {
+        this.FileConfig = new YamlConfiguration();
         this.file = new File(folder, child);
         this.load();
     }
     public YMLFile(String path) {
+        this.FileConfig = new YamlConfiguration();
         this.file = new File(path);
         this.load();
     }
     public YMLFile(File file) {
+        this.FileConfig = new YamlConfiguration();
         this.file = file;
         this.load();
     }
