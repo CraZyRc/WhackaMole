@@ -4,7 +4,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
-import org.w3c.dom.DOMStringList;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,7 +25,6 @@ public final class Config {
     public String PERM_REMOVE;
     public String PERM_SETTINGS;
     public File gamesData = new File("./plugins/WhackaMole/Games/");
-    private Logger logger;
 
     private Config(Plugin main) {
         if(!new File("./plugins/WhackaMole/config.yml").exists())
@@ -48,16 +46,15 @@ public final class Config {
         this.PERM_CREATE    = "WAM." + this.configFile.getString("Commands.Create");
         this.PERM_REMOVE    = "WAM." + this.configFile.getString("Commands.Remove");
         this.PERM_SETTINGS  = "WAM." + this.configFile.getString("Commands.Settings");
-        this.index = this.ACTIONTEXT.size();
     }
 
-    public String getNext() {
+    public String getNext(List<String> message) {
+        this.index = message.size();
         this.index++;
-        if (index >= this.ACTIONTEXT.size()) {
-            this.logger.info(index + "");
+        if (index >= message.size()) {
             index = 0;
         }
-        return this.ACTIONTEXT.get(this.index);
+        return message.get(this.index);
     }
 
     public static Config getInstance(Plugin main) {

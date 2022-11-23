@@ -127,10 +127,10 @@ public final class GamesManager implements Listener {
         axeMeta.setUnbreakable(true);
         axeMeta.addEnchant(Enchantment.LURE, 1, true);
         axeMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
-        axeMeta.setDisplayName(color("&0&l[&6&lWAM&0&l] #28c00&lS#2fca00&lMASHER"));
+        axeMeta.setDisplayName(color(this.config.HAMMERNAME));
         axe.setItemMeta(axeMeta);
 
-        String actionName = this.config.getNext();
+        String actionName = this.config.getNext(this.config.ACTIONTEXT);
         BaseComponent[] list = ComponentSerializer.parse(actionName);
         BaseComponent[] sendList = new ComponentBuilder().append(list).create();
 
