@@ -26,7 +26,7 @@ public class GameHandler implements Listener {
     boolean gamesLoaded = false;
 
     public String gameName;
-    public String gameWorld;
+    private World world;
     public Grid grid;
     public Boolean cashHats = true;
     public Integer Interval = 20;
@@ -116,8 +116,8 @@ public class GameHandler implements Listener {
 
     public void getValues() {
         this.gameName = (String) this.gameConfig.get("Properties.Name");
-        this.gameWorld = (String) this.gameConfig.get("Properties.World");
-        this.grid.Deserialize((List<List<Integer>>) this.gameConfig.getList("Field Data"));
+        this.world = Bukkit.getWorld((String) this.gameConfig.get("Properties.World"));
+        this.grid = Grid.Deserialize(this.world, (List<List<Integer>>) this.gameConfig.getList("Field Data"));
         this.cashHats = this.gameConfig.getBoolean("properties." + "CashHats");
         this.Interval = this.gameConfig.getInt("properties." + "Interval");
         this.pointsPerKill = this.gameConfig.getInt("properties." + "Points per Kill");
