@@ -18,6 +18,7 @@ public final class Config {
     public String PREFIX;
     public String CURRENCY;
     public String SYMBOL;
+    public int TICKETPRICE;
     public String ACTIONTEXT;
     public String HAMMERNAME;
     public List<?> MOLEBLOCK;
@@ -46,12 +47,13 @@ public final class Config {
         this.PREFIX         = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
         this.CURRENCY       = this.configFile.getString("Server Currency");
         this.SYMBOL         = this.configFile.getString("Currency Symbol");
+        this.TICKETPRICE    = this.configFile.getInt("Ticket Price");
         this.MOLEBLOCK      = this.configFile.getList("Blocklist");
         this.SUBBLOCK       = this.configFile.getList("Sub-List");
         this.ACTIONTEXT     = this.configFile.getString("Actionbar Message");
         this.HAMMERNAME     = Config.color(this.configFile.getString("Hammer Name"));
         this.NO_PERM        = this.PREFIX + Config.color(this.configFile.getString("No Permission"));
-        this.PERM_ALL       = "WAM." + this.configFile.getString("Every permission");
+        this.PERM_ALL       = "WAM." + this.configFile.getString("Every Permission");
         this.PERM_RELOAD    = "WAM." + this.configFile.getString("Commands.Reload");
         this.PERM_CREATE    = "WAM." + this.configFile.getString("Commands.Create");
         this.PERM_REMOVE    = "WAM." + this.configFile.getString("Commands.Remove");

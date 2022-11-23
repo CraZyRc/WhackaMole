@@ -11,28 +11,28 @@ import java.awt.*;
 >>>>>>> e262bdb (Game starter:)
 import java.io.File;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.security.spec.ECField;
 >>>>>>> 1e62199 (change :))
 =======
 >>>>>>> 328aa81 (change :))
 import java.util.ArrayList;
 import java.util.List;
+=======
+import java.text.SimpleDateFormat;
+import java.util.*;
+>>>>>>> de8c408 (Grid:)
 
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scoreboard.Score;
 
 
 public final class GamesManager implements Listener {
@@ -48,7 +48,7 @@ public final class GamesManager implements Listener {
 
     public GamesManager() {
         this.loadGames();
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, Stages, 1l, 1l);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, Tick, 1l, 1l);
     }
 
     public void loadGames() {
@@ -122,18 +122,21 @@ public final class GamesManager implements Listener {
 
     @EventHandler
     public void playerMoveEvent(PlayerMoveEvent event) {
-        for (GameHandler gameHandler : games) {
-            if (gameHandler.onGrid(event.getTo())) {
-                gameHandler.Start(event.getPlayer());
 
+        for (GameHandler gameHandler : games) {
+            if (gameHandler.onGrid(event.getPlayer())) {
+                if (!gameHandler.hasCooldown(event.getPlayer().getUniqueId())) {
+                    gameHandler.Start(event.getPlayer());
+                }
             } else if (gameHandler.gamePlayer == event.getPlayer()) {
                 gameHandler.Stop();
-
+                event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder().append("").create());
             }
         }
     }
 
-    Runnable Stages = new Runnable() {
+    int runnableTickCounter = 0;
+    Runnable Tick = new Runnable() {
         @Override
         public void run() {
             for (GameHandler gameHandler : games) {
@@ -144,8 +147,29 @@ public final class GamesManager implements Listener {
                     }
                 }
             }
+            if (runnableTickCounter >= 20) {
+                runnableTickCounter = 0;
+                for (GameHandler gameHandler : games) {
+                    for (Map.Entry<UUID, Long> cooldownPlayer : gameHandler.cooldown.entrySet()) {
+                        if (!gameHandler.hasCooldown(cooldownPlayer.getKey())) {
+                            gameHandler.removeCooldown(cooldownPlayer.getKey());
+                        }else if (gameHandler.cooldownSendList.contains(cooldownPlayer.getKey()) && gameHandler.gameLost) {
+                            BaseComponent[] resetMessage = new ComponentBuilder().append(Config.color("&l" + GameHandler.moleMissed + " moles missed: &4&lGAME OVER&f&l, please buy a new ticket or wait. Time left: &a&l") + gameHandler.formatCooldown(cooldownPlayer.getValue())).create();
+                            Bukkit.getPlayer(cooldownPlayer.getKey()).spigot().sendMessage(ChatMessageType.ACTION_BAR, resetMessage);
+                        } else if (gameHandler.cooldownSendList.contains(cooldownPlayer.getKey()) && !gameHandler.gameLost) {
+                            BaseComponent[] resetMessage = new ComponentBuilder().append(Config.color("&4&lGAME OVER !&f&l please buy a new ticket or wait. Time left: &a&l") + gameHandler.formatCooldown(cooldownPlayer.getValue())).create();
+                            Bukkit.getPlayer(cooldownPlayer.getKey()).spigot().sendMessage(ChatMessageType.ACTION_BAR, resetMessage);
+
+                        }
+                    }
+                }
+            }
+            runnableTickCounter++;
+
         }
     };
+
+
 
     @EventHandler
     public void onHit(EntityDamageByEntityEvent e) {
@@ -155,7 +179,7 @@ public final class GamesManager implements Listener {
                 if (e.getDamager() == game.gamePlayer && game.gamePlayer.getInventory().getItemInMainHand().equals(GameHandler.axe)) {
                     for (Mole mole : game.moleList) {
                         if (e.getEntity() == mole.mole) {
-                            mole.index = 40;
+                            mole.hit = true;
                             game.Score = game.Score + game.pointsPerKill;
                             break gameloop;
                         }
@@ -165,6 +189,7 @@ public final class GamesManager implements Listener {
             }
         }
     }
+
 
     public void toggleArmorStands() {
         for (GameHandler gameHandler : games) {

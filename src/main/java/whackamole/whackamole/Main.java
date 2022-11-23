@@ -3,10 +3,7 @@ package whackamole.whackamole;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandAPIConfig;
-import dev.jorel.commandapi.arguments.BooleanArgument;
-import dev.jorel.commandapi.arguments.IntegerArgument;
-import dev.jorel.commandapi.arguments.LongArgument;
-import dev.jorel.commandapi.arguments.StringArgument;
+import dev.jorel.commandapi.arguments.*;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -62,6 +59,14 @@ public final class Main extends JavaPlugin {
                             }
                         })
                 )
+                .withSubcommand(new CommandAPICommand("buy")
+                        .executesPlayer((player, args) -> {
+                            GameHandler game = this.gameManager.getOnGrid(player);
+                            game.removeCooldown(player.getUniqueId());
+                            econ.econ.withdrawPlayer(player, game.ticketCost);
+                            player.sendMessage(this.config.PREFIX + "Cooldown removed!");
+                        })
+                )
                 .withSubcommand(new CommandAPICommand("settings")
                         .withPermission(this.config.PERM_SETTINGS)
                         .withSubcommand(new CommandAPICommand("cash-hat")
@@ -86,6 +91,20 @@ public final class Main extends JavaPlugin {
                                         game.Interval = (Long) args[0];
                                         game.saveGame();
                                         player.sendMessage(this.config.PREFIX + "Successfully changed the Interval value to: " + ChatColor.AQUA + args[0]);
+                                    } else {
+                                        this.logger.error("Player settings change failed: Player is not standing on a game grid");
+                                        throw CommandAPI.fail(this.config.PREFIX + "Please stand on the game Grid to edit the game grid");
+                                    }
+                                })
+                        )
+                        .withSubcommand(new CommandAPICommand("Type")
+                                .withArguments(new StringArgument("VAULT"))
+                                .executesPlayer((player, args) -> {
+                                    GameHandler game = this.gameManager.getOnGrid(player);
+                                    if (game != null) {
+                                        game.gameType = (String) args[0];
+                                        game.saveGame();
+                                        player.sendMessage(this.config.PREFIX + "Successfully changed the gametype value to: " + ChatColor.AQUA + args[0]);
                                     } else {
                                         this.logger.error("Player settings change failed: Player is not standing on a game grid");
                                         throw CommandAPI.fail(this.config.PREFIX + "Please stand on the game Grid to edit the game grid");

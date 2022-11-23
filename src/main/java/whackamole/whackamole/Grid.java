@@ -90,7 +90,7 @@ class Grid {
 
     public boolean onGrid(Location loc) {
         for (Block block : this.grid) {
-            if (block.getLocation().add(0.5, 1, 0.5).distance(loc) < 1) {
+            if (block.getLocation().add(0.5, 1, 0.5).distance(loc) < 1 || block.getLocation().add(0.5, 2, 0.5).distance(loc) < 1) {
                 return true;
             }
         }
