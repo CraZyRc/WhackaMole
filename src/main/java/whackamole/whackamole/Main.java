@@ -5,8 +5,11 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.CommandAPIConfig;
 import dev.jorel.commandapi.arguments.BooleanArgument;
 import dev.jorel.commandapi.arguments.IntegerArgument;
+import dev.jorel.commandapi.arguments.LongArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
@@ -15,12 +18,14 @@ public final class Main extends JavaPlugin {
     public Config config;
     public Logger logger = Logger.getInstance();
     public GamesManager gameManager;
+    public static Plugin plugin;
 
     @Override
     public void onLoad() {
         Logger.Prefix = this.getDescription().getPrefix();
         this.config = Config.getInstance(this);
-        CommandAPI.onLoad(new CommandAPIConfig().verboseOutput(true));
+        CommandAPI.onLoad(new CommandAPIConfig().verboseOutput(false));
+        Main.plugin = this;
 
         new CommandAPICommand("WhackaMole")
                 .withAliases("WAM", "Whack")
@@ -73,11 +78,11 @@ public final class Main extends JavaPlugin {
                                 })
                         )
                         .withSubcommand(new CommandAPICommand("Interval")
-                                .withArguments(new IntegerArgument("Interval"))
+                                .withArguments(new LongArgument("Interval"))
                                 .executesPlayer((player, args) -> {
                                     GameHandler game = this.gameManager.getOnGrid(player);
                                     if (game != null) {
-                                        game.Interval = (Integer) args[0];
+                                        game.Interval = (Long) args[0];
                                         game.saveGame();
                                         player.sendMessage(this.config.PREFIX + "Successfully changed the Interval value to: " + ChatColor.AQUA + args[0]);
                                     } else {

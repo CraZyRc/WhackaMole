@@ -2,10 +2,13 @@ package whackamole.whackamole;
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 import java.awt.*;
 >>>>>>> 6eaa2d8 (WAMHammer color fix)
+=======
+>>>>>>> e262bdb (Game starter:)
 import java.io.File;
 <<<<<<< HEAD
 import java.security.spec.ECField;
@@ -14,43 +17,37 @@ import java.security.spec.ECField;
 >>>>>>> 328aa81 (change :))
 import java.util.ArrayList;
 import java.util.List;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.chat.BaseComponentSerializer;
-import net.md_5.bungee.chat.ComponentSerializer;
-import net.md_5.bungee.chat.TextComponentSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.w3c.dom.Text;
 
-import static net.md_5.bungee.api.ChatColor.*;
 
 
 public final class GamesManager implements Listener {
 
+<<<<<<< HEAD
+=======
+    private Config config = Config.getInstance();
+
+>>>>>>> e262bdb (Game starter:)
     private Logger logger = Logger.getInstance();
+
     public List<GameHandler> games = new ArrayList<>();
 
     public GamesManager() {
         this.loadGames();
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, Stages, 1l, 1l);
     }
 
     public void loadGames() {
@@ -124,48 +121,44 @@ public final class GamesManager implements Listener {
 
     @EventHandler
     public void playerMoveEvent(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-        ItemStack axe = new ItemStack(Material.GOLDEN_AXE);
-        ItemMeta axeMeta = axe.getItemMeta();
-        ((Damageable) axeMeta).setDamage(31);
-        axeMeta.setUnbreakable(true);
-        axeMeta.addEnchant(Enchantment.LURE, 1, true);
-        axeMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
-
-        axeMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', this.config.HAMMERNAME));
-        axe.setItemMeta(axeMeta);
-
-        String actionName = this.config.getNext(this.config.ACTIONTEXT);
-        BaseComponent[] list = ComponentSerializer.parse(actionName);
-        BaseComponent[] sendList = new ComponentBuilder().append(list).create();
-
-
         for (GameHandler gameHandler : games) {
             if (gameHandler.onGrid(event.getTo())) {
-                if (!(player.getInventory().contains(axe))) {
-                    player.getInventory().addItem(axe);
-                }
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, sendList);
-                for (int i = 0; i == gameHandler.Interval; i++) {
-//                    if (i == gameHandler.Interval) {
-//                        Location l = g;
-//                        double x = l.getX();
-//                        double y = l.getY();
-//                        double z = l.getZ();
-//                        event.getPlayer().getWorld().spawnEntity(l, EntityType.ARMOR_STAND);
-//                    }
-                }
+                gameHandler.Start(event.getPlayer());
+            } else if (gameHandler.gamePlayer == event.getPlayer()) {
+                gameHandler.Stop();
 
-
-            } else {
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(""));
-                player.getInventory().removeItem(axe);
             }
         }
     }
 
+    Runnable Stages = new Runnable() {
+        @Override
+        public void run() {
+            for (GameHandler gameHandler : games) {
+                for (int i = gameHandler.moleList.size() -1; i > 0 ; i--) {
+                    Mole mole = gameHandler.moleList.get(i);
+                    if (!(mole.Update())) {
+                        gameHandler.moleList.remove(i);
+                    }
+                }
+            }
+        }
+    };
+
     @EventHandler
-    public void onHit(EntityDamageByEntityEvent event) {
+    public void onHit(EntityDamageByEntityEvent e) {
+        if (e.getDamager().getType() == EntityType.PLAYER) {
+            for (GameHandler game : this.games) {
+                if (e.getDamager() == game.gamePlayer) {
+                    for (Mole mole : game.moleList) {
+                        if (e.getEntity() == mole.mole) {
+                            mole.index = 40;
+                        }
+                    }
+
+                }
+            }
+        }
     }
 
     public void toggleArmorStands() {
@@ -173,4 +166,23 @@ public final class GamesManager implements Listener {
             gameHandler.toggleArmorStands();
         }
     }
+    public static String color(String message) {
+        Pattern pattern = Pattern.compile("#[a-fA-f0-9]{6}");
+        Matcher matcher = pattern.matcher(message);
+        while (matcher.find()) {
+            String hexCode = message.substring(matcher.start(), matcher.end());
+            String replaceSharp = hexCode.replace('#','x');
+
+            char[] ch = replaceSharp.toCharArray();
+            StringBuilder builder = new StringBuilder("");
+            for (char c : ch) {
+                builder.append("&" + c);
+            }
+
+            message = message.replace(hexCode, builder.toString());
+            matcher = pattern.matcher(message);
+        }
+        return ChatColor.translateAlternateColorCodes('&', message);
+    }
+
 }

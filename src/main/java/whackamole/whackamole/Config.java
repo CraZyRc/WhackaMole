@@ -11,11 +11,10 @@ import java.util.List;
 
 public final class Config {
 
-    int index;
     private static Config Instance;
     public YMLFile configFile;
     public String PREFIX;
-    public List<String> ACTIONTEXT;
+    public String ACTIONTEXT;
     public String HAMMERNAME;
     public List<?> MOLEBLOCK;
     public List<?> SUBBLOCK;
@@ -39,23 +38,15 @@ public final class Config {
         this.PREFIX         = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
         this.MOLEBLOCK      = this.configFile.getList("Blocklist");
         this.SUBBLOCK       = this.configFile.getList("Sub-List");
-        this.ACTIONTEXT     = this.configFile.FileConfig.getStringList("Actionbar Message");
-        this.HAMMERNAME     = this.configFile.getString("Hammer Name");
-        this.NO_PERM        = this.PREFIX + this.configFile.getString(ChatColor.translateAlternateColorCodes('&',"No Permission"));
+        this.ACTIONTEXT     = this.configFile.getString("Actionbar Message");
+        this.HAMMERNAME     = GamesManager.color(this.configFile.getString("Hammer Name"));
+        this.NO_PERM        = this.PREFIX + GamesManager.color(this.configFile.getString("No Permission"));
         this.PERM_ALL       = "WAM." + this.configFile.getString("Every permission");
         this.PERM_CREATE    = "WAM." + this.configFile.getString("Commands.Create");
         this.PERM_REMOVE    = "WAM." + this.configFile.getString("Commands.Remove");
         this.PERM_SETTINGS  = "WAM." + this.configFile.getString("Commands.Settings");
     }
 
-    public String getNext(List<String> message) {
-        this.index = message.size();
-        this.index++;
-        if (index >= message.size()) {
-            index = 0;
-        }
-        return message.get(this.index);
-    }
 
     public static Config getInstance(Plugin main) {
         if (Config.Instance == null) {
@@ -109,9 +100,11 @@ class YMLFile {
     public Integer getInt(String path) {
         return this.FileConfig.getInt(path);
     }
+    public Long getLong(String path) {return this.FileConfig.getLong(path);}
     public List<?> getList(String path) {
         return this.FileConfig.getList(path);
     }
+
 
     public void set (String path, Object value) {
         this.FileConfig.set(path, value);

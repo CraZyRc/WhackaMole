@@ -25,7 +25,6 @@ class Grid {
     };
 
     private Config config = Config.getInstance();
-    private Logger logger = Logger.getInstance();
 
     public ArrayList<Block> grid;
     public World world;
