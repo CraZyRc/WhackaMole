@@ -38,6 +38,16 @@ public final class GamesManager implements Listener {
         this.games.add(game);
     }
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+    public void addGame(File gameName) {
+=======
+    public void addGame(File gameName) throws Exception {
+>>>>>>> cffe322 (change :))
+        this.games.add(new GameHandler(gameName));
+    }
+>>>>>>> 461f3dd (updated: addGame method)
     public void addGame(String gameName, Grid grid) throws Exception {
         if (this.nameExists(gameName)) {
             throw new Exception("Grid with name {0} already exists!".formatted(gameName));
