@@ -1,7 +1,11 @@
 package whackamole.whackamole;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+import java.awt.*;
+>>>>>>> 6eaa2d8 (WAMHammer color fix)
 import java.io.File;
 <<<<<<< HEAD
 import java.security.spec.ECField;
@@ -37,7 +41,7 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.w3c.dom.Text;
 
-import static net.md_5.bungee.api.ChatColor.COLOR_CHAR;
+import static net.md_5.bungee.api.ChatColor.*;
 
 
 public final class GamesManager implements Listener {
@@ -127,7 +131,8 @@ public final class GamesManager implements Listener {
         axeMeta.setUnbreakable(true);
         axeMeta.addEnchant(Enchantment.LURE, 1, true);
         axeMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
-        axeMeta.setDisplayName(color(this.config.HAMMERNAME));
+
+        axeMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', this.config.HAMMERNAME));
         axe.setItemMeta(axeMeta);
 
         String actionName = this.config.getNext(this.config.ACTIONTEXT);
@@ -167,24 +172,5 @@ public final class GamesManager implements Listener {
         for (GameHandler gameHandler : games) {
             gameHandler.toggleArmorStands();
         }
-    }
-
-    public static String color(String message) {
-        Pattern pattern = Pattern.compile("#[a-fA-f0-9]{6}");
-        Matcher matcher = pattern.matcher(message);
-        while (matcher.find()) {
-            String hexCode = message.substring(matcher.start(), matcher.end());
-            String replaceSharp = hexCode.replace('#','x');
-
-            char[] ch = replaceSharp.toCharArray();
-            StringBuilder builder = new StringBuilder("");
-            for (char c : ch) {
-                builder.append("&" + c);
-            }
-
-            message = message.replace(hexCode, builder.toString());
-            matcher = pattern.matcher(message);
-        }
-        return ChatColor.translateAlternateColorCodes('&', message);
     }
 }

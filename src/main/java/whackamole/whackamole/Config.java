@@ -41,7 +41,7 @@ public final class Config {
         this.SUBBLOCK       = this.configFile.getList("Sub-List");
         this.ACTIONTEXT     = this.configFile.FileConfig.getStringList("Actionbar Message");
         this.HAMMERNAME     = this.configFile.getString("Hammer Name");
-        this.NO_PERM        = this.PREFIX + this.configFile.getString(GamesManager.color("No Permission"));
+        this.NO_PERM        = this.PREFIX + this.configFile.getString(ChatColor.translateAlternateColorCodes('&',"No Permission"));
         this.PERM_ALL       = "WAM." + this.configFile.getString("Every permission");
         this.PERM_CREATE    = "WAM." + this.configFile.getString("Commands.Create");
         this.PERM_REMOVE    = "WAM." + this.configFile.getString("Commands.Remove");
