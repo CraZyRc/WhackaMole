@@ -14,7 +14,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
+<<<<<<< HEAD
 import whackamole.whackamole.Mole.*;
+=======
+import org.bukkit.inventory.meta.SkullMeta;
+>>>>>>> 0d00087 (Commands:)
 
 
 public class Game {
@@ -34,6 +38,7 @@ public class Game {
 <<<<<<< HEAD
     public Grid grid;
     public String gameName;
+<<<<<<< HEAD
     public String gameType = "";
     public String scoreObjective = "";
 <<<<<<< HEAD
@@ -52,9 +57,12 @@ public class Game {
     
 >>>>>>> c279d38 (Config:)
     public boolean cashHats = true;
+=======
+    public boolean Jackpot = true;
+    public boolean gameLost = false;
+>>>>>>> 0d00087 (Commands:)
     public long Interval = 20L;
     public int pointsPerKill = 1;
-    public int ticketCost = 15;
     public int maxMissed = 3;
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -144,12 +152,38 @@ public class Game {
 
             this.gamePlayer.getInventory().removeItem(this.config.PLAYER_AXE);
             this.gamePlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(""));
+<<<<<<< HEAD
             this.setCooldown(gamePlayer.getUniqueId());
         
+=======
+            if (this.Score > 0 || this.moleMissed == this.maxMissed) {
+                this.setCooldown(gamePlayer.getUniqueId());
+            }
+
+                if (econ.currencyType != Econ.Currency.NULL) {
+                    econ.depositPlayer(gamePlayer, this.Score);
+                    if (this.Score == 1) {
+                        gamePlayer.sendMessage(this.config.PREFIX + "You've been rewarded " + ChatColor.AQUA + this.config.SYMBOL + this.Score + ChatColor.WHITE + " " + this.config.CURRENCY_SING);
+                    } else if (this.Score > 1) {
+                        gamePlayer.sendMessage(this.config.PREFIX + "You've been rewarded " + ChatColor.AQUA + this.config.SYMBOL + this.Score + ChatColor.WHITE + " " + this.config.CURRENCY_PLUR);
+                    } else {
+                        gamePlayer.sendMessage(this.config.PREFIX + "No moles hit, " + ChatColor.AQUA +  this.config.SYMBOL + "0 " + this.config.CURRENCY_PLUR + ChatColor.WHITE + " rewarded");
+
+                    }
+                }
+>>>>>>> 0d00087 (Commands:)
             this.Score = 0;
             this.gamePlayer = null;
         }
     }
+<<<<<<< HEAD
+=======
+    public void unload() {
+        this.Stop();
+        this.saveGame();
+    }
+    public void saveGame() {
+>>>>>>> 0d00087 (Commands:)
 
 
     public void saveGame() {
@@ -170,11 +204,15 @@ public class Game {
                 "Points per Kill = how many points should be rewarded per kill",
                 "That is all, enjoy messing around :)",
                 ""));
+<<<<<<< HEAD
         this.gameConfig.set("Properties.Name", this.name);
         this.gameConfig.set("Properties.CashHats", this.cashHats);
+=======
+        this.gameConfig.set("Properties.Name", this.gameName);
+        this.gameConfig.set("Properties.Jackpot", this.Jackpot);
+>>>>>>> 0d00087 (Commands:)
         this.gameConfig.set("Properties.Interval", this.Interval);
         this.gameConfig.set("Properties.Game lost", this.maxMissed);
-        this.gameConfig.set("Properties.Ticket price", this.ticketCost);
         this.gameConfig.set("Properties.Points per Kill", this.pointsPerKill);
         this.gameConfig.set("Field Data.World", this.grid.world.getName());
         this.gameConfig.set("Field Data.Grid", this.grid.Serialize());
@@ -184,11 +222,18 @@ public class Game {
     public void loadGame() {
         this.world          = Bukkit.getWorld(this.gameConfig.getString("Field Data.World"));
         this.grid           = Grid.Deserialize(this.world, (List<List<Integer>>) this.gameConfig.getList("Field Data.Grid"));
+<<<<<<< HEAD
         this.name       = this.gameConfig.getString("Properties.Name");
         this.cashHats       = this.gameConfig.getBoolean("Properties.CashHats");
         this.Interval       = this.gameConfig.getLong("Properties.Interval");
         this.maxMissed      = this.gameConfig.getInt("Properties.Game lost");
         this.ticketCost     = this.gameConfig.getInt("Properties.Ticket price");
+=======
+        this.gameName       = this.gameConfig.getString("Properties.Name");
+        this.Jackpot        = this.gameConfig.getBoolean("Properties.Jackpot");
+        this.Interval       = this.gameConfig.getLong("Properties.Interval");
+        this.maxMissed      = this.gameConfig.getInt("Properties.Game lost");
+>>>>>>> 0d00087 (Commands:)
         this.pointsPerKill  = this.gameConfig.getInt("Properties.Points per Kill");
     }
 

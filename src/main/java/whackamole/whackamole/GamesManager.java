@@ -35,12 +35,24 @@ import java.util.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+<<<<<<< HEAD
+=======
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
+>>>>>>> 0d00087 (Commands:)
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 
 public final class GamesManager implements Listener {
@@ -53,10 +65,29 @@ public final class GamesManager implements Listener {
     private Logger logger = Logger.getInstance();
 
     public List<Game> games = new ArrayList<>();
-
+    private static GamesManager Instance;
+    public ItemStack ticket;
     public GamesManager() {
+
+    }
+
+    public GamesManager(Main main) {
+        this.Ticket();
         this.loadGames();
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, Tick, 1l, 1l);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(main, Tick, 1l, 1l);
+    }
+    public static GamesManager getInstance() {
+        if (GamesManager.Instance == null) {
+            GamesManager.Instance = new GamesManager();
+        }
+        return GamesManager.Instance;
+    }
+
+    public static GamesManager getInstance(Main main) {
+        if (GamesManager.Instance == null) {
+            GamesManager.Instance = new GamesManager(main);
+        }
+        return GamesManager.Instance;
     }
 
     public void loadGames() {
@@ -79,6 +110,7 @@ public final class GamesManager implements Listener {
         }
     }
 
+<<<<<<< HEAD
     private boolean gameExists(String name) {
         this.logger.info(name);
         for (Game game : games) {
@@ -87,6 +119,12 @@ public final class GamesManager implements Listener {
             }
         }
         return false;
+=======
+    public void unloadGames() {
+        for (Game game : games) {
+            game.unload();
+        }
+>>>>>>> 0d00087 (Commands:)
     }
 
     public void addGame(Game game) throws Exception {
@@ -183,4 +221,53 @@ public final class GamesManager implements Listener {
             }
         }
     }
+<<<<<<< HEAD
+=======
+
+    @EventHandler
+    public void ticketUse(PlayerInteractEvent e) {
+        Player player = e.getPlayer();
+        Game game = this.getOnGrid(player);
+        if (player.getInventory().getItemInMainHand().equals(ticket) && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+            if (player.hasPermission(this.config.PERM_TICKET_USE)) {
+                if (game == null) {
+                    player.sendMessage(this.config.PREFIX + ChatColor.DARK_RED + "Stand on the game you wish to reset !");
+                    e.setCancelled(true);
+                } else if (game.hasCooldown(player.getUniqueId())) {
+                    game.removeCooldown(player.getUniqueId());
+                    e.getPlayer().sendMessage(this.config.PREFIX + ChatColor.AQUA + "Cooldown successfully removed !");
+                    e.setUseItemInHand(Event.Result.DENY);
+                    player.getInventory().removeItem(ticket);
+                }  else {
+                    player.sendMessage(this.config.PREFIX + ChatColor.DARK_RED + "You can't use this item without cooldown !");
+                    e.setCancelled(true);
+                }
+            } else {
+                player.sendMessage(this.config.PREFIX + ChatColor.DARK_RED + "You don't seem to have the right permission to use this!");
+                e.setCancelled(true);
+            }
+        }
+    }
+
+
+    public void toggleArmorStands() {
+        for (Game game : games) {
+            game.toggleArmorStands();
+        }
+    }
+
+    public void Ticket() {
+        ItemStack ticket = new ItemStack(Material.MAP);
+        ItemMeta ticketInfo = ticket.getItemMeta();
+        ticketInfo.addEnchant(Enchantment.LURE, 1, true);
+        ticketInfo.setDisplayName(Config.color("&0&l[&6&lWAM&0&l] &b&lReset Ticket"));
+        ticketInfo.setLore(Arrays.asList(Config.color("&eRight click this ticket"), Config.color("&ewhen on top of a WhackaMole gamefield"), Config.color("&eto reset the waiting time!")));
+        ticketInfo.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
+
+
+        ticket.setItemMeta(ticketInfo);
+
+        this.ticket = ticket;
+    }
+>>>>>>> 0d00087 (Commands:)
 }

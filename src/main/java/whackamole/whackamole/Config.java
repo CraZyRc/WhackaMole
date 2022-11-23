@@ -30,15 +30,16 @@ public final class Config {
     private static Config Instance;
     public YMLFile configFile;
     public String PREFIX;
-    public String CURRENCY;
+    public String CURRENCY_SING;
+    public String CURRENCY_PLUR;
     public String SYMBOL;
     public int TICKETPRICE;
     public String ACTIONTEXT;
     public String HAMMERNAME;
     public List<?> MOLEBLOCK;
     public List<?> SUBBLOCK;
-    public String NO_PERM;
-    public String PERM_ALL;
+    public String PERM_TICKET_USE;
+    public String PERM_BUY;
     public String PERM_RELOAD;
     public String PERM_CREATE;
     public String PERM_REMOVE;
@@ -66,6 +67,7 @@ public final class Config {
     private Config() {}
 
     public void setup() {
+<<<<<<< HEAD
         this.PREFIX         = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
         this.ECONOMY        = this.configFile.getString("Economy");
         this.OBJECTIVE      = this.configFile.getString("Scoreboard Objective");
@@ -85,6 +87,25 @@ public final class Config {
 
         this.FiELD_MARGIN_X = this.configFile.getDouble("Field.Margin.X");
         this.FiELD_MARGIN_Y = this.configFile.getDouble("Field.Margin.Y");
+=======
+        this.PREFIX             = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
+        this.ECONOMY            = this.configFile.getString("Economy");
+        this.OBJECTIVE          = this.configFile.getString("Scoreboard Objective");
+        this.CURRENCY_SING      = this.configFile.getString("Singular Currency");
+        this.CURRENCY_PLUR      = this.configFile.getString("Plural Currency");
+        this.SYMBOL             = this.configFile.getString("Currency Symbol");
+        this.TICKETPRICE        = this.configFile.getInt("Ticket Price");
+        this.MOLEBLOCK          = this.configFile.getList("Blocklist");
+        this.SUBBLOCK           = this.configFile.getList("Sub-List");
+        this.ACTIONTEXT         = this.configFile.getString("Actionbar Message");
+        this.HAMMERNAME         = Config.color(this.configFile.getString("Hammer Name"));
+        this.PERM_TICKET_USE    = "WAM." + this.configFile.getString("Commands.Use Reset Ticket");
+        this.PERM_BUY           = "WAM." + this.configFile.getString("Commands.Buy");
+        this.PERM_RELOAD        = "WAM." + this.configFile.getString("Commands.Reload");
+        this.PERM_CREATE        = "WAM." + this.configFile.getString("Commands.Create");
+        this.PERM_REMOVE        = "WAM." + this.configFile.getString("Commands.Remove");
+        this.PERM_SETTINGS      = "WAM." + this.configFile.getString("Commands.Settings");
+>>>>>>> 0d00087 (Commands:)
     }
 
     public static String color(String message) {
@@ -156,6 +177,11 @@ public final class Config {
             return Config.Instance;
         }
         return Config.Instance;
+    }
+
+    public static Config reload(Main main) {
+        Config.Instance = null;
+        return Config.getInstance(main);
     }
 }
 
@@ -246,5 +272,6 @@ class YMLFile {
             this.logger.error("Failed to create Folder/File: %s".formatted(this.file.getName()));
             e.printStackTrace();
         }
-    } 
+    }
+
 }
