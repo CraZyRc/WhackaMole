@@ -21,6 +21,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -28,6 +29,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scoreboard.Score;
 
 
@@ -121,6 +125,7 @@ public final class GamesManager implements Listener {
         for (GameHandler gameHandler : games) {
             if (gameHandler.onGrid(event.getTo())) {
                 gameHandler.Start(event.getPlayer());
+
             } else if (gameHandler.gamePlayer == event.getPlayer()) {
                 gameHandler.Stop();
 
@@ -132,7 +137,7 @@ public final class GamesManager implements Listener {
         @Override
         public void run() {
             for (GameHandler gameHandler : games) {
-                for (int i = gameHandler.moleList.size() -1; i > 0 ; i--) {
+                for (int i = gameHandler.moleList.size() -1; i >= 0 ; i--) {
                     Mole mole = gameHandler.moleList.get(i);
                     if (!(mole.Update())) {
                         gameHandler.moleList.remove(i);
@@ -147,11 +152,11 @@ public final class GamesManager implements Listener {
         if (e.getDamager().getType() == EntityType.PLAYER) {
             gameloop:
             for (GameHandler game : this.games) {
-                if (e.getDamager() == game.gamePlayer) {
+                if (e.getDamager() == game.gamePlayer && game.gamePlayer.getInventory().getItemInMainHand().equals(GameHandler.axe)) {
                     for (Mole mole : game.moleList) {
                         if (e.getEntity() == mole.mole) {
                             mole.index = 40;
-                            game.Score++;
+                            game.Score = game.Score + game.pointsPerKill;
                             break gameloop;
                         }
                     }

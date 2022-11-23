@@ -16,12 +16,15 @@ public final class Config {
     private static Config Instance;
     public YMLFile configFile;
     public String PREFIX;
+    public String CURRENCY;
+    public String SYMBOL;
     public String ACTIONTEXT;
     public String HAMMERNAME;
     public List<?> MOLEBLOCK;
     public List<?> SUBBLOCK;
     public String NO_PERM;
     public String PERM_ALL;
+    public String PERM_RELOAD;
     public String PERM_CREATE;
     public String PERM_REMOVE;
     public String PERM_SETTINGS;
@@ -30,7 +33,10 @@ public final class Config {
     private Config(Plugin main) {
         if(!new File("./plugins/WhackaMole/config.yml").exists())
             main.saveResource("config.yml", false);
-        
+        if (!gamesData.exists()) {
+            gamesData.mkdirs();
+        }
+
         this.configFile = new YMLFile("./plugins/WhackaMole/config.yml");
         this.setup();
     }
@@ -38,12 +44,15 @@ public final class Config {
 
     public void setup() {
         this.PREFIX         = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
+        this.CURRENCY       = this.configFile.getString("Server Currency");
+        this.SYMBOL         = this.configFile.getString("Currency Symbol");
         this.MOLEBLOCK      = this.configFile.getList("Blocklist");
         this.SUBBLOCK       = this.configFile.getList("Sub-List");
         this.ACTIONTEXT     = this.configFile.getString("Actionbar Message");
         this.HAMMERNAME     = Config.color(this.configFile.getString("Hammer Name"));
         this.NO_PERM        = this.PREFIX + Config.color(this.configFile.getString("No Permission"));
         this.PERM_ALL       = "WAM." + this.configFile.getString("Every permission");
+        this.PERM_RELOAD    = "WAM." + this.configFile.getString("Commands.Reload");
         this.PERM_CREATE    = "WAM." + this.configFile.getString("Commands.Create");
         this.PERM_REMOVE    = "WAM." + this.configFile.getString("Commands.Remove");
         this.PERM_SETTINGS  = "WAM." + this.configFile.getString("Commands.Settings");

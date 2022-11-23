@@ -8,7 +8,6 @@ import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.LongArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -58,7 +57,8 @@ public final class Main extends JavaPlugin {
                             }
                             if (game != null) {
                                     this.gameManager.removeGame(game);
-                            } else {throw CommandAPI.fail(this.config.PREFIX + "Please stand on the game Grid you wish to remove");
+//                                    GameHandler.Stop();
+                            } else {throw CommandAPI.fail(this.config.PREFIX + "Please stand on the game game you wish to remove");
                             }
                         })
                 )
@@ -113,6 +113,12 @@ public final class Main extends JavaPlugin {
                             this.gameManager.toggleArmorStands();
                         })
                 )
+                .withSubcommand(new CommandAPICommand("reload")
+                        .withPermission(this.config.PERM_RELOAD)
+                        .executes((sender, args) ->{
+
+                        })
+                )
                 .register();
     }
 
@@ -122,18 +128,12 @@ public final class Main extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(this.gameManager, this);
         CommandAPI.onEnable(this);
         if (!econ.setupEconomy(this)) {
-            logger.error(String.format("Disabled due to lack of Vault dependency!", this.getDescription().getName()));
-            this.getServer().getPluginManager().disablePlugin(this);
-            CommandAPI.unregister("WhackaMole", true);
-            CommandAPI.unregister("WAM", true);
-            CommandAPI.unregister("Whack", true);
-        } else {
-            this.logger.success("Done! V" + getDescription().getVersion());
+            logger.warning(String.format("Disabled due to lack of Vault dependency! (missing Economy plugin)", this.getDescription().getName()));
         }
+        this.logger.success("Done! V" + getDescription().getVersion());
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
     }
 }

@@ -18,6 +18,13 @@ Version: ${project.version}
 # <------------------------------------------------------> #
 ############################################################
 
+
+#The name of your server currency:
+Server Currency: "Dollar(s)"
+
+#Symbol of server currency:
+Currency Symbol: '$'
+
 #The list of blocks the game can spawn on (generally what the surface blocks will be of the game, the visible layer of the game)
 Blocklist:
   - SMOKER
@@ -59,6 +66,7 @@ Hammer Name: "&0&l[&6&lWAM&0&l] &x&2&8&c&0&0&0&lS&x&2&f&c&a&0&0&lM&x&3&7&d&5&0&0
 Every permission: "*"
 
 Commands:
+  Reload: "Reload"
   Create: "create"
   Remove: "Remove"
   Play: "Play"

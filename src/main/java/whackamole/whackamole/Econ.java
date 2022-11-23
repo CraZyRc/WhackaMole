@@ -19,16 +19,13 @@ public class Econ {
 
     public boolean setupEconomy(Main plugin) {
         if (plugin.getServer().getPluginManager().getPlugin("Vault") == null) {
-            logger.error("vault not found");
             return false;
         } else {
             RegisteredServiceProvider<Economy> rsp = plugin.getServer().getServicesManager().getRegistration(Economy.class);
             if (rsp == null) {
-                logger.error("something rsp");
                 return false;
             } else {
-                logger.info("successfull?");
-                econ = (Economy)rsp.getProvider();
+                econ = rsp.getProvider();
                 return econ != null;
             }
         }
