@@ -36,11 +36,15 @@ import java.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 >>>>>>> 0d00087 (Commands:)
+=======
+import org.bukkit.Sound;
+>>>>>>> 3ca9180 (STABLE v1.2 :)
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -298,6 +302,7 @@ public final class GamesManager implements Listener {
                     e.setCancelled(true);
                 } else if (game.hasCooldown(player.getUniqueId())) {
                     game.removeCooldown(player.getUniqueId());
+                    player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
                     e.getPlayer().sendMessage(this.config.PREFIX + ChatColor.AQUA + "Cooldown successfully removed !");
                     e.setUseItemInHand(Event.Result.DENY);
                     player.getInventory().removeItem(ticket);

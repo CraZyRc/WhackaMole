@@ -452,6 +452,7 @@ public class Game {
             this.Score = this.Score + (this.pointsPerKill*3);
         }
         this.gamePlayer.playSound(e.getDamager().getLocation(), this.config.HITSOUND, 1, 1);
+        player.spawnParticle(Particle.COMPOSTER, mole.mole.getLocation().add(0, 1.75, 0), 10, 0.1, 0.1, 0.1, 0);
         this.difficultyPoints++;
         if (Game.this.difficultyPoints == Game.this.difficultyScore) setSpeedScale();
         mole.state = MoleState.Hit;

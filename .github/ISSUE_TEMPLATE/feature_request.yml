@@ -1,0 +1,64 @@
+name: Feature Request
+description: Suggest new ideas/improvements.
+
+body:
+  - type: 'markdown'
+    attributes:
+      value: |-
+        ## IMPORTANT
+        Please try and answer the required fields as accurate as possible.
+        The required fields are the ones marked with a *
+        **Not following the issue form will get it closed automatically!**
+        
+        ----
+        
+        ### 1. Confirmation checks
+        Make sure you've done the following checks before submitting a feature request.
+  - type: 'checkboxes'
+    attributes:
+      label: 'I confirm that I have ...'
+      description: 'Click the checkboxes to "check" them. Make sure you actually did what they mention.'
+      options:
+        - label: '...tried the latest build to make sure my feature doesn''t exist already.'
+          required: true
+        - label: '...checked the realism of my feature and i think it can be executed.'
+          required: true
+        - label: '...checked other existing issues for my feature request.'
+          required: true
+  - type: 'markdown'
+    attributes:
+      value: |-
+        ----
+        
+        ### 2. Explanation and Code
+        Give a detailed description of why it is useful, how it could be executed and possibly some code example.
+  - type: 'textarea'
+    attributes:
+      label: 'Description'
+      description: |-
+        Describe your new feature as detailed as possible and try to answer the following question with it:
+        
+        1. Why should it be added?
+        2. What are the benefits for others?
+        3. How should this feature work?
+        4. Are there existing alternatives (plugins) that can achieve this idea?
+      placeholder: 'WhackaMole should have ... to allow ...'
+    validations:
+      required: true
+  - type: 'textarea'
+    attributes:
+      label: 'Code Example'
+      description: |-
+        Feel free to share possible code-examples on how this feature may be implemented. This is completely optional.
+        The text field will automatically render the provided text as Java Code.
+        
+        Leave blank if you don't have an example.
+      placeholder: |-
+        public void newAwesomeFeature() {
+            System.out.println("Awesome!");
+        }
+      render: java
+  - type: 'textarea'
+    attributes:
+      description: |-
+        Yes this has been utterly stolen from the [Citizens2](https://github.com/CitizensDev/Citizens2/blob/master/.github/ISSUE_TEMPLATE/feature_request.yml) repository

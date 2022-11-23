@@ -1,0 +1,75 @@
+name: Bug Report
+description: Use this form to report a bug with Citizens.
+
+body:
+  - type: 'markdown'
+    attributes:
+      value: |-
+        ## IMPORTANT
+        Please try and answer the required fields as accurate as possible.
+        The required fields are the ones marked with a *
+        **Not following the issue form will get it closed automatically!**
+        
+        ----
+        
+        ### 1. Version
+        Include the outputs of `/version` and `/version Citizens` in the respective fields.
+  - type: 'textarea'
+    attributes:
+      description: 'Include the **complete** output of the `/version` command here.'
+      placeholder: 'This server is running ...'
+      render: txt
+    validations:
+      required: true
+  - type: 'textarea'
+    attributes:
+      description: 'Include the **complete** output of the `/version WhackaMole` command here.'
+      placeholder: 'WhackaMole Version ...'
+      render: txt
+    validations:
+      required: true
+  - type: 'markdown'
+    attributes:
+      value: |-
+        ----
+        
+        ### 2. Log and Configuration files
+        Provide your server's latest log file, the configuration file (`config.yml`) and the `<Gamename>.yml` file of The game that gave the error.
+        If the error wasn't produced by a specific game then you can leave this empty.
+        Paste your log/config/gamefile each in a seperate https://pastebin.com and paste the link in the fields below
+  - type: 'input'
+    attributes:
+      label: 'Log file'
+      description: 'the error log'
+      placeholder: 'https://pastebin.com/...'
+    validations:
+      required: true
+  - type: 'input'
+    attributes:
+      label: 'config.yml'
+      description: 'your config file'
+      placeholder: 'https://pastebin.com/...'
+    validations:
+      required: true
+  - type: 'input'
+    attributes:
+      label: '<Gamename>.yml'
+      description: 'the gamefile, this is not needed if the error did not come from messing with a game'
+      placeholder: 'https://pastebin.com...'
+    validations:
+      required: false
+  - type: 'markdown'
+    attributes:
+      value: |-
+        ----
+        
+        ### 3. Details
+        Please describe what happened before the error came up.
+        Be as detailed as possible, otherwise it can be very difficult to find the source of the problem.
+        This part is possibly the most important so please be as specific as possible.
+  - type: 'textarea'
+    attributes:
+      label: 'Description'
+      placeholder: 'When i did... this happened... which resulted in...'
+    validations:
+      required: true
