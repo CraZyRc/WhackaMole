@@ -33,12 +33,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 >>>>>>> de8c408 (Grid:)
 
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.*;
-import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -65,11 +61,14 @@ public final class GamesManager implements Listener {
 
     public void loadGames() {
         File GamesFolder = this.config.gamesData;
+
         this.logger.info("Loading Games...");
+        
         if (GamesFolder.list().length == 0) {
             this.logger.warning("...No games found");
             return;
         }
+
         for (File i : GamesFolder.listFiles()) {
             try {
                 this.addGame(i);
@@ -80,9 +79,19 @@ public final class GamesManager implements Listener {
         }
     }
 
+    private boolean gameExists(String name) {
+        this.logger.info(name);
+        for (Game game : games) {
+            if (game.name.toLowerCase().equals(name.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void addGame(Game game) throws Exception {
-        if (this.nameExists(game.gameName)) {
-            throw new Exception("Grid with name %s already exists!".formatted(game.gameName));
+        if (this.gameExists(game.name)) {
+            throw new Exception("Grid with name %s already exists!".formatted(game.name));
         }
         this.games.add(game);
     }
@@ -102,28 +111,17 @@ public final class GamesManager implements Listener {
     }
 >>>>>>> 461f3dd (updated: addGame method)
     public void addGame(String gameName, Grid grid) throws Exception {
-        if (this.nameExists(gameName)) {
+        if (this.gameExists(gameName)) {
             throw new Exception("Grid with name %s already exists!".formatted(ChatColor.YELLOW + gameName + ChatColor.WHITE));
         }
         this.games.add(new Game(gameName, grid));
     }
 
     public void removeGame(Game game) {
+        this.logger.info(game.name + " ...Successfully removed!");
         this.games.remove(game);
-        game.deleteSave();
-        this.logger.info(game + " ...Successfully removed!");
     }
 
-    public boolean nameExists(String name) {
-        this.logger.info(name);
-        for (Game game : games) {
-            this.logger.info(game.gameName);
-            if (game.gameName.equals(name)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     public Game getOnGrid(Player player) {
         for (Game game : games) {
@@ -134,11 +132,32 @@ public final class GamesManager implements Listener {
         return null;
     }
 
+    public void toggleArmorStands() {
+        for (Game game : games) {
+            game.toggleArmorStands();
+        }
+    }
 
+    int runnableTickCounter = 0;
+    Runnable Tick = new Runnable() {
+        @Override
+        public void run() {
+            for (Game game : GamesManager.this.games) {
+                game.moleUpdater();
+            }
+
+            if (GamesManager.this.runnableTickCounter >= 20) {
+                GamesManager.this.runnableTickCounter = 0;
+                for (Game game : GamesManager.this.games) {
+                    game.displayActionBar();
+                }
+            }
+            GamesManager.this.runnableTickCounter++;
+        }
+    };
 
     @EventHandler
     public void playerMoveEvent(PlayerMoveEvent event) {
-
         for (Game game : games) {
             if (game.onGrid(event.getPlayer())) {
                 if (!game.hasCooldown(event.getPlayer().getUniqueId())) {
@@ -147,74 +166,21 @@ public final class GamesManager implements Listener {
                 }
             } else if (game.gamePlayer == event.getPlayer()) {
                 game.Stop();
-            break;
+                break;
             }
         }
     }
-
-    int runnableTickCounter = 0;
-    Runnable Tick = new Runnable() {
-        @Override
-        public void run() {
-            for (Game game : games) {
-                for (int i = game.moleList.size() -1; i >= 0 ; i--) {
-                    Mole mole = game.moleList.get(i);
-                    if (!(mole.Update())) {
-                        game.moleList.remove(i);
-                    }
-                }
-            }
-            if (runnableTickCounter >= 20) {
-                runnableTickCounter = 0;
-                for (Game game : games) {
-                    if (game.Running) {
-                        BaseComponent[] actionMessage = new ComponentBuilder().append(ComponentSerializer.parse(config.ACTIONTEXT)).append((Config.color("&2&l ") + game.Score)).create();
-                        game.gamePlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, actionMessage);
-                    }
-                    for (Map.Entry<UUID, Long> cooldownPlayer : game.cooldown.entrySet()) {
-                        if (!game.hasCooldown(cooldownPlayer.getKey())) {
-                            game.removeCooldown(cooldownPlayer.getKey());
-                        }else if (game.cooldownSendList.contains(cooldownPlayer.getKey()) && game.gameLost) {
-                            BaseComponent[] resetMessage = new ComponentBuilder().append(Config.color("&l" + game.moleMissed + " moles missed: &4&lGAME OVER&f&l, please buy a new ticket or wait. Time left: &a&l") + game.formatCooldown(cooldownPlayer.getValue())).create();
-                            Bukkit.getPlayer(cooldownPlayer.getKey()).spigot().sendMessage(ChatMessageType.ACTION_BAR, resetMessage);
-                        } else if (game.cooldownSendList.contains(cooldownPlayer.getKey()) && !game.gameLost) {
-                            BaseComponent[] resetMessage = new ComponentBuilder().append(Config.color("&4&lGAME OVER !&f&l please buy a new ticket or wait. Time left: &a&l") + game.formatCooldown(cooldownPlayer.getValue())).create();
-                            Bukkit.getPlayer(cooldownPlayer.getKey()).spigot().sendMessage(ChatMessageType.ACTION_BAR, resetMessage);
-                        }
-                    }
-                }
-            }
-            runnableTickCounter++;
-
-        }
-    };
-
-
 
     @EventHandler
     public void onHit(EntityDamageByEntityEvent e) {
         if (e.getDamager().getType() == EntityType.PLAYER) {
-            gameloop:
             for (Game game : this.games) {
-                if (e.getDamager() == game.gamePlayer && game.gamePlayer.getInventory().getItemInMainHand().equals(Game.axe)) {
-                    for (Mole mole : game.moleList) {
-                        if (e.getEntity() == mole.mole) {
-                            mole.hit = true;
-                            game.gamePlayer.playSound(game.gamePlayer, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
-                            game.Score = game.Score + game.pointsPerKill;
-                            break gameloop;
-                        }
-                    }
-
+                if(game.handleHitEvent((Player) e.getDamager(), e.getEntity())) {
+                    e.setDamage(0);
+                    e.setCancelled(true);
+                    break;
                 }
             }
-        }
-    }
-
-
-    public void toggleArmorStands() {
-        for (Game game : games) {
-            game.toggleArmorStands();
         }
     }
 }

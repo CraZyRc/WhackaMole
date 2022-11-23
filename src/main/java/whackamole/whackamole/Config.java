@@ -3,7 +3,21 @@ package whackamole.whackamole;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
+
+// import net.minecraft.world.level.material.Material;
+
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import org.bukkit.inventory.meta.SkullMeta;
+import java.lang.reflect.Field;
+import org.bukkit.*;
+import java.util.*;
+import org.bukkit.enchantments.Enchantment;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,7 +45,12 @@ public final class Config {
     public String PERM_SETTINGS;
     public String ECONOMY;
     public String OBJECTIVE;
+    public Double FiELD_MARGIN_X;
+    public Double FiELD_MARGIN_Y;
     public File gamesData = new File("./plugins/WhackaMole/Games/");
+
+    public ItemStack PLAYER_AXE; 
+    public ItemStack MOLE_SKULL; 
 
     private Config(Plugin main) {
         if(!new File("./plugins/WhackaMole/config.yml").exists())
@@ -42,6 +61,7 @@ public final class Config {
 
         this.configFile = new YMLFile("./plugins/WhackaMole/config.yml");
         this.setup();
+        this.loadNBTData();
     }
     private Config() {}
 
@@ -62,6 +82,9 @@ public final class Config {
         this.PERM_CREATE    = "WAM." + this.configFile.getString("Commands.Create");
         this.PERM_REMOVE    = "WAM." + this.configFile.getString("Commands.Remove");
         this.PERM_SETTINGS  = "WAM." + this.configFile.getString("Commands.Settings");
+
+        this.FiELD_MARGIN_X = this.configFile.getDouble("Field.Margin.X");
+        this.FiELD_MARGIN_Y = this.configFile.getDouble("Field.Margin.Y");
     }
 
     public static String color(String message) {
@@ -82,6 +105,42 @@ public final class Config {
         }
         return ChatColor.translateAlternateColorCodes('&', message);
     }
+
+    
+    private void loadNBTData() {
+        ItemStack axe = new ItemStack(Material.GOLDEN_AXE);
+        ItemMeta axeMeta = axe.getItemMeta();
+        ((Damageable) axeMeta).setDamage(31);
+        axeMeta.setUnbreakable(true);
+        axeMeta.addEnchant(Enchantment.LURE, 1, true);
+        axeMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
+        axeMeta.setDisplayName(this.HAMMERNAME);
+        axe.setItemMeta(axeMeta);
+
+        this.PLAYER_AXE = axe;
+        this.MOLE_SKULL = this.getSkull(
+            "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxMjUwM2Q2MWM0OWY3MDFmZWU4NjdkNzkzZjFkY2M1MjJlNGQ3YzVjNDFhNjhmMjk1MTU3OWYyNGU3Y2IyYSJ9fX0=");
+    }
+
+    private ItemStack getSkull(String url) {
+        ItemStack moleHead = new ItemStack(Material.PLAYER_HEAD);
+        if (url.isEmpty())
+            return moleHead;
+        SkullMeta moleMeta = (SkullMeta) moleHead.getItemMeta();
+        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+
+        profile.getProperties().put("textures", new Property("textures", url));
+        try {
+            Field profileField = moleMeta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            profileField.set(moleMeta, profile);
+        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        moleHead.setItemMeta(moleMeta);
+        return moleHead;
+    }
+
 
     public static Config getInstance(Plugin main) {
         if (Config.Instance == null) {
@@ -134,6 +193,9 @@ class YMLFile {
     }
     public Integer getInt(String path) {
         return this.FileConfig.getInt(path);
+    }
+    public Double getDouble(String path) {
+        return this.FileConfig.getDouble(path);
     }
     public Long getLong(String path) {
         return this.FileConfig.getLong(path);
