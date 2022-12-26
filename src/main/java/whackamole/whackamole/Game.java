@@ -306,35 +306,36 @@ public class Game {
     }
 
     public void saveGame() {
-        this.gameConfig.FileConfig.options().setHeader(Arrays.asList(
-                "###########################################################",
-                " ^------------------------------------------------------^ #",
-                " |                       GameFile                       | #",
-                " <------------------------------------------------------> #",
-                "###########################################################",
-                " " + this.translator.GAME_CONFIG_FIRSTNOTE,
-                " " + this.translator.GAME_CONFIG_SECONDNOTE,
-                " " + this.translator.GAME_CONFIG_THIRDNOTE,
-                "",
-                "",
-                "###########################################################",
-                " ^------------------------------------------------------^ #",
-                " |                      Explanation                     | #",
-                " <------------------------------------------------------> #",
-                "###########################################################",
-                " " + this.translator.GAME_CONFIG_NAME,
-                " " + this.translator.GAME_CONFIG_DIRECTION,
-                " " + this.translator.GAME_CONFIG_JACKPOT,
-                " " + this.translator.GAME_CONFIG_JACKPOTSPAWN,
-                " " + this.translator.GAME_CONFIG_GAMELOST,
-                " " + this.translator.GAME_CONFIG_POINTSPERKILL,
-                " " + this.translator.GAME_CONFIG_SPAWNRATE,
-                " " + this.translator.GAME_CONFIG_SPAWNCHANCE,
-                " " + this.translator.GAME_CONFIG_MOLESPEED,
-                " " + this.translator.GAME_CONFIG_DIFFICULTYSCALE,
-                " " + this.translator.GAME_CONFIG_DIFFICULTYINCREASE,
-                " " + this.translator.GAME_CONFIG_COOLDOWN,
-                " " + this.translator.GAME_CONFIG_ENDMESSAGE));
+        this.gameConfig.FileConfig.options().header(
+                "###########################################################"+
+                "\n ^------------------------------------------------------^ #"+
+                "\n |                       GameFile                       | #"+
+                "\n <------------------------------------------------------> #"+
+                "\n###########################################################"+
+                "\n " + this.translator.GAME_CONFIG_FIRSTNOTE+
+                "\n " + this.translator.GAME_CONFIG_SECONDNOTE+
+                "\n " + this.translator.GAME_CONFIG_THIRDNOTE+
+                "\n"+
+                "\n"+
+                "\n###########################################################"+
+                "\n ^------------------------------------------------------^ #"+
+                "\n |                      Explanation                     | #"+
+                "\n <------------------------------------------------------> #"+
+                "\n###########################################################"+
+                "\n " + this.translator.GAME_CONFIG_NAME+
+                "\n " + this.translator.GAME_CONFIG_DIRECTION+
+                "\n " + this.translator.GAME_CONFIG_JACKPOT+
+                "\n " + this.translator.GAME_CONFIG_JACKPOTSPAWN+
+                "\n " + this.translator.GAME_CONFIG_GAMELOST+
+                "\n " + this.translator.GAME_CONFIG_POINTSPERKILL+
+                "\n " + this.translator.GAME_CONFIG_SPAWNRATE+
+                "\n " + this.translator.GAME_CONFIG_SPAWNCHANCE+
+                "\n " + this.translator.GAME_CONFIG_MOLESPEED+
+                "\n " + this.translator.GAME_CONFIG_DIFFICULTYSCALE+
+                "\n " + this.translator.GAME_CONFIG_DIFFICULTYINCREASE+
+                "\n " + this.translator.GAME_CONFIG_COOLDOWN+
+                "\n " + this.translator.GAME_CONFIG_ENDMESSAGE+
+                "\n ");
         this.gameConfig.set("Properties.Name", this.name);
         this.gameConfig.set("Properties.Direction", this.spawnRotation.name());
         this.gameConfig.set("Properties.Jackpot", this.Jackpot);
