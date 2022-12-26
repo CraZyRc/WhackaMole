@@ -4,11 +4,7 @@ import java.util.EnumSet;
 
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-<<<<<<< HEAD
-import org.checkerframework.checker.signedness.qual.Unsigned;
-=======
 import org.bukkit.inventory.EquipmentSlot;
->>>>>>> 0f64a75 (SNAPSHOT -V1 :)
 
 
 public class Mole {

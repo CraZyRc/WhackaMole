@@ -12,13 +12,13 @@ import org.bukkit.plugin.Plugin;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import org.bukkit.inventory.meta.SkullMeta;
+
+import java.io.*;
 import java.lang.reflect.Field;
 import org.bukkit.*;
 import java.util.*;
 import org.bukkit.enchantments.Enchantment;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,7 +27,10 @@ public final class Config {
 
     private static Config Instance;
     private static Logger logger = Logger.getInstance();
-    private String configVersion;
+    private Translator translator;
+    public String language;
+    public String configVersion;
+    public String newConfigVersion = "1.1";
     public YMLFile configFile;
     public String PREFIX;
     public String CURRENCY_SING;
@@ -56,49 +59,32 @@ public final class Config {
 
     public ItemStack PLAYER_AXE; 
     public ItemStack MOLE_SKULL; 
-<<<<<<< HEAD
-=======
     public ItemStack JACKPOT_SKULL;
     public ItemStack TICKET;
->>>>>>> 2f10a80 (Beta release:)
 
     private Config(Plugin main) {
         if (!new File("./plugins/WhackaMole/config.yml").exists()) main.saveResource("config.yml", false);
         if (!gamesData.exists()) gamesData.mkdirs();
         this.configFile = new YMLFile("./plugins/WhackaMole/config.yml");
         this.setup();
-        this.loadNBTData();
-        if (!this.configVersion.equals(main.getDescription().getVersion())) {
-            this.logger.warning("Running old config, please update the config, config version: " + this.configVersion + " | new version: " + main.getDescription().getVersion());
-        }
+
+
     }
     private Config() {}
 
+    public void onEnable() {
+        this.translator = Translator.getInstance();
+        this.translator.configLoad(this.language);
+        this.loadNBTData();
+        if (!this.configVersion.equals(newConfigVersion)) {
+            this.logger.warning(this.translator.Format(this.translator.CONFIG_OLDVERSION));
+        }
+    }
 
     public void setup() {
-<<<<<<< HEAD
-        this.PREFIX         = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
-        this.ECONOMY        = this.configFile.getString("Economy");
-        this.OBJECTIVE      = this.configFile.getString("Scoreboard Objective");
-        this.CURRENCY       = this.configFile.getString("Server Currency");
-        this.SYMBOL         = this.configFile.getString("Currency Symbol");
-        this.TICKETPRICE    = this.configFile.getInt("Ticket Price");
-        this.MOLEBLOCK      = this.configFile.getList("Blocklist");
-        this.SUBBLOCK       = this.configFile.getList("Sub-List");
-        this.ACTIONTEXT     = this.configFile.getString("Actionbar Message");
-        this.HAMMERNAME     = Config.color(this.configFile.getString("Hammer Name"));
-        this.NO_PERM        = this.PREFIX + Config.color(this.configFile.getString("No Permission"));
-        this.PERM_ALL       = "WAM." + this.configFile.getString("Every Permission");
-        this.PERM_RELOAD    = "WAM." + this.configFile.getString("Commands.Reload");
-        this.PERM_CREATE    = "WAM." + this.configFile.getString("Commands.Create");
-        this.PERM_REMOVE    = "WAM." + this.configFile.getString("Commands.Remove");
-        this.PERM_SETTINGS  = "WAM." + this.configFile.getString("Commands.Settings");
-
-        this.FiELD_MARGIN_X = this.configFile.getDouble("Field.Margin.X");
-        this.FiELD_MARGIN_Y = this.configFile.getDouble("Field.Margin.Y");
-=======
         this.PREFIX             = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
-        this.configVersion      = this.configFile.getString("Version");
+        this.language           = this.configFile.getString("Language");
+        this.configVersion      = this.configFile.getString("Config Version");
         this.ECONOMY            = this.configFile.getString("Economy");
         this.OBJECTIVE          = this.configFile.getString("Scoreboard Objective");
         this.CURRENCY_SING      = this.configFile.getString("Singular Currency");
@@ -118,14 +104,10 @@ public final class Config {
         this.PERM_REMOVE        = "WAM." + this.configFile.getString("Commands.Remove");
         this.PERM_PLAY          = "WAM." + this.configFile.getString("Commands.Play");
         this.PERM_SETTINGS      = "WAM." + this.configFile.getString("Commands.Settings");
-<<<<<<< HEAD
->>>>>>> 0d00087 (Commands:)
-=======
 
         this.FIELD_MAX_SIZE     = this.configFile.getInt("Max playfield");
         this.FiELD_MARGIN_X     = this.configFile.getDouble("Field extension.width");
         this.FiELD_MARGIN_Y     = this.configFile.getDouble("Field extension.height");
->>>>>>> 0f64a75 (SNAPSHOT -V1 :)
     }
 
     public static String color(String message) {
@@ -147,50 +129,6 @@ public final class Config {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 
-    
-    private void loadNBTData() {
-        ItemStack axe = new ItemStack(Material.GOLDEN_AXE);
-        ItemMeta axeMeta = axe.getItemMeta();
-        ((Damageable) axeMeta).setDamage(31);
-        axeMeta.setUnbreakable(true);
-        axeMeta.addEnchant(Enchantment.LURE, 1, true);
-        axeMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
-        axeMeta.setDisplayName(this.HAMMERNAME);
-        axe.setItemMeta(axeMeta);
-
-        this.PLAYER_AXE = axe;
-        this.MOLE_SKULL = this.getSkull(
-<<<<<<< HEAD
-            "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxMjUwM2Q2MWM0OWY3MDFmZWU4NjdkNzkzZjFkY2M1MjJlNGQ3YzVjNDFhNjhmMjk1MTU3OWYyNGU3Y2IyYSJ9fX0=");
-=======
-                "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxMjUwM2Q2MWM0OWY3MDFmZWU4NjdkNzkzZjFkY2M1MjJlNGQ3YzVjNDFhNjhmMjk1MTU3OWYyNGU3Y2IyYSJ9fX0=");
-        this.JACKPOT_SKULL = this.getSkull(
-                "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlkZGZiMDNjOGY3Zjc4MDA5YjgzNDRiNzgzMGY0YTg0MThmYTRiYzBlYjMzN2EzMzA1OGFiYjdhMDVlOTNlMSJ9fX0=");
-
-
->>>>>>> 2f10a80 (Beta release:)
-    }
-
-    private ItemStack getSkull(String url) {
-        ItemStack moleHead = new ItemStack(Material.PLAYER_HEAD);
-        if (url.isEmpty())
-            return moleHead;
-        SkullMeta moleMeta = (SkullMeta) moleHead.getItemMeta();
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-
-        profile.getProperties().put("textures", new Property("textures", url));
-        try {
-            Field profileField = moleMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(moleMeta, profile);
-        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        moleHead.setItemMeta(moleMeta);
-        return moleHead;
-    }
-
-
     public static Config getInstance(Plugin main) {
         if (Config.Instance == null) {
             Config.Instance = new Config(main);
@@ -211,15 +149,70 @@ public final class Config {
         Config.Instance = null;
         return Config.getInstance(main);
     }
+
+    private void loadNBTData() {
+        ItemStack axe = new ItemStack(Material.GOLDEN_AXE);
+        ItemMeta axeMeta = axe.getItemMeta();
+        ((Damageable) axeMeta).setDamage(31);
+        axeMeta.setUnbreakable(true);
+        axeMeta.addEnchant(Enchantment.LURE, 1, true);
+        axeMeta.addItemFlags(
+                ItemFlag.HIDE_ATTRIBUTES,
+                ItemFlag.HIDE_ENCHANTS,
+                ItemFlag.HIDE_UNBREAKABLE);
+        axeMeta.setDisplayName(this.HAMMERNAME);
+        axe.setItemMeta(axeMeta);
+
+        ItemStack ticket = new ItemStack(Material.MAP);
+        ItemMeta ticketInfo = ticket.getItemMeta();
+        ticketInfo.addEnchant(Enchantment.LURE, 1, true);
+        ticketInfo.setDisplayName(Config.color(this.translator.CONFIG_TICKET_NAME));
+        ticketInfo.setLore(
+                Arrays.asList(
+                        Config.color(this.translator.CONFIG_TICKET_LORE1),
+                        Config.color(this.translator.CONFIG_TICKET_LORE2),
+                        Config.color(this.translator.CONFIG_TICKET_LORE3)));
+        ticketInfo.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
+        ticket.setItemMeta(ticketInfo);
+
+        this.PLAYER_AXE = axe;
+        this.TICKET = ticket;
+        this.MOLE_SKULL = this.getSkull(
+                "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxMjUwM2Q2MWM0OWY3MDFmZWU4NjdkNzkzZjFkY2M1MjJlNGQ3YzVjNDFhNjhmMjk1MTU3OWYyNGU3Y2IyYSJ9fX0=");
+        this.JACKPOT_SKULL = this.getSkull(
+                "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlkZGZiMDNjOGY3Zjc4MDA5YjgzNDRiNzgzMGY0YTg0MThmYTRiYzBlYjMzN2EzMzA1OGFiYjdhMDVlOTNlMSJ9fX0=");
+
+
+    }
+
+    private ItemStack getSkull(String url) {
+        ItemStack moleHead = new ItemStack(Material.PLAYER_HEAD);
+        if (url.isEmpty())
+            return moleHead;
+        SkullMeta moleMeta = (SkullMeta) moleHead.getItemMeta();
+        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+
+        profile.getProperties().put("textures", new Property("textures", url));
+        try {
+            Field profileField = moleMeta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            profileField.set(moleMeta, profile);
+        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        moleHead.setItemMeta(moleMeta);
+        return moleHead;
+    }
 }
 
 class YMLFile {
     public FileConfiguration FileConfig = new YamlConfiguration();
     public File file;
     private final Logger logger = Logger.getInstance();
+    private Translator translator = Translator.getInstance();
 
     public YMLFile(File folder, String child) throws FileNotFoundException {
-        if (!folder.isDirectory()) throw new FileNotFoundException("Did not pass a Folder file: %s".formatted(folder.getName()));
+        if (!folder.isDirectory()) throw new FileNotFoundException(this.translator.Format(this.translator.YML_NOTFOUNDEXCEPTION, folder));
         this.file = new File(folder, child);
         this.load();
     }
@@ -258,7 +251,7 @@ class YMLFile {
     public void save() {
         try {
             this.FileConfig.save(this.file);
-            this.logger.success("Saved File: %s".formatted(this.file.getName()));
+            this.logger.success(this.translator.Format(this.translator.YML_SAVEDFILE, this.file));
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -273,9 +266,8 @@ class YMLFile {
     }
     public void remove() {
         try {
-            String fileName = this.file.getName();
             this.file.delete();
-            this.logger.success("deleted file: %s".formatted(fileName));
+            this.logger.success(this.translator.Format(this.translator.YML_DELETEDFILE, this.file));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -283,12 +275,12 @@ class YMLFile {
     
     public void createFile() {
         try {
-            this.logger.success("Creating Folder/file: %s".formatted(this.file.getName()));
+            this.logger.success(this.translator.Format(this.translator.YML_CREATEFILE, this.file));
             if (this.file.getParentFile().mkdirs()) {
                 this.load();
             }
         } catch (Exception e) {
-            this.logger.error("Failed to create Folder/File: %s".formatted(this.file.getName()));
+            this.logger.error(this.translator.Format(this.translator.YML_CREATEFAIL, this.file));
             e.printStackTrace();
         }
     }

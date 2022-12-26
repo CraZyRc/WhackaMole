@@ -11,13 +11,15 @@ import java.util.Objects;
 
 public class Econ {
     private Logger logger = Logger.getInstance();
-    private static Econ Instance;
     private Config config = Config.getInstance();
-    private Objective Objective;
-    
-    public Economy econ = null;
-    public Currency currencyType = Currency.NULL;
+    private Translator translator = Translator.getInstance();
 
+    private static Econ Instance;
+    
+    private Objective Objective;
+    public Economy econ = null;
+    
+    public Currency currencyType = Currency.NULL;
     enum Currency {
         NULL,
         SCOREBOARD,
@@ -28,20 +30,21 @@ public class Econ {
         try {
             this.currencyType = Currency.valueOf(this.config.ECONOMY);
         } catch (IllegalArgumentException e) {
-            this.logger.error("Invalid economy set in config");
+            this.logger.error(this.translator.ECON_INVALIDECONOMY);
         }
         switch (this.currencyType) {
-            case VAULT        ->  {
+            case VAULT ->  {
                 if (!this.setupEconomy(main)) {
-                    this.logger.error("Missing Vault dependency! (missing Economy plugin)");
+                    this.logger.error(this.translator.ECON_INVALIDVAULT);
                 }
             }
             case SCOREBOARD   -> {
                 if (!this.setupScoreboard(this.config.OBJECTIVE)) {
-                    this.logger.error("Invalid objective in Config");
+                    this.logger.error(this.translator.ECON_INVALIDOBJECTIVE);
                     this.currencyType = Currency.NULL;
                 }
             }
+            case NULL -> {}
         }
     }
 
@@ -54,7 +57,7 @@ public class Econ {
 
     public static Econ getInstance() {
         if (Econ.Instance == null) {
-            Logger.getInstance().error("Econ not yet instantiated in Main");
+            Logger.getInstance().error("Econ not yet instantiated in Main (please report this bug to: https://github.com/CraZyRc/WhackaMole/issues");
         }
         return Econ.Instance;
     }
@@ -95,16 +98,11 @@ public class Econ {
         switch (this.currencyType) {
             case VAULT          ->          econ.withdrawPlayer(player, amount);
             case SCOREBOARD     ->          this.remScore(this.getScore(player), amount);
+            case NULL           ->          {}
         }
     }
 
     public void depositPlayer(Player player, double amount) {
-<<<<<<< HEAD
-        switch (this.currencyType) {
-            case VAULT          ->          econ.depositPlayer(player, amount);
-            case SCOREBOARD     ->          this.addScore(this.getScore(player), amount);
-        }
-=======
         try {
             switch (this.currencyType) {
                 case VAULT          ->          econ.depositPlayer(player, amount);
@@ -113,7 +111,6 @@ public class Econ {
             }
         } catch (Exception e) {}
 
->>>>>>> 2f10a80 (Beta release:)
     }
 
     public Score getScore(Player player) {

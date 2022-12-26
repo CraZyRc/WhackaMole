@@ -6,7 +6,6 @@ import dev.jorel.commandapi.IStringTooltip;
 import dev.jorel.commandapi.StringTooltip;
 import dev.jorel.commandapi.arguments.*;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
-import org.bukkit.ChatColor;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
@@ -16,105 +15,93 @@ import java.util.UUID;
 public class Commands {
     private Logger logger = Logger.getInstance();
     private Config config = Config.getInstance();
+    private final Translator translator = Translator.getInstance();
     private Econ econ;
     public GamesManager manager;
 
-    private Hashtable<UUID, Long> buyTicket = new Hashtable<>();
-    private Hashtable<UUID, Long> removeGame = new Hashtable<>();
+    private final Hashtable<UUID, Long> buyTicket = new Hashtable<>();
+    private final Hashtable<UUID, Long> removeGame = new Hashtable<>();
 
     public Commands(Main main) {
 
-        String gameNameTip      = "The name of this game";
-        String DirectionTip     = "What Direction should the mole face";
-        String jackpotTip       = "Enable/Disable jackpot spawns";
-        String jackpotSpawnTip  = "Spawn chance for a jackpot to spawn";
-        String maxMissedTip     = "How many moles can be missed until game over";
-        String hitpointsTip     = "How many points per successful mole hit";
-        String intervalTip      = "How often in seconds a mole will try to spawn";
-        String spawnChanceTip   = "Spawn chance per spawn rate interval for a mole to spawn";
-        String moleSpeedTip     = "How quickly should the mole be able to move (the lower the quicker)";
-        String diffScaleTip     = "Per how many percent should the game difficulty be increased";
-        String diffIncreaseTip  = "Per how many hits should the game difficulty increase";
+        String gameNameTip      = this.translator.COMMANDS_TIPS_NAME;
+        String DirectionTip     = this.translator.COMMANDS_TIPS_DIRECTION;
+        String jackpotTip       = this.translator.COMMANDS_TIPS_JACKPOT;
+        String jackpotSpawnTip  = this.translator.COMMANDS_TIPS_SPAWNCHANCE;
+        String maxMissedTip     = this.translator.COMMANDS_TIPS_MAXMISSED;
+        String hitpointsTip     = this.translator.COMMANDS_TIPS_HITPOINTS;
+        String intervalTip      = this.translator.COMMANDS_TIPS_INTERVAL;
+        String spawnChanceTip   = this.translator.COMMANDS_TIPS_SPAWNCHANCE;
+        String moleSpeedTip     = this.translator.COMMANDS_TIPS_MOLESPEED;
+        String diffScaleTip     = this.translator.COMMANDS_TIPS_DIFFICULTYSCALE;
+        String diffIncreaseTip  = this.translator.COMMANDS_TIPS_DIFFICULTYINCREASE;
 
 
         new CommandAPICommand("WhackaMole")
                 .withAliases("WAM", "Whack")
-                .withSubcommand(new CommandAPICommand("create")
+                .withSubcommand(new CommandAPICommand(this.translator.COMMANDS_CREATE)
                         .withPermission(this.config.PERM_CREATE)
                         .withArguments(new StringArgument("Game name")
                                 .replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(suggestionInfo -> new IStringTooltip[] {
                                         StringTooltip.of("WhackaGame", gameNameTip),
                                         StringTooltip.of("MOLESTER ", gameNameTip),
                                         StringTooltip.of("Something...Somthing", gameNameTip),
-                                        StringTooltip.of("Name", gameNameTip)
+                                        StringTooltip.of("Moling", gameNameTip)
                                 }))
                         )
                         .executesPlayer((player, args) -> {
                             try {
                                 String gameName = (String) args[0];
                                 this.manager.addGame(gameName, new Grid(player.getWorld(), player), player);
-                                player.sendMessage(this.config.PREFIX + "Game succesfully created, feel free to play around with the settings (" + ChatColor.AQUA + "/wam settings" + ChatColor.WHITE + ")");
+                                player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_CREATE_SUCCESS));
                             } catch (Exception e) {
                                 this.logger.error(e.getMessage());
                                 throw CommandAPI.fail(this.config.PREFIX + e.getMessage());
                             }
                         })
                 )
-                .withSubcommand(new CommandAPICommand("remove")
+                .withSubcommand(new CommandAPICommand(this.translator.COMMANDS_REMOVE)
                         .withPermission(this.config.PERM_REMOVE)
                         .executesPlayer((player, args) -> {
                             if (this.isOnGrid(player)) {
                                 if (this.removeConfirmation(player.getUniqueId())) {
                                     Game game = this.manager.getOnGrid(player);
                                     this.manager.removeGame(game);
-                                    player.sendMessage(this.config.PREFIX + "Game successfully removed !");
+                                    player.sendMessage(this.config.PREFIX + this.translator.COMMANDS_REMOVE_SUCCESS);
                                 } else {
-                                    player.sendMessage(this.config.PREFIX + "Are you sure you wish to delete the game? To confirm, please re-enter: " + ChatColor.AQUA + "/wam remove" + ChatColor.WHITE + ". Confirmation resets after 10s");
+                                    player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_REMOVE_CONFIRM));
                                 }
                             }
                         })
                 )
-                .withSubcommand(new CommandAPICommand("buy")
+                .withSubcommand(new CommandAPICommand(this.translator.COMMANDS_BUY)
                         .withPermission(this.config.PERM_BUY)
                         .executesPlayer((player, args) -> {
-<<<<<<< HEAD
-                            if (econ.has(player, this.config.TICKETPRICE)) {
-                                if (this.buyConfirmation(player.getUniqueId())) {
-<<<<<<< HEAD
-                                    player.getInventory().addItem(manager.ticket);
-                                    econ.withdrawPlayer(player, this.config.TICKETPRICE);
-                                    player.sendMessage(this.config.PREFIX + "Ticket bought! removed " + ChatColor.AQUA + this.config.SYMBOL + this.config.TICKETPRICE + " " + ChatColor.WHITE + this.config.CURRENCY_PLUR);
-=======
-                                    if (player.getInventory().firstEmpty() == -1) {
-                                        player.sendMessage(this.config.PREFIX + "Inventory full, please empty a slot to buy this item");
-=======
                             if (this.econ.currencyType != Econ.Currency.NULL) {
                                 if (this.econ.has(player, this.config.TICKETPRICE)) {
                                     if (this.buyConfirmation(player.getUniqueId())) {
                                         if (player.getInventory().firstEmpty() == -1) {
-                                            player.sendMessage(this.config.PREFIX + "Inventory full, please empty a slot to buy this item");
+                                            player.sendMessage(this.config.PREFIX + this.translator.COMMANDS_BUY_FULLINVENTORY);
                                         } else {
                                             player.getInventory().addItem(this.config.TICKET);
                                             econ.withdrawPlayer(player, this.config.TICKETPRICE);
-                                            player.sendMessage(this.config.PREFIX + "Ticket bought! removed " + ChatColor.AQUA + this.config.SYMBOL + this.config.TICKETPRICE + " " + ChatColor.WHITE + this.config.CURRENCY_PLUR);
+                                            player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_BUY_SUCCESS));
                                         }
->>>>>>> 646e2ae (STABLE v1.1 :)
                                     } else {
-                                        player.sendMessage(this.config.PREFIX + "Reset ticket costs: " + ChatColor.AQUA + this.config.SYMBOL + this.config.TICKETPRICE + " " + ChatColor.WHITE + this.config.CURRENCY_PLUR + ". To confirm, please re-enter: " + ChatColor.AQUA + "/wam buy" + ChatColor.WHITE + ". Offer stands for 10s");
+                                        player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_BUY_CONFIRMATION));
                                     }
->>>>>>> 0f64a75 (SNAPSHOT -V1 :)
                                 } else {
-                                    player.sendMessage(this.config.PREFIX + ChatColor.RED + "Insufficient funds !");
+                                    player.sendMessage(this.config.PREFIX + this.translator.COMMANDS_BUY_LOWECONOMY);
                                 }
                             } else {
-                                player.sendMessage(this.config.PREFIX + ChatColor.DARK_RED + "Economy error, see console");
-                                this.logger.error("Unable to buy ticket due to invalid economy set in config");
+                                player.sendMessage(this.config.PREFIX + this.translator.COMMANDS_BUY_ECONOMYERROR_PLAYER);
+                                this.logger.error(this.translator.COMMANDS_BUY_ECONOMYERROR_CONSOLE);
                             }
                         })
                 )
-                .withSubcommand(new CommandAPICommand("settings")
+                .withSubcommand(new CommandAPICommand(this.translator.COMMANDS_SETTINGS)
                         .withPermission(this.config.PERM_SETTINGS)
-                        .withSubcommand(new CommandAPICommand("direction")
+                        .withSubcommand(new CommandAPICommand(this.translator.COMMANDS_SETTINGS_DIRECTION)
                                 .withArguments(new StringArgument("String")
                                         .replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(suggestionInfo -> new IStringTooltip[] {
                                                 StringTooltip.of("NORTH",       DirectionTip),
@@ -132,11 +119,11 @@ public class Commands {
                                         Game game = this.manager.getOnGrid(player);
                                         game.spawnRotation = BlockFace.valueOf((String) args[0]);
                                         game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + "Successfully changed the spawn direction value to: " + ChatColor.AQUA + args[0]);
+                                        player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_SETTINGS_DIRECTION_SUCCESS, (String) args[0]));
                                     }
                                 })
                         )
-                        .withSubcommand(new CommandAPICommand("jackpot")
+                        .withSubcommand(new CommandAPICommand(this.translator.COMMANDS_SETTINGS_JACKPOT)
                                 .withArguments(new BooleanArgument("true/false")
                                         .replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(suggestionInfo -> new IStringTooltip[] {
                                                 StringTooltip.of("true", jackpotTip),
@@ -148,11 +135,11 @@ public class Commands {
                                         Game game = this.manager.getOnGrid(player);
                                         game.Jackpot = (Boolean) args[0];
                                         game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + "Successfully changed the jackpot value to: " + ChatColor.AQUA + args[0]);
+                                        player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_SETTINGS_JACKPOT_SUCCESS, (String) args[0]));
                                     }
                                 })
                         )
-                        .withSubcommand(new CommandAPICommand("jackpot-spawnchance")
+                        .withSubcommand(new CommandAPICommand(this.translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE)
                                 .withArguments(new IntegerArgument("Integer")
                                         .replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(suggestionInfo -> new IStringTooltip[] {
                                                 StringTooltip.of("1",   jackpotSpawnTip),
@@ -166,11 +153,11 @@ public class Commands {
                                         Game game = this.manager.getOnGrid(player);
                                         game.jackpotSpawn = (int) args[0];
                                         game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + "Successfully changed the jackpot spawn chance value to: " + ChatColor.AQUA + args[0]);
+                                        player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_SUCCESS, (String) args[0]));
                                     }
                                 })
                         )
-                        .withSubcommand(new CommandAPICommand("max-missed")
+                        .withSubcommand(new CommandAPICommand(this.translator.COMMANDS_SETTINGS_MAXMISSED)
                                 .withArguments(new IntegerArgument("Moles missed max")
                                         .replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(suggestionInfo -> new IStringTooltip[] {
                                                 StringTooltip.of("1",   maxMissedTip),
@@ -184,11 +171,11 @@ public class Commands {
                                         Game game = this.manager.getOnGrid(player);
                                         game.maxMissed = (int) args[0];
                                         game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + "Successfully changed the max. moles missed value to: " + ChatColor.AQUA + args[0]);
+                                        player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_SETTINGS_MAXMISSED_SUCCESS, (String) args[0]));
                                     }
                                 })
                         )
-                        .withSubcommand(new CommandAPICommand("score-points")
+                        .withSubcommand(new CommandAPICommand(this.translator.COMMANDS_SETTINGS_SCOREPOINTS)
                                 .withArguments(new IntegerArgument("Number of points")
                                         .replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(suggestionInfo -> new IStringTooltip[] {
                                                 StringTooltip.of("1",   hitpointsTip),
@@ -202,11 +189,11 @@ public class Commands {
                                         Game game = this.manager.getOnGrid(player);
                                         game.pointsPerKill = (Integer) args[0];
                                         game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + "Successfully changed the points earned per kill value to: " + ChatColor.AQUA + args[0]);
+                                        player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_SETTINGS_SCOREPOINTS_SUCCESS, (String) args[0]));
                                     }
                                 })
                         )
-                        .withSubcommand(new CommandAPICommand("spawnrate")
+                        .withSubcommand(new CommandAPICommand(this.translator.COMMANDS_SETTINGS_SPAWNRATE)
                                 .withArguments(new DoubleArgument("Double")
                                         .replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(suggestionInfo -> new IStringTooltip[] {
                                                 StringTooltip.of("1",   intervalTip),
@@ -220,11 +207,11 @@ public class Commands {
                                         Game game = this.manager.getOnGrid(player);
                                         game.Interval = (double) args[0];
                                         game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + "Successfully changed the spawn rate value to: " + ChatColor.AQUA + args[0]);
+                                        player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_SETTINGS_SPAWNRATE_SUCCESS, (String) args[0]));
                                     }
                                 })
                         )
-                        .withSubcommand(new CommandAPICommand("spawnchance")
+                        .withSubcommand(new CommandAPICommand(this.translator.COMMANDS_SETTINGS_SPAWNCHANCE)
                                 .withArguments(new DoubleArgument("Double")
                                         .replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(suggestionInfo -> new IStringTooltip[] {
                                                 StringTooltip.of("1",   spawnChanceTip),
@@ -238,11 +225,11 @@ public class Commands {
                                         Game game = this.manager.getOnGrid(player);
                                         game.spawnChance = (double) args[0];
                                         game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + "Successfully changed the spawn chance value to: " + ChatColor.AQUA + args[0]);
+                                        player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_SETTINGS_SPAWNCHANCE_SUCCESS, (String) args[0]));
                                     }
                                 })
                         )
-                        .withSubcommand(new CommandAPICommand("molespeed")
+                        .withSubcommand(new CommandAPICommand(this.translator.COMMANDS_SETTINGS_MOLESPEED)
                                 .withArguments(new DoubleArgument("Double")
                                         .replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(suggestionInfo -> new IStringTooltip[] {
                                                 StringTooltip.of("0.5", moleSpeedTip),
@@ -256,11 +243,11 @@ public class Commands {
                                         Game game = this.manager.getOnGrid(player);
                                         game.moleSpeed = (double) args[0];
                                         game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + "Successfully changed the mole speed value to: " + ChatColor.AQUA + args[0]);
+                                        player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_SETTINGS_MOLESPEED_SUCCESS, (String) args[0]));
                                     }
                                 })
                         )
-                        .withSubcommand(new CommandAPICommand("difficulty-scale")
+                        .withSubcommand(new CommandAPICommand(this.translator.COMMANDS_SETTINGS_DIFFICULTYSCALE)
                                 .withArguments(new DoubleArgument("Double")
                                         .replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(suggestionInfo -> new IStringTooltip[] {
                                                 StringTooltip.of("1",   diffScaleTip),
@@ -274,11 +261,11 @@ public class Commands {
                                         Game game = this.manager.getOnGrid(player);
                                         game.difficultyScale = (double) args[0];
                                         game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + "Successfully changed the difficulty increase value to: " + ChatColor.AQUA + args[0]);
+                                        player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_SETTINGS_DIFFICULTYSCALE_SUCCESS, (String) args[0]));
                                     }
                                 })
                         )
-                        .withSubcommand(new CommandAPICommand("difficulty-increase")
+                        .withSubcommand(new CommandAPICommand(this.translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE)
                                 .withArguments(new IntegerArgument("int")
                                         .replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(suggestionInfo -> new IStringTooltip[] {
                                                 StringTooltip.of("1",   diffIncreaseTip),
@@ -292,20 +279,21 @@ public class Commands {
                                         Game game = this.manager.getOnGrid(player);
                                         game.difficultyPoints = (int) args[0];
                                         game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + "Successfully changed the difficulty increase value to: " + ChatColor.AQUA + args[0]);
+                                        player.sendMessage(this.config.PREFIX + this.translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE_SUCCESS, (String) args[0]);
                                     }
                                 })
                         )
                 )
-                .withSubcommand(new CommandAPICommand("reload")
+                .withSubcommand(new CommandAPICommand(this.translator.COMMANDS_RELOAD)
                         .withPermission(this.config.PERM_RELOAD)
                         .executes((sender, args) ->{
                             this.manager.unloadGames(false);
                             this.config = Config.reload(main);
+                            this.config.onEnable();
                             this.logger = Logger.reload();
                             this.econ = Econ.reload(main);
                             this.manager.loadGames();
-                            sender.sendMessage(this.config.PREFIX + "Reload complete!");
+                            sender.sendMessage(this.config.PREFIX + this.translator.COMMANDS_RELOAD_SUCCESS);
                             this.logger.success("Done! V" + main.getDescription().getVersion());
                             return 0;
 
@@ -343,10 +331,11 @@ public class Commands {
         if (game != null) {
             return true;
         } else {
-            this.logger.error("Game change failed: Player is not standing on a game");
-            throw CommandAPI.fail(this.config.PREFIX + "Please stand on the game field to edit the game");
+            this.logger.error(this.translator.Format(this.translator.COMMANDS_ONGRID_FAIL_CONSOLE, player.getDisplayName()));
+            throw CommandAPI.fail(this.config.PREFIX + this.translator.COMMANDS_ONGRID_FAIL_PLAYER);
         }
     }
+
 
 }
 

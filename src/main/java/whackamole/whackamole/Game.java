@@ -6,26 +6,16 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
-<<<<<<< HEAD
-=======
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import whackamole.whackamole.Mole.*;
->>>>>>> 0f64a75 (SNAPSHOT -V1 :)
 
 import org.bukkit.*;
 import org.bukkit.entity.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.text.DecimalFormat;
 import java.util.*;
-
-<<<<<<< HEAD
-import whackamole.whackamole.Mole.*;
-=======
-import org.bukkit.inventory.meta.SkullMeta;
->>>>>>> 0d00087 (Commands:)
 
 
 public class Game {
@@ -34,6 +24,7 @@ public class Game {
     private final Logger  logger  = Logger.getInstance();
     private final Config  config  = Config.getInstance();
     private final Econ    econ    = Econ.getInstance();
+    private final Translator translator = Translator.getInstance();
 
     private YMLFile gameConfig;
     public  String  name;
@@ -44,53 +35,7 @@ public class Game {
     
     public Player gamePlayer;
     private World world;
-<<<<<<< HEAD
-    public Grid grid;
-    public String gameName;
-<<<<<<< HEAD
-    public String gameType = "";
-    public String scoreObjective = "";
-<<<<<<< HEAD
-    public Boolean cashHats = true;
-    public Long Interval = 20L;
-    public Integer pointsPerKill = 1;
-<<<<<<< HEAD
-<<<<<<< HEAD
-    private World world;
-=======
-    private int ID = -1;
-=======
-=======
-=======
     private Grid  grid;
-<<<<<<< HEAD
-    
->>>>>>> c279d38 (Config:)
-    public boolean cashHats = true;
-=======
-    public boolean Jackpot = true;
-    public boolean gameLost = false;
->>>>>>> 0d00087 (Commands:)
-    public long Interval = 20L;
-    public int pointsPerKill = 1;
-    public int maxMissed = 3;
-<<<<<<< HEAD
-<<<<<<< HEAD
-    public static int moleMissed = 0;
->>>>>>> de8c408 (Grid:)
-=======
-    public int moleMissed = 0;
->>>>>>> 86f74e4 (Changed: files cleanup)
-    private int ID1 = -1;
-<<<<<<< HEAD
->>>>>>> c865bc2 (Game starter:)
-    private boolean Running = false;
->>>>>>> e262bdb (Game starter:)
-=======
-    public boolean Running = false;
->>>>>>> cfd2e6f (Config:)
-=======
-=======
 
     private Random random = new Random();
 
@@ -109,31 +54,14 @@ public class Game {
     public double moleSpeedScaled;
     public double intervalScaled;
     public double spawnChanceScaled;
->>>>>>> 2f10a80 (Beta release:)
     
     private int Score = 0;
     private int moleMissed = 0;
     private boolean Running = false;
     private int runnableIdentifier = -1;
-<<<<<<< HEAD
-    
-    public String gameType = "";
-    public String scoreObjective = "";
->>>>>>> c279d38 (Config:)
-=======
     private int Tick = 0;
 
-<<<<<<< HEAD
->>>>>>> 2f10a80 (Beta release:)
-
-    public Game(YMLFile configFile) throws Exception {
-        this.gameConfig = configFile;
-        this.loadGame();
-    }
-    public Game(File configFile) throws Exception {
-=======
     public Game(File configFile) {
->>>>>>> 0f64a75 (SNAPSHOT -V1 :)
         this.gameConfig = new YMLFile(configFile);
         this.loadGame();
     }
@@ -178,7 +106,7 @@ public class Game {
                 this.Running = true;
             }
         } else {
-            this.logger.error("Could not start game due to invalid economy set in config");
+            this.logger.error(this.translator.GAME_INVALIDECONOMY);
             this.setCooldown(player.getUniqueId(), 10000L);
         }
     }
@@ -192,112 +120,17 @@ public class Game {
 
             this.gamePlayer.getInventory().removeItem(this.config.PLAYER_AXE);
             this.gamePlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(""));
-<<<<<<< HEAD
-<<<<<<< HEAD
-            this.setCooldown(gamePlayer.getUniqueId());
-        
-=======
-            if (this.Score > 0 || this.moleMissed == this.maxMissed) {
-=======
             if (this.Score > 0 || this.moleMissed >= this.maxMissed) {
-<<<<<<< HEAD
->>>>>>> 2f10a80 (Beta release:)
-                this.setCooldown(gamePlayer.getUniqueId());
-=======
                 this.setCooldown(gamePlayer.getUniqueId(), this.parseTime(this.Cooldown));
->>>>>>> 0f64a75 (SNAPSHOT -V1 :)
                 if (this.moleMissed >= this.maxMissed) this.missedMoles.put(this.gamePlayer.getUniqueId(), moleMissed);
             }
-<<<<<<< HEAD
-            if (econ.currencyType != Econ.Currency.NULL) {
-                econ.depositPlayer(gamePlayer, this.Score);
-                if (this.Score == 1) {
-                    gamePlayer.sendMessage(this.config.PREFIX + "You've been rewarded " + ChatColor.AQUA + this.config.SYMBOL + this.Score + ChatColor.WHITE + " " + this.config.CURRENCY_SING);
-                } else if (this.Score > 1) {
-                    gamePlayer.sendMessage(this.config.PREFIX + "You've been rewarded " + ChatColor.AQUA + this.config.SYMBOL + this.Score + ChatColor.WHITE + " " + this.config.CURRENCY_PLUR);
-                } else {
-                    gamePlayer.sendMessage(this.config.PREFIX + "No moles hit, " + ChatColor.AQUA +  this.config.SYMBOL + "0 " + this.config.CURRENCY_PLUR + ChatColor.WHITE + " rewarded");
-
-                }
-<<<<<<< HEAD
->>>>>>> 0d00087 (Commands:)
-            this.Score = 0;
-            this.gamePlayer = null;
-        }
-    }
-<<<<<<< HEAD
-=======
-    public void unload() {
-        this.Stop();
-        this.saveGame();
-    }
-    public void saveGame() {
->>>>>>> 0d00087 (Commands:)
-
-
-    public void saveGame() {
-        this.gameConfig.FileConfig.options().setHeader(Arrays.asList(
-                "###########################################################",
-                " ^------------------------------------------------------^ #",
-                " |                       GameFile                       | #",
-                " <------------------------------------------------------> #",
-                "###########################################################",
-                "NOTE: you can edit the Properties to change the game rules",
-                "NOTE: Do not touch the Field Data!",
-                "",
-                "EXPLANATION:",
-                "Name = name (make sure this is the same as the Filename)",
-                "CashHats = a chance of 0.1% that a special mole will spawn giving a bigger reward",
-                "Interval = XXXXXXXXXXXXXXXXXXXXXXXX",
-                "Game lost = the amount of moles not hit before the game ends",
-                "Points per Kill = how many points should be rewarded per kill",
-                "That is all, enjoy messing around :)",
-                ""));
-<<<<<<< HEAD
-        this.gameConfig.set("Properties.Name", this.name);
-        this.gameConfig.set("Properties.CashHats", this.cashHats);
-=======
-        this.gameConfig.set("Properties.Name", this.gameName);
-        this.gameConfig.set("Properties.Jackpot", this.Jackpot);
->>>>>>> 0d00087 (Commands:)
-        this.gameConfig.set("Properties.Interval", this.Interval);
-        this.gameConfig.set("Properties.Game lost", this.maxMissed);
-        this.gameConfig.set("Properties.Points per Kill", this.pointsPerKill);
-        this.gameConfig.set("Field Data.World", this.grid.world.getName());
-        this.gameConfig.set("Field Data.Grid", this.grid.Serialize());
-        this.gameConfig.save();
-    }
-    
-    public void loadGame() {
-        this.world          = Bukkit.getWorld(this.gameConfig.getString("Field Data.World"));
-        this.grid           = Grid.Deserialize(this.world, (List<List<Integer>>) this.gameConfig.getList("Field Data.Grid"));
-<<<<<<< HEAD
-        this.name       = this.gameConfig.getString("Properties.Name");
-        this.cashHats       = this.gameConfig.getBoolean("Properties.CashHats");
-        this.Interval       = this.gameConfig.getLong("Properties.Interval");
-        this.maxMissed      = this.gameConfig.getInt("Properties.Game lost");
-        this.ticketCost     = this.gameConfig.getInt("Properties.Ticket price");
-=======
-        this.gameName       = this.gameConfig.getString("Properties.Name");
-        this.Jackpot        = this.gameConfig.getBoolean("Properties.Jackpot");
-        this.Interval       = this.gameConfig.getLong("Properties.Interval");
-        this.maxMissed      = this.gameConfig.getInt("Properties.Game lost");
->>>>>>> 0d00087 (Commands:)
-        this.pointsPerKill  = this.gameConfig.getInt("Properties.Points per Kill");
-    }
-
-    private void deleteSave() {
-        this.gameConfig.remove();
-=======
-=======
             econ.depositPlayer(gamePlayer, this.Score);
             if (this.Score == 1) {
-                gamePlayer.sendMessage(this.config.PREFIX + "You've been rewarded " + ChatColor.AQUA + this.config.SYMBOL + this.Score + ChatColor.WHITE + " " + this.config.CURRENCY_SING);
+                gamePlayer.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.GAME_STOP_REWARD_SING, String.valueOf(this.Score)));
             } else if (this.Score > 1) {
-                gamePlayer.sendMessage(this.config.PREFIX + "You've been rewarded " + ChatColor.AQUA + this.config.SYMBOL + this.Score + ChatColor.WHITE + " " + this.config.CURRENCY_PLUR);
+                gamePlayer.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.GAME_STOP_REWARD_PLUR, String.valueOf(this.Score)));
             } else {
-                gamePlayer.sendMessage(this.config.PREFIX + "No moles hit, " + ChatColor.AQUA +  this.config.SYMBOL + "0 " + this.config.CURRENCY_PLUR + ChatColor.WHITE + " rewarded");
->>>>>>> 646e2ae (STABLE v1.1 :)
+                gamePlayer.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.GAME_STOP_REWARD_NONE));
             }
             this.moleSpeedScaled = this.moleSpeed;
             this.intervalScaled = this.Interval;
@@ -310,7 +143,7 @@ public class Game {
     private boolean placeAxe(Player player) {
         if (!player.getInventory().getItemInMainHand().equals(Material.AIR)) {
             if (player.getInventory().firstEmpty() == -1) {
-                player.sendMessage(this.config.PREFIX + "Inventory full, please empty a slot to play the game");
+                player.sendMessage(this.config.PREFIX + this.translator.GAME_START_FULLINVENTORY);
                 this.setCooldown(player.getUniqueId(), 10000L);
                 return false;
             } else {
@@ -324,7 +157,6 @@ public class Game {
     public void onPlayerExit(Player player) {
         this.missedMoles.remove(player.getUniqueId());
         if (Running) this.Stop();
->>>>>>> 2f10a80 (Beta release:)
     }
 
 
@@ -339,7 +171,7 @@ public class Game {
     }
     private Long parseTime(String time) {
         if (time == null || time.isEmpty()) {
-            logger.error("Cooldown has improperly been set, correct format is HH:mm:ss");
+            logger.error(this.translator.GAME_INVALIDCOOLDOWN);
             return 0L;
         }
 
@@ -382,42 +214,21 @@ public class Game {
             if(!this.hasCooldown(cooldownEntry.getKey())) {
                 this.removeCooldown(cooldownEntry.getKey());
             }
-<<<<<<< HEAD
-            else if(this.cooldownSendList.contains(cooldownEntry.getKey())) {
-                // TODO: look at this
-                // BaseComponent[] resetMessage = new ComponentBuilder()
-                //         .append(Config.color("&l"
-                //                 + this.moleMissed
-                //                 + " moles missed: &4&lGAME OVER&f&l, please buy a new ticket or wait. Time left: &a&l")
-                //                 + this.formatCooldown(cooldownEntry.getValue()))
-                //         .create();
-                // Bukkit.getPlayer(cooldownEntry.getKey()).spigot().sendMessage(ChatMessageType.ACTION_BAR, resetMessage);
-
-                BaseComponent[] resetMessage = new ComponentBuilder()
-                    .append(Config.color("&4&lGAME OVER !&f&l please buy a new ticket or wait. Time left: &a&l"))
-                    .append(this.formatCooldown(cooldownEntry.getValue()))
-                    .create();
-=======
             else if(this.cooldownSendList.contains(cooldownEntry.getKey()) && Bukkit.getPlayer(cooldownEntry.getKey()) != null) {
                 BaseComponent[] resetMessage;
                 if (this.econ.currencyType == Econ.Currency.NULL) {
                     resetMessage = new ComponentBuilder()
-                            .append(Config.color("&4&l! GAME ERROR !&f&l please see console"))
+                            .append(Config.color(this.translator.GAME_ACTIONBAR_ERROR))
                             .create();
                 } else if (this.missedMoles.containsKey(cooldownEntry.getKey())) {
                     resetMessage = new ComponentBuilder()
-                            .append(Config.color("&l"
-                                    + this.missedMoles.get(cooldownEntry.getKey())
-                                    + " moles missed: &4&lGAME OVER&f&l, please buy a new ticket or wait. Time left: &a&l")
-                                    + this.formatCooldown(cooldownEntry.getValue()))
+                            .append(Config.color(this.translator.Format(this.translator.GAME_ACTIONBAR_MOLEGAMEOVER, String.valueOf(this.missedMoles.get(cooldownEntry.getKey())))) + this.formatCooldown(cooldownEntry.getValue()))
                             .create();
                 }else {
-                    resetMessage = new ComponentBuilder()
-                            .append(Config.color("&4&lGAME OVER !&f&l please buy a new ticket or wait. Time left: "))
-                            .append(Config.color("&a&l") + this.formatCooldown(cooldownEntry.getValue()))
+                    resetMessage = new ComponentBuilder().append(Config.color(this.translator.GAME_ACTIONBAR_GAMEOVER)
+                                    + this.formatCooldown(cooldownEntry.getValue()))
                             .create();
                 }
->>>>>>> 2f10a80 (Beta release:)
                 Bukkit.getPlayer(cooldownEntry.getKey()).spigot().sendMessage(ChatMessageType.ACTION_BAR, resetMessage);
             }
         }
@@ -427,7 +238,7 @@ public class Game {
         int missed = this.grid.entityUpdate();
         if (missed > 0) {
             this.gamePlayer.playSound(gamePlayer.getLocation(), this.config.MISSSOUND, 1, 1);
-            this.gamePlayer.sendMessage(this.config.PREFIX + "Mole missed, " + (this.moleMissed + missed) + "/" + this.maxMissed);
+            this.gamePlayer.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.GAME_MOLEMISSED, String.valueOf((this.moleMissed + missed)), String.valueOf(this.maxMissed)));
         }
         this.moleMissed += missed;
         if (moleMissed >= maxMissed) {
@@ -485,8 +296,8 @@ public class Game {
     }
     private void setSpeedScale() {
         double Scaler = 1 + (this.difficultyScale/100);
-        this.moleSpeedScaled = roundupDouble(this.moleSpeedScaled / Scaler);
-        this.intervalScaled = roundupDouble(this.intervalScaled / Scaler);
+        this.moleSpeedScaled = this.moleSpeedScaled / Scaler;
+        this.intervalScaled = this.intervalScaled / Scaler;
         if (this.spawnChanceScaled < 100) {
             this.spawnChanceScaled = (int) ( this.spawnChanceScaled * Scaler);
             if (this.spawnChanceScaled > 100) this.spawnChanceScaled = 100;
@@ -501,9 +312,9 @@ public class Game {
                 " |                       GameFile                       | #",
                 " <------------------------------------------------------> #",
                 "###########################################################",
-                " NOTE: you can edit the Properties to change the game rules",
-                " NOTE: you can change properties with a decimal to a value with decimal, those without decimal should stay without decimal",
-                " NOTE: Do not touch the Field Data!",
+                " " + this.translator.GAME_CONFIG_FIRSTNOTE,
+                " " + this.translator.GAME_CONFIG_SECONDNOTE,
+                " " + this.translator.GAME_CONFIG_THIRDNOTE,
                 "",
                 "",
                 "###########################################################",
@@ -511,19 +322,19 @@ public class Game {
                 " |                      Explanation                     | #",
                 " <------------------------------------------------------> #",
                 "###########################################################",
-                " Name = name (make sure this is the same as the Filename)",
-                " Direction = What direction the moles spawning should be facing",
-                " Jackpot = enable the chance that a special mole will spawn giving triple the points if hit",
-                " Jackpot spawn chance = the chance per mole spawn for a jackpot",
-                " Game lost = the amount of moles not hit before the game ends",
-                " Points per kill = how many points should be rewarded per kill",
-                " Spawn rate = per how many seconds the mole has a chance of spawning",
-                " Spawn chance = percentage of successful spawn per spawn rate",
-                " Mole speed = how quick the mole should move up and down (the lower the quicker)",
-                " Difficulty scaling = by how many percent the game should become more difficult (every x moles hit makes the game ..% more difficult)",
-                " Difficulty increase = per how many moles hit the game difficulty should increase",
-                " Cooldown = the cooldown when a player loses the game (HH:mm:ss)",
-                " That is all, enjoy messing around :)"));
+                " " + this.translator.GAME_CONFIG_NAME,
+                " " + this.translator.GAME_CONFIG_DIRECTION,
+                " " + this.translator.GAME_CONFIG_JACKPOT,
+                " " + this.translator.GAME_CONFIG_JACKPOTSPAWN,
+                " " + this.translator.GAME_CONFIG_GAMELOST,
+                " " + this.translator.GAME_CONFIG_POINTSPERKILL,
+                " " + this.translator.GAME_CONFIG_SPAWNRATE,
+                " " + this.translator.GAME_CONFIG_SPAWNCHANCE,
+                " " + this.translator.GAME_CONFIG_MOLESPEED,
+                " " + this.translator.GAME_CONFIG_DIFFICULTYSCALE,
+                " " + this.translator.GAME_CONFIG_DIFFICULTYINCREASE,
+                " " + this.translator.GAME_CONFIG_COOLDOWN,
+                " " + this.translator.GAME_CONFIG_ENDMESSAGE));
         this.gameConfig.set("Properties.Name", this.name);
         this.gameConfig.set("Properties.Direction", this.spawnRotation.name());
         this.gameConfig.set("Properties.Jackpot", this.Jackpot);
@@ -556,7 +367,7 @@ public class Game {
         this.difficultyScale    = this.gameConfig.getDouble("Properties.Difficulty scaling");
         this.difficultyScore    = this.gameConfig.getInt("Properties.Difficulty increase");
         this.Cooldown           = this.gameConfig.getString("Properties.Cooldown");
-        this.logger.success("Loaded File: %s".formatted(this.gameConfig.file.getName()));
+        this.logger.success(this.translator.Format(this.translator.GAME_LOADSUCCESS, this.gameConfig.file));
     }
 
     public void unload(boolean saveGame) {
@@ -568,11 +379,6 @@ public class Game {
     public void deleteSave() {
         this.Stop();
         this.gameConfig.remove();
-    }
-
-    private double roundupDouble(double value) {
-        DecimalFormat round = new DecimalFormat("###.##");
-        return Double.parseDouble(round.format(value));
     }
 
 }

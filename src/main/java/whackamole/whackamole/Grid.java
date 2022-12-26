@@ -27,12 +27,8 @@ class Grid {
         }
     };
 
-<<<<<<< HEAD
-    private Config config = Config.getInstance();
-    private Logger logger = Logger.getInstance();
-=======
     private final Config config = Config.getInstance();
->>>>>>> 0f64a75 (SNAPSHOT -V1 :)
+    private final Translator translator = Translator.getInstance();
 
     public ArrayList<Mole> entityList = new ArrayList<>();
 
@@ -46,10 +42,6 @@ class Grid {
 
     public Grid(World world, Player player) throws Exception {
         this.world = world;
-<<<<<<< HEAD
-        // TODO: Start block lookup downwards
-=======
->>>>>>> 2f10a80 (Beta release:)
         Block startBlock = world.getBlockAt(player.getLocation().subtract(0, 1, 0));
         this.grid = this.findGrid(startBlock);
     }
@@ -72,9 +64,9 @@ class Grid {
         }
 
         if (returnList.isEmpty()) {
-            throw new Exception("Failed to find a grid, make sure you're standing on the game field");
+            throw new Exception(this.translator.GRID_EMPTYGRID);
         } else if (returnList.size() > this.config.FIELD_MAX_SIZE) {
-            throw new Exception("Failed to create grid, the field is bigger then the allowed size");
+            throw new Exception(this.translator.GRID_INVALIDSIZE);
         }
         return returnList;
     }
@@ -183,12 +175,8 @@ class Grid {
         return outList;
     }
 
-    public static Grid Deserialize(World world, List<List<Integer>> data) {
+    public static Grid Deserialize(World world, List<?> data) {
         ArrayList<Block> grid = new ArrayList<>();
-<<<<<<< HEAD
-        for (List<Integer> loc : data) {
-            grid.add(world.getBlockAt(loc.get(0), loc.get(1), loc.get(2)));
-=======
         for (Object datum : data) {
             List<?> loc = (List<?>) datum;
             grid.add(world.getBlockAt(
@@ -196,7 +184,6 @@ class Grid {
                     (Integer) loc.get(1),
                     (Integer) loc.get(2)
             ));
->>>>>>> 0f64a75 (SNAPSHOT -V1 :)
         }
         return new Grid(world, grid);
     }
