@@ -154,6 +154,8 @@ public class Translator {
         message = message.replace("{Symbol}", this.config.SYMBOL);
         message = message.replace("{currencyPlur}",  this.config.CURRENCY_PLUR);
         message = message.replace("{currencySing}",  this.config.CURRENCY_SING);
+        message = message.replace("{missedMoles}", placeholder);
+        message = message.replace("{Score}", placeholder);
         message = message.replace("{gameName}", placeholder);
         message = message.replace("{Direction}", placeholder);
         message = message.replace("{jackpotSpawn}", placeholder);
