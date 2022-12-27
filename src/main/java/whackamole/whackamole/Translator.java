@@ -154,7 +154,6 @@ public class Translator {
         message = message.replace("{Symbol}", this.config.SYMBOL);
         message = message.replace("{currencyPlur}",  this.config.CURRENCY_PLUR);
         message = message.replace("{currencySing}",  this.config.CURRENCY_SING);
-        message = message.replace("{missedMoles}", placeholder);
         message = message.replace("{Score}", placeholder);
         message = message.replace("{gameName}", placeholder);
         message = message.replace("{Direction}", placeholder);
@@ -265,8 +264,8 @@ public class Translator {
         this.GAME_START_FULLINVENTORY                       = this.Messages.getString("Game.Start.fullInventory");
         this.GAME_INVALIDCOOLDOWN                           = this.Messages.getString("Game.invalidCooldown");
         this.GAME_ACTIONBAR_ERROR                           = this.Messages.getString("Game.Actionbar.Error");
-        this.GAME_ACTIONBAR_GAMEOVER                        = this.Messages.getString("Game.Actionbar.moleGameOver");
-        this.GAME_ACTIONBAR_MOLEGAMEOVER                    = this.Messages.getString("Game.Actionbar.gameOver");
+        this.GAME_ACTIONBAR_GAMEOVER                        = this.Messages.getString("Game.Actionbar.gameOver");
+        this.GAME_ACTIONBAR_MOLEGAMEOVER                    = this.Messages.getString("Game.Actionbar.moleGameOver");
         this.GAME_MOLEMISSED                                = this.Messages.getString("Game.moleMissed");
         this.GAME_LOADSUCCESS                               = this.Messages.getString("Game.loadSuccess");
         this.GAME_CONFIG_FIRSTNOTE                          = this.Messages.getString("Game.Config.firstNote");

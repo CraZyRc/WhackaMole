@@ -222,7 +222,7 @@ public class Game {
                             .create();
                 } else if (this.missedMoles.containsKey(cooldownEntry.getKey())) {
                     resetMessage = new ComponentBuilder()
-                            .append(Config.color(this.translator.Format(this.translator.GAME_ACTIONBAR_MOLEGAMEOVER, String.valueOf(this.missedMoles.get(cooldownEntry.getKey())))) + this.formatCooldown(cooldownEntry.getValue()))
+                            .append(this.translator.Format(this.translator.GAME_ACTIONBAR_MOLEGAMEOVER, String.valueOf(this.missedMoles.get(cooldownEntry.getKey()))) + this.formatCooldown(cooldownEntry.getValue()))
                             .create();
                 }else {
                     resetMessage = new ComponentBuilder().append(Config.color(this.translator.GAME_ACTIONBAR_GAMEOVER)
