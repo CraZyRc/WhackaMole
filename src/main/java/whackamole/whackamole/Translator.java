@@ -1,9 +1,13 @@
 package whackamole.whackamole;
 
 
+import org.bukkit.ChatColor;
+
 import java.io.File;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Translator {
@@ -55,6 +59,8 @@ public class Translator {
     public String COMMANDS_SETTINGS_JACKPOT_SUCCESS;
     public String COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE;
     public String COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_SUCCESS;
+    public String COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_CONSOLE;
+    public String COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_PLAYER;
     public String COMMANDS_SETTINGS_MAXMISSED;
     public String COMMANDS_SETTINGS_MAXMISSED_SUCCESS;
     public String COMMANDS_SETTINGS_SCOREPOINTS;
@@ -148,141 +154,152 @@ public class Translator {
         message = message.replace("{commandBuy}",  "/wam " + this.COMMANDS_BUY);
         message = message.replace("{currencySing}",  this.config.CURRENCY_SING);
 
-        return Config.color(message);
+        return Color(message);
     }
     public String Format(String message, String placeholder) {
         message = message.replace("{Symbol}", this.config.SYMBOL);
         message = message.replace("{currencyPlur}",  this.config.CURRENCY_PLUR);
         message = message.replace("{currencySing}",  this.config.CURRENCY_SING);
+        message = message.replace("{missedMoles}", placeholder);
         message = message.replace("{Score}", placeholder);
         message = message.replace("{gameName}", placeholder);
-        message = message.replace("{Direction}", placeholder);
-        message = message.replace("{jackpotSpawn}", placeholder);
-        message = message.replace("{jackpotSpawnChance}", placeholder);
-        message = message.replace("{maxMissed}", placeholder);
-        message = message.replace("{scorePoints}", placeholder);
-        message = message.replace("{Interval}", placeholder);
-        message = message.replace("{spawnChance}", placeholder);
-        message = message.replace("{Molespeed}", placeholder);
-        message = message.replace("{difficultyScale}", placeholder);
-        message = message.replace("{difficultyIncrease}", placeholder);
         message = message.replace("{Player}", placeholder);
         message = message.replace("{Message}", placeholder);
-        message = message.replace("{missedMoles}", placeholder);
-        return Config.color(message);
+        return Color(message);
     }
     public String Format(String message, String placeholder1, String placeholder2) {
         message = message.replace("{missedMoles}", placeholder1);
         message = message.replace("{maxMissed}", placeholder2);
-        return Config.color(message);
+        return Color(message);
     }
     public String Format(String message, File file) {
         message = message.replace("{File}", file.getName());
-        return Config.color(message);
+        return Color(message);
+    }
+
+    public static String Color(String message) {
+        Pattern pattern = Pattern.compile("#[a-fA-f0-9]{6}");
+        Matcher matcher = pattern.matcher(message);
+        while (matcher.find()) {
+            String hexCode = message.substring(matcher.start(), matcher.end());
+            String replaceSharp = hexCode.replace('#', 'x');
+
+            char[] ch = replaceSharp.toCharArray();
+            StringBuilder builder = new StringBuilder();
+            for (char c : ch) {
+                builder.append("&").append(c);
+            }
+
+            message = message.replace(hexCode, builder.toString());
+            matcher = pattern.matcher(message);
+        }
+        return ChatColor.translateAlternateColorCodes('&', message);
     }
 
 
     public void Translation() {
-        this.MAIN_OLDVERSION                                = this.Messages.getString("Main.oldVersion");
-        this.UPDATEFAIL                                     = this.Messages.getString("Update.updateFail");
-        this.LOGGER_WARNING                                 = this.Messages.getString("Logger.Warning");
-        this.LOGGER_ERROR                                   = this.Messages.getString("Logger.Error");
-        this.CONFIG_OLDVERSION                              = this.Messages.getString("Config.oldVersion");
-        this.CONFIG_TICKET_NAME                             = this.Messages.getString("Config.Ticket.Name");
-        this.CONFIG_TICKET_LORE1                            = this.Messages.getString("Config.Ticket.Lore1");
-        this.CONFIG_TICKET_LORE2                            = this.Messages.getString("Config.Ticket.Lore2");
-        this.CONFIG_TICKET_LORE3                            = this.Messages.getString("Config.Ticket.Lore3");
-        this.YML_NOTFOUNDEXCEPTION                          = this.Messages.getString("YML.notFoundException");
-        this.YML_SAVEDFILE                                  = this.Messages.getString("YML.savedFile");
-        this.YML_DELETEDFILE                                = this.Messages.getString("YML.deletedFile");
-        this.YML_CREATEFILE                                 = this.Messages.getString("YML.createFile");
-        this.YML_CREATEFAIL                                 = this.Messages.getString("YML.createFail");
-        this.COMMANDS_TIPS_NAME                             = this.Messages.getString("Commands.Tips.Name");
-        this.COMMANDS_TIPS_DIRECTION                        = this.Messages.getString("Commands.Tips.Direction");
-        this.COMMANDS_TIPS_JACKPOT                          = this.Messages.getString("Commands.Tips.Jackpot");
-        this.COMMANDS_TIPS_JACKPOTSPAWNS                    = this.Messages.getString("Commands.Tips.jackpotSpawns");
-        this.COMMANDS_TIPS_MAXMISSED                        = this.Messages.getString("Commands.Tips.maxMissed");
-        this.COMMANDS_TIPS_HITPOINTS                        = this.Messages.getString("Commands.Tips.hitPoints");
-        this.COMMANDS_TIPS_INTERVAL                         = this.Messages.getString("Commands.Tips.Interval");
-        this.COMMANDS_TIPS_SPAWNCHANCE                      = this.Messages.getString("Commands.Tips.spawnChance");
-        this.COMMANDS_TIPS_MOLESPEED                        = this.Messages.getString("Commands.Tips.moleSpeed");
-        this.COMMANDS_TIPS_DIFFICULTYSCALE                  = this.Messages.getString("Commands.Tips.difficultyScale");
-        this.COMMANDS_TIPS_DIFFICULTYINCREASE               = this.Messages.getString("Commands.Tips.difficultyIncrease");
-        this.COMMANDS_CREATE                                = this.Messages.getString("Commands.Create");
-        this.COMMANDS_CREATE_SUCCESS                        = this.Messages.getString("Commands.Create.Success");
-        this.COMMANDS_REMOVE                                = this.Messages.getString("Commands.Remove");
-        this.COMMANDS_REMOVE_CONFIRM                        = this.Messages.getString("Commands.Remove.Confirm");
-        this.COMMANDS_REMOVE_SUCCESS                        = this.Messages.getString("Commands.Remove.Success");
-        this.COMMANDS_BUY                                   = this.Messages.getString("Commands.Buy");
-        this.COMMANDS_BUY_FULLINVENTORY                     = this.Messages.getString("Commands.Buy.fullInventory");
-        this.COMMANDS_BUY_CONFIRMATION                      = this.Messages.getString("Commands.Buy.Confirmation");
-        this.COMMANDS_BUY_LOWECONOMY                        = this.Messages.getString("Commands.Buy.lowEconomy");
-        this.COMMANDS_BUY_ECONOMYERROR_PLAYER               = this.Messages.getString("Commands.Buy.economyError.Player");
-        this.COMMANDS_BUY_ECONOMYERROR_CONSOLE              = this.Messages.getString("Commands.Buy.economyError.Console");
-        this.COMMANDS_BUY_SUCCESS                           = this.Messages.getString("Commands.Buy.Success");
-        this.COMMANDS_SETTINGS                              = this.Messages.getString("Commands.Settings");
-        this.COMMANDS_SETTINGS_DIRECTION                    = this.Messages.getString("Commands.Settings.Direction");
-        this.COMMANDS_SETTINGS_DIRECTION_SUCCESS            = this.Messages.getString("Commands.Settings.Directions.Success");
-        this.COMMANDS_SETTINGS_JACKPOT                      = this.Messages.getString("Commands.Settings.Jackpot");
-        this.COMMANDS_SETTINGS_JACKPOT_SUCCESS              = this.Messages.getString("Commands.Settings.Jackpot.Success");
-        this.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE           = this.Messages.getString("Commands.Settings.jackpotSpawnChance");
-        this.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_SUCCESS   = this.Messages.getString("Commands.Settings.jackpotSpawnChance.Success");
-        this.COMMANDS_SETTINGS_MAXMISSED                    = this.Messages.getString("Commands.Settings.maxMissed");
-        this.COMMANDS_SETTINGS_MAXMISSED_SUCCESS            = this.Messages.getString("Commands.Settings.maxMissed.Success");
-        this.COMMANDS_SETTINGS_SCOREPOINTS                  = this.Messages.getString("Commands.Settings.scorePoints");
-        this.COMMANDS_SETTINGS_SCOREPOINTS_SUCCESS          = this.Messages.getString("Commands.Settings.scorePoints.Success");
-        this.COMMANDS_SETTINGS_SPAWNRATE                    = this.Messages.getString("Commands.Settings.spawnRate");
-        this.COMMANDS_SETTINGS_SPAWNRATE_SUCCESS            = this.Messages.getString("Commands.Settings.spawnRate.Success");
-        this.COMMANDS_SETTINGS_SPAWNCHANCE                  = this.Messages.getString("Commands.Settings.spawnChance");
-        this.COMMANDS_SETTINGS_SPAWNCHANCE_SUCCESS          = this.Messages.getString("Commands.Settings.spawnChance.Success");
-        this.COMMANDS_SETTINGS_MOLESPEED                    = this.Messages.getString("Commands.Settings.Molespeed");
-        this.COMMANDS_SETTINGS_MOLESPEED_SUCCESS            = this.Messages.getString("Commands.Settings.Molespeed.Success");
-        this.COMMANDS_SETTINGS_DIFFICULTYSCALE              = this.Messages.getString("Commands.Settings.difficultyScale");
-        this.COMMANDS_SETTINGS_DIFFICULTYSCALE_SUCCESS      = this.Messages.getString("Commands.Settings.difficultyScale.Success");
-        this.COMMANDS_SETTINGS_DIFFICULTYINCREASE           = this.Messages.getString("Commands.Settings.difficultyIncrease");
-        this.COMMANDS_SETTINGS_DIFFICULTYINCREASE_SUCCESS   = this.Messages.getString("Commands.Settings.difficultyIncrease.Success");
-        this.COMMANDS_RELOAD                                = this.Messages.getString("Commands.Reload");
-        this.COMMANDS_RELOAD_SUCCESS                        = this.Messages.getString("Commands.Reload.Success");
-        this.COMMANDS_ONGRID_FAIL_PLAYER                    = this.Messages.getString("Commands.onGrid.Fail.Player");
-        this.COMMANDS_ONGRID_FAIL_CONSOLE                   = this.Messages.getString("Commands.onGrid.Fail.Console");
-        this.ECON_INVALIDECONOMY                            = this.Messages.getString("Econ.invalidEconomy");
-        this.ECON_INVALIDVAULT                              = this.Messages.getString("Econ.invalidVault");
-        this.ECON_INVALIDOBJECTIVE                          = this.Messages.getString("Econ.invalidObjective");
-        this.GRID_EMPTYGRID                                 = this.Messages.getString("Grid.emptyGrid");
-        this.GRID_INVALIDSIZE                               = this.Messages.getString("Grid.invalidSize");
-        this.MANAGER_LOADINGGAMES                           = this.Messages.getString("Manager.loadingGames");
-        this.MANAGER_NOGAMESFOUND                           = this.Messages.getString("Manager.noGamesFound");
-        this.MANAGER_NAMEEXISTS                             = this.Messages.getString("Manager.nameExists");
-        this.MANAGER_TICKETUSE_GAMENOTFOUND                 = this.Messages.getString("Manager.ticketUse.gameNotFound");
-        this.MANAGER_TICKETUSE_SUCCESS                      = this.Messages.getString("Manager.ticketUse.Success");
-        this.MANAGER_TICKETUSE_NOCOOLDOWN                   = this.Messages.getString("Manager.ticketUse.noCooldown");
-        this.MANAGER_TICKETUSE_NOPERMISSION                 = this.Messages.getString("Manager.ticketUse.noPremission");
-        this.GAME_INVALIDECONOMY                            = this.Messages.getString("Game.invalidEconomy");
-        this.GAME_STOP_REWARD_SING                          = this.Messages.getString("Game.Stop.Reward.Sing");
-        this.GAME_STOP_REWARD_PLUR                          = this.Messages.getString("Game.Stop.Reward.Plur");
-        this.GAME_STOP_REWARD_NONE                          = this.Messages.getString("Game.Stop.Reward.None");
-        this.GAME_START_FULLINVENTORY                       = this.Messages.getString("Game.Start.fullInventory");
-        this.GAME_INVALIDCOOLDOWN                           = this.Messages.getString("Game.invalidCooldown");
-        this.GAME_ACTIONBAR_ERROR                           = this.Messages.getString("Game.Actionbar.Error");
-        this.GAME_ACTIONBAR_GAMEOVER                        = this.Messages.getString("Game.Actionbar.gameOver");
-        this.GAME_ACTIONBAR_MOLEGAMEOVER                    = this.Messages.getString("Game.Actionbar.moleGameOver");
-        this.GAME_MOLEMISSED                                = this.Messages.getString("Game.moleMissed");
-        this.GAME_LOADSUCCESS                               = this.Messages.getString("Game.loadSuccess");
-        this.GAME_CONFIG_FIRSTNOTE                          = this.Messages.getString("Game.Config.firstNote");
-        this.GAME_CONFIG_SECONDNOTE                         = this.Messages.getString("Game.Config.secondNote");
-        this.GAME_CONFIG_THIRDNOTE                          = this.Messages.getString("Game.Config.thirdNote");
-        this.GAME_CONFIG_NAME                               = this.Messages.getString("Game.Config.Name");
-        this.GAME_CONFIG_DIRECTION                          = this.Messages.getString("Game.Config.Direction");
-        this.GAME_CONFIG_JACKPOT                            = this.Messages.getString("Game.Config.Jackpot");
-        this.GAME_CONFIG_JACKPOTSPAWN                       = this.Messages.getString("Game.Config.jackpotSpawn");
-        this.GAME_CONFIG_GAMELOST                           = this.Messages.getString("Game.Config.gameLost");
-        this.GAME_CONFIG_POINTSPERKILL                      = this.Messages.getString("Game.Config.pointsPerKill");
-        this.GAME_CONFIG_SPAWNRATE                          = this.Messages.getString("Game.Config.spawnRate");
-        this.GAME_CONFIG_SPAWNCHANCE                        = this.Messages.getString("Game.Config.spawnChance");
-        this.GAME_CONFIG_MOLESPEED                          = this.Messages.getString("Game.Config.Molespeed");
-        this.GAME_CONFIG_DIFFICULTYSCALE                    = this.Messages.getString("Game.Config.difficultyScale");
-        this.GAME_CONFIG_DIFFICULTYINCREASE                 = this.Messages.getString("Game.Config.difficultyIncrease");
-        this.GAME_CONFIG_COOLDOWN                           = this.Messages.getString("Game.Config.Cooldown");
-        this.GAME_CONFIG_ENDMESSAGE                         = this.Messages.getString("Game.Config.endMessage");
+        this.MAIN_OLDVERSION                                        = Color(this.Messages.getString("Main.oldVersion"));
+        this.UPDATEFAIL                                             = Color(this.Messages.getString("Update.updateFail"));
+        this.LOGGER_WARNING                                         = Color(this.Messages.getString("Logger.Warning"));
+        this.LOGGER_ERROR                                           = Color(this.Messages.getString("Logger.Error"));
+        this.CONFIG_OLDVERSION                                      = Color(this.Messages.getString("Config.oldVersion"));
+        this.CONFIG_TICKET_NAME                                     = Color(this.Messages.getString("Config.Ticket.Name"));
+        this.CONFIG_TICKET_LORE1                                    = Color(this.Messages.getString("Config.Ticket.Lore1"));
+        this.CONFIG_TICKET_LORE2                                    = Color(this.Messages.getString("Config.Ticket.Lore2"));
+        this.CONFIG_TICKET_LORE3                                    = Color(this.Messages.getString("Config.Ticket.Lore3"));
+        this.YML_NOTFOUNDEXCEPTION                                  = Color(this.Messages.getString("YML.notFoundException"));
+        this.YML_SAVEDFILE                                          = Color(this.Messages.getString("YML.savedFile"));
+        this.YML_DELETEDFILE                                        = Color(this.Messages.getString("YML.deletedFile"));
+        this.YML_CREATEFILE                                         = Color(this.Messages.getString("YML.createFile"));
+        this.YML_CREATEFAIL                                         = Color(this.Messages.getString("YML.createFail"));
+        this.COMMANDS_TIPS_NAME                                     = Color(this.Messages.getString("Commands.Tips.Name"));
+        this.COMMANDS_TIPS_DIRECTION                                = Color(this.Messages.getString("Commands.Tips.Direction"));
+        this.COMMANDS_TIPS_JACKPOT                                  = Color(this.Messages.getString("Commands.Tips.Jackpot"));
+        this.COMMANDS_TIPS_JACKPOTSPAWNS                            = Color(this.Messages.getString("Commands.Tips.jackpotSpawns"));
+        this.COMMANDS_TIPS_MAXMISSED                                = Color(this.Messages.getString("Commands.Tips.maxMissed"));
+        this.COMMANDS_TIPS_HITPOINTS                                = Color(this.Messages.getString("Commands.Tips.hitPoints"));
+        this.COMMANDS_TIPS_INTERVAL                                 = Color(this.Messages.getString("Commands.Tips.Interval"));
+        this.COMMANDS_TIPS_SPAWNCHANCE                              = Color(this.Messages.getString("Commands.Tips.spawnChance"));
+        this.COMMANDS_TIPS_MOLESPEED                                = Color(this.Messages.getString("Commands.Tips.moleSpeed"));
+        this.COMMANDS_TIPS_DIFFICULTYSCALE                          = Color(this.Messages.getString("Commands.Tips.difficultyScale"));
+        this.COMMANDS_TIPS_DIFFICULTYINCREASE                       = Color(this.Messages.getString("Commands.Tips.difficultyIncrease"));
+        this.COMMANDS_CREATE                                        = Color(this.Messages.getString("Commands.Create"));
+        this.COMMANDS_CREATE_SUCCESS                                = Color(this.Messages.getString("Commands.Create.Success"));
+        this.COMMANDS_REMOVE                                        = Color(this.Messages.getString("Commands.Remove"));
+        this.COMMANDS_REMOVE_CONFIRM                                = Color(this.Messages.getString("Commands.Remove.Confirm"));
+        this.COMMANDS_REMOVE_SUCCESS                                = Color(this.Messages.getString("Commands.Remove.Success"));
+        this.COMMANDS_BUY                                           = Color(this.Messages.getString("Commands.Buy"));
+        this.COMMANDS_BUY_FULLINVENTORY                             = Color(this.Messages.getString("Commands.Buy.fullInventory"));
+        this.COMMANDS_BUY_CONFIRMATION                              = Color(this.Messages.getString("Commands.Buy.Confirmation"));
+        this.COMMANDS_BUY_LOWECONOMY                                = Color(this.Messages.getString("Commands.Buy.lowEconomy"));
+        this.COMMANDS_BUY_ECONOMYERROR_PLAYER                       = Color(this.Messages.getString("Commands.Buy.economyError.Player"));
+        this.COMMANDS_BUY_ECONOMYERROR_CONSOLE                      = Color(this.Messages.getString("Commands.Buy.economyError.Console"));
+        this.COMMANDS_BUY_SUCCESS                                   = Color(this.Messages.getString("Commands.Buy.Success"));
+        this.COMMANDS_SETTINGS                                      = Color(this.Messages.getString("Commands.Settings"));
+        this.COMMANDS_SETTINGS_DIRECTION                            = Color(this.Messages.getString("Commands.Settings.Direction"));
+        this.COMMANDS_SETTINGS_DIRECTION_SUCCESS                    = Color(this.Messages.getString("Commands.Settings.Directions.Success"));
+        this.COMMANDS_SETTINGS_JACKPOT                              = Color(this.Messages.getString("Commands.Settings.Jackpot"));
+        this.COMMANDS_SETTINGS_JACKPOT_SUCCESS                      = Color(this.Messages.getString("Commands.Settings.Jackpot.Success"));
+        this.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE                   = Color(this.Messages.getString("Commands.Settings.jackpotSpawnChance"));
+        this.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_SUCCESS           = Color(this.Messages.getString("Commands.Settings.jackpotSpawnChance.Success"));
+        this.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_CONSOLE     = Color(this.Messages.getString("Commands.Settings.jackpotSpawnChance.Error.Console"));
+        this.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_PLAYER      = Color(this.Messages.getString("Commands.Settings.jackpotSpawnChance.Error.Player"));
+        this.COMMANDS_SETTINGS_MAXMISSED                            = Color(this.Messages.getString("Commands.Settings.maxMissed"));
+        this.COMMANDS_SETTINGS_MAXMISSED_SUCCESS                    = Color(this.Messages.getString("Commands.Settings.maxMissed.Success"));
+        this.COMMANDS_SETTINGS_SCOREPOINTS                          = Color(this.Messages.getString("Commands.Settings.scorePoints"));
+        this.COMMANDS_SETTINGS_SCOREPOINTS_SUCCESS                  = Color(this.Messages.getString("Commands.Settings.scorePoints.Success"));
+        this.COMMANDS_SETTINGS_SPAWNRATE                            = Color(this.Messages.getString("Commands.Settings.spawnRate"));
+        this.COMMANDS_SETTINGS_SPAWNRATE_SUCCESS                    = Color(this.Messages.getString("Commands.Settings.spawnRate.Success"));
+        this.COMMANDS_SETTINGS_SPAWNCHANCE                          = Color(this.Messages.getString("Commands.Settings.spawnChance"));
+        this.COMMANDS_SETTINGS_SPAWNCHANCE_SUCCESS                  = Color(this.Messages.getString("Commands.Settings.spawnChance.Success"));
+        this.COMMANDS_SETTINGS_MOLESPEED                            = Color(this.Messages.getString("Commands.Settings.Molespeed"));
+        this.COMMANDS_SETTINGS_MOLESPEED_SUCCESS                    = Color(this.Messages.getString("Commands.Settings.Molespeed.Success"));
+        this.COMMANDS_SETTINGS_DIFFICULTYSCALE                      = Color(this.Messages.getString("Commands.Settings.difficultyScale"));
+        this.COMMANDS_SETTINGS_DIFFICULTYSCALE_SUCCESS              = Color(this.Messages.getString("Commands.Settings.difficultyScale.Success"));
+        this.COMMANDS_SETTINGS_DIFFICULTYINCREASE                   = Color(this.Messages.getString("Commands.Settings.difficultyIncrease"));
+        this.COMMANDS_SETTINGS_DIFFICULTYINCREASE_SUCCESS           = Color(this.Messages.getString("Commands.Settings.difficultyIncrease.Success"));
+        this.COMMANDS_RELOAD                                        = Color(this.Messages.getString("Commands.Reload"));
+        this.COMMANDS_RELOAD_SUCCESS                                = Color(this.Messages.getString("Commands.Reload.Success"));
+        this.COMMANDS_ONGRID_FAIL_PLAYER                            = Color(this.Messages.getString("Commands.onGrid.Fail.Player"));
+        this.COMMANDS_ONGRID_FAIL_CONSOLE                           = Color(this.Messages.getString("Commands.onGrid.Fail.Console"));
+        this.ECON_INVALIDECONOMY                                    = Color(this.Messages.getString("Econ.invalidEconomy"));
+        this.ECON_INVALIDVAULT                                      = Color(this.Messages.getString("Econ.invalidVault"));
+        this.ECON_INVALIDOBJECTIVE                                  = Color(this.Messages.getString("Econ.invalidObjective"));
+        this.GRID_EMPTYGRID                                         = Color(this.Messages.getString("Grid.emptyGrid"));
+        this.GRID_INVALIDSIZE                                       = Color(this.Messages.getString("Grid.invalidSize"));
+        this.MANAGER_LOADINGGAMES                                   = Color(this.Messages.getString("Manager.loadingGames"));
+        this.MANAGER_NOGAMESFOUND                                   = Color(this.Messages.getString("Manager.noGamesFound"));
+        this.MANAGER_NAMEEXISTS                                     = Color(this.Messages.getString("Manager.nameExists"));
+        this.MANAGER_TICKETUSE_GAMENOTFOUND                         = Color(this.Messages.getString("Manager.ticketUse.gameNotFound"));
+        this.MANAGER_TICKETUSE_SUCCESS                              = Color(this.Messages.getString("Manager.ticketUse.Success"));
+        this.MANAGER_TICKETUSE_NOCOOLDOWN                           = Color(this.Messages.getString("Manager.ticketUse.noCooldown"));
+        this.MANAGER_TICKETUSE_NOPERMISSION                         = Color(this.Messages.getString("Manager.ticketUse.noPremission"));
+        this.GAME_INVALIDECONOMY                                    = Color(this.Messages.getString("Game.invalidEconomy"));
+        this.GAME_STOP_REWARD_SING                                  = Color(this.Messages.getString("Game.Stop.Reward.Sing"));
+        this.GAME_STOP_REWARD_PLUR                                  = Color(this.Messages.getString("Game.Stop.Reward.Plur"));
+        this.GAME_STOP_REWARD_NONE                                  = Color(this.Messages.getString("Game.Stop.Reward.None"));
+        this.GAME_START_FULLINVENTORY                               = Color(this.Messages.getString("Game.Start.fullInventory"));
+        this.GAME_INVALIDCOOLDOWN                                   = Color(this.Messages.getString("Game.invalidCooldown"));
+        this.GAME_ACTIONBAR_ERROR                                   = Color(this.Messages.getString("Game.Actionbar.Error"));
+        this.GAME_ACTIONBAR_GAMEOVER                                = Color(this.Messages.getString("Game.Actionbar.gameOver"));
+        this.GAME_ACTIONBAR_MOLEGAMEOVER                            = Color(this.Messages.getString("Game.Actionbar.moleGameOver"));
+        this.GAME_MOLEMISSED                                        = Color(this.Messages.getString("Game.moleMissed"));
+        this.GAME_LOADSUCCESS                                       = Color(this.Messages.getString("Game.loadSuccess"));
+        this.GAME_CONFIG_FIRSTNOTE                                  = Color(this.Messages.getString("Game.Config.firstNote"));
+        this.GAME_CONFIG_SECONDNOTE                                 = Color(this.Messages.getString("Game.Config.secondNote"));
+        this.GAME_CONFIG_THIRDNOTE                                  = Color(this.Messages.getString("Game.Config.thirdNote"));
+        this.GAME_CONFIG_NAME                                       = Color(this.Messages.getString("Game.Config.Name"));
+        this.GAME_CONFIG_DIRECTION                                  = Color(this.Messages.getString("Game.Config.Direction"));
+        this.GAME_CONFIG_JACKPOT                                    = Color(this.Messages.getString("Game.Config.Jackpot"));
+        this.GAME_CONFIG_JACKPOTSPAWN                               = Color(this.Messages.getString("Game.Config.jackpotSpawn"));
+        this.GAME_CONFIG_GAMELOST                                   = Color(this.Messages.getString("Game.Config.gameLost"));
+        this.GAME_CONFIG_POINTSPERKILL                              = Color(this.Messages.getString("Game.Config.pointsPerKill"));
+        this.GAME_CONFIG_SPAWNRATE                                  = Color(this.Messages.getString("Game.Config.spawnRate"));
+        this.GAME_CONFIG_SPAWNCHANCE                                = Color(this.Messages.getString("Game.Config.spawnChance"));
+        this.GAME_CONFIG_MOLESPEED                                  = Color(this.Messages.getString("Game.Config.Molespeed"));
+        this.GAME_CONFIG_DIFFICULTYSCALE                            = Color(this.Messages.getString("Game.Config.difficultyScale"));
+        this.GAME_CONFIG_DIFFICULTYINCREASE                         = Color(this.Messages.getString("Game.Config.difficultyIncrease"));
+        this.GAME_CONFIG_COOLDOWN                                   = Color(this.Messages.getString("Game.Config.Cooldown"));
+        this.GAME_CONFIG_ENDMESSAGE                                 = Color(this.Messages.getString("Game.Config.endMessage"));
     }
 }

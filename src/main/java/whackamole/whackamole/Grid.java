@@ -75,9 +75,7 @@ class Grid {
         ArrayList<Block> returnlist = new ArrayList<>();
         for (Vector vector : neighborList) {
             Block CurBlock = this.world.getBlockAt(MiddleBlock.getLocation().add(vector));
-            if (   this.config.MOLEBLOCK.contains(CurBlock.getType().name())
-                && this.config.SUBBLOCK .contains(CurBlock.getRelative(0, -1, 0).getType().name())
-            ) {
+            if (this.config.MOLEBLOCK.contains(CurBlock.getType().name())) {
                 returnlist.add(CurBlock);
             }
         }

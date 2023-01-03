@@ -9,6 +9,7 @@ import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
+import javax.management.StringValueExp;
 import java.util.Hashtable;
 import java.util.UUID;
 
@@ -119,7 +120,7 @@ public class Commands {
                                         Game game = this.manager.getOnGrid(player);
                                         game.spawnRotation = BlockFace.valueOf((String) args[0]);
                                         game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_SETTINGS_DIRECTION_SUCCESS, (String) args[0]));
+                                        player.sendMessage(this.config.PREFIX + this.translator.COMMANDS_SETTINGS_DIRECTION_SUCCESS + args[0]);
                                     }
                                 })
                         )
@@ -135,7 +136,7 @@ public class Commands {
                                         Game game = this.manager.getOnGrid(player);
                                         game.Jackpot = (Boolean) args[0];
                                         game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_SETTINGS_JACKPOT_SUCCESS, (String) args[0]));
+                                        player.sendMessage(this.config.PREFIX + this.translator.COMMANDS_SETTINGS_JACKPOT_SUCCESS + args[0]);
                                     }
                                 })
                         )
@@ -150,10 +151,15 @@ public class Commands {
                                 )
                                 .executesPlayer((player, args) -> {
                                     if (this.isOnGrid(player)) {
-                                        Game game = this.manager.getOnGrid(player);
-                                        game.jackpotSpawn = (int) args[0];
-                                        game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_SUCCESS, (String) args[0]));
+                                        if ((int) args[0] <= 100) {
+                                            Game game = this.manager.getOnGrid(player);
+                                            game.jackpotSpawn = (int) args[0];
+                                            game.saveGame();
+                                            player.sendMessage(this.config.PREFIX + this.translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_SUCCESS + args[0]);
+                                        } else {
+                                            this.logger.error(this.translator.Format(this.translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_CONSOLE, player.getDisplayName()));
+                                            player.sendMessage(this.config.PREFIX + this.translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_PLAYER);
+                                        }
                                     }
                                 })
                         )
@@ -171,7 +177,7 @@ public class Commands {
                                         Game game = this.manager.getOnGrid(player);
                                         game.maxMissed = (int) args[0];
                                         game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_SETTINGS_MAXMISSED_SUCCESS, (String) args[0]));
+                                        player.sendMessage(this.config.PREFIX + this.translator.COMMANDS_SETTINGS_MAXMISSED_SUCCESS + args[0]);
                                     }
                                 })
                         )
@@ -189,7 +195,7 @@ public class Commands {
                                         Game game = this.manager.getOnGrid(player);
                                         game.pointsPerKill = (Integer) args[0];
                                         game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_SETTINGS_SCOREPOINTS_SUCCESS, (String) args[0]));
+                                        player.sendMessage(this.config.PREFIX + this.translator.COMMANDS_SETTINGS_SCOREPOINTS_SUCCESS + args[0]);
                                     }
                                 })
                         )
@@ -207,14 +213,14 @@ public class Commands {
                                         Game game = this.manager.getOnGrid(player);
                                         game.Interval = (double) args[0];
                                         game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_SETTINGS_SPAWNRATE_SUCCESS, (String) args[0]));
+                                        player.sendMessage(this.config.PREFIX + this.translator.COMMANDS_SETTINGS_SPAWNRATE_SUCCESS + args[0]);
                                     }
                                 })
                         )
                         .withSubcommand(new CommandAPICommand(this.translator.COMMANDS_SETTINGS_SPAWNCHANCE)
                                 .withArguments(new DoubleArgument("Double")
                                         .replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(suggestionInfo -> new IStringTooltip[] {
-                                                StringTooltip.of("1",   spawnChanceTip),
+                                                StringTooltip.of("1", spawnChanceTip),
                                                 StringTooltip.of("10",  spawnChanceTip),
                                                 StringTooltip.of("50",  spawnChanceTip),
                                                 StringTooltip.of("100", spawnChanceTip)
@@ -222,10 +228,15 @@ public class Commands {
                                 )
                                 .executesPlayer((player, args) -> {
                                     if (this.isOnGrid(player)) {
-                                        Game game = this.manager.getOnGrid(player);
-                                        game.spawnChance = (double) args[0];
-                                        game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_SETTINGS_SPAWNCHANCE_SUCCESS, (String) args[0]));
+                                        if ((double) args[0] <= 100) {
+                                            Game game = this.manager.getOnGrid(player);
+                                            game.spawnChance = (double) args[0];
+                                            game.saveGame();
+                                            player.sendMessage(this.config.PREFIX + this.translator.COMMANDS_SETTINGS_SPAWNCHANCE_SUCCESS + args[0]);
+                                        } else {
+                                            this.logger.error(this.translator.Format(this.translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_CONSOLE, player.getDisplayName()));
+                                            player.sendMessage(this.config.PREFIX + this.translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_PLAYER);
+                                        }
                                     }
                                 })
                         )
@@ -243,7 +254,7 @@ public class Commands {
                                         Game game = this.manager.getOnGrid(player);
                                         game.moleSpeed = (double) args[0];
                                         game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_SETTINGS_MOLESPEED_SUCCESS, (String) args[0]));
+                                        player.sendMessage(this.config.PREFIX + this.translator.COMMANDS_SETTINGS_MOLESPEED_SUCCESS + args[0]);
                                     }
                                 })
                         )
@@ -261,7 +272,7 @@ public class Commands {
                                         Game game = this.manager.getOnGrid(player);
                                         game.difficultyScale = (double) args[0];
                                         game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + this.translator.Format(this.translator.COMMANDS_SETTINGS_DIFFICULTYSCALE_SUCCESS, (String) args[0]));
+                                        player.sendMessage(this.config.PREFIX + this.translator.COMMANDS_SETTINGS_DIFFICULTYSCALE_SUCCESS + args[0]);
                                     }
                                 })
                         )
@@ -279,7 +290,7 @@ public class Commands {
                                         Game game = this.manager.getOnGrid(player);
                                         game.difficultyPoints = (int) args[0];
                                         game.saveGame();
-                                        player.sendMessage(this.config.PREFIX + this.translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE_SUCCESS, (String) args[0]);
+                                        player.sendMessage(this.config.PREFIX + this.translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE_SUCCESS + args[0]);
                                     }
                                 })
                         )

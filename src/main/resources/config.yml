@@ -4,7 +4,7 @@
 # <------------------------------------------------------> #
 ############################################################
 
-Config Version: 1.1
+Config Version: 1.3
 
 # Welcome to the config file, here you can adjust the general settings of the plugin.
 # the lines must be in YAML format, so it doesn't accept tabs, only spaces.
@@ -26,8 +26,18 @@ Language: en_US
 
 # The message to display on the Actionbar (accepts only Json).
 Actionbar Message: '[{"text":""},{"text":"[","Bold":true,"color":"#000000"},{"text":"W","bold":true,"color":"#ffd700"},{"text":"h","bold":true,"color":"#ffce00"},{"text":"a","bold":true,"color":"#ffc600"},{"text":"c","bold":true,"color":"#ffbe00"},{"text":"k","bold":true,"color":"#ffb600"},{"text":"a","bold":true,"color":"#ffae00"},{"text":"M","bold":true,"color":"#ffa600"},{"text":"o","bold":true,"color":"#ff9e00"},{"text":"l","bold":true,"color":"#ff9600"},{"text":"e","bold":true,"color":"#ff8e00"},{"text":"] ","Bold":true,"color":"#000000"},{"text":"Your score is:","bold":true,"color":"#55ffff"}]'
+
 # Name of the hammer (accepts color codes and hex colors).
 Hammer Name: "&0&l[&6&lWAM&0&l] #28c000&lS#2fca00&lM#37d500&lA#3edf00&lS#46ea00&lH#4df400&lE#55ff00&lR"
+
+# Add your custom skin to the mole head. simple grab the link from an online database (like https://minecraft-heads.com/ ).
+# If you use minecraft-heads.com get the value code (it always starts with "eyJ0ZXh"... etc).
+# Default: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxMjUwM2Q2MWM0OWY3MDFmZWU4NjdkNzkzZjFkY2M1MjJlNGQ3YzVjNDFhNjhmMjk1MTU3OWYyNGU3Y2IyYSJ9fX0="
+Mole Skin: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxMjUwM2Q2MWM0OWY3MDFmZWU4NjdkNzkzZjFkY2M1MjJlNGQ3YzVjNDFhNjhmMjk1MTU3OWYyNGU3Y2IyYSJ9fX0="
+
+# Use the line below for the Jackpot skin.
+# Default: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlkZGZiMDNjOGY3Zjc4MDA5YjgzNDRiNzgzMGY0YTg0MThmYTRiYzBlYjMzN2EzMzA1OGFiYjdhMDVlOTNlMSJ9fX0="
+Jackpot Skin: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlkZGZiMDNjOGY3Zjc4MDA5YjgzNDRiNzgzMGY0YTg0MThmYTRiYzBlYjMzN2EzMzA1OGFiYjdhMDVlOTNlMSJ9fX0="
 
 
 ############################################################
@@ -81,12 +91,6 @@ Blocklist:
   - DISPENCER
   - DROPPER
   - END_PORTAL_FRAME
-
-#The list of blocks you can use for the second layer of the game
-Sub-List:
-  - BROWN_MUSHROOM_BLOCK
-  - MUSHROOM
-  - VERDANT_FROGLIGHT
 
 # Maximum size of a created field.
 Max playfield: 25

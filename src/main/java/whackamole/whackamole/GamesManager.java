@@ -74,7 +74,6 @@ public final class GamesManager implements Listener {
     }
 
     private boolean gameExists(String name) {
-        this.logger.info(name);
         for (Game game : games) {
             if (game.name.equalsIgnoreCase(name)) {
                 return true;
@@ -190,7 +189,7 @@ public final class GamesManager implements Listener {
                 } else if (game.hasCooldown(player.getUniqueId())) {
                     game.removeCooldown(player.getUniqueId());
                     player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
-                    e.getPlayer().sendMessage(Config.color(this.config.PREFIX + this.translator.MANAGER_TICKETUSE_SUCCESS));
+                    e.getPlayer().sendMessage(this.config.PREFIX + this.translator.MANAGER_TICKETUSE_SUCCESS);
                     e.setUseItemInHand(Event.Result.DENY);
                     player.getInventory().removeItem(this.config.TICKET);
 

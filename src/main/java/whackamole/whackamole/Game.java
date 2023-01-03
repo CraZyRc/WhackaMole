@@ -205,7 +205,7 @@ public class Game {
         if(this.Running) {
             BaseComponent[] actionMessage = new ComponentBuilder()
                     .append(ComponentSerializer.parse(this.config.ACTIONTEXT))
-                    .append((Config.color("&2&l ") + this.Score))
+                    .append((Translator.Color("&2&l ") + this.Score))
                     .create();
             this.gamePlayer.spigot().sendMessage(ChatMessageType.ACTION_BAR, actionMessage);
         }
@@ -218,14 +218,14 @@ public class Game {
                 BaseComponent[] resetMessage;
                 if (this.econ.currencyType == Econ.Currency.NULL) {
                     resetMessage = new ComponentBuilder()
-                            .append(Config.color(this.translator.GAME_ACTIONBAR_ERROR))
+                            .append(this.translator.GAME_ACTIONBAR_ERROR)
                             .create();
                 } else if (this.missedMoles.containsKey(cooldownEntry.getKey())) {
                     resetMessage = new ComponentBuilder()
                             .append(this.translator.Format(this.translator.GAME_ACTIONBAR_MOLEGAMEOVER, String.valueOf(this.missedMoles.get(cooldownEntry.getKey()))) + this.formatCooldown(cooldownEntry.getValue()))
                             .create();
                 }else {
-                    resetMessage = new ComponentBuilder().append(Config.color(this.translator.GAME_ACTIONBAR_GAMEOVER)
+                    resetMessage = new ComponentBuilder().append(this.translator.GAME_ACTIONBAR_GAMEOVER
                                     + this.formatCooldown(cooldownEntry.getValue()))
                             .create();
                 }

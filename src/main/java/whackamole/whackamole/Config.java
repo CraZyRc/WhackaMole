@@ -20,17 +20,17 @@ import java.util.*;
 import org.bukkit.enchantments.Enchantment;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public final class Config {
 
     private static Config Instance;
     private static Logger logger = Logger.getInstance();
     private Translator translator;
+    private String MOLE_SKIN;
+    private String JACKPOT_SKIN;
     public String language;
     public String configVersion;
-    public String newConfigVersion = "1.1";
+    public String newConfigVersion = "1.3";
     public YMLFile configFile;
     public String PREFIX;
     public String CURRENCY_SING;
@@ -42,7 +42,6 @@ public final class Config {
     public Sound HITSOUND;
     public Sound MISSSOUND;
     public List<?> MOLEBLOCK;
-    public List<?> SUBBLOCK;
     public String PERM_TICKET_USE;
     public String PERM_BUY;
     public String PERM_RELOAD;
@@ -94,9 +93,10 @@ public final class Config {
         this.HITSOUND           = this.configFile.getSound("HitSound");
         this.MISSSOUND          = this.configFile.getSound("MissedSound");
         this.MOLEBLOCK          = this.configFile.getList("Blocklist");
-        this.SUBBLOCK           = this.configFile.getList("Sub-List");
         this.ACTIONTEXT         = this.configFile.getString("Actionbar Message");
-        this.HAMMERNAME         = Config.color(this.configFile.getString("Hammer Name"));
+        this.MOLE_SKIN          = this.configFile.getString("Mole Skin");
+        this.JACKPOT_SKIN       = this.configFile.getString("Jackpot Skin");
+        this.HAMMERNAME         = Translator.Color(this.configFile.getString("Hammer Name"));
         this.PERM_TICKET_USE    = "WAM." + this.configFile.getString("Commands.Use Reset Ticket");
         this.PERM_BUY           = "WAM." + this.configFile.getString("Commands.Buy");
         this.PERM_RELOAD        = "WAM." + this.configFile.getString("Commands.Reload");
@@ -110,24 +110,7 @@ public final class Config {
         this.FiELD_MARGIN_Y     = this.configFile.getDouble("Field extension.height");
     }
 
-    public static String color(String message) {
-        Pattern pattern = Pattern.compile("#[a-fA-f0-9]{6}");
-        Matcher matcher = pattern.matcher(message);
-        while (matcher.find()) {
-            String hexCode = message.substring(matcher.start(), matcher.end());
-            String replaceSharp = hexCode.replace('#', 'x');
 
-            char[] ch = replaceSharp.toCharArray();
-            StringBuilder builder = new StringBuilder();
-            for (char c : ch) {
-                builder.append("&" + c);
-            }
-
-            message = message.replace(hexCode, builder.toString());
-            matcher = pattern.matcher(message);
-        }
-        return ChatColor.translateAlternateColorCodes('&', message);
-    }
 
     public static Config getInstance(Plugin main) {
         if (Config.Instance == null) {
@@ -166,21 +149,19 @@ public final class Config {
         ItemStack ticket = new ItemStack(Material.MAP);
         ItemMeta ticketInfo = ticket.getItemMeta();
         ticketInfo.addEnchant(Enchantment.LURE, 1, true);
-        ticketInfo.setDisplayName(Config.color(this.translator.CONFIG_TICKET_NAME));
+        ticketInfo.setDisplayName(this.translator.CONFIG_TICKET_NAME);
         ticketInfo.setLore(
                 Arrays.asList(
-                        Config.color(this.translator.CONFIG_TICKET_LORE1),
-                        Config.color(this.translator.CONFIG_TICKET_LORE2),
-                        Config.color(this.translator.CONFIG_TICKET_LORE3)));
+                        this.translator.CONFIG_TICKET_LORE1,
+                        this.translator.CONFIG_TICKET_LORE2,
+                        this.translator.CONFIG_TICKET_LORE3));
         ticketInfo.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
         ticket.setItemMeta(ticketInfo);
 
         this.PLAYER_AXE = axe;
         this.TICKET = ticket;
-        this.MOLE_SKULL = this.getSkull(
-                "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxMjUwM2Q2MWM0OWY3MDFmZWU4NjdkNzkzZjFkY2M1MjJlNGQ3YzVjNDFhNjhmMjk1MTU3OWYyNGU3Y2IyYSJ9fX0=");
-        this.JACKPOT_SKULL = this.getSkull(
-                "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlkZGZiMDNjOGY3Zjc4MDA5YjgzNDRiNzgzMGY0YTg0MThmYTRiYzBlYjMzN2EzMzA1OGFiYjdhMDVlOTNlMSJ9fX0=");
+        this.MOLE_SKULL = this.getSkull(this.MOLE_SKIN);
+        this.JACKPOT_SKULL = this.getSkull(this.JACKPOT_SKIN);
 
 
     }
