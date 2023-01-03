@@ -17,7 +17,8 @@ Want a new feature? Then please try and be specific in what you like, descrive h
  * Possibility to switch between using Vault or a Scoreboard.
  * Enable/Disable Jackpot spawns.
  * Decide what the game field is made out of, what block should be used for the moles to spawn on?
- * decide what sound should be played if a mole is to be hit or missed.
+ * Decide what sound should be played if a mole is to be hit or missed.
+ * Custom skins for the moles
  * Customisability for the hammer name and game message (Actionbar).
  * Mole spawning in 8 directions (North, North_east, East, South_east, South, South_west, West, North_west).
  * Choose yourself the speed of a mole, when it spawns, per how many hits the difficulty increases or how often a jackpot spawns (basically everything is   customizable.
