@@ -10,6 +10,7 @@ Please visit the [Issues](https://github.com/CraZyRc/WhackaMole/issues) tab to r
 Whenerver submitting a new request, please be as specific as possible. 
 Have a bug? Then please submit your error log and describe how you got that bug/error to happen.
 Want a new feature? Then please try and be specific in what you like, descrive how you see this feature happening.
+We offer additional support on our [Discord server](https://discord.gg/RNhtzvsBGP), go to: WAM Help and asdk your questions :) 
 
 
 ## Features:
