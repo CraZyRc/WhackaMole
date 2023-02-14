@@ -4,10 +4,8 @@ import java.io.File;
 import java.util.*;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -18,17 +16,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-
 public final class GamesManager implements Listener {
-
-    private final Config config = Config.getInstance();
-
-    private final Logger logger = Logger.getInstance();
-    private final Translator translator = Translator.getInstance();
 
     private List<Game> games = new ArrayList<>();
     private int runnableTickCounter = 0;
-    
+
     private static GamesManager Instance;
 
     public GamesManager() {
@@ -39,6 +31,7 @@ public final class GamesManager implements Listener {
         this.loadGames();
         Bukkit.getScheduler().scheduleSyncRepeatingTask(main, Tick, 1L, 1L);
     }
+
     public static GamesManager getInstance() {
         if (GamesManager.Instance == null) {
             GamesManager.Instance = new GamesManager();
@@ -54,20 +47,20 @@ public final class GamesManager implements Listener {
     }
 
     public void loadGames() {
-        File GamesFolder = this.config.gamesData;
+        File GamesFolder = new File(Config.AppConfig.storageFolder + "/games");
 
-        this.logger.info(this.translator.MANAGER_LOADINGGAMES);
-        
+        Logger.info(Translator.MANAGER_LOADINGGAMES);
+
         if (GamesFolder.list().length == 0) {
-            this.logger.warning(this.translator.MANAGER_NOGAMESFOUND);
+            Logger.warning(Translator.MANAGER_NOGAMESFOUND);
             return;
         }
 
         for (File i : GamesFolder.listFiles()) {
             try {
-                this.addGame(i);
+                this.addGame(new YMLFile(i));
             } catch (Exception e) {
-                this.logger.error(e.getMessage());
+                Logger.error(e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -82,29 +75,28 @@ public final class GamesManager implements Listener {
         return false;
     }
 
-    public void addGame(File gameName) {
+    public void addGame(YMLFile gameName) {
         this.games.add(new Game(gameName));
     }
+
     public void addGame(String gameName, Grid grid, Player player) throws Exception {
         if (this.gameExists(gameName)) {
-            throw new Exception(this.translator.Format(this.translator.MANAGER_NAMEEXISTS, gameName));
+            throw new Exception(Translator.Format(Translator.MANAGER_NAMEEXISTS, gameName));
         }
         this.games.add(new Game(gameName, grid, player));
     }
 
-    public void unloadGames(boolean saveGames) {
+    public void unloadGames() {
         for (Game game : games) {
-            game.unload(saveGames);
+            game.unload();
         }
         this.games.clear();
     }
 
-    
-    public void removeGame(Game game) {
-        game.deleteSave();
+    public void deleteGame(Game game) {
+        game.delete();
         this.games.remove(game);
     }
-
 
     public Game getOnGrid(Player player) {
         for (Game game : games) {
@@ -114,6 +106,7 @@ public final class GamesManager implements Listener {
         }
         return null;
     }
+
     Runnable Tick = () -> {
         for (Game game : GamesManager.this.games) {
             game.run();
@@ -123,7 +116,7 @@ public final class GamesManager implements Listener {
         if (GamesManager.this.runnableTickCounter >= 20) {
             GamesManager.this.runnableTickCounter = 0;
             for (Game game : GamesManager.this.games) {
-                game.displayActionBar();
+                game.updateActionBar();
             }
         }
         GamesManager.this.runnableTickCounter++;
@@ -133,18 +126,17 @@ public final class GamesManager implements Listener {
     public void onPlayerQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
         for (Game game : games) {
-            if (game.gamePlayer == player) game.onPlayerExit(player);
+            game.onPlayerExit(player);
         }
     }
+
     @EventHandler
     public void playerMoveEvent(PlayerMoveEvent event) {
         for (Game game : games) {
             if (game.onGrid(event.getPlayer())) {
-                if (!game.hasCooldown(event.getPlayer().getUniqueId())) {
-                    game.Start(event.getPlayer());
-                    break;
-                }
-            } else if (game.gamePlayer == event.getPlayer()) {
+                game.Start(event.getPlayer());
+                break;
+            } else if (game.getRunning().player == event.getPlayer()) {
                 game.Stop();
                 break;
             }
@@ -155,21 +147,23 @@ public final class GamesManager implements Listener {
     public void onHit(EntityDamageByEntityEvent e) {
         if (e.getDamager().getType() == EntityType.PLAYER) {
             for (Game game : this.games) {
-                if(game.handleHitEvent(e)) {
+                if (game.handleHitEvent(e)) {
                     break;
                 }
             }
         }
     }
+
     @EventHandler
     public void itemDrop(PlayerDropItemEvent e) {
-        if (e.getItemDrop().getItemStack().equals(this.config.PLAYER_AXE)) {
+        if (e.getItemDrop().getItemStack().equals(Config.Game.PLAYER_AXE)) {
             e.setCancelled(true);
         }
     }
+
     @EventHandler
     private void itemMove(InventoryClickEvent e) {
-        if (Objects.equals(e.getCurrentItem(), this.config.PLAYER_AXE)) {
+        if (Objects.equals(e.getCurrentItem(), Config.Game.PLAYER_AXE)) {
             e.setCancelled(true);
         }
     }
@@ -177,31 +171,25 @@ public final class GamesManager implements Listener {
     @EventHandler
     public void ticketUse(PlayerInteractEvent e) {
         Player player = e.getPlayer();
-        Game game = this.getOnGrid(player);
-        if (player.getInventory().getItemInMainHand().isSimilar(this.config.TICKET)
-            && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)
-        ) {
-            if (player.hasPermission(this.config.PERM_TICKET_USE)) {
-                if (game == null) {
-                    player.sendMessage(this.config.PREFIX + this.translator.MANAGER_TICKETUSE_GAMENOTFOUND);
-                    e.setCancelled(true);
 
-                } else if (game.hasCooldown(player.getUniqueId())) {
-                    game.removeCooldown(player.getUniqueId());
-                    player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
-                    e.getPlayer().sendMessage(this.config.PREFIX + this.translator.MANAGER_TICKETUSE_SUCCESS);
-                    e.setUseItemInHand(Event.Result.DENY);
-                    player.getInventory().removeItem(this.config.TICKET);
+        if (!player.getInventory().getItemInMainHand().isSimilar(Config.Game.TICKET))
+            return;
+        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK)
+            return;
 
-                } else {
-                    player.sendMessage(this.config.PREFIX + this.translator.MANAGER_TICKETUSE_NOCOOLDOWN);
-                    e.setCancelled(true);
-
-                }
-            } else {
-                player.sendMessage(this.config.PREFIX + this.translator.MANAGER_TICKETUSE_NOPERMISSION);
-                e.setCancelled(true);
-            }
+        if (!player.hasPermission(Config.Permissions.PERM_TICKET_USE)) {
+            player.sendMessage(Config.AppConfig.PREFIX + Translator.MANAGER_TICKETUSE_NOPERMISSION);
+            e.setCancelled(true);
+            return;
         }
+
+        Game game = this.getOnGrid(player);
+        if (game == null) {
+            player.sendMessage(Config.AppConfig.PREFIX + Translator.MANAGER_TICKETUSE_GAMENOTFOUND);
+            e.setCancelled(true);
+            return;
+        }
+
+        game.useTicket(e);
     }
 }

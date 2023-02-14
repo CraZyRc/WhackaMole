@@ -6,7 +6,7 @@
 
     <groupId>WhackaMole</groupId>
     <artifactId>WhackaMole</artifactId>
-    <version>1.19.2 v1.1</version>
+    <version>1.8</version>
     <packaging>jar</packaging>
 
     <name>WhackaMole</name>
@@ -41,7 +41,7 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <outputFile>[LOCATION]/WhackaMole 1.19.2.jar</outputFile>
+                            <outputFile>/target/WhackaMole.jar</outputFile>
                             <relocations>
                                 <relocation>
                                     <pattern>dev.jorel.commandapi</pattern>
@@ -86,7 +86,7 @@
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
             <version>1.19.2-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <scope>provided</scope> 
         </dependency>
         <dependency>
             <groupId>dev.jorel</groupId>
@@ -98,6 +98,23 @@
             <groupId>dev.jorel</groupId>
             <artifactId>commandapi-shade</artifactId>
             <version>8.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.18.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.seeseemelk</groupId>
+            <artifactId>MockBukkit-v1.19</artifactId>
+            <version>2.29.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

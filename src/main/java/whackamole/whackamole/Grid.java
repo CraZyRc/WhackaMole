@@ -27,13 +27,13 @@ class Grid {
         }
     };
 
-    private final Config config = Config.getInstance();
-    private final Translator translator = Translator.getInstance();
-
     public ArrayList<Mole> entityList = new ArrayList<>();
 
     public ArrayList<Block> grid;
     public World world;
+
+    public Grid() {
+    }
 
     public Grid(World world, ArrayList<Block> grid) {
         this.world = world;
@@ -45,7 +45,6 @@ class Grid {
         Block startBlock = world.getBlockAt(player.getLocation().subtract(0, 1, 0));
         this.grid = this.findGrid(startBlock);
     }
-
 
     private ArrayList<Block> findGrid(Block startBlock) throws Exception {
         ArrayList<Block> returnList = new ArrayList<>();
@@ -64,9 +63,9 @@ class Grid {
         }
 
         if (returnList.isEmpty()) {
-            throw new Exception(this.translator.GRID_EMPTYGRID);
-        } else if (returnList.size() > this.config.FIELD_MAX_SIZE) {
-            throw new Exception(this.translator.GRID_INVALIDSIZE);
+            throw new Exception(Translator.GRID_EMPTYGRID.toString());
+        } else if (returnList.size() > Config.Game.FIELD_MAX_SIZE) {
+            throw new Exception(Translator.GRID_INVALIDSIZE.toString());
         }
         return returnList;
     }
@@ -75,13 +74,12 @@ class Grid {
         ArrayList<Block> returnlist = new ArrayList<>();
         for (Vector vector : neighborList) {
             Block CurBlock = this.world.getBlockAt(MiddleBlock.getLocation().add(vector));
-            if (this.config.MOLEBLOCK.contains(CurBlock.getType().name())) {
+            if (Config.Game.MOLEBLOCK.contains(CurBlock.getType().name())) {
                 returnlist.add(CurBlock);
             }
         }
         return returnlist;
     }
-
 
     public boolean onGrid(Player player) {
         return this.onGrid(player.getLocation());
@@ -91,16 +89,16 @@ class Grid {
         for (Block block : this.grid) {
             Location blockLoc = block.getLocation().add(0.5, 0, 0.5);
 
-            if( (Math.abs(blockLoc.getX() - loc.getX()) <= this.config.FiELD_MARGIN_X) // * X
-            &&  (Math.abs(blockLoc.getY() - loc.getY()) <= this.config.FiELD_MARGIN_Y && blockLoc.getY() < loc.getY()) // * Y
-            &&  (Math.abs(blockLoc.getZ() - loc.getZ()) <= this.config.FiELD_MARGIN_X) // * Z
+            if ((Math.abs(blockLoc.getX() - loc.getX()) <= Config.Game.FiELD_MARGIN_X) // * X
+                    && (Math.abs(blockLoc.getY() - loc.getY()) <= Config.Game.FiELD_MARGIN_Y
+                            && blockLoc.getY() < loc.getY()) // * Y
+                    && (Math.abs(blockLoc.getZ() - loc.getZ()) <= Config.Game.FiELD_MARGIN_X) // * Z
             ) {
                 return true;
             }
         }
         return false;
     }
-
 
     public void spawnRandomEntity(MoleType type, double moleSpeed, BlockFace Rotation) {
         Random random = new Random();
@@ -109,26 +107,27 @@ class Grid {
     }
 
     public void spawnEntity(Block block, MoleType type, double moleSpeed, BlockFace Rotation) {
-        this.spawnEntity(block.getLocation().clone().add(0.5, -1.5, 0.5).setDirection(Rotation.getDirection()), type, moleSpeed);
+        this.spawnEntity(block.getLocation().clone().add(0.5, -1.5, 0.5).setDirection(Rotation.getDirection()), type,
+                moleSpeed);
     }
+
     public void spawnEntity(Location loc, MoleType type, double moleSpeed) {
         this.entityList.add(
-            new Mole(
-                type,
-                (ArmorStand) this.world.spawnEntity(loc, EntityType.ARMOR_STAND),
-                moleSpeed
-            )
-        );
+                new Mole(
+                        type,
+                        (ArmorStand) this.world.spawnEntity(loc, EntityType.ARMOR_STAND),
+                        moleSpeed));
     }
 
     public void removeEntities() {
-        for (int i = this.entityList.size() -1; i >= 0; i--) {
+        for (int i = this.entityList.size() - 1; i >= 0; i--) {
             this.entityList.get(i).unload();
         }
         this.entityList.clear();
     }
+
     public void removeEntities(MoleState state) {
-        for (int i = this.entityList.size() -1; i >= 0; i--) {
+        for (int i = this.entityList.size() - 1; i >= 0; i--) {
             if (this.entityList.get(i).state == state) {
                 this.entityList.get(i).unload();
                 this.entityList.remove(i);
@@ -136,39 +135,35 @@ class Grid {
         }
     }
 
-
     public int entityUpdate() {
         this.removeEntities(MoleState.Hidden);
         int missedCount = 0;
-        for(Mole mole : this.entityList) {
-            if(mole.state == MoleState.Missed) missedCount++;
+        for (Mole mole : this.entityList) {
+            if (mole.state == MoleState.Missed)
+                missedCount++;
             mole.update();
         }
         return missedCount;
     }
 
-
     public Mole handleHitEvent(Entity e) {
-        for(Mole mole : this.entityList) {
-            if(mole.equals(e) && mole.isMoving()) {
+        for (Mole mole : this.entityList) {
+            if (mole.equals(e) && mole.isMoving()) {
                 return mole;
             }
         }
         return null;
     }
 
-
     public List<List<Integer>> Serialize() {
         List<List<Integer>> outList = new ArrayList<>();
         for (Block block : this.grid) {
             Location loc = block.getLocation();
             outList.add(
-                new ArrayList<>(Arrays.asList(
-                    (int) loc.getX(),
-                    (int) loc.getY(),
-                    (int) loc.getZ())
-                )
-            );
+                    new ArrayList<>(Arrays.asList(
+                            (int) loc.getX(),
+                            (int) loc.getY(),
+                            (int) loc.getZ())));
         }
         return outList;
     }
@@ -180,8 +175,7 @@ class Grid {
             grid.add(world.getBlockAt(
                     (Integer) loc.get(0),
                     (Integer) loc.get(1),
-                    (Integer) loc.get(2)
-            ));
+                    (Integer) loc.get(2)));
         }
         return new Grid(world, grid);
     }
