@@ -15,7 +15,7 @@ public class YMLFile {
     public boolean created = false;
 
     public YMLFile(String folderString, String child) throws FileNotFoundException {
-        this(new File(folderString, child));
+        this(new File(folderString), child);
     }
 
     public YMLFile(File folder, String child) throws FileNotFoundException {
@@ -64,11 +64,12 @@ public class YMLFile {
 
     public void save() throws IOException {
         this.FileConfig.save(this.file);
-        Logger.success(Translator.YML_SAVEDFILE.Format(this.file));
+        Logger.success(Translator.YML_SAVEDFILE.Format(this));
     }
 
     public void load() {
         try {
+            if(!this.file.exists()) created = true;
             this.FileConfig.load(this.file);
         } catch (Exception e) {
             this.createFile();
@@ -77,7 +78,7 @@ public class YMLFile {
 
     public void remove() {
         this.file.delete();
-        Logger.success(Translator.YML_DELETEDFILE.Format(this.file));
+        Logger.success(Translator.YML_DELETEDFILE.Format(this));
     }
 
     public void createFile() {
@@ -86,7 +87,7 @@ public class YMLFile {
                 this.load();
             }
         } catch (Exception e) {
-            Logger.error(Translator.YML_CREATEFAIL.Format(this.file));
+            Logger.error(Translator.YML_CREATEFAIL.Format(this));
             e.printStackTrace();
         }
     }

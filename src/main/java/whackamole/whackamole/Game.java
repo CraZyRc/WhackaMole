@@ -20,7 +20,7 @@ import org.bukkit.entity.*;
 import java.util.*;
 
 public class Game {
-    public final BlockFace[] Directions = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST,
+    public BlockFace[] Directions = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST,
             BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST };
 
     private class CooldownList {
@@ -139,7 +139,7 @@ public class Game {
         private YMLFile gameConfig;
 
         public GameFile() {
-            gameConfig = new YMLFile(Config.AppConfig.storageFolder + "/games/" + name);
+            gameConfig = new YMLFile(Config.AppConfig.storageFolder + "/Games/" + name + ".yml");
             this.save();
         }
 
@@ -151,42 +151,37 @@ public class Game {
         // @SuppressWarnings("deprecation")
         public void save() {
             List<String> header = Arrays.asList(
-                    "###########################################################",
-                    "\n ^------------------------------------------------------^ #",
-                    "\n |                       GameFile                       | #",
-                    "\n <------------------------------------------------------> #",
-                    "\n###########################################################",
-                    "\n " + Translator.GAME_CONFIG_FIRSTNOTE,
-                    "\n " + Translator.GAME_CONFIG_SECONDNOTE,
-                    "\n " + Translator.GAME_CONFIG_THIRDNOTE,
-                    "\n",
-                    "\n",
-                    "\n###########################################################",
-                    "\n ^------------------------------------------------------^ #",
-                    "\n |                      Explanation                     | #",
-                    "\n <------------------------------------------------------> #",
-                    "\n###########################################################",
-                    "\n " + Translator.GAME_CONFIG_NAME,
-                    "\n " + Translator.GAME_CONFIG_DIRECTION,
-                    "\n " + Translator.GAME_CONFIG_JACKPOT,
-                    "\n " + Translator.GAME_CONFIG_JACKPOTSPAWN,
-                    "\n " + Translator.GAME_CONFIG_GAMELOST,
-                    "\n " + Translator.GAME_CONFIG_POINTSPERKILL,
-                    "\n " + Translator.GAME_CONFIG_SPAWNRATE,
-                    "\n " + Translator.GAME_CONFIG_SPAWNCHANCE,
-                    "\n " + Translator.GAME_CONFIG_MOLESPEED,
-                    "\n " + Translator.GAME_CONFIG_DIFFICULTYSCALE,
-                    "\n " + Translator.GAME_CONFIG_DIFFICULTYINCREASE,
-                    "\n " + Translator.GAME_CONFIG_COOLDOWN,
-                    "\n " + Translator.GAME_CONFIG_ENDMESSAGE,
-                    "\n ");
+                    "############################################################",
+                    "# ^------------------------------------------------------^ #",
+                    "# |                       GameFile                       | #",
+                    "# <------------------------------------------------------> #",
+                    "############################################################",
+                    "# " + Translator.GAME_CONFIG_FIRSTNOTE,
+                    "# " + Translator.GAME_CONFIG_SECONDNOTE,
+                    "# " + Translator.GAME_CONFIG_THIRDNOTE,
+                    "#",
+                    "#",
+                    "############################################################",
+                    "# ^------------------------------------------------------^ #",
+                    "# |                      Explanation                     | #",
+                    "# <------------------------------------------------------> #",
+                    "############################################################",
+                    "# " + Translator.GAME_CONFIG_NAME,
+                    "# " + Translator.GAME_CONFIG_DIRECTION,
+                    "# " + Translator.GAME_CONFIG_JACKPOT,
+                    "# " + Translator.GAME_CONFIG_JACKPOTSPAWN,
+                    "# " + Translator.GAME_CONFIG_GAMELOST,
+                    "# " + Translator.GAME_CONFIG_POINTSPERKILL,
+                    "# " + Translator.GAME_CONFIG_SPAWNRATE,
+                    "# " + Translator.GAME_CONFIG_SPAWNCHANCE,
+                    "# " + Translator.GAME_CONFIG_MOLESPEED,
+                    "# " + Translator.GAME_CONFIG_DIFFICULTYSCALE,
+                    "# " + Translator.GAME_CONFIG_DIFFICULTYINCREASE,
+                    "# " + Translator.GAME_CONFIG_COOLDOWN,
+                    "# " + Translator.GAME_CONFIG_ENDMESSAGE,
+                    "# ");
 
-            // if (Bukkit.getVersion().substring(Bukkit.getVersion().lastIndexOf('.') +
-            // 1).contains("1.17")) {
-            // this.gameConfig.FileConfig.options().header(String.join("", header));
-            // } else {
             this.gameConfig.FileConfig.options().setHeader(header);
-            // }
 
             this.gameConfig.set("Properties.Name", Game.this.name);
             this.gameConfig.set("Properties.Direction", Game.this.settings.spawnRotation.name());
@@ -223,7 +218,7 @@ public class Game {
             Game.this.settings.difficultyScale = this.gameConfig.getDouble("Properties.Difficulty scaling");
             Game.this.settings.difficultyScore = this.gameConfig.getInt("Properties.Difficulty increase");
             Game.this.settings.Cooldown = this.gameConfig.getString("Properties.Cooldown");
-            Logger.success(Translator.GAME_LOADSUCCESS.Format(this.gameConfig.file));
+            Logger.success(Translator.GAME_LOADSUCCESS.Format(this.gameConfig));
         }
 
         public void delete() {
@@ -264,16 +259,16 @@ public class Game {
         }
     }
 
-    protected class Runnable {
+    public class GameRunner {
         public Player player;
         public int score = 0, missed = 0, difficultyModifier = 0;
 
         public double moleSpeed = settings.moleSpeed, interval = settings.Interval, spawnChance = settings.spawnChance;
 
-        public Runnable() {
+        public GameRunner() {
         }
 
-        public Runnable(Player player) throws Exception {
+        public GameRunner(Player player) throws Exception {
             if (!Start(player))
                 throw new Exception("Failed to start game");
         }
@@ -286,8 +281,10 @@ public class Game {
             }
 
             if (cooldown.contains(player)
-                    || player.hasPermission(Config.Permissions.PERM_PLAY))
+            // || player.hasPermission(Config.Permissions.PERM_PLAY)
+            ) {
                 return false;
+            }
 
             if (!givePlayerAxe(player)) {
                 player.sendMessage(Config.AppConfig.PREFIX + Translator.GAME_START_FULLINVENTORY);
@@ -315,7 +312,7 @@ public class Game {
 
         private boolean givePlayerAxe(Player player) {
             PlayerInventory inventory = player.getInventory();
-            if (!inventory.getItemInMainHand().getType().equals(Material.AIR)) {
+            if (!inventory.getItemInMainHand().equals(Material.AIR)) {
                 if (inventory.firstEmpty() != -1) {
                     inventory.setItem(inventory.firstEmpty(),
                             inventory.getItemInMainHand());
@@ -331,11 +328,11 @@ public class Game {
         }
 
         private void sendScoreToPlayer(Player player, int score) {
-            player.sendMessage(Config.AppConfig.PREFIX + Translator.Format(
-                    (score == 0) ? Translator.GAME_STOP_REWARD_NONE
-                            : (score == 1) ? Translator.GAME_STOP_REWARD_SING
-                                    : Translator.GAME_STOP_REWARD_PLUR,
-                    String.valueOf(score)));
+            var message = "";
+            if(score == 0) message = Translator.GAME_STOP_REWARD_NONE.Format(); 
+            if(score == 1) message = Translator.GAME_STOP_REWARD_SING.Format(Game.this); 
+            if(score >  1) message = Translator.GAME_STOP_REWARD_PLUR.Format(Game.this); 
+            player.sendMessage(Config.AppConfig.PREFIX + message);
         }
 
         public void moleHit(Mole mole) {
@@ -366,11 +363,12 @@ public class Game {
     }
 
     private Econ econ = new Econ();
-    private Settings settings;
-    private CooldownList cooldown;
-    private Scoreboard scoreboard;
+    private Settings settings = new Settings();
+    private CooldownList cooldown = new CooldownList();
+    private Scoreboard scoreboard = new Scoreboard();
     private GameFile gameFile;
-    private Runnable game;
+    private GameRunner game;
+    private boolean disabled = false;
 
     public String name;
     private World world;
@@ -386,6 +384,7 @@ public class Game {
         this.name = formatName(name);
         this.settings.spawnRotation = Directions[Math.round(player.getLocation().getYaw() / 45) & 0x7];
         this.grid = grid;
+        this.gameFile = new GameFile();
     }
 
     private String formatName(String name) {
@@ -398,9 +397,11 @@ public class Game {
         try {
             if (this.game != null)
                 return;
-            this.game = new Runnable(player);
+            this.game = new GameRunner(player);
         } catch (Exception e) {
+            Logger.error(e.getMessage());
             this.game = null;
+            this.disabled = true;
         }
     }
 
@@ -420,11 +421,11 @@ public class Game {
             this.gameFile.delete();
     }
 
-    public Runnable getRunning() {
+    public GameRunner getRunning() {
         if (this.game != null) {
             return this.game;
         }
-        return new Runnable();
+        return new GameRunner();
     }
 
     public Settings getSettings() {
@@ -487,6 +488,8 @@ public class Game {
         // * Player cooldown hook
         this.cooldown.onGridHook(playerOnGrid, player);
 
+        this.Start(player);
+
         return playerOnGrid;
     }
 
@@ -525,14 +528,13 @@ public class Game {
 
     public void moleUpdater() {
         int missed = this.grid.entityUpdate();
-        if (missed > 0) {
+        if (this.game != null && missed > 0) {
+            this.game.missed += missed;
             this.game.player.playSound(game.player.getLocation(), Config.Game.MISSSOUND, 1, 1);
-            this.game.player.sendMessage(Config.AppConfig.PREFIX + Translator.Format(Translator.GAME_MOLEMISSED,
-                    String.valueOf((this.game.missed + missed)), String.valueOf(this.settings.maxMissed)));
-        }
-        this.game.missed += missed;
-        if (this.game.missed >= this.settings.maxMissed) {
-            this.Stop();
+            this.game.player.sendMessage(Config.AppConfig.PREFIX + Translator.GAME_MOLEMISSED.Format(this));
+            if (this.getRunning().missed >= this.settings.maxMissed) {
+                this.Stop();
+            }
         }
     }
 
@@ -566,7 +568,7 @@ public class Game {
             Tick++;
             if (Tick >= gameInterval) {
                 double Speed = 1 / (this.game.moleSpeed * 10);
-                final int DROP = random.nextInt(100);
+                int DROP = random.nextInt(100);
                 if (DROP <= this.game.spawnChance) {
                     if (this.settings.Jackpot) {
                         if (DROP <= this.settings.jackpotSpawn) {

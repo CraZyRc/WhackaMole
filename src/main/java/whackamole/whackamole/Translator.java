@@ -1,7 +1,5 @@
 package whackamole.whackamole;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -42,7 +40,7 @@ public enum Translator {
     ,   GAME_ACTIONBAR_MOLEGAMEOVER                         ("Game.Actionbar.moleGameOver", Game.class)
     ,   GAME_ACTIONBAR_GAMEOVER                             ("Game.Actionbar.gameOver")
     ,   GAME_MOLEMISSED                                     ("Game.moleMissed", Game.class)
-    ,   GAME_LOADSUCCESS                                    ("Game.loadSuccess", String.class)
+    ,   GAME_LOADSUCCESS                                    ("Game.loadSuccess", YMLFile.class)
     ,   GAME_CONFIG_FIRSTNOTE                               ("Game.Config.firstNote")
     ,   GAME_CONFIG_SECONDNOTE                              ("Game.Config.secondNote")
     ,   GAME_CONFIG_THIRDNOTE                               ("Game.Config.thirdNote")
@@ -71,9 +69,9 @@ public enum Translator {
     ,   COMMANDS_TIPS_DIFFICULTYSCALE                       ("Commands.Tips.difficultyScale")
     ,   COMMANDS_TIPS_DIFFICULTYINCREASE                    ("Commands.Tips.difficultyIncrease")
     ,   COMMANDS_CREATE                                     ("Commands.Create")
-    ,   COMMANDS_CREATE_SUCCESS                             ("Commands.Create.Success", String.class)
+    ,   COMMANDS_CREATE_SUCCESS                             ("Commands.Create.Success")
     ,   COMMANDS_REMOVE                                     ("Commands.Remove")
-    ,   COMMANDS_REMOVE_CONFIRM                             ("Commands.Remove.Confirm", String.class)
+    ,   COMMANDS_REMOVE_CONFIRM                             ("Commands.Remove.Confirm")
     ,   COMMANDS_REMOVE_SUCCESS                             ("Commands.Remove.Success")
     ,   COMMANDS_BUY                                        ("Commands.Buy")
     ,   COMMANDS_BUY_FULLINVENTORY                          ("Commands.Buy.fullInventory")
@@ -144,9 +142,10 @@ public enum Translator {
         return Format(type, new Object[0]);
     }
     public static String Format(Translator type, Object... replacements) {
-        assertEquals("Translation format", typesToString(type.requiredTypes), typesToString(replacements));     
+        if(!typesToString(type.requiredTypes).equals(typesToString(replacements))) {
+            Logger.error("Translator format failed for " + type.key + ": " + typesToString(type.requiredTypes) + " | "+ typesToString(replacements));
+        }
 
-        // type.LookupTranslation();
 
         // * Config formatting
         type.configFormat();
@@ -202,9 +201,10 @@ public enum Translator {
         List<String> out = new ArrayList<String>();
         for(Object i : types) {
             String name = "";
-            if(i instanceof Class) name = ((Class<?>) i).getName();
+            if(i == null) name = "null";
+            else if(i instanceof Class) name = ((Class<?>) i).getName();
             else name = i.getClass().getName();
-            out.add(name.substring(name.lastIndexOf('.') + 1).replace("Mock", ""));
+            out.add(name.substring(name.lastIndexOf('.') + 1));
         }
         if(types.length == 0) return "";
         else return " '" + String.join("', '", out) + "' ";

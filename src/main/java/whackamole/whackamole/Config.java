@@ -31,7 +31,7 @@ public class Config {
         public final static String configVersion = "1.4";
         public final static String configFileName = "config.yml";
 
-        public static String storageFolder,
+        public static String storageFolder = "./plugins/WhackaMole",
                 PREFIX = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
 
         private static void LoadConfig(YMLFile configFile) {
@@ -128,7 +128,7 @@ public class Config {
     }
 
     public static void onLoad(Plugin Main) {
-        AppConfig.storageFolder = Main.getDataFolder().getAbsolutePath();
+        Logger.info(Main.getDataFolder().getPath());
         try {
             ConfigFile = new YMLFile(AppConfig.storageFolder, AppConfig.configFileName);
         } catch (Exception e) {

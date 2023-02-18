@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class Commands {
     private Econ econ = new Econ();
-    public GamesManager manager;
+    public GamesManager manager = GamesManager.getInstance();
 
     private final Hashtable<UUID, Long> buyTicket = new Hashtable<>();
     private final Hashtable<UUID, Long> removeGame = new Hashtable<>();
@@ -154,7 +154,8 @@ public class Commands {
                                                     + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_SUCCESS.Format()
                                                     + args[0]);
                                         } else {
-                                            Logger.error(Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_CONSOLE.Format(player.getDisplayName()));
+                                            Logger.error(Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_CONSOLE
+                                                    .Format(player.getDisplayName()));
                                             player.sendMessage(Config.AppConfig.PREFIX
                                                     + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_PLAYER);
                                         }
@@ -229,7 +230,8 @@ public class Commands {
                                                     + Translator.COMMANDS_SETTINGS_SPAWNCHANCE_SUCCESS.Format()
                                                     + args[0]);
                                         } else {
-                                            Logger.error(Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_CONSOLE.Format(player.getDisplayName()));
+                                            Logger.error(Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_CONSOLE
+                                                    .Format(player.getDisplayName()));
                                             player.sendMessage(Config.AppConfig.PREFIX
                                                     + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_PLAYER);
                                         }
@@ -291,22 +293,19 @@ public class Commands {
                 .withSubcommand(new CommandAPICommand(Translator.COMMANDS_RELOAD.Format())
                         .withPermission(Config.Permissions.PERM_RELOAD)
                         .executes((sender, args) -> {
-                            this.manager.unloadGames();
+                            this.manager.onUnload();
+
                             Config.onLoad(main);
                             Translator.onLoad();
-                            Econ.onLoad();
+                            Econ.onEnable();
+                            this.manager.onLoad(main);
 
-                            this.manager.loadGames();
                             sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_RELOAD_SUCCESS);
                             Logger.success("Done! V" + main.getDescription().getVersion());
                             return 0;
 
                         }))
                 .register();
-    }
-
-    public void onEnable() {
-        this.manager = GamesManager.getInstance();
     }
 
     private boolean buyConfirmation(UUID player) {
@@ -334,8 +333,7 @@ public class Commands {
         if (game != null) {
             return true;
         } else {
-            Logger.error(
-                    Translator.COMMANDS_ONGRID_FAIL_CONSOLE.Format(player.getDisplayName()));
+            Logger.error(Translator.COMMANDS_ONGRID_FAIL_CONSOLE.Format(player.getDisplayName()));
             throw CommandAPI.fail(Config.AppConfig.PREFIX + Translator.COMMANDS_ONGRID_FAIL_PLAYER);
         }
     }

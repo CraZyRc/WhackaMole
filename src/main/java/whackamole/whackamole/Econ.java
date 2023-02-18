@@ -24,7 +24,7 @@ public class Econ {
     public Econ() {
     }
 
-    public static void onLoad() {
+    public static void onEnable() {
         try {
             currencyType = Currency.valueOf(Config.Currency.ECONOMY);
         } catch (IllegalArgumentException e) {
@@ -65,11 +65,14 @@ public class Econ {
     }
 
     private static boolean setupScoreboard(String objective) {
-        if (Objects.requireNonNull(Bukkit.getScoreboardManager()).getMainScoreboard().getObjective(objective) != null) {
-            Objective = Objects.requireNonNull(Bukkit.getScoreboardManager()).getMainScoreboard()
-                    .getObjective(objective);
-            return true;
-        } else {
+        try {
+            if (Bukkit.getScoreboardManager().getMainScoreboard().getObjective(objective) != null) {
+                Objective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective(objective);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
             return false;
         }
     }

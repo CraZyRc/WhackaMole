@@ -15,22 +15,14 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
 
 public final class GamesManager implements Listener {
 
-    private List<Game> games = new ArrayList<>();
-    private int runnableTickCounter = 0;
-
     private static GamesManager Instance;
+    private List<Game> games = new ArrayList<>();
 
-    public GamesManager() {
-
-    }
-
-    public GamesManager(Main main) {
-        this.loadGames();
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(main, Tick, 1L, 1L);
-    }
+    private GamesManager() {}
 
     public static GamesManager getInstance() {
         if (GamesManager.Instance == null) {
@@ -39,19 +31,23 @@ public final class GamesManager implements Listener {
         return GamesManager.Instance;
     }
 
-    public static GamesManager getInstance(Main main) {
-        if (GamesManager.Instance == null) {
-            GamesManager.Instance = new GamesManager(main);
-        }
-        return GamesManager.Instance;
+    private int tickId = -1;
+    public void onLoad(Plugin main) {
+        this.loadGames();
+        this.tickId = Bukkit.getScheduler().scheduleSyncRepeatingTask(main, Tick, 1L, 1L);
+    }
+
+    public void onUnload() {
+        this.unloadGames();
+        Bukkit.getScheduler().cancelTask(this.tickId);
     }
 
     public void loadGames() {
-        File GamesFolder = new File(Config.AppConfig.storageFolder + "/games");
+        File GamesFolder = new File(Config.AppConfig.storageFolder + "/Games");
 
         Logger.info(Translator.MANAGER_LOADINGGAMES);
 
-        if (GamesFolder.list().length == 0) {
+        if (GamesFolder.list() == null) {
             Logger.warning(Translator.MANAGER_NOGAMESFOUND);
             return;
         }
@@ -107,6 +103,7 @@ public final class GamesManager implements Listener {
         return null;
     }
 
+    private int runnableTickCounter = 0;
     Runnable Tick = () -> {
         for (Game game : GamesManager.this.games) {
             game.run();
