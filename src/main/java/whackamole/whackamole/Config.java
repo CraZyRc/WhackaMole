@@ -140,7 +140,7 @@ public class Config {
             Logger.info(Translator.YML_CREATEFILE.Format(ConfigFile));
         }
 
-        if (!AppConfig.configVersion.equals(ConfigFile.getString("Config Version"))) {
+        if(Updater.versionCompare(ConfigFile.getString("Config Version"), AppConfig.configVersion)) {
             Logger.warning(Translator.CONFIG_OLDVERSION.Format(ConfigFile.getString("Config Version")));
         }
 

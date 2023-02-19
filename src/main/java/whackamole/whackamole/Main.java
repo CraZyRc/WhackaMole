@@ -28,12 +28,8 @@ public final class Main extends JavaPlugin {
         CommandAPI.onEnable(this);
         
         this.getServer().getPluginManager().registerEvents(this.manager, this);
-        new Updater(this, 106405).getVersion(version -> {
-            if (!this.getDescription().getVersion().equals(version)) {
-                Logger.warning(Translator.MAIN_OLDVERSION);
-            }
-        });
-
+        
+        new Updater(this, 106405);
         Logger.success("Done! V" + getDescription().getVersion());
     }
 
