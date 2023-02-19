@@ -28,10 +28,10 @@ import whackamole.whackamole.Mole.MoleState;
 import whackamole.whackamole.Mole.MoleType;
 
 public class Game {
-    public BlockFace[] Directions = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST,
+    public static final BlockFace[] Directions = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST,
             BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST };
 
-    private class CooldownList {
+    public class CooldownList {
         private HashMap<UUID, Long> cooldown = new HashMap<>();
 
         private void add(Player player) {
@@ -126,7 +126,7 @@ public class Game {
 
     }
 
-    private class GameFile {
+    public class GameFile {
         private YMLFile gameConfig;
 
         public GameFile() {
@@ -218,7 +218,7 @@ public class Game {
 
     }
 
-    private class Scoreboard {
+    public class Scoreboard {
 
         private class Score {
             private Player player;
@@ -361,7 +361,6 @@ public class Game {
     private GameRunner game;
 
     private List<UUID> currentyOnGird = new ArrayList<>();
-
     private boolean disabled = false;
 
     public String name;
@@ -533,19 +532,6 @@ public class Game {
             new ComponentBuilder()
                 .append(Translator.GAME_ACTIONBAR_GAMEOVER + this.cooldown.getText(player))
                 .create());
-
-    }
-
-    public void moleUpdater() {
-        int missed = this.grid.entityUpdate();
-        if (this.game != null && missed > 0) {
-            this.game.missed += missed;
-            this.game.player.playSound(game.player.getLocation(), Config.Game.MISSSOUND, 1, 1);
-            this.game.player.sendMessage(Config.AppConfig.PREFIX + Translator.GAME_MOLEMISSED.Format(this));
-            if (this.getRunning().missed >= this.settings.maxMissed) {
-                this.Stop();
-            }
-        }
     }
 
     public boolean handleHitEvent(EntityDamageByEntityEvent e) {
@@ -568,6 +554,18 @@ public class Game {
         player.spawnParticle(Particle.COMPOSTER, mole.mole.getLocation().add(0, 1.75, 0), 10, 0.1, 0.1, 0.1, 0);
 
         return true;
+    }
+
+    public void moleUpdater() {
+        int missed = this.grid.entityUpdate();
+        if (this.game != null && missed > 0) {
+            this.game.missed += missed;
+            this.game.player.playSound(game.player.getLocation(), Config.Game.MISSSOUND, 1, 1);
+            this.game.player.sendMessage(Config.AppConfig.PREFIX + Translator.GAME_MOLEMISSED.Format(this));
+            if (this.getRunning().missed >= this.settings.maxMissed) {
+                this.Stop();
+            }
+        }
     }
 
     private int Tick = 0;
