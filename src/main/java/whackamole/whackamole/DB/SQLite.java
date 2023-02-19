@@ -1,34 +1,92 @@
-package whackamole.whackamole;
+package whackamole.whackamole.DB;
 
 import org.bukkit.block.BlockFace;
 
+import whackamole.whackamole.Config;
+import whackamole.whackamole.Logger;
+
+import java.io.File;
 import java.sql.*;
 import java.util.UUID;
 
 public class SQLite {
-    private static SQLite Instance;
     private static String url = "jdbc:sqlite:" + Config.AppConfig.storageFolder+ "/Storage.db";
+    
+    private SQLite() {}
 
-    public static Connection connect() {
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection(url);
-        } catch (SQLException e) {
-            Logger.error(e.getMessage());
-        }
-        return conn;
-    }
-
+    private static SQLite Instance;
     public static SQLite getInstance() {
         if (SQLite.Instance == null) {
             SQLite.Instance = new SQLite();
         }
         return SQLite.Instance;
     }
+    
+    public static void onLoad() {
+        var dbFile = new File(Config.AppConfig.storageFolder + "/Storage.db");
+        if(!dbFile.exists()) {
+            getGameDB().create();
+        }
+    }
+
+    private static Connection connection;
+    private static Connection getConnection() {
+        if (SQLite.connection == null) {
+            try {
+                SQLite.connection = DriverManager.getConnection(url);
+            } catch (SQLException e) {
+                Logger.error(e.getMessage());
+                Logger.error(e.getStackTrace().toString());
+            }
+        }
+        return SQLite.connection;
+    }
+
+    private PreparedStatement getStatement(String query, Object... arguments) throws SQLException {
+        var connection = getConnection();
+        var stmt = connection.prepareStatement(query);
+        for (int i = 0; i < arguments.length; i++) {
+            stmt.setObject(i + 1, arguments[i]);
+        }
+        return stmt;
+    }
+
+    public void executeUpdate(String query) {
+        this.executeUpdate(query, new Object[0]);
+    }
+    public void executeUpdate(String query, Object ... arguments) {
+        try {
+            var stmt = this.getStatement(query, arguments);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            Logger.error(e.getMessage());
+            Logger.error(e.getStackTrace().toString());
+        }
+    }
+    
+    public ResultSet executeQuery(String query) {
+        return this.executeQuery(query, new Object[0]);
+    }
+    public ResultSet executeQuery(String query, Object ... arguments) {
+        try {
+            var stmt = this.getStatement(query, arguments);
+            return stmt.executeQuery();
+        } catch (SQLException e) {
+            Logger.error(e.getMessage());
+            Logger.error(e.getStackTrace().toString());
+            return null;
+        }
+    }
+
+    public static GameDB getGameDB() {
+        return new GameDB(getInstance());
+    }
+
+
 
     public static void createNewTables() {
         try {
-            Connection conn = connect();
+            Connection conn = getConnection();
             Statement stmt = conn.createStatement();
             stmt.execute(
                     "CREATE TABLE IF NOT EXISTS Cooldown (gameID INTEGER NOT NULL, playerID TEXT NOT NULL, endTimeStamp INTEGER, PRIMARY KEY(gameID, playerID))");
@@ -47,7 +105,7 @@ public class SQLite {
         String sql = "INSERT INTO Cooldown(gameID, playerID, endTimeStamp) VALUES(?,?,?)";
 
         try {
-            Connection conn = connect();
+            Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, gameID);
             pstmt.setString(2, playerID.toString());
@@ -62,7 +120,7 @@ public class SQLite {
         String sql = "DELETE FROM Cooldown WHERE gameID = ? AND playerID = ?";
 
         try {
-            Connection conn = connect();
+            Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, gameID);
             pstmt.setString(2, Player.toString());
@@ -78,7 +136,7 @@ public class SQLite {
         String sq2 = "SELECT last_insert_rowid()";
 
         try {
-            Connection conn = connect();
+            Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, Name);
             pstmt.setString(2, worldName);
@@ -100,7 +158,7 @@ public class SQLite {
             sql += " WHERE worldName = '" + worldName + "'";
         }
         try {
-            Connection conn = connect();
+            Connection conn = getConnection();
             PreparedStatement pstmt2 = conn.prepareStatement(sql);
             ResultSet result = pstmt2.executeQuery();
             return result;
@@ -114,7 +172,7 @@ public class SQLite {
         String sql = "DELETE FROM Game WHERE ID = ?";
 
         try {
-            Connection conn = connect();
+            Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, gameID);
             pstmt.executeUpdate();
@@ -128,7 +186,7 @@ public class SQLite {
         String sql = "INSERT INTO Grid(gameID, X, Y, Z) VALUES(?,?,?,?)";
 
         try {
-            Connection conn = connect();
+            Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, gameID);
             pstmt.setInt(2, X);
@@ -144,7 +202,7 @@ public class SQLite {
         String sql = "INSERT INTO Scoreboard(playerID, gameID, Score, Datetime) VALUES(?,?,?,?)";
 
         try {
-            Connection conn = connect();
+            Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, playerID.toString());
             pstmt.setString(2, gameID);
@@ -160,7 +218,7 @@ public class SQLite {
         String sql = "UPDATE Game SET " + Setting + " = ? WHERE ID = ?";
 
         try {
-            Connection conn = connect();
+            Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, Value);
             pstmt.setInt(2, ID);
@@ -174,7 +232,7 @@ public class SQLite {
         String sql = "UPDATE Game SET " + Setting + " = ? WHERE ID = ?";
 
         try {
-            Connection conn = connect();
+            Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, Value);
             pstmt.setInt(2, ID);
@@ -188,7 +246,7 @@ public class SQLite {
         String sql = "UPDATE Game SET " + Setting + " = ? WHERE name = ?";
 
         try {
-            Connection conn = connect();
+            Connection conn = getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setDouble(1, Value);
             pstmt.setInt(2, ID);
@@ -196,9 +254,5 @@ public class SQLite {
         } catch (SQLException e) {
             Logger.error(e.getMessage());
         }
-    }
-
-    public static void onLoad() {
-        createNewTables();
     }
 }

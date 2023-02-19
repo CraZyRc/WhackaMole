@@ -24,6 +24,8 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
+import whackamole.whackamole.DB.GameDB;
+import whackamole.whackamole.DB.SQLite;
 import whackamole.whackamole.Mole.MoleState;
 import whackamole.whackamole.Mole.MoleType;
 
@@ -47,20 +49,22 @@ public class Game {
         }
 
         private boolean contains(UUID player) {
-            return this.cooldown.containsKey(player);
+            if(this.cooldown.containsKey(player)) {
+                if(this.getTime(player) < System.currentTimeMillis()) {
+                    this.remove(player);
+                    return false;
+                }
+                return true;
+            }
+            return false;
         }
 
         private void remove(UUID player) {
-            if (contains(player)) {
-                this.cooldown.remove(player);
-            }
+            this.cooldown.remove(player);
         }
 
         private Long getTime(UUID player) {
-            if (contains(player)) {
-                return this.cooldown.get(player);
-            }
-            return null;
+            return this.cooldown.get(player);
         }
 
         private String getText(UUID player) {
@@ -115,6 +119,7 @@ public class Game {
     }
 
     public class Settings {
+        public World world;
         public BlockFace spawnRotation;
         public String Cooldown = "24:00:00";
 
@@ -139,7 +144,6 @@ public class Game {
             this.load();
         }
 
-        // @SuppressWarnings("deprecation")
         public void save() {
             List<String> header = Arrays.asList(
                     "############################################################",
@@ -195,9 +199,8 @@ public class Game {
         }
 
         public void load() {
-            Game.this.world = Bukkit.getWorld(this.gameConfig.getString("Field Data.World"));
-            Game.this.grid = Grid.Deserialize(Game.this.world, this.gameConfig.getList("Field Data.Grid"));
             Game.this.name = this.gameConfig.getString("Properties.Name");
+            Game.this.settings.world = Bukkit.getWorld(this.gameConfig.getString("Field Data.World"));
             Game.this.settings.spawnRotation = BlockFace.valueOf(this.gameConfig.getString("Properties.Direction"));
             Game.this.settings.Jackpot = this.gameConfig.getBoolean("Properties.Jackpot");
             Game.this.settings.jackpotSpawn = this.gameConfig.getInt("Properties.Jackpot spawn chance");
@@ -209,6 +212,8 @@ public class Game {
             Game.this.settings.difficultyScale = this.gameConfig.getDouble("Properties.Difficulty scaling");
             Game.this.settings.difficultyScore = this.gameConfig.getInt("Properties.Difficulty increase");
             Game.this.settings.Cooldown = this.gameConfig.getString("Properties.Cooldown");
+            Game.this.grid = Grid.Deserialize(Game.this.settings.world, this.gameConfig.getList("Field Data.Grid"));
+
             Logger.success(Translator.GAME_LOADSUCCESS.Format(this.gameConfig));
         }
 
@@ -363,9 +368,10 @@ public class Game {
     private List<UUID> currentyOnGird = new ArrayList<>();
     private boolean disabled = false;
 
+    public int ID;
     public String name;
-    private World world;
     private Grid grid;
+    private GameDB db = SQLite.getGameDB();
 
     private Random random = new Random();
 
@@ -376,8 +382,11 @@ public class Game {
     public Game(String name, Grid grid, Player player) {
         this.name = formatName(name);
         this.settings.spawnRotation = Directions[Math.round(player.getLocation().getYaw() / 45) & 0x7];
+        this.settings.world = player.getWorld();
         this.grid = grid;
         this.gameFile = new GameFile();
+
+        this.ID = this.db.insert(this);
     }
 
     private String formatName(String name) {

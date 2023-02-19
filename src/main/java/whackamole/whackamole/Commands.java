@@ -6,6 +6,8 @@ import dev.jorel.commandapi.IStringTooltip;
 import dev.jorel.commandapi.StringTooltip;
 import dev.jorel.commandapi.arguments.*;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import whackamole.whackamole.DB.SQLite;
+
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
@@ -295,6 +297,7 @@ public class Commands {
                         .executes((sender, args) -> {
                             this.manager.onUnload();
 
+                            SQLite.onLoad();
                             Config.onLoad(main);
                             Translator.onLoad();
                             Econ.onEnable();

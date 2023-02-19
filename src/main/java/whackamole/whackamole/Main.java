@@ -2,6 +2,7 @@ package whackamole.whackamole;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIConfig;
+import whackamole.whackamole.DB.SQLite;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -16,6 +17,8 @@ public final class Main extends JavaPlugin {
         Logger.onLoad(this);
         Config.onLoad(this);
         Translator.onLoad();
+
+        SQLite.onLoad();
         
     }
 
