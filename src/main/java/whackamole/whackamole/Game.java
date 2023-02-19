@@ -1,23 +1,31 @@
 package whackamole.whackamole;
 
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.PlayerInventory;
 
-import whackamole.whackamole.Mole.*;
-
-import org.bukkit.*;
-import org.bukkit.entity.*;
-
-import java.util.*;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
+import whackamole.whackamole.Mole.MoleState;
+import whackamole.whackamole.Mole.MoleType;
 
 public class Game {
     public BlockFace[] Directions = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST,
@@ -25,7 +33,6 @@ public class Game {
 
     private class CooldownList {
         private HashMap<UUID, Long> cooldown = new HashMap<>();
-        private ArrayList<UUID> onGirdList = new ArrayList<>();
 
         private void add(Player player) {
             this.add(player.getUniqueId(), parseTime(settings.Cooldown));
@@ -47,9 +54,6 @@ public class Game {
             if (contains(player)) {
                 this.cooldown.remove(player);
             }
-            if (this.onGirdList.contains(player)) {
-                this.onGirdList.remove(player);
-            }
         }
 
         private Long getTime(UUID player) {
@@ -64,37 +68,6 @@ public class Game {
                 return formatCooldown(this.cooldown.get(player));
             }
             return null;
-        }
-
-        private void onGridHook(boolean currentlyOnGrid, Player player) {
-            if (!contains(player.getUniqueId()))
-                return;
-            UUID playerUUID = player.getUniqueId();
-
-            Long endTime = getTime(playerUUID);
-            if (endTime >= System.currentTimeMillis()) {
-                remove(playerUUID);
-                return;
-            }
-
-            if (currentlyOnGrid && !this.onGirdList.contains(playerUUID)) {
-                this.onGirdList.add(playerUUID);
-            }
-
-            if (!currentlyOnGrid && this.onGirdList.contains(playerUUID)) {
-                this.onGirdList.remove(playerUUID);
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder().append("").create());
-            }
-        }
-
-        private void onPlayerDisconnectHook(Player player) {
-            UUID playerUUID = player.getUniqueId();
-            if (!contains(playerUUID))
-                return;
-
-            if (this.onGirdList.contains(playerUUID)) {
-                this.onGirdList.remove(playerUUID);
-            }
         }
 
         private Long parseTime(String time) {
@@ -120,6 +93,24 @@ public class Game {
             return (hours > 0 ? hours > 9 ? String.valueOf(hours) : "0" + hours : "00")
                     + ":" + (minutes > 0 ? minutes > 9 ? String.valueOf(minutes) : "0" + minutes : "00")
                     + ":" + (seconds > 0 ? seconds > 9 ? String.valueOf(seconds) : "0" + seconds : "00");
+        }
+
+        public void walkOnGridHook(Player player) {
+            if (!this.contains(player.getUniqueId()))
+                return;
+
+            UUID playerUUID = player.getUniqueId();
+            if (this.getTime(playerUUID) < System.currentTimeMillis())
+                this.remove(playerUUID);
+            else 
+                Game.this.sendPlayerCooldownMessage(playerUUID);
+        }
+
+        public void walkOffGridHook(Player player) {
+            if (!this.contains(player.getUniqueId()))
+                return;
+
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder().append("").create());
         }
     }
 
@@ -368,6 +359,9 @@ public class Game {
     private Scoreboard scoreboard = new Scoreboard();
     private GameFile gameFile;
     private GameRunner game;
+
+    private List<UUID> currentyOnGird = new ArrayList<>();
+
     private boolean disabled = false;
 
     public String name;
@@ -399,9 +393,7 @@ public class Game {
                 return;
             this.game = new GameRunner(player);
         } catch (Exception e) {
-            Logger.error(e.getMessage());
             this.game = null;
-            this.disabled = true;
         }
     }
 
@@ -477,7 +469,9 @@ public class Game {
     }
 
     public void onPlayerExit(Player player) {
-        this.cooldown.onPlayerDisconnectHook(player);
+        if (this.currentyOnGird.contains(player.getUniqueId()))
+            this.currentyOnGird.remove(player.getUniqueId());
+
         if (this.game != null && this.game.player == player)
             this.Stop();
     }
@@ -485,10 +479,19 @@ public class Game {
     public boolean onGrid(Player player) {
         boolean playerOnGrid = this.grid.onGrid(player);
 
-        // * Player cooldown hook
-        this.cooldown.onGridHook(playerOnGrid, player);
+        // * Player walks on grid
+        if (playerOnGrid && !currentyOnGird.contains(player.getUniqueId())) {
+            currentyOnGird.add(player.getUniqueId());
+            this.Start(player);
+            this.cooldown.walkOnGridHook(player);
+        }
 
-        this.Start(player);
+        // * Player walks of grid
+        if (!playerOnGrid && currentyOnGird.contains(player.getUniqueId())) {
+            currentyOnGird.remove(player.getUniqueId());
+            this.cooldown.walkOffGridHook(player);
+            return playerOnGrid;
+        }
 
         return playerOnGrid;
     }
@@ -518,12 +521,19 @@ public class Game {
             this.game.player.spigot().sendMessage(ChatMessageType.ACTION_BAR, actionMessage);
         }
 
-        for (UUID player : this.cooldown.onGirdList) {
-            Bukkit.getPlayer(player).spigot().sendMessage(
-                    ChatMessageType.ACTION_BAR,
-                    new ComponentBuilder().append(Translator.GAME_ACTIONBAR_GAMEOVER + this.cooldown.getText(player))
-                            .create());
+        for (UUID player : this.currentyOnGird) {
+            if (this.cooldown.contains(player))
+                sendPlayerCooldownMessage(player);
         }
+    }
+        
+    private void sendPlayerCooldownMessage(UUID player) {
+        Bukkit.getPlayer(player).spigot().sendMessage(
+            ChatMessageType.ACTION_BAR,
+            new ComponentBuilder()
+                .append(Translator.GAME_ACTIONBAR_GAMEOVER + this.cooldown.getText(player))
+                .create());
+
     }
 
     public void moleUpdater() {
