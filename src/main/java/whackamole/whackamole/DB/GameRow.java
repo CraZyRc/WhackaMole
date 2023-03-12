@@ -18,14 +18,14 @@ public class GameRow implements Row {
     ,   jackpotSpawnChance
     ,   missCount
     ,   scorePoints
-    ,   difficultyScore
-    ,   Cooldown;
+    ,   difficultyScore;
 
     public double
-        spawnTimer
+    spawnTimer
     ,   spawnChance
     ,   moleSpeed
-    ,   difficultyScale;
+    ,   difficultyScale
+    ,   Cooldown;
 
     public static GameRow fromSet(ResultSet set) throws SQLException {
         var item                = new GameRow();
@@ -38,12 +38,12 @@ public class GameRow implements Row {
         item.jackpotSpawnChance = set.getInt("jackpotSpawnChance");
         item.missCount          = set.getInt("missCount");
         item.scorePoints        = set.getInt("scorePoints");
-        item.difficultyScore    = set.getInt("difficultyScore");
-        item.Cooldown           = set.getInt("Cooldown");
         item.spawnTimer         = set.getLong("spawnTimer");
         item.spawnChance        = set.getLong("spawnChance");
         item.moleSpeed          = set.getLong("moleSpeed");
         item.difficultyScale    = set.getLong("difficultyScale");
+        item.difficultyScore    = set.getInt("difficultyScore");
+        item.Cooldown           = set.getLong("Cooldown");
 
         return item;
     }
@@ -53,6 +53,23 @@ public class GameRow implements Row {
             this.Name
         ,   this.worldName
         ,   this.spawnDirection
+        };
+    }
+
+    public Object[] updateSpread() {
+        return new Object[] {
+                this.spawnDirection
+            ,   this.hasJackpot
+            ,   this.jackpotSpawnChance
+            ,   this.missCount
+            ,   this.scorePoints
+            ,   this.spawnTimer
+            ,   this.spawnChance
+            ,   this.moleSpeed
+            ,   this.difficultyScale
+            ,   this.difficultyScore
+            ,   this.Cooldown
+            ,   this.ID
         };
     }
 
@@ -68,8 +85,7 @@ public class GameRow implements Row {
         item.missCount = settings.maxMissed;
         item.scorePoints = settings.pointsPerKill;
         item.difficultyScore = settings.difficultyScore;
-        // item.Cooldown = settings.Cooldown;
-        // TODO: cooldown to double
+        item.Cooldown = settings.Cooldown;
         item.spawnTimer = settings.Interval;
         item.spawnChance = settings.spawnChance;
         item.moleSpeed = settings.moleSpeed;

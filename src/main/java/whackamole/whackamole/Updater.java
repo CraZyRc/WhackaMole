@@ -1,11 +1,13 @@
 package whackamole.whackamole;
 
+import org.apache.commons.lang3.compare.ObjectToStringComparator;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Updater {
@@ -37,10 +39,15 @@ public class Updater {
 
     private static int versionToNumber(String version) {
         int out = 0;
+
+        if (version == null || version.isEmpty()) {
+            return out;
+        }
         
-        String[] verisonList = version.split("[.]", 0);
-        out += Integer.parseInt(verisonList[0]) << 8;
-        out += Integer.parseInt(verisonList[1]);
+        String[] versionList = version.split("[.]", 0);
+        for (var i = versionList.length -1 ; i >= 0; i--) {
+            out += Integer.parseInt(versionList[i]) << (8* (versionList.length - i));
+        }
 
         return out;
 

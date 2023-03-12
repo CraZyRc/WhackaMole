@@ -13,7 +13,7 @@ public class GameDB implements Table {
         this.sql = sql;
     }
 
-    public void create() {
+    public void Create() {
         var query = """
                 CREATE TABLE IF NOT EXISTS Game (
                     ID INTEGER NOT NULL UNIQUE
@@ -35,16 +35,20 @@ public class GameDB implements Table {
         this.sql.executeUpdate(query);
     }
 
-    public List<GameRow> select() {
+    public List<GameRow> Select() {
         var query = "SELECT * FROM Game";
         return Row.SetToList(this.sql.executeQuery(query));
     }
-
-    public int insert(Game game) {
-        return this.insert(GameRow.fromClass(game));
+    public List<GameRow> Select(String worldName) {
+        var query = "SELECT * FROM Game WHERE worldName = ?";
+        return Row.SetToList(this.sql.executeQuery(query, worldName));
     }
 
-    public int insert(Row row) {
+    public int Insert(Game game) {
+        return this.Insert(GameRow.fromClass(game));
+    }
+
+    public int Insert(Row row) {
         var query = """
             INSERT INTO Game (
                     Name
@@ -62,5 +66,26 @@ public class GameDB implements Table {
             Logger.error(e.getStackTrace().toString());
             return -1;
         }
+    }
+    public void Update(Game game) {
+        this.Update(GameRow.fromClass(game));
+    }
+    public void Update(Row row) {
+        var query = """
+                UPDATE Game 
+                SET spawnDirection = ?
+                ,   hasJackpot = ?
+                ,   jackpotSpawnChance = ?
+                ,   missCount = ?
+                ,   scorePoints = ?
+                ,   spawnTimer = ?
+                ,   spawnChance = ?
+                ,   moleSpeed = ?
+                ,   difficultyScale = ?
+                ,   difficultyScore = ?
+                ,   Cooldown INTEGER = ?
+                WHERE ID = ?
+                """;
+        this.sql.executeUpdate(query, row.updateSpread());
     }
 }

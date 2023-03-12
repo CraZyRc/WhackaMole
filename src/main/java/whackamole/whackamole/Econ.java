@@ -3,11 +3,13 @@ package whackamole.whackamole;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 
-import java.util.Objects;
+import static org.bukkit.Bukkit.getServer;
+
 
 public class Econ {
     private static Objective Objective;
@@ -24,7 +26,7 @@ public class Econ {
     public Econ() {
     }
 
-    public static void onEnable() {
+    public static void onEnable(Plugin plugin) {
         try {
             currencyType = Currency.valueOf(Config.Currency.ECONOMY);
         } catch (IllegalArgumentException e) {
@@ -36,6 +38,7 @@ public class Econ {
                 if (!setupEconomy()) {
                     Logger.error(Translator.ECON_INVALIDVAULT);
                     currencyType = Currency.NULL;
+                    plugin.getPluginLoader().disablePlugin(plugin);
                 }
             }
             case SCOREBOARD -> {
@@ -44,23 +47,23 @@ public class Econ {
                     currencyType = Currency.NULL;
                 }
             }
-            case NULL -> {
-            }
+            case NULL -> {}
         }
     }
 
+
     private static boolean setupEconomy() {
-        if (Bukkit.getServer().getPluginManager().getPlugin("Vault") == null) {
+        if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
             return false;
         } else {
-            RegisteredServiceProvider<Economy> rsp = Bukkit.getServer().getServicesManager()
+            RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager()
                     .getRegistration(Economy.class);
             if (rsp == null) {
                 return false;
-            } else {
-                econ = rsp.getProvider();
-                return econ != null;
             }
+            econ = rsp.getProvider();
+            return econ != null;
+
         }
     }
 

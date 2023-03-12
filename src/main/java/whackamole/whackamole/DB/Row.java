@@ -11,6 +11,7 @@ public interface Row {
 
 
     Object[] insertSpread();
+    Object[] updateSpread();
 
     static <T extends Row> T fromClass(Class<?> item) {
         return null;

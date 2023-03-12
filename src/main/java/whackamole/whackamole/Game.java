@@ -1,5 +1,7 @@
 package whackamole.whackamole;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -24,7 +27,10 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
+import org.checkerframework.checker.units.qual.C;
+import org.sqlite.core.DB;
 import whackamole.whackamole.DB.GameDB;
+import whackamole.whackamole.DB.GameRow;
 import whackamole.whackamole.DB.SQLite;
 import whackamole.whackamole.Mole.MoleState;
 import whackamole.whackamole.Mole.MoleType;
@@ -37,7 +43,7 @@ public class Game {
         private HashMap<UUID, Long> cooldown = new HashMap<>();
 
         private void add(Player player) {
-            this.add(player.getUniqueId(), parseTime(settings.Cooldown));
+            this.add(player.getUniqueId(), settings.Cooldown);
         }
 
         private void add(UUID player, Long time) {
@@ -74,7 +80,7 @@ public class Game {
             return null;
         }
 
-        private Long parseTime(String time) {
+        public static Long parseTime(String time) {
             if (time == null || time.isEmpty())
                 return 0L;
 
@@ -117,22 +123,30 @@ public class Game {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder().append("").create());
         }
     }
-
     public class Settings {
         public World world;
         public BlockFace spawnRotation;
-        public String Cooldown = "24:00:00";
-
+        public Long Cooldown = 86400000L;
         public boolean Jackpot = true;
 
         public int jackpotSpawn = 1, difficultyScore = 1, pointsPerKill = 1, maxMissed = 3;
 
         public double Interval = 1, spawnChance = 100, difficultyScale = 10, moleSpeed = 2;
 
-    }
+        public String getCooldown() {
+            return Game.this.cooldown.formatCooldown(this.Cooldown);
+        }
 
+
+    }
+    public class dataBase {
+        private final GameDB gameDB = SQLite.getGameDB();
+        public void save() {
+            gameDB.Update(Game.this);
+        }
+    }
     public class GameFile {
-        private YMLFile gameConfig;
+        private final YMLFile gameConfig;
 
         public GameFile() {
             gameConfig = new YMLFile(Config.AppConfig.storageFolder + "/Games/" + name + ".yml");
@@ -146,37 +160,37 @@ public class Game {
 
         public void save() {
             List<String> header = Arrays.asList(
-                    "############################################################",
-                    "# ^------------------------------------------------------^ #",
-                    "# |                       GameFile                       | #",
-                    "# <------------------------------------------------------> #",
-                    "############################################################",
-                    "# " + Translator.GAME_CONFIG_FIRSTNOTE,
-                    "# " + Translator.GAME_CONFIG_SECONDNOTE,
-                    "# " + Translator.GAME_CONFIG_THIRDNOTE,
-                    "#",
-                    "#",
-                    "############################################################",
-                    "# ^------------------------------------------------------^ #",
-                    "# |                      Explanation                     | #",
-                    "# <------------------------------------------------------> #",
-                    "############################################################",
-                    "# " + Translator.GAME_CONFIG_NAME,
-                    "# " + Translator.GAME_CONFIG_DIRECTION,
-                    "# " + Translator.GAME_CONFIG_JACKPOT,
-                    "# " + Translator.GAME_CONFIG_JACKPOTSPAWN,
-                    "# " + Translator.GAME_CONFIG_GAMELOST,
-                    "# " + Translator.GAME_CONFIG_POINTSPERKILL,
-                    "# " + Translator.GAME_CONFIG_SPAWNRATE,
-                    "# " + Translator.GAME_CONFIG_SPAWNCHANCE,
-                    "# " + Translator.GAME_CONFIG_MOLESPEED,
-                    "# " + Translator.GAME_CONFIG_DIFFICULTYSCALE,
-                    "# " + Translator.GAME_CONFIG_DIFFICULTYINCREASE,
-                    "# " + Translator.GAME_CONFIG_COOLDOWN,
-                    "# " + Translator.GAME_CONFIG_ENDMESSAGE,
-                    "# ");
+                    "############################################################\n",
+                    "# ^------------------------------------------------------^ #\n",
+                    "# |                       GameFile                       | #\n",
+                    "# <------------------------------------------------------> #\n",
+                    "############################################################\n",
+                    "# " + Translator.GAME_CONFIG_FIRSTNOTE + "\n",
+                    "# " + Translator.GAME_CONFIG_SECONDNOTE + "\n",
+                    "# " + Translator.GAME_CONFIG_THIRDNOTE + "\n",
+                    "#\n",
+                    "#\n",
+                    "############################################################\n",
+                    "# ^------------------------------------------------------^ #\n",
+                    "# |                      Explanation                     | #\n",
+                    "# <------------------------------------------------------> #\n",
+                    "############################################################\n",
+                    "# " + Translator.GAME_CONFIG_NAME + "\n",
+                    "# " + Translator.GAME_CONFIG_DIRECTION + "\n",
+                    "# " + Translator.GAME_CONFIG_JACKPOT + "\n",
+                    "# " + Translator.GAME_CONFIG_JACKPOTSPAWN + "\n",
+                    "# " + Translator.GAME_CONFIG_GAMELOST + "\n",
+                    "# " + Translator.GAME_CONFIG_POINTSPERKILL + "\n",
+                    "# " + Translator.GAME_CONFIG_SPAWNRATE + "\n",
+                    "# " + Translator.GAME_CONFIG_SPAWNCHANCE + "\n",
+                    "# " + Translator.GAME_CONFIG_MOLESPEED + "\n",
+                    "# " + Translator.GAME_CONFIG_DIFFICULTYSCALE + "\n",
+                    "# " + Translator.GAME_CONFIG_DIFFICULTYINCREASE + "\n",
+                    "# " + Translator.GAME_CONFIG_COOLDOWN + "\n",
+                    "# " + Translator.GAME_CONFIG_ENDMESSAGE + "\n",
+                    "# \n");
 
-            this.gameConfig.FileConfig.options().setHeader(header);
+            this.gameConfig.FileConfig.options().header(header.toString());
 
             this.gameConfig.set("Properties.Name", Game.this.name);
             this.gameConfig.set("Properties.Direction", Game.this.settings.spawnRotation.name());
@@ -189,12 +203,12 @@ public class Game {
             this.gameConfig.set("Properties.Mole speed", Game.this.settings.moleSpeed);
             this.gameConfig.set("Properties.Difficulty scaling", Game.this.settings.difficultyScale);
             this.gameConfig.set("Properties.Difficulty increase", Game.this.settings.difficultyScore);
-            this.gameConfig.set("Properties.Cooldown", Game.this.settings.Cooldown);
+            this.gameConfig.set("Properties.Cooldown", Game.this.cooldown.formatCooldown(Game.this.settings.Cooldown));
             this.gameConfig.set("Field Data.World", Game.this.grid.world.getName());
             this.gameConfig.set("Field Data.Grid", Game.this.grid.Serialize());
             try {
                 this.gameConfig.save();
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
 
@@ -211,10 +225,10 @@ public class Game {
             Game.this.settings.moleSpeed = this.gameConfig.getDouble("Properties.Mole speed");
             Game.this.settings.difficultyScale = this.gameConfig.getDouble("Properties.Difficulty scaling");
             Game.this.settings.difficultyScore = this.gameConfig.getInt("Properties.Difficulty increase");
-            Game.this.settings.Cooldown = this.gameConfig.getString("Properties.Cooldown");
+            Game.this.settings.Cooldown = CooldownList.parseTime(this.gameConfig.getString("Properties.Cooldown"));
             Game.this.grid = Grid.Deserialize(Game.this.settings.world, this.gameConfig.getList("Field Data.Grid"));
 
-            Logger.success(Translator.GAME_LOADSUCCESS.Format(this.gameConfig));
+            Logger.success(Translator.GAME_LOADSUCCESS.Format(Game.this));
         }
 
         public void delete() {
@@ -359,6 +373,7 @@ public class Game {
     }
 
     private Econ econ = new Econ();
+    private dataBase DB = new dataBase();
     private Settings settings = new Settings();
     private CooldownList cooldown = new CooldownList();
     private Scoreboard scoreboard = new Scoreboard();
@@ -374,6 +389,24 @@ public class Game {
     private GameDB db = SQLite.getGameDB();
 
     private Random random = new Random();
+    public Game(GameRow result) {
+        this.ID = result.ID;
+        this.name = result.Name;
+        this.settings.world = Bukkit.getWorld(result.worldName);
+        this.settings.spawnRotation = BlockFace.valueOf(result.spawnDirection);
+        this.settings.Jackpot = result.hasJackpot == 1;
+        this.settings.jackpotSpawn = result.jackpotSpawnChance;
+        this.settings.maxMissed = result.missCount;
+        this.settings.pointsPerKill = result.scorePoints;
+        this.settings.Interval = result.spawnTimer;
+        this.settings.spawnChance = result.spawnChance;
+        this.settings.moleSpeed = result.moleSpeed;
+        this.settings.difficultyScale = result.difficultyScale;
+        this.settings.difficultyScore = result.difficultyScore;
+        this.settings.Cooldown = (long) result.Cooldown;
+        Logger.success(Translator.GAME_LOADSUCCESS.Format(this.name));
+
+    }
 
     public Game(YMLFile configFile) {
         this.gameFile = new GameFile(configFile);
@@ -384,9 +417,11 @@ public class Game {
         this.settings.spawnRotation = Directions[Math.round(player.getLocation().getYaw() / 45) & 0x7];
         this.settings.world = player.getWorld();
         this.grid = grid;
-        this.gameFile = new GameFile();
+        if (Config.Game.ENABLE_GAMECONFIG) {
+            this.gameFile = new GameFile();
+        }
 
-        this.ID = this.db.insert(this);
+        this.ID = this.db.Insert(this);
     }
 
     private String formatName(String name) {
@@ -416,6 +451,12 @@ public class Game {
         this.Stop();
     }
 
+    public void save() {
+        if (this.gameFile != null) {
+            this.gameFile.save();
+        }
+        this.DB.save();
+    }
     public void delete() {
         if (this.gameFile != null)
             this.gameFile.delete();
@@ -434,46 +475,57 @@ public class Game {
 
     public void setJackpotSpawn(int jackpotSpawn) {
         this.settings.jackpotSpawn = jackpotSpawn;
+        this.save();
     }
 
     public void setDifficultyScore(int difficultyScore) {
         this.settings.difficultyScore = difficultyScore;
+        this.save();
     }
 
     public void setPointsPerKill(int pointsPerKill) {
         this.settings.pointsPerKill = pointsPerKill;
+        this.save();
     }
 
     public void setMaxMissed(int maxMissed) {
         this.settings.maxMissed = maxMissed;
+        this.save();
     }
 
     public void setInterval(double Interval) {
         this.settings.Interval = Interval;
+        this.save();
     }
 
     public void setSpawnChance(double spawnChance) {
         this.settings.spawnChance = spawnChance;
+        this.save();
     }
 
     public void setDifficultyScale(double difficultyScale) {
         this.settings.difficultyScale = difficultyScale;
+        this.save();
     }
 
     public void setMoleSpeed(double moleSpeed) {
         this.settings.moleSpeed = moleSpeed;
+        this.save();
     }
 
     public void setJackpot(boolean Jackpot) {
         this.settings.Jackpot = Jackpot;
+        this.save();
     }
 
     public void setCooldown(String Cooldown) {
-        this.settings.Cooldown = Cooldown;
+        this.settings.Cooldown = CooldownList.parseTime(Cooldown);
+        this.save();
     }
 
     public void setSpawnRotation(BlockFace spawnRotation) {
         this.settings.spawnRotation = spawnRotation;
+        this.save();
     }
 
     public void onPlayerExit(Player player) {
@@ -502,6 +554,12 @@ public class Game {
         }
 
         return playerOnGrid;
+    }
+    public boolean inGrid(Block block) {
+        if (this.grid.grid.contains(block)) {
+            return true;
+        }
+        return false;
     }
 
     public void useTicket(PlayerInteractEvent e) {

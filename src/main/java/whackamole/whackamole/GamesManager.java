@@ -4,10 +4,12 @@ import java.io.File;
 import java.util.*;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -15,12 +17,17 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
+import whackamole.whackamole.DB.GameRow;
+import whackamole.whackamole.DB.SQLite;
 
 public final class GamesManager implements Listener {
 
     private static GamesManager Instance;
-    private List<Game> games = new ArrayList<>();
+    public List<Game> games = new ArrayList<>();
 
     private GamesManager() {}
 
@@ -118,6 +125,43 @@ public final class GamesManager implements Listener {
         }
         GamesManager.this.runnableTickCounter++;
     };
+    public void loadFromDatabase() {
+        loadFromDatabase("");
+    }
+    public boolean loadFromDatabase(String worldName) {
+        List<GameRow> gameList;
+        if (worldName.isEmpty()) {
+            gameList = SQLite.getGameDB().Select();
+
+        } else {
+            gameList = SQLite.getGameDB().Select(worldName);
+        }
+        if (gameList.size() == 0) {
+            return false;
+        }
+        for (var game : gameList) {
+            this.games.add(new Game(game));
+        }
+        return true;
+    }
+
+    @EventHandler
+    public void onWorldLoad(WorldLoadEvent e) {
+        Logger.info(Translator.MANAGER_LOADINGGAMES.Format(e.getWorld().getName()));
+        if (!this.loadFromDatabase(e.getWorld().getName())) {
+            Logger.warning(Translator.MANAGER_NOGAMESFOUND);
+        }
+    }
+
+    @EventHandler
+    public void onWorldUnload(WorldUnloadEvent e) {
+        for (int i = this.games.size() -1; i >= 0; i--) {
+            if (this.games.get(i).getSettings().world.equals(e.getWorld())) {
+                this.games.get(i).unload();
+                this.games.remove(i);
+            }
+        }
+    }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
@@ -128,12 +172,24 @@ public final class GamesManager implements Listener {
     }
 
     @EventHandler
-    public void playerMoveEvent(PlayerMoveEvent event) {
+    public void playerMoveEvent(PlayerMoveEvent e) {
+        Player player = e.getPlayer();
         for (Game game : games) {
-            if (game.onGrid(event.getPlayer())) {
-                game.Start(event.getPlayer());
+            if (game.onGrid(player)) {
+                if (game.getRunning() != null && e.getPlayer() != game.getRunning().player) {
+                    Location playerLocation = player.getLocation();
+                    Vector moveVector = e.getFrom().toVector().subtract(e.getTo().toVector()).normalize().multiply(1.5).setY(1);
+                    while (game.onGrid(e.getPlayer())) {
+                        if (moveVector.getX() == 0 && moveVector.getZ() == 0) {
+                            moveVector = game.getSettings().spawnRotation.getDirection();
+                        }
+                        playerLocation = playerLocation.add(moveVector);
+                    }
+                    player.teleport(playerLocation);
+                    player.sendMessage(Config.AppConfig.PREFIX + Translator.MANAGER_ALREADYACTIVE);
+                }
                 break;
-            } else if (game.getRunning().player == event.getPlayer()) {
+            } else if (game.getRunning().player == e.getPlayer()) {
                 game.Stop();
                 break;
             }
@@ -149,6 +205,15 @@ public final class GamesManager implements Listener {
                 }
             }
         }
+    }
+    @EventHandler
+    public void blockBreak(BlockBreakEvent e) {
+        for (Game game : this.games) {
+            if (game.inGrid(e.getBlock())) {
+                e.setCancelled(true);
+            }
+        }
+
     }
 
     @EventHandler

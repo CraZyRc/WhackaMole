@@ -24,7 +24,7 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Econ.onEnable();
+        Econ.onEnable(this);
         this.manager.onLoad(this);
         new Commands(this);
 
@@ -40,4 +40,5 @@ public final class Main extends JavaPlugin {
     public void onDisable() {
         this.manager.onUnload();
     }
+
 }

@@ -4,7 +4,7 @@
 # <------------------------------------------------------> #
 ############################################################
 
-Config Version: 1.4
+Config Version: 1.5
 
 # Welcome to the config file, here you can adjust the general settings of the plugin.
 # the lines must be in YAML format, so it doesn't accept tabs, only spaces.
@@ -76,6 +76,10 @@ Ticket Price: 15
 
 # Here you will find the general options regarding game creation and playability.
 
+# Game data is stored in a SQL database, optionally you can choose to generate a config file for each WAM game.
+# Having the config file allows you to make multiple changes in one go, if this is disabled, game settings can only be changed and seen by commands (/wam settings).
+Game config: true
+
 # For sounds, please refer to the Sound enum to see the Java equivalent of the minecraft sound: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html.
 # What sound should be played when a mole has been hit.
 HitSound: BLOCK_NOTE_BLOCK_BIT
@@ -100,7 +104,7 @@ Max playfield: 25
 # NOTE: if you keep the width under '1.0' the player will exit the field when the player steps off the field, to add a little margin, make sure this is higher than '1.0'.
 Field extension:
   width: 1.4
-  height: 2.0
+  height: 2.5
 
 
 ############################################################
@@ -109,11 +113,13 @@ Field extension:
 # <------------------------------------------------------> #
 ############################################################
 
-Commands:
-  Play: "Play"
-  Buy: "Buy"
+Play:
   Use Reset Ticket: "Use"
-  Create: "create"
-  Reload: "Reload"
+  Play: "Play"
+
+Commands:
+  Buy: "Buy"
   Settings: "Settings"
+  Reload: "Reload"
+  Create: "create"
   Remove: "Remove"

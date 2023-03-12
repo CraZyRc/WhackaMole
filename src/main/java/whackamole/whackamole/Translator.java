@@ -24,6 +24,7 @@ public enum Translator {
     ,   MANAGER_LOADINGGAMES                                ("Manager.loadingGames")
     ,   MANAGER_NOGAMESFOUND                                ("Manager.noGamesFound")
     ,   MANAGER_NAMEEXISTS                                  ("Manager.nameExists", String.class)
+    ,   MANAGER_ALREADYACTIVE                               ("Manager.alreadyActive")
     ,   MANAGER_TICKETUSE_GAMENOTFOUND                      ("Manager.ticketUse.gameNotFound")
     ,   MANAGER_TICKETUSE_SUCCESS                           ("Manager.ticketUse.Success")
     ,   MANAGER_TICKETUSE_NOCOOLDOWN                        ("Manager.ticketUse.noCooldown")
@@ -40,7 +41,7 @@ public enum Translator {
     ,   GAME_ACTIONBAR_MOLEGAMEOVER                         ("Game.Actionbar.moleGameOver", Game.class)
     ,   GAME_ACTIONBAR_GAMEOVER                             ("Game.Actionbar.gameOver")
     ,   GAME_MOLEMISSED                                     ("Game.moleMissed", Game.class)
-    ,   GAME_LOADSUCCESS                                    ("Game.loadSuccess", YMLFile.class)
+    ,   GAME_LOADSUCCESS                                    ("Game.loadSuccess", Game.class)
     ,   GAME_CONFIG_FIRSTNOTE                               ("Game.Config.firstNote")
     ,   GAME_CONFIG_SECONDNOTE                              ("Game.Config.secondNote")
     ,   GAME_CONFIG_THIRDNOTE                               ("Game.Config.thirdNote")
@@ -68,6 +69,7 @@ public enum Translator {
     ,   COMMANDS_TIPS_MOLESPEED                             ("Commands.Tips.moleSpeed")
     ,   COMMANDS_TIPS_DIFFICULTYSCALE                       ("Commands.Tips.difficultyScale")
     ,   COMMANDS_TIPS_DIFFICULTYINCREASE                    ("Commands.Tips.difficultyIncrease")
+    ,   COMMANDS_TIPS_COOLDOWN                              ("Commands.Tips.Cooldown")
     ,   COMMANDS_CREATE                                     ("Commands.Create")
     ,   COMMANDS_CREATE_SUCCESS                             ("Commands.Create.Success")
     ,   COMMANDS_REMOVE                                     ("Commands.Remove")
@@ -103,6 +105,8 @@ public enum Translator {
     ,   COMMANDS_SETTINGS_DIFFICULTYSCALE_SUCCESS           ("Commands.Settings.difficultyScale.Success")
     ,   COMMANDS_SETTINGS_DIFFICULTYINCREASE                ("Commands.Settings.difficultyIncrease")
     ,   COMMANDS_SETTINGS_DIFFICULTYINCREASE_SUCCESS        ("Commands.Settings.difficultyIncrease.Success")
+    ,   COMMANDS_SETTINGS_COOLDOWN                          ("Commands.Settings.Cooldown")
+    ,   COMMANDS_SETTINGS_COOLDOWN_SUCCESS                  ("Commands.Settings.Cooldown.Success")
     ,   COMMANDS_RELOAD                                     ("Commands.Reload")
     ,   COMMANDS_RELOAD_SUCCESS                             ("Commands.Reload.Success")
     ,   COMMANDS_ONGRID_FAIL_PLAYER                         ("Commands.onGrid.Fail.Player")
@@ -112,7 +116,8 @@ public enum Translator {
     ,   ECON_INVALIDOBJECTIVE                               ("Econ.invalidObjective");
 
     public String key;
-    public String value;
+    public String value = "";
+    public String formattedValue;
     private Translator(String key) {
         this.key = key;
         this.requiredTypes = new Object[0];
@@ -147,6 +152,7 @@ public enum Translator {
         }
 
 
+        type.formattedValue = type.value;
         // * Config formatting
         type.configFormat();
 
@@ -160,26 +166,27 @@ public enum Translator {
         for(String item : stringReplacements) {
             type.Format(item);
         }
-        return Config.Color(type.value);
+        return Config.Color(type.formattedValue);
     }
 
 
     private void Format(Game game) {
-        this.value = this.value.replace("{missedMoles}", String.valueOf(game.getRunning().missed));
-        this.value = this.value.replace("{maxMissed}", String.valueOf(game.getSettings().maxMissed));
-        this.value = this.value.replace("{Score}", String.valueOf(game.getRunning().score));
+        this.formattedValue = this.formattedValue.replace("{missedMoles}", String.valueOf(game.getRunning().missed));
+        this.formattedValue = this.formattedValue.replace("{maxMissed}", String.valueOf(game.getSettings().maxMissed));
+        this.formattedValue = this.formattedValue.replace("{Score}", String.valueOf(game.getRunning().score));
+        this.formattedValue = this.formattedValue.replace("{gameName}", String.valueOf(game.name));
     }
     private void Format(Player player) {
-        this.value = this.value.replace("{Player}", String.valueOf(player.getName()));
+        this.formattedValue = this.formattedValue.replace("{Player}", String.valueOf(player.getName()));
     }
     private void Format(YMLFile file) {
-        this.value = this.value.replace("{File}", String.valueOf(file.file.getName()));
+        this.formattedValue = this.formattedValue.replace("{File}", String.valueOf(file.file.getName()));
     }
     private void Format(String item) {
-        this.value = this.value.replaceFirst("\\{.*?\\}", item);
+        this.formattedValue = this.formattedValue.replaceFirst("\\{.*?\\}", item);
     }   
     private void configFormat() {
-        this.value = this.value
+        this.formattedValue = this.formattedValue
         .replace("{configVersion}",     Config.AppConfig.configVersion)
         .replace("{Symbol}",            Config.Currency.SYMBOL)
         .replace("{ticketPrice}",       String.valueOf(Config.Currency.TICKETPRICE))
@@ -190,9 +197,7 @@ public enum Translator {
         .replace("{commandReload}",    "/wam " + COMMANDS_RELOAD)
         .replace("{commandBuy}",       "/wam " + COMMANDS_BUY);
     }
-
     public String toString() {
-        // LookupTranslation();
         return Config.Color(this.value);
     }
 

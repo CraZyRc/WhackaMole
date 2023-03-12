@@ -4,9 +4,10 @@ import java.util.List;
 
 public interface Table {
 
-    void create();
+    void Create();
 
-    List<? extends Row> select();
+    List<? extends Row> Select();
 
-    int insert(Row row);
+    int Insert(Row row);
+    void Update(Row row);
 }
