@@ -175,8 +175,10 @@ public final class GamesManager implements Listener {
     public void playerMoveEvent(PlayerMoveEvent e) {
         Player player = e.getPlayer();
         for (Game game : games) {
+            var gameRunner = game.getRunning();
             if (game.onGrid(player)) {
-                if (game.getRunning() != null && e.getPlayer() != game.getRunning().player) {
+                if (gameRunner == null) continue;
+                if (gameRunner.player != e.getPlayer()) {
                     Location playerLocation = player.getLocation();
                     Vector moveVector = e.getFrom().toVector().subtract(e.getTo().toVector()).normalize().multiply(1.5).setY(1);
                     while (game.onGrid(e.getPlayer())) {
@@ -189,7 +191,7 @@ public final class GamesManager implements Listener {
                     player.sendMessage(Config.AppConfig.PREFIX + Translator.MANAGER_ALREADYACTIVE);
                 }
                 break;
-            } else if (game.getRunning().player == e.getPlayer()) {
+            } else if (gameRunner != null && gameRunner.player == e.getPlayer()) {
                 game.Stop();
                 break;
             }

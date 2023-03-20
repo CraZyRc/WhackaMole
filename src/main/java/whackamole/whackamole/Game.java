@@ -77,7 +77,7 @@ public class Game {
             return null;
         }
 
-        public static Long parseTime(String time) {
+        public Long parseTime(String time) {
             if (time == null || time.isEmpty())
                 return 0L;
 
@@ -225,7 +225,7 @@ public class Game {
             Game.this.settings.moleSpeed = this.gameConfig.getDouble("Properties.Mole speed");
             Game.this.settings.difficultyScale = this.gameConfig.getDouble("Properties.Difficulty scaling");
             Game.this.settings.difficultyScore = this.gameConfig.getInt("Properties.Difficulty increase");
-            Game.this.settings.Cooldown = CooldownList.parseTime(this.gameConfig.getString("Properties.Cooldown"));
+            Game.this.settings.Cooldown = cooldown.parseTime(this.gameConfig.getString("Properties.Cooldown"));
             Game.this.grid = Grid.Deserialize(Game.this.settings.world, this.gameConfig.getList("Field Data.Grid"));
 
             Logger.success(Translator.GAME_LOADSUCCESS.Format(Game.this));
@@ -280,11 +280,6 @@ public class Game {
         public double moleSpeed = settings.moleSpeed, interval = settings.Interval, spawnChance = settings.spawnChance;
 
         public GameRunner() {
-        }
-
-        public GameRunner(Player player) throws Exception {
-            if (!Start(player))
-                throw new Exception("Failed to start game");
         }
 
         private boolean Start(Player player) {
@@ -439,11 +434,10 @@ public class Game {
     }
 
     public void Start(Player player) {
-        try {
-            if (this.game != null)
-                return;
-            this.game = new GameRunner(player);
-        } catch (Exception e) {
+        if (this.game != null)
+            return;
+        this.game = new GameRunner();
+        if(!this.game.Start(player)) {
             this.game = null;
         }
     }
@@ -474,7 +468,7 @@ public class Game {
         if (this.game != null) {
             return this.game;
         }
-        return new GameRunner();
+        return null;
     }
 
     public Settings getSettings() {
@@ -527,7 +521,7 @@ public class Game {
     }
 
     public void setCooldown(String Cooldown) {
-        this.settings.Cooldown = CooldownList.parseTime(Cooldown);
+        this.settings.Cooldown = this.cooldown.parseTime(Cooldown);
         this.save();
     }
 
