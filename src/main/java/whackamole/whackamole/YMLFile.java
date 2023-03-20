@@ -20,7 +20,12 @@ public class YMLFile {
 
     public YMLFile(File folder, String child) throws FileNotFoundException {
         if (!folder.isDirectory())
-            throw new FileNotFoundException(Translator.Format(Translator.YML_NOTFOUNDEXCEPTION, folder));
+            try {
+                folder.mkdirs();
+            } catch(Exception e) {
+                this.file = folder;
+                throw new FileNotFoundException(Translator.YML_CREATEFAIL.Format(this));
+            }
         this.file = new File(folder, child);
         this.load();
     }
