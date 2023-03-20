@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -18,7 +19,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.util.Vector;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -361,6 +364,20 @@ public class Game {
             this.difficultyModifier++;
             if (this.difficultyModifier >= settings.difficultyScore)
                 setSpeedScale();
+        }
+
+        public void RemovePlayerFromGame(PlayerMoveEvent e) {
+            Player player = e.getPlayer();
+            Location playerLocation = player.getLocation();
+            Vector moveVector = e.getFrom().toVector().subtract(e.getTo().toVector()).normalize().multiply(1.5).setY(1);
+            while (Game.this.onGrid(e.getPlayer())) {
+                if (moveVector.getX() == 0 && moveVector.getZ() == 0) {
+                    moveVector = Game.this.getSettings().spawnRotation.getDirection();
+                }
+                playerLocation = playerLocation.add(moveVector);
+            }
+            player.teleport(playerLocation);
+            player.sendMessage(Config.AppConfig.PREFIX + Translator.MANAGER_ALREADYACTIVE);
         }
 
         private void setSpeedScale() {

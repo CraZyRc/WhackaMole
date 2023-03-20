@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.*;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -20,7 +19,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.util.Vector;
 import whackamole.whackamole.DB.GameRow;
 import whackamole.whackamole.DB.SQLite;
 
@@ -179,16 +177,7 @@ public final class GamesManager implements Listener {
             if (game.onGrid(player)) {
                 if (gameRunner == null) continue;
                 if (gameRunner.player != e.getPlayer()) {
-                    Location playerLocation = player.getLocation();
-                    Vector moveVector = e.getFrom().toVector().subtract(e.getTo().toVector()).normalize().multiply(1.5).setY(1);
-                    while (game.onGrid(e.getPlayer())) {
-                        if (moveVector.getX() == 0 && moveVector.getZ() == 0) {
-                            moveVector = game.getSettings().spawnRotation.getDirection();
-                        }
-                        playerLocation = playerLocation.add(moveVector);
-                    }
-                    player.teleport(playerLocation);
-                    player.sendMessage(Config.AppConfig.PREFIX + Translator.MANAGER_ALREADYACTIVE);
+                    gameRunner.RemovePlayerFromGame(e);
                 }
                 break;
             } else if (gameRunner != null && gameRunner.player == e.getPlayer()) {
