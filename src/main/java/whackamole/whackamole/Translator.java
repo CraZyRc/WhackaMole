@@ -80,37 +80,37 @@ public enum Translator {
     ,   COMMANDS_BUY_CONFIRMATION                           ("Commands.Buy.Confirmation")
     ,   COMMANDS_BUY_LOWECONOMY                             ("Commands.Buy.lowEconomy")
     ,   COMMANDS_BUY_ECONOMYERROR_PLAYER                    ("Commands.Buy.economyError.Player")
-    ,   COMMANDS_BUY_ECONOMYERROR_CONSOLE                   ("Commands.Buy.economyError.Console", Player.class)
+    ,   COMMANDS_BUY_ECONOMYERROR_CONSOLE                   ("Commands.Buy.economyError.Console", String.class)
     ,   COMMANDS_BUY_SUCCESS                                ("Commands.Buy.Success")
     ,   COMMANDS_SETTINGS                                   ("Commands.Settings")
     ,   COMMANDS_SETTINGS_DIRECTION                         ("Commands.Settings.Direction")
-    ,   COMMANDS_SETTINGS_DIRECTION_SUCCESS                 ("Commands.Settings.Directions.Success")
+    ,   COMMANDS_SETTINGS_DIRECTION_SUCCESS                 ("Commands.Settings.Directions.Success", String.class)
     ,   COMMANDS_SETTINGS_JACKPOT                           ("Commands.Settings.Jackpot")
-    ,   COMMANDS_SETTINGS_JACKPOT_SUCCESS                   ("Commands.Settings.Jackpot.Success")
+    ,   COMMANDS_SETTINGS_JACKPOT_SUCCESS                   ("Commands.Settings.Jackpot.Success", String.class)
     ,   COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE                ("Commands.Settings.jackpotSpawnChance")
-    ,   COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_SUCCESS        ("Commands.Settings.jackpotSpawnChance.Success")
-    ,   COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_CONSOLE  ("Commands.Settings.jackpotSpawnChance.Error.Console", Player.class)
+    ,   COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_SUCCESS        ("Commands.Settings.jackpotSpawnChance.Success", String.class)
+    ,   COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_CONSOLE  ("Commands.Settings.jackpotSpawnChance.Error.Console", String.class)
     ,   COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_PLAYER   ("Commands.Settings.jackpotSpawnChance.Error.Player")
     ,   COMMANDS_SETTINGS_MAXMISSED                         ("Commands.Settings.maxMissed")
-    ,   COMMANDS_SETTINGS_MAXMISSED_SUCCESS                 ("Commands.Settings.maxMissed.Success")
+    ,   COMMANDS_SETTINGS_MAXMISSED_SUCCESS                 ("Commands.Settings.maxMissed.Success", String.class)
     ,   COMMANDS_SETTINGS_SCOREPOINTS                       ("Commands.Settings.scorePoints")
-    ,   COMMANDS_SETTINGS_SCOREPOINTS_SUCCESS               ("Commands.Settings.scorePoints.Success")
+    ,   COMMANDS_SETTINGS_SCOREPOINTS_SUCCESS               ("Commands.Settings.scorePoints.Success", String.class)
     ,   COMMANDS_SETTINGS_SPAWNRATE                         ("Commands.Settings.spawnRate")
-    ,   COMMANDS_SETTINGS_SPAWNRATE_SUCCESS                 ("Commands.Settings.spawnRate.Success")
+    ,   COMMANDS_SETTINGS_SPAWNRATE_SUCCESS                 ("Commands.Settings.spawnRate.Success", String.class)
     ,   COMMANDS_SETTINGS_SPAWNCHANCE                       ("Commands.Settings.spawnChance")
-    ,   COMMANDS_SETTINGS_SPAWNCHANCE_SUCCESS               ("Commands.Settings.spawnChance.Success")
+    ,   COMMANDS_SETTINGS_SPAWNCHANCE_SUCCESS               ("Commands.Settings.spawnChance.Success", String.class)
     ,   COMMANDS_SETTINGS_MOLESPEED                         ("Commands.Settings.Molespeed")
-    ,   COMMANDS_SETTINGS_MOLESPEED_SUCCESS                 ("Commands.Settings.Molespeed.Success")
+    ,   COMMANDS_SETTINGS_MOLESPEED_SUCCESS                 ("Commands.Settings.Molespeed.Success", String.class)
     ,   COMMANDS_SETTINGS_DIFFICULTYSCALE                   ("Commands.Settings.difficultyScale")
-    ,   COMMANDS_SETTINGS_DIFFICULTYSCALE_SUCCESS           ("Commands.Settings.difficultyScale.Success")
+    ,   COMMANDS_SETTINGS_DIFFICULTYSCALE_SUCCESS           ("Commands.Settings.difficultyScale.Success", String.class)
     ,   COMMANDS_SETTINGS_DIFFICULTYINCREASE                ("Commands.Settings.difficultyIncrease")
-    ,   COMMANDS_SETTINGS_DIFFICULTYINCREASE_SUCCESS        ("Commands.Settings.difficultyIncrease.Success")
+    ,   COMMANDS_SETTINGS_DIFFICULTYINCREASE_SUCCESS        ("Commands.Settings.difficultyIncrease.Success", String.class)
     ,   COMMANDS_SETTINGS_COOLDOWN                          ("Commands.Settings.Cooldown")
-    ,   COMMANDS_SETTINGS_COOLDOWN_SUCCESS                  ("Commands.Settings.Cooldown.Success")
+    ,   COMMANDS_SETTINGS_COOLDOWN_SUCCESS                  ("Commands.Settings.Cooldown.Success", String.class)
     ,   COMMANDS_RELOAD                                     ("Commands.Reload")
     ,   COMMANDS_RELOAD_SUCCESS                             ("Commands.Reload.Success")
-    ,   COMMANDS_ONGRID_FAIL_PLAYER                         ("Commands.onGrid.Fail.Player")
-    ,   COMMANDS_ONGRID_FAIL_CONSOLE                        ("Commands.onGrid.Fail.Console", Player.class)
+    ,   COMMANDS_ARGUMENTS_UNKNOWNGAMENAME                  ("Commands.Arguments.unknownGameName", String.class)
+    ,   COMMANDS_ARGUMENTS_INVALIDSETTING                   ("Commands.Arguments.invalidSetting")
     ,   ECON_INVALIDECONOMY                                 ("Econ.invalidEconomy")
     ,   ECON_INVALIDVAULT                                   ("Econ.invalidVault")
     ,   ECON_INVALIDOBJECTIVE                               ("Econ.invalidObjective");
@@ -177,10 +177,10 @@ public enum Translator {
         this.formattedValue = this.formattedValue.replace("{gameName}", String.valueOf(game.name));
     }
     private void Format(Player player) {
-        this.formattedValue = this.formattedValue.replace("{Player}", String.valueOf(player.getName()));
+        this.formattedValue = this.formattedValue.replace("{Player}", (player.getName()));
     }
     private void Format(YMLFile file) {
-        this.formattedValue = this.formattedValue.replace("{File}", String.valueOf(file.file.getName()));
+        this.formattedValue = this.formattedValue.replace("{File}", (file.file.getName()));
     }
     private void Format(String item) {
         this.formattedValue = this.formattedValue.replaceFirst("\\{.*?\\}", item);

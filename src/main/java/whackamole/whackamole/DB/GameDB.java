@@ -83,7 +83,7 @@ public class GameDB implements Table {
                 ,   moleSpeed = ?
                 ,   difficultyScale = ?
                 ,   difficultyScore = ?
-                ,   Cooldown INTEGER = ?
+                ,   Cooldown = ?
                 WHERE ID = ?
                 """;
         this.sql.executeUpdate(query, row.updateSpread());

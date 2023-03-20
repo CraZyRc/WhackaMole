@@ -4,6 +4,7 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.IStringTooltip;
 import dev.jorel.commandapi.StringTooltip;
 import dev.jorel.commandapi.arguments.*;
+import net.minecraft.commands.arguments.ArgumentEntity;
 import org.bukkit.ChatColor;
 import whackamole.whackamole.DB.SQLite;
 
@@ -146,7 +147,6 @@ public class Commands {
                             player.sendMessage(outputString);
 
                         })
-
                 )
                 .withSubcommand(new CommandAPICommand(String.valueOf(Translator.COMMANDS_SETTINGS))
                         .withPermission(Config.Permissions.PERM_SETTINGS)
@@ -155,60 +155,60 @@ public class Commands {
                         .executesPlayer((player, args) -> {
                             Game game = (Game) args[0];
                             switch (this.settingType) {
-                                case NULL -> Logger.error("Invalid Setting (please translate me)");
+                                case NULL -> Logger.error(Translator.COMMANDS_ARGUMENTS_INVALIDSETTING);
                                 case DIRECTION -> {
                                     game.setSpawnRotation(BlockFace.valueOf((String) args[2]));
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIRECTION_SUCCESS + args[2]);
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIRECTION_SUCCESS.Format(args[2]));
                                 }
                                 case HASJACKPOT -> {
                                     game.setJackpot(Boolean.parseBoolean((String) args[2]));
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOT_SUCCESS + args[2]);
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOT_SUCCESS.Format(args[2]));
                                 }
                                 case JACKPOTSPAWNCHANCE -> {
-                                    if ((int) args[2] <= 100) {
-                                        game.setJackpotSpawn((int) args[2]);
-                                        player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_SUCCESS + args[2]);
+                                    if (Integer.parseInt((String) args[2]) <= 100) {
+                                        game.setJackpotSpawn(Integer.parseInt((String) args[2]));
+                                        player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_SUCCESS.Format(args[2].toString()));
                                     } else {
                                         Logger.error(Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_CONSOLE.Format(player.getDisplayName()));
                                         player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_PLAYER);
                                     }
                                 }
                                 case MISSCOUNT -> {
-                                    game.setMaxMissed((int) args[2]);
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MAXMISSED_SUCCESS + args[2]);
+                                    game.setMaxMissed(Integer.parseInt((String) args[2]));
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MAXMISSED_SUCCESS.Format(args[2].toString()));
                                 }
                                 case SCOREPOINTS -> {
-                                    game.setPointsPerKill ((int) args[2]);
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SCOREPOINTS_SUCCESS + args[2]);
+                                    game.setPointsPerKill (Integer.parseInt((String) args[2]));
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SCOREPOINTS_SUCCESS.Format(args[2].toString()));
                                 }
                                 case SPAWNTIMER -> {
-                                    game.setInterval ((double) args[2]);
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SPAWNRATE_SUCCESS + args[2]);
+                                    game.setInterval (Double.parseDouble((String) args[2]));
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SPAWNRATE_SUCCESS.Format(args[2].toString()));
                                 }
                                 case SPAWNCHANCE -> {
-                                    if ((double) args[2] <= 100) {
-                                        game.setSpawnChance((double) args[2]);
-                                        player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SPAWNCHANCE_SUCCESS + args[2]);
+                                    if (Double.parseDouble((String) args[2]) <= 100) {
+                                        game.setSpawnChance(Double.parseDouble((String) args[2]));
+                                        player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SPAWNCHANCE_SUCCESS.Format(args[2].toString()));
                                     } else {
                                         Logger.error(Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_CONSOLE.Format(player.getDisplayName()));
                                         player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_PLAYER);
                                     }
                                 }
                                 case MOLESPEED -> {
-                                    game.setMoleSpeed((double) args[2]);
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MOLESPEED_SUCCESS + args[2]);
+                                    game.setMoleSpeed(Double.parseDouble((String) args[2]));
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MOLESPEED_SUCCESS.Format(args[2].toString()));
                                 }
                                 case DIFFICULTYSCALE -> {
-                                    game.setDifficultyScale((double) args[2]);
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE_SUCCESS + args[2]);
+                                    game.setDifficultyScale(Double.parseDouble((String) args[2]));
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE_SUCCESS.Format(args[2].toString()));
                                 }
                                 case DIFFICULTYSCORE -> {
-                                    game.setDifficultyScore((int) args[2]);
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE_SUCCESS + args[2]);
+                                    game.setDifficultyScore(Integer.parseInt((String) args[2]));
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE_SUCCESS.Format(args[2].toString()));
                                 }
                                 case COOLDOWN -> {
                                     game.setCooldown((String) args[2]);
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_COOLDOWN_SUCCESS + args[2]);
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_COOLDOWN_SUCCESS.Format(args[2]));
                                 }
                             }
                         })
@@ -236,7 +236,8 @@ public class Commands {
                     return game;
                 }
             }
-            throw new CustomArgument.CustomArgumentException(new CustomArgument.MessageBuilder("Unknown game name: ").appendArgInput());
+            String Arg = String.valueOf(new CustomArgument.MessageBuilder().appendArgInput());
+            throw new CustomArgument.CustomArgumentException(new CustomArgument.MessageBuilder(Translator.COMMANDS_ARGUMENTS_UNKNOWNGAMENAME.Format(Arg)));
         }).replaceSuggestions(ArgumentSuggestions.strings(
                 (this.manager == null) ? List.of("").toArray(new String[0]) :
                         this.manager.games.stream()
@@ -245,7 +246,7 @@ public class Commands {
     }
     private List<Argument<?>> settingsArgument() {
         List<Argument<?>> arguments = new ArrayList<>();
-        arguments.add(new CustomArgument<>(new StringArgument("Settings"), Info -> {
+        arguments.add(new CustomArgument<>(new TextArgument("Settings"), Info -> {
             if (Settings.DIRECTION.toString().equals(Info.input()))                 return Settings.DIRECTION;
             if (Settings.HASJACKPOT.toString().equals(Info.input()))                return Settings.HASJACKPOT;
             if (Settings.JACKPOTSPAWNCHANCE.toString().equals(Info.input()))        return Settings.JACKPOTSPAWNCHANCE;
@@ -262,10 +263,10 @@ public class Commands {
         }).replaceSuggestions(ArgumentSuggestions.strings(String.valueOf(Translator.COMMANDS_SETTINGS_DIRECTION), String.valueOf(Translator.COMMANDS_SETTINGS_JACKPOT), String.valueOf(Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE), String.valueOf(Translator.COMMANDS_SETTINGS_MAXMISSED), String.valueOf(Translator.COMMANDS_SETTINGS_SCOREPOINTS), String.valueOf(Translator.COMMANDS_SETTINGS_SPAWNRATE), String.valueOf(Translator.COMMANDS_SETTINGS_SPAWNCHANCE), String.valueOf(Translator.COMMANDS_SETTINGS_MOLESPEED), String.valueOf(Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE), String.valueOf(Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE), String.valueOf(Translator.COMMANDS_SETTINGS_COOLDOWN)
         )));
 
-        arguments.add(new StringArgument("settingValue").replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(info -> {
+        arguments.add(new TextArgument("settingValue").replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(info -> {
             this.settingType = (Settings) info.previousArgs()[1];
             switch (this.settingType) {
-                case NULL -> Logger.error("Invalid Setting (please translate me)");
+                case NULL -> Logger.error(Translator.COMMANDS_ARGUMENTS_INVALIDSETTING);
                 case DIRECTION -> {
                     return new IStringTooltip[] {
                         StringTooltip.ofString("NORTH",             this.DirectionTip),
@@ -350,11 +351,11 @@ public class Commands {
                 }
                 case COOLDOWN -> {
                     return new IStringTooltip[] {
-                        StringTooltip.ofString("24:00:00",          this.cooldownTip),
-                        StringTooltip.ofString("01:00:00",          this.cooldownTip),
-                        StringTooltip.ofString("00:30:00",          this.cooldownTip),
-                        StringTooltip.ofString("00:10:00",          this.cooldownTip),
-                        StringTooltip.ofString("00:00:10",          this.cooldownTip)
+                        StringTooltip.ofString("\"24:00:00\"",      this.cooldownTip),
+                        StringTooltip.ofString("\"01:00:00\"",      this.cooldownTip),
+                        StringTooltip.ofString("\"00:30:00\"",      this.cooldownTip),
+                        StringTooltip.ofString("\"00:10:00\"",      this.cooldownTip),
+                        StringTooltip.ofString("\"00:00:10\"",      this.cooldownTip)
                     };
                 }
             }
