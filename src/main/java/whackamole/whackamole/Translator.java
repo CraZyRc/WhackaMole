@@ -24,7 +24,7 @@ public enum Translator {
     ,   MANAGER_LOADINGGAMES                                ("Manager.loadingGames")
     ,   MANAGER_NOGAMESFOUND                                ("Manager.noGamesFound")
     ,   MANAGER_NAMEEXISTS                                  ("Manager.nameExists", String.class)
-    ,   MANAGER_ALREADYACTIVE                               ("Manager.alreadyActive")
+    // ,   MANAGER_ALREADYACTIVE                               ("Manager.alreadyActive") // TODO: No translation exists for this one. (Needed by Game.java:380 RemovePlayerFromGame(Player player))
     ,   MANAGER_TICKETUSE_GAMENOTFOUND                      ("Manager.ticketUse.gameNotFound")
     ,   MANAGER_TICKETUSE_SUCCESS                           ("Manager.ticketUse.Success")
     ,   MANAGER_TICKETUSE_NOCOOLDOWN                        ("Manager.ticketUse.noCooldown")

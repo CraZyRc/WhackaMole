@@ -377,7 +377,7 @@ public class Game {
                 playerLocation = playerLocation.add(moveVector);
             }
             player.teleport(playerLocation);
-            player.sendMessage(Config.AppConfig.PREFIX + Translator.MANAGER_ALREADYACTIVE);
+            // player.sendMessage(Config.AppConfig.PREFIX + Translator.MANAGER_ALREADYACTIVE);
         }
 
         private void setSpeedScale() {
