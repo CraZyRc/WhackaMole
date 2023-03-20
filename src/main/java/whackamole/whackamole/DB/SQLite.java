@@ -1,13 +1,11 @@
 package whackamole.whackamole.DB;
 
-import org.bukkit.block.BlockFace;
-
 import whackamole.whackamole.Config;
+import whackamole.whackamole.Game;
 import whackamole.whackamole.Logger;
 
 import java.io.File;
 import java.sql.*;
-import java.util.UUID;
 
 public class SQLite {
     private static String url = "jdbc:sqlite:" + Config.AppConfig.storageFolder+ "/Storage.db";
@@ -26,6 +24,9 @@ public class SQLite {
         var dbFile = new File(Config.AppConfig.storageFolder + "/Storage.db");
         if(!dbFile.exists()) {
             getGameDB().Create();
+            getGridDB().Create();
+            getCooldownDB().Create();
+            getScoreboardDB().Create();
         }
     }
 
@@ -81,5 +82,8 @@ public class SQLite {
     public static GameDB getGameDB() {
         return new GameDB(getInstance());
     }
+    public static ScoreboardDB getScoreboardDB() { return new ScoreboardDB(getInstance()); }
+    public static CooldownDB getCooldownDB() { return new CooldownDB(getInstance()); }
+    public static GridDB getGridDB() { return new GridDB(getInstance()); }
 
 }

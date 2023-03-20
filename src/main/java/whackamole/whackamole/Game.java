@@ -1,7 +1,5 @@
 package whackamole.whackamole;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,11 +25,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
-import org.checkerframework.checker.units.qual.C;
-import org.sqlite.core.DB;
-import whackamole.whackamole.DB.GameDB;
-import whackamole.whackamole.DB.GameRow;
-import whackamole.whackamole.DB.SQLite;
+import whackamole.whackamole.DB.*;
 import whackamole.whackamole.Mole.MoleState;
 import whackamole.whackamole.Mole.MoleType;
 
@@ -41,6 +35,7 @@ public class Game {
 
     public class CooldownList {
         private HashMap<UUID, Long> cooldown = new HashMap<>();
+        private CooldownDB db = SQLite.getCooldownDB();
 
         private void add(Player player) {
             this.add(player.getUniqueId(), settings.Cooldown);
@@ -48,6 +43,7 @@ public class Game {
 
         private void add(UUID player, Long time) {
             this.cooldown.put(player, System.currentTimeMillis() + time);
+            this.db.Insert(Game.this.ID, player, System.currentTimeMillis() + time);
         }
 
         private boolean contains(Player player) {
@@ -67,6 +63,7 @@ public class Game {
 
         private void remove(UUID player) {
             this.cooldown.remove(player);
+            this.db.Delete(Game.this.ID, player);
         }
 
         private Long getTime(UUID player) {
@@ -75,7 +72,7 @@ public class Game {
 
         private String getText(UUID player) {
             if (contains(player)) {
-                return formatCooldown(this.cooldown.get(player));
+                return formatRestCooldown(this.cooldown.get(player));
             }
             return null;
         }
@@ -91,8 +88,11 @@ public class Game {
             return Hour + Minutes + Seconds;
         }
 
-        private String formatCooldown(long time) {
+        private String formatRestCooldown(long time) {
             time = time - System.currentTimeMillis();
+            return formatSetCooldown(time);
+        }
+        private String formatSetCooldown(long time) {
             int seconds = (int) (Math.floorDiv(time, 1000));
             int minutes = (Math.floorDiv(seconds, 60));
             int hours = (Math.floorDiv(minutes, 60));
@@ -134,7 +134,7 @@ public class Game {
         public double Interval = 1, spawnChance = 100, difficultyScale = 10, moleSpeed = 2;
 
         public String getCooldown() {
-            return Game.this.cooldown.formatCooldown(this.Cooldown);
+            return Game.this.cooldown.formatSetCooldown(this.Cooldown);
         }
 
 
@@ -203,7 +203,7 @@ public class Game {
             this.gameConfig.set("Properties.Mole speed", Game.this.settings.moleSpeed);
             this.gameConfig.set("Properties.Difficulty scaling", Game.this.settings.difficultyScale);
             this.gameConfig.set("Properties.Difficulty increase", Game.this.settings.difficultyScore);
-            this.gameConfig.set("Properties.Cooldown", Game.this.cooldown.formatCooldown(Game.this.settings.Cooldown));
+            this.gameConfig.set("Properties.Cooldown", Game.this.cooldown.formatSetCooldown(Game.this.settings.Cooldown));
             this.gameConfig.set("Field Data.World", Game.this.grid.world.getName());
             this.gameConfig.set("Field Data.Grid", Game.this.grid.Serialize());
             try {
@@ -239,10 +239,10 @@ public class Game {
 
     public class Scoreboard {
 
-        private class Score {
-            private Player player;
-            private int score;
-            private Long timestamp;
+        public class Score {
+            public Player player;
+            public int score;
+            public Long timestamp;
 
             public Score(Player player, int score, Long timestamp) {
                 this.player = player;
@@ -252,9 +252,13 @@ public class Game {
         }
 
         private ArrayList<Score> scores = new ArrayList<>();
+        private ScoreboardDB db = SQLite.getScoreboardDB();
 
         public void add(Player player, int score) {
-            this.scores.add(new Score(player, score, System.currentTimeMillis() / 1000));
+            Score scoreItem = new Score(player, score, System.currentTimeMillis() / 1000);
+            this.scores.add(scoreItem);
+            this.db.Insert(scoreItem, Game.this.ID);
+
         }
 
         public List<Score> getTop() {
@@ -284,17 +288,19 @@ public class Game {
         }
 
         private boolean Start(Player player) {
+            if (cooldown.contains(player)
+                // || player.hasPermission(Config.Permissions.PERM_PLAY)
+            ) {
+                return false;
+            }
+
+
             if (Econ.currencyType == Econ.Currency.NULL) {
                 Logger.error(Translator.GAME_INVALIDECONOMY);
                 cooldown.add(player.getUniqueId(), 10000L);
                 return false;
             }
 
-            if (cooldown.contains(player)
-            // || player.hasPermission(Config.Permissions.PERM_PLAY)
-            ) {
-                return false;
-            }
 
             if (!givePlayerAxe(player)) {
                 player.sendMessage(Config.AppConfig.PREFIX + Translator.GAME_START_FULLINVENTORY);
@@ -386,7 +392,8 @@ public class Game {
     public int ID;
     public String name;
     private Grid grid;
-    private GameDB db = SQLite.getGameDB();
+    private GameDB gameDB = SQLite.getGameDB();
+    private GridDB gridDB = SQLite.getGridDB();
 
     private Random random = new Random();
     public Game(GameRow result) {
@@ -421,7 +428,8 @@ public class Game {
             this.gameFile = new GameFile();
         }
 
-        this.ID = this.db.Insert(this);
+        this.ID = this.gameDB.Insert(this);
+        this.gridDB.Insert(this.grid, this.ID);
     }
 
     private String formatName(String name) {
@@ -544,6 +552,7 @@ public class Game {
             currentyOnGird.add(player.getUniqueId());
             this.Start(player);
             this.cooldown.walkOnGridHook(player);
+            return playerOnGrid;
         }
 
         // * Player walks of grid

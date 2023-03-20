@@ -108,10 +108,10 @@ public class Commands {
                                         } else {
                                             player.getInventory().addItem(Config.Game.TICKET);
                                             econ.withdrawPlayer(player, Config.Currency.TICKETPRICE);
-                                            player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_BUY_SUCCESS);
+                                            player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_BUY_SUCCESS.Format());
                                         }
                                     } else {
-                                        player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_BUY_CONFIRMATION);
+                                        player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_BUY_CONFIRMATION.Format());
                                     }
                                 } else {
                                     player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_BUY_LOWECONOMY);

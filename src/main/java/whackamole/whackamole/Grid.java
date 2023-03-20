@@ -11,7 +11,7 @@ import org.bukkit.util.Vector;
 
 import whackamole.whackamole.Mole.*;
 
-class Grid {
+public class Grid {
     private static ArrayList<Vector> neighborList = new ArrayList<>() {
         {
             add(new Vector(1, 0, -1)); // * topleft

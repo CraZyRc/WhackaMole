@@ -77,7 +77,7 @@ public enum Translator {
     ,   COMMANDS_REMOVE_SUCCESS                             ("Commands.Remove.Success")
     ,   COMMANDS_BUY                                        ("Commands.Buy")
     ,   COMMANDS_BUY_FULLINVENTORY                          ("Commands.Buy.fullInventory")
-    ,   COMMANDS_BUY_CONFIRMATION                           ("Commands.Buy.Confirmation", String.class)
+    ,   COMMANDS_BUY_CONFIRMATION                           ("Commands.Buy.Confirmation")
     ,   COMMANDS_BUY_LOWECONOMY                             ("Commands.Buy.lowEconomy")
     ,   COMMANDS_BUY_ECONOMYERROR_PLAYER                    ("Commands.Buy.economyError.Player")
     ,   COMMANDS_BUY_ECONOMYERROR_CONSOLE                   ("Commands.Buy.economyError.Console", Player.class)
