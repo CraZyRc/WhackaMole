@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,9 +71,9 @@ public class TranslationTest {
     public void AllTranslationsPresent(Locale language) {
         Config.AppConfig.Language = language;
         for (Translator item : Translator.values()) {
-            softly.then(item.toString() != null).as("%s : %s", item.name(), item.key)
+            softly.then(item.toString().isEmpty()).as("%s : %s", item.name(), item.key)
                     .withFailMessage("Not found in resource file: Lang_%s.properties", language)
-                    .isTrue();
+                    .isFalse();
         }
     }
 
