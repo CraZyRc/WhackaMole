@@ -593,6 +593,9 @@ public class Game {
         for (UUID player : this.currentyOnGird) {
             if (this.cooldown.contains(player))
                 sendPlayerCooldownMessage(player);
+            else 
+                Bukkit.getPlayer(player).spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder().append("").create());
+
         }
     }
         
