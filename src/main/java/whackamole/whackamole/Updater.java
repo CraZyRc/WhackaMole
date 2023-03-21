@@ -1,13 +1,11 @@
 package whackamole.whackamole;
 
-import org.apache.commons.lang3.compare.ObjectToStringComparator;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class Updater {

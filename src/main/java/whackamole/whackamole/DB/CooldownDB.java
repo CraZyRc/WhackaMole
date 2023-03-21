@@ -1,6 +1,5 @@
 package whackamole.whackamole.DB;
 
-import org.bukkit.entity.Player;
 import whackamole.whackamole.Logger;
 
 import java.sql.SQLException;

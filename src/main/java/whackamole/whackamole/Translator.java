@@ -182,10 +182,10 @@ public enum Translator {
         this.formattedValue = this.formattedValue.replace("{maxMissed}", String.valueOf(game.getSettings().maxMissed));
     }
     private void Format(Player player) {
-        this.formattedValue = this.formattedValue.replace("{Player}", (player.getName()));
+        this.formattedValue = this.formattedValue.replace("{Player}", player.getName());
     }
     private void Format(YMLFile file) {
-        this.formattedValue = this.formattedValue.replace("{File}", (file.file.getName()));
+        this.formattedValue = this.formattedValue.replace("{File}", file.file.getName());
     }
     private void Format(String item) {
         this.formattedValue = this.formattedValue.replaceFirst("\\{.*?\\}", item);

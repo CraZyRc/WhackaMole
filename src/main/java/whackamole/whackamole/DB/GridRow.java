@@ -1,8 +1,6 @@
 package whackamole.whackamole.DB;
 
-import org.bukkit.Location;
 import org.bukkit.block.Block;
-import whackamole.whackamole.Game;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

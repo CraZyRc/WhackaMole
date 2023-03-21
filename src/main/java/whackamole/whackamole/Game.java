@@ -228,7 +228,6 @@ public class Game {
         public void delete() {
             this.gameConfig.remove();
         }
-
     }
 
     public class Scoreboard {
@@ -399,7 +398,6 @@ public class Game {
     private GameRunner game;
 
     private List<UUID> currentyOnGird = new ArrayList<>();
-    private boolean disabled = false;
 
     public int ID;
     public String name;

@@ -4,9 +4,7 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.IStringTooltip;
 import dev.jorel.commandapi.StringTooltip;
 import dev.jorel.commandapi.arguments.*;
-import net.minecraft.commands.arguments.ArgumentEntity;
 import org.bukkit.ChatColor;
-import whackamole.whackamole.DB.SQLite;
 
 import org.bukkit.block.BlockFace;
 
@@ -16,7 +14,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class Commands {
-    private final SQLite SQL = SQLite.getInstance();
     private Econ econ = new Econ();
     public GamesManager manager = GamesManager.getInstance();
 
@@ -229,7 +226,7 @@ public class Commands {
                 )
                 .register();
     }
-    public Argument gameNameArgument(String name) {
+    public Argument<Game> gameNameArgument(String name) {
         return new CustomArgument<>(new StringArgument(name), customArgumentInfo -> {
             for (Game game : this.manager.games) {
                 if (game.name.equals(customArgumentInfo.input())) {

@@ -1,7 +1,6 @@
 package whackamole.whackamole.DB;
 
 import whackamole.whackamole.Config;
-import whackamole.whackamole.Game;
 import whackamole.whackamole.Logger;
 
 import java.io.File;

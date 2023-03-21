@@ -1,7 +1,6 @@
 package whackamole.whackamole.DB;
 
 import org.bukkit.block.Block;
-import whackamole.whackamole.Game;
 import whackamole.whackamole.Grid;
 import whackamole.whackamole.Logger;
 
