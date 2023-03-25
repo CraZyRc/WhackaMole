@@ -6,6 +6,8 @@ import whackamole.whackamole.Logger;
 import java.io.File;
 import java.sql.*;
 
+import org.jetbrains.annotations.Nullable;
+
 public class SQLite {
     private static String url = "jdbc:sqlite:" + Config.AppConfig.storageFolder+ "/Storage.db";
     
@@ -30,6 +32,7 @@ public class SQLite {
     }
 
     private static Connection connection;
+    @Nullable
     private static Connection getConnection() {
         if (SQLite.connection == null) {
             try {
@@ -64,9 +67,11 @@ public class SQLite {
         }
     }
     
+    @Nullable
     public ResultSet executeQuery(String query) {
         return this.executeQuery(query, new Object[0]);
     }
+    @Nullable
     public ResultSet executeQuery(String query, Object ... arguments) {
         try {
             var stmt = this.getStatement(query, arguments);
@@ -78,11 +83,9 @@ public class SQLite {
         }
     }
 
-    public static GameDB getGameDB() {
-        return new GameDB(getInstance());
-    }
-    public static ScoreboardDB getScoreboardDB() { return new ScoreboardDB(getInstance()); }
-    public static CooldownDB getCooldownDB() { return new CooldownDB(getInstance()); }
-    public static GridDB getGridDB() { return new GridDB(getInstance()); }
+    public static ScoreboardDB getScoreboardDB() {  return new ScoreboardDB(getInstance()); }
+    public static CooldownDB getCooldownDB() {      return new CooldownDB(getInstance()); }
+    public static GridDB getGridDB() {              return new GridDB(getInstance()); }
+    public static GameDB getGameDB() {              return new GameDB(getInstance()); }
 
 }
