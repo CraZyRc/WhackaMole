@@ -1,10 +1,14 @@
 package whackamole.whackamole.DB.Model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.UUID;
+
 import org.jetbrains.annotations.NotNull;
 
-public class Column {
+public class Column<T> {
     private String Name = "";
-    private Object rawType;
+    private Class<T> rawType;
 
     // * Options
     private boolean IsPrimayKey;
@@ -16,7 +20,7 @@ public class Column {
      * @param Name Column Name
      * @param type Java expected Type
      */
-    public Column(String Name, Object type) {
+    public Column(String Name, Class<T> type) {
         this.Name = Name;
         this.rawType = type;
     }
@@ -26,11 +30,13 @@ public class Column {
      * @return the sql column type (Ex. {@code TEXT})
      */
     private String GetType() {
-        if(Integer.class.isInstance(this.rawType))   return "INTERGER";
-        if(String.class.isInstance(this.rawType))    return "TEXT";
-        if(Double.class.isInstance(this.rawType))    return "REAL";
-        if(Long.class.isInstance(this.rawType))      return "REAL";
-        throw new UnsupportedOperationException("Unknown Type received: %d".formatted(this.rawType.getClass().getName()));
+        if(this.rawType.isAssignableFrom(Integer.class))    return "INTEGER";
+        if(this.rawType.isAssignableFrom(String.class))     return "TEXT";
+        if(this.rawType.isAssignableFrom(UUID.class))       return "TEXT";
+        if(this.rawType.isAssignableFrom(Double.class))     return "REAL";
+        if(this.rawType.isAssignableFrom(Long.class))       return "REAL";
+        // return "TEXT";
+        throw new UnsupportedOperationException("Unknown Type received: %s".formatted(this.rawType));
     }
 
     /**
@@ -64,13 +70,32 @@ public class Column {
         return this.Name + " " + this.GetType();
     }
 
+    /**
+     * Casts RowSet Column to column type of T
+     * @param set
+     * @return Casted RowSet to T
+     * @throws SQLException
+     */
+    @SuppressWarnings("unchecked")
+    protected T ResultSetToRow(ResultSet set) throws SQLException {
+        Object V = set.getObject(Name);
+        if(V.equals("null")) return null;
+        
+        if(this.rawType.isAssignableFrom(Integer.class))    return (T) Integer.valueOf(set.getInt(Name));
+        if(this.rawType.isAssignableFrom(String.class))     return (T) String.valueOf(set.getString(Name));
+        if(this.rawType.isAssignableFrom(Double.class))     return (T) Double.valueOf(set.getDouble(Name));
+        if(this.rawType.isAssignableFrom(UUID.class))       return (T) UUID.fromString(set.getString(Name));
+        if(this.rawType.isAssignableFrom(Long.class))       return (T) Long.valueOf(set.getLong(Name));
+        return null;
+    }
+
     // * Options
     /**
      * Tel the column if it is a Primary key for the Table
      * @param isKey
      * @return The column
      */
-    public Column IsPrimaryKey(boolean isKey) {
+    public Column<T> IsPrimaryKey(boolean isKey) {
         this.IsPrimayKey = isKey;
         return this;
     }
@@ -90,7 +115,7 @@ public class Column {
      * @param HasKey
      * @return The column
      */
-    public Column HasAutoIncrement(boolean HasKey) {
+    public Column<T> HasAutoIncrement(boolean HasKey) {
         this.HasAutoIncrement = HasKey;
         return this;
     }
@@ -110,7 +135,7 @@ public class Column {
      * @param HasKey
      * @return The column
      */
-    public Column AllowNull(boolean AllowKey) {
+    public Column<T> AllowNull(boolean AllowKey) {
         this.AllowNull = AllowKey;
         return this;
     }
