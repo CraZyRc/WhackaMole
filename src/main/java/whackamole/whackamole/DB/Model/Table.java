@@ -60,19 +60,17 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         SQL.executeUpdate(query);
     }
     
-    
     /**
      * Execute Insert query
      * 
      * @see Table#GetInsertQuery()
      */
-    public int Insert(T row) {
+    public void Insert(T row) {
         var query = this.GetInsertQuery(row);
-        if (query.isEmpty()) return 0;
+        if (query.isEmpty()) return;
+        
         SQL.executeUpdate(query);
-        return 0;
-        // TODO: Added return of the ID from autoincrement when needed
-        // ? Maybe return the row back but with updated columns
+        this.TrySetLastRowId(row);
     }
     
     /**
@@ -292,5 +290,31 @@ public abstract class Table<T extends Row> implements TableModel<T> {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Create a Row object from a RowSet
+     * @param set
+     * @return a new Row Object
+     */
+    private void TrySetLastRowId(T row) {
+        try {
+            Column<?> autoIColumn = null;
+            for (var i : this.ColumnNames) {
+                if (i.HasAutoIncrement()) {
+                    autoIColumn= i;
+                    break;
+                }
+            }
+
+            if (autoIColumn != null) {
+                var lastrow = SQL.executeQuery("SELECT last_insert_rowid()");
+                
+                var field = row.getClass().getDeclaredField(autoIColumn.GetName());
+                field.set(row, lastrow.getObject(1));
+            }
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

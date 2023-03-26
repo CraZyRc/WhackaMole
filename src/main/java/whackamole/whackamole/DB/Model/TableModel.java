@@ -6,13 +6,9 @@ public interface TableModel<T extends RowModel> {
     
     void Create();
 
-    /**
-     * Selects All Rows from Table
-     * @return List Of < Rows extends RowModel >
-     */
     List<T> Select();
 
-    int Insert(T row);
+    void Insert(T row);
 
     void Update(T row);
 }
