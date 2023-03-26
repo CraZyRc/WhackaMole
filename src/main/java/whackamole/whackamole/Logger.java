@@ -20,7 +20,7 @@ public final class Logger {
             Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "[" + Logger.Prefix + "] " + message);
         } catch (Exception e) { 
             // * Primarily for testing purposes, or when it fails to load in Bukkit
-            System.out.println(ChatColor.GOLD + "[" + Logger.Prefix + "] " + message);
+            System.out.println(message);
         }
     }
 

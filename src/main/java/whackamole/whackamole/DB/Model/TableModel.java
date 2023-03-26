@@ -11,4 +11,7 @@ public interface TableModel<T extends RowModel> {
     void Insert(T row);
 
     void Update(T row);
+
+    // TODO: Add Remove row implmentation
+    // void Remove(T row);
 }
