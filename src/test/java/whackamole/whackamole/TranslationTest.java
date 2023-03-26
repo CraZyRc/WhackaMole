@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
+import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -129,10 +130,8 @@ public class TranslationTest {
 
     @Test
     public void NullParameterShouldFail() {
-        try (MockedStatic<Logger> logger = mockStatic(Logger.class)) {
-            softly.then(Translator.MANAGER_NAMEEXISTS.Format())
-            .as("name exists without parameters")
-            .isNotNull();
-        }
+        Assert.assertThrows(java.lang.AssertionError.class, () -> {
+            Translator.MANAGER_NAMEEXISTS.Format();
+        });
     }
 }
