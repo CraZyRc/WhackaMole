@@ -150,9 +150,8 @@ public enum Translator {
         return Format(type, new Object[0]);
     }
     public static String Format(Translator type, Object... replacements) {
-        if(!typesToString(type.requiredTypes).equals(typesToString(replacements))) {
-            Logger.error("Translator format failed for " + type.key + ": " + typesToString(type.requiredTypes) + " | "+ typesToString(replacements));
-        }
+        assert typesToString(type.requiredTypes).equals(typesToString(replacements)) 
+            : "Translator format failed for " + type.key + ": " + typesToString(type.requiredTypes) + " | "+ typesToString(replacements); 
 
 
         type.formattedValue = type.value;
