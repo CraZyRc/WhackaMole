@@ -10,7 +10,7 @@ public class CooldownDB extends Table<CooldownRow> {
         super(sql, "Cooldown", new Column<?>[] {
             new Column<Integer>("gameID", Integer.class).IsPrimaryKey(true).AllowNull(true),
             new Column<UUID>("playerID", UUID.class).IsPrimaryKey(true).AllowNull(true),
-            new Column<Long>("endtimeStamp", Long.class),
+            new Column<Long>("endTimeStamp", Long.class),
         }, CooldownRow.class);
     }
 

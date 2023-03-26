@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -334,9 +335,25 @@ public abstract class Table<T extends Row> implements TableModel<T> {
                 if(col.HasAutoIncrement()) autoincrements ++;
                 assert autoincrements < 2 : "Only 1 Primary key is allowed to have the AutoIncrement set! (%s)".formatted(col.GetName());
             } else {
-                assert col.HasAutoIncrement() : "HasAutoIncrement is only allowed on Primary keys! (%s)".formatted(col.GetName());
+                assert ! col.HasAutoIncrement() : "HasAutoIncrement is only allowed on Primary keys! (%s)".formatted(col.GetName());
             }
         }
+
+        try {
+            T i = this.rawType.getDeclaredConstructor().newInstance();
+            for (var column : this.ColumnNames) {
+            try {
+                    i.getClass().getDeclaredField(column.GetName());
+                } catch (NoSuchFieldException e) {
+                    assert false : "Table Columns Didn't match Row class. On Column: (%s)\nStackTrace: %s".formatted(column.GetName(), ExceptionUtils.getStackTrace(e));
+                }
+            }
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
+            e.printStackTrace();
+            return false;
+        }
+
         return true;
     }
 }

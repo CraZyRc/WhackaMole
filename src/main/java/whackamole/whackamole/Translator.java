@@ -3,6 +3,7 @@ package whackamole.whackamole;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
 
 import org.bukkit.entity.Player;
 
@@ -187,7 +188,7 @@ public enum Translator {
         this.formattedValue = this.formattedValue.replace("{File}", file.file.getName());
     }
     private void Format(String item) {
-        this.formattedValue = this.formattedValue.replaceFirst("\\{.*?\\}", item);
+        this.formattedValue = this.formattedValue.replaceFirst("\\{.*?\\}", Matcher.quoteReplacement(item));
     }   
     private void configFormat() {
         this.formattedValue = this.formattedValue

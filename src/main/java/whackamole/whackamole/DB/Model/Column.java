@@ -11,10 +11,10 @@ public class Column<T> {
     private Class<T> rawType;
 
     // * Options
-    private boolean IsPrimayKey;
-    private boolean HasAutoIncrement;
-    private boolean AllowNull;
-    private boolean IsUnique;
+    private boolean IsPrimayKey = false;
+    private boolean HasAutoIncrement = false;
+    private boolean AllowNull = false;
+    private boolean IsUnique = false;
 
     /**
      * Creates a Sql Table Column
