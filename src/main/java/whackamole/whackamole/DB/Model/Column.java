@@ -14,6 +14,7 @@ public class Column<T> {
     private boolean IsPrimayKey;
     private boolean HasAutoIncrement;
     private boolean AllowNull;
+    private boolean IsUnique;
 
     /**
      * Creates a Sql Table Column
@@ -30,13 +31,17 @@ public class Column<T> {
      * @return the sql column type (Ex. {@code TEXT})
      */
     private String GetType() {
-        if(this.rawType.isAssignableFrom(Integer.class))    return "INTEGER";
-        if(this.rawType.isAssignableFrom(String.class))     return "TEXT";
-        if(this.rawType.isAssignableFrom(UUID.class))       return "TEXT";
-        if(this.rawType.isAssignableFrom(Double.class))     return "REAL";
-        if(this.rawType.isAssignableFrom(Long.class))       return "REAL";
-        // return "TEXT";
-        throw new UnsupportedOperationException("Unknown Type received: %s".formatted(this.rawType));
+        String out = "";
+        if(this.rawType.isAssignableFrom(Integer.class))    out += "INTEGER";
+        if(this.rawType.isAssignableFrom(String.class))     out += "TEXT";
+        if(this.rawType.isAssignableFrom(UUID.class))       out += "TEXT";
+        if(this.rawType.isAssignableFrom(Double.class))     out += "REAL";
+        if(this.rawType.isAssignableFrom(Long.class))       out += "REAL";
+        assert ! out.isEmpty() : "Unable to identify Column Type: (%s) for method Column#GetType()".formatted(this.rawType);
+
+        if(!this.AllowNull)         out += " NOT NULL";
+        if(this.IsUnique)           out += " UNIQUE";
+        return out;
     }
 
     /**
@@ -58,7 +63,7 @@ public class Column<T> {
         if (! this.IsPrimayKey) return "";
 
         String out = this.Name;
-        if(this.HasAutoIncrement) out += " AUTOINCREMENT";
+        if(this.HasAutoIncrement)   out += " AUTOINCREMENT";
         return out;
     }
 
@@ -86,6 +91,8 @@ public class Column<T> {
         if(this.rawType.isAssignableFrom(Double.class))     return (T) Double.valueOf(set.getDouble(Name));
         if(this.rawType.isAssignableFrom(UUID.class))       return (T) UUID.fromString(set.getString(Name));
         if(this.rawType.isAssignableFrom(Long.class))       return (T) Long.valueOf(set.getLong(Name));
+        assert false : "Unable to identify Column Type: (%s) for method Column#ResultSetToRow(ResultSet set)".formatted(this.rawType);
+
         return null;
     }
 
@@ -147,5 +154,25 @@ public class Column<T> {
      */
     protected boolean AllowNull() {
         return this.AllowNull;
+    }
+    
+    /**
+     * Set the Unique option
+     * 
+     * @param IsKey
+     * @return The column
+     */
+    public Column<T> IsUnique(boolean IsKey) {
+        this.IsUnique = IsKey;
+        return this;
+    }
+
+    /**
+     * Get the Unique option
+     * 
+     * @return The is Unique option
+     */
+    protected boolean IsUnique() {
+        return this.IsUnique;
     }
 }
