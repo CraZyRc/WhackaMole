@@ -6,6 +6,7 @@ import whackamole.whackamole.Logger;
 import java.io.File;
 import java.sql.*;
 
+import org.codehaus.plexus.util.ExceptionUtils;
 import org.jetbrains.annotations.Nullable;
 
 public class SQLite {
@@ -62,8 +63,11 @@ public class SQLite {
             var stmt = this.getStatement(query, arguments);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            Logger.error(e.getMessage());
-            Logger.error(e.getStackTrace().toString());
+            Logger.error("Failed to execute Query: (%s)\nFor Reason: %s\nWith StackTrace:\n%s".formatted(
+                query,
+                e.getMessage(),
+                ExceptionUtils.getStackTrace(e)
+            ));
         }
     }
     
@@ -77,8 +81,10 @@ public class SQLite {
             var stmt = this.getStatement(query, arguments);
             return stmt.executeQuery();
         } catch (SQLException e) {
-            Logger.error(e.getMessage());
-            Logger.error(e.getStackTrace().toString());
+            Logger.error("Failed to execute Query: (%s)\nFor Reason: %s\nWith StackTrace:\n%s".formatted(
+                    query,
+                    e.getMessage(),
+                    ExceptionUtils.getStackTrace(e)));
             return null;
         }
     }

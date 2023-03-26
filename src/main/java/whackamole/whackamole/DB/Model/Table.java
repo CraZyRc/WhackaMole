@@ -28,6 +28,7 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         this.ColumnNames = ColumnNames;
 
         this.rawType = type;
+        assert this.ColumnsValidation() : "Columns are not fully valid";
     }
 
     /**
@@ -150,14 +151,14 @@ public abstract class Table<T extends Row> implements TableModel<T> {
      */
     @Nullable
     private String GetPrimaryKeys() {
-        String keys = "";
+        List<String> keys = new ArrayList<>();
 
         for (Column<?> col : this.ColumnNames) {
-            keys += col.GetPrimaryWithOptions();
+            if(col.IsPrimaryKey()) keys.add(col.GetPrimaryWithOptions());
         }
 
         if (!keys.isEmpty()) {
-            return "PRIMARY KEY(%s)".formatted(keys);
+            return "PRIMARY KEY(%s)".formatted(String.join(", ", keys));
         }
         return null;
     }
@@ -316,5 +317,26 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SQLException e) {
             e.printStackTrace();
         }
+    }
+
+
+    /**
+     * Only ran when assetion is enabled
+     * U can enable assertion by adding VM argument -ea
+     * 
+     * @return
+     */
+    private boolean ColumnsValidation() {
+        int autoincrements = 0;
+
+        for (var col : this.ColumnNames) {
+            if(col.IsPrimaryKey()) {
+                if(col.HasAutoIncrement()) autoincrements ++;
+                assert autoincrements < 2 : "Only 1 Primary key is allowed to have the AutoIncrement set! (%s)".formatted(col.GetName());
+            } else {
+                assert col.HasAutoIncrement() : "HasAutoIncrement is only allowed on Primary keys! (%s)".formatted(col.GetName());
+            }
+        }
+        return true;
     }
 }
