@@ -1,11 +1,6 @@
 package whackamole.whackamole;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -31,6 +26,8 @@ import net.md_5.bungee.chat.ComponentSerializer;
 import whackamole.whackamole.DB.*;
 import whackamole.whackamole.Mole.MoleState;
 import whackamole.whackamole.Mole.MoleType;
+
+import static org.bukkit.Bukkit.spigot;
 
 public class Game {
     public static final BlockFace[] Directions = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST,
@@ -115,16 +112,10 @@ public class Game {
             UUID playerUUID = player.getUniqueId();
             if (this.getTime(playerUUID) < System.currentTimeMillis())
                 this.remove(playerUUID);
-            else 
-                Game.this.sendPlayerCooldownMessage(playerUUID);
+            else
+                Game.this.actionbarParse(player.getUniqueId(), Translator.GAME_ACTIONBAR_GAMEOVER, Game.this.cooldown.getText(player.getUniqueId()));
         }
 
-        public void walkOffGridHook(Player player) {
-            if (!this.contains(player.getUniqueId()))
-                return;
-
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder().append("").create());
-        }
     }
     public class Settings {
         public World world;
@@ -287,7 +278,7 @@ public class Game {
 
         private boolean Start(Player player) {
             if (cooldown.contains(player)
-                // || player.hasPermission(Config.Permissions.PERM_PLAY)
+//                 || player.hasPermission(Config.Permissions.PERM_PLAY)
             ) {
                 return false;
             }
@@ -296,13 +287,14 @@ public class Game {
             if (Econ.currencyType == Econ.Currency.NULL) {
                 Logger.error(Translator.GAME_INVALIDECONOMY);
                 cooldown.add(player.getUniqueId(), 10000L);
+                Game.this.actionbarParse(player.getUniqueId(), Translator.GAME_ACTIONBAR_ERROR.Format());
                 return false;
             }
 
 
             if (!givePlayerAxe(player)) {
                 player.sendMessage(Config.AppConfig.PREFIX + Translator.GAME_START_FULLINVENTORY);
-                cooldown.add(player.getUniqueId(), 10000L);
+                Game.this.actionbarParse(player.getUniqueId(), Translator.GAME_ACTIONBAR_FULLINVENTORY.Format());
                 return false;
             }
 
@@ -312,7 +304,7 @@ public class Game {
 
         private void Stop() {
             grid.removeEntities();
-            this.player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(""));
+            Game.this.actionbarParse(this.player.getUniqueId(), "");
             this.removePlayerAxe(this.player);
             this.sendScoreToPlayer(this.player, this.score);
             econ.depositPlayer(this.player, this.score);
@@ -366,11 +358,11 @@ public class Game {
                 setSpeedScale();
         }
 
-        public void RemovePlayerFromGame(PlayerMoveEvent e) {
+        public void RemovePlayerFromGame(PlayerMoveEvent e) { // TODO: MAKE TELEPORT LOCATION IN FRONT OF MIDDLE BLOCK FRONT ROW :) (WITH CHECK FOR BLOCK SPAWN AND SAFE TP)
             Player player = e.getPlayer();
             Location playerLocation = player.getLocation();
-            Vector moveVector = e.getFrom().toVector().subtract(e.getTo().toVector()).normalize().multiply(1.5).setY(1);
-            while (Game.this.onGrid(e.getPlayer())) {
+            Vector moveVector = e.getFrom().toVector().subtract(e.getTo().toVector()).normalize().multiply(2).setY(1.5);
+            while (Game.this.grid.onGrid(playerLocation)) {
                 if (moveVector.getX() == 0 && moveVector.getZ() == 0) {
                     moveVector = Game.this.getSettings().spawnRotation.getDirection();
                 }
@@ -569,7 +561,7 @@ public class Game {
         // * Player walks of grid
         if (!playerOnGrid && currentyOnGird.contains(player.getUniqueId())) {
             currentyOnGird.remove(player.getUniqueId());
-            this.cooldown.walkOffGridHook(player);
+            Game.this.actionbarParse(player.getUniqueId(), "");
             return playerOnGrid;
         }
 
@@ -598,31 +590,41 @@ public class Game {
 
     }
 
-    public void updateActionBar() {
-        if (this.game != null) {
-            BaseComponent[] actionMessage = new ComponentBuilder()
-                    .append(ComponentSerializer.parse(Config.Game.ACTIONTEXT))
-                    .append((Config.Color("&2&l ") + this.game.score))
-                    .create();
-            this.game.player.spigot().sendMessage(ChatMessageType.ACTION_BAR, actionMessage);
-        }
+    private void actionbarParse(UUID player, String text) {
+        Bukkit.getPlayer(player).spigot().sendMessage(
+                ChatMessageType.ACTION_BAR,
+                new ComponentBuilder()
+                        .append(text + "")
+                        .create());
+    }
+    private void actionbarParse(UUID player, BaseComponent[] text, String text2) {
+        Bukkit.getPlayer(player).spigot().sendMessage(
+                ChatMessageType.ACTION_BAR,
+                new ComponentBuilder()
+                        .append(text)
+                        .append(text2)
+                        .create());
+    }
+    private void actionbarParse(UUID player, Translator text, String text2) {
+        Bukkit.getPlayer(player).spigot().sendMessage(
+                ChatMessageType.ACTION_BAR,
+                new ComponentBuilder()
+                        .append(text + text2)
+                        .create());
+    }
 
+    public void updateActionBar() {
+        if (Game.this.getRunning() != null) {
+            this.actionbarParse(this.game.player.getUniqueId(), ComponentSerializer.parse(Config.Game.ACTIONTEXT), Config.Color("&2&l ") + this.game.score);
+        }
         for (UUID player : this.currentyOnGird) {
             if (this.cooldown.contains(player))
-                sendPlayerCooldownMessage(player);
-            else 
-                Bukkit.getPlayer(player).spigot().sendMessage(ChatMessageType.ACTION_BAR, new ComponentBuilder().append("").create());
-
+                this.actionbarParse(player, Translator.GAME_ACTIONBAR_GAMEOVER, this.cooldown.getText(player));
+            else if (Bukkit.getPlayer(player).getInventory().firstEmpty() != -1)
+                this.actionbarParse(player, Translator.GAME_ACTIONBAR_RESTART.Format());
         }
     }
-        
-    private void sendPlayerCooldownMessage(UUID player) {
-        Bukkit.getPlayer(player).spigot().sendMessage(
-            ChatMessageType.ACTION_BAR,
-            new ComponentBuilder()
-                .append(Translator.GAME_ACTIONBAR_GAMEOVER + this.cooldown.getText(player))
-                .create());
-    }
+
 
     public boolean handleHitEvent(EntityDamageByEntityEvent e) {
         if (this.game == null)

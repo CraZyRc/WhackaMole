@@ -38,6 +38,8 @@ public enum Translator {
     ,   GAME_START_FULLINVENTORY                            ("Game.Start.fullInventory")
     ,   GAME_INVALIDCOOLDOWN                                ("Game.invalidCooldown")
     ,   GAME_ACTIONBAR_ERROR                                ("Game.Actionbar.Error")
+    ,   GAME_ACTIONBAR_FULLINVENTORY                        ("Game.Actionbar.fullInventory")
+    ,   GAME_ACTIONBAR_RESTART                              ("Game.Actionbar.Restart")
     ,   GAME_ACTIONBAR_MOLEGAMEOVER                         ("Game.Actionbar.moleGameOver", Game.class)
     ,   GAME_ACTIONBAR_GAMEOVER                             ("Game.Actionbar.gameOver")
     ,   GAME_MOLEMISSED                                     ("Game.moleMissed", Game.class)
@@ -171,10 +173,12 @@ public enum Translator {
 
 
     private void Format(Game game) {
-        this.formattedValue = this.formattedValue.replace("{missedMoles}", String.valueOf(game.getRunning().missed));
-        this.formattedValue = this.formattedValue.replace("{maxMissed}", String.valueOf(game.getSettings().maxMissed));
-        this.formattedValue = this.formattedValue.replace("{Score}", String.valueOf(game.getRunning().score));
+        if (game.getRunning() != null) {
+            this.formattedValue = this.formattedValue.replace("{Score}", String.valueOf(game.getRunning().score));
+            this.formattedValue = this.formattedValue.replace("{missedMoles}", String.valueOf(game.getRunning().missed));
+        }
         this.formattedValue = this.formattedValue.replace("{gameName}", String.valueOf(game.name));
+        this.formattedValue = this.formattedValue.replace("{maxMissed}", String.valueOf(game.getSettings().maxMissed));
     }
     private void Format(Player player) {
         this.formattedValue = this.formattedValue.replace("{Player}", (player.getName()));
