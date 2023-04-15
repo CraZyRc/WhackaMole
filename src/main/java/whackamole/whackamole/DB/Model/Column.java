@@ -13,8 +13,9 @@ public class Column<T> {
     // * Options
     private boolean IsPrimayKey = false;
     private boolean HasAutoIncrement = false;
-    private boolean AllowNull = false;
+    private boolean AllowNull = true;
     private boolean IsUnique = false;
+    private T DefaultValue;
 
     /**
      * Creates a Sql Table Column
@@ -37,6 +38,7 @@ public class Column<T> {
         if(this.rawType.isAssignableFrom(UUID.class))       out += "TEXT";
         if(this.rawType.isAssignableFrom(Double.class))     out += "REAL";
         if(this.rawType.isAssignableFrom(Long.class))       out += "REAL";
+        if(this.rawType.isAssignableFrom(Boolean.class))    out += "INTEGER";
         assert ! out.isEmpty() : "Unable to identify Column Type: (%s) for method Column#GetType()".formatted(this.rawType);
 
         if(!this.AllowNull)         out += " NOT NULL";
@@ -76,6 +78,24 @@ public class Column<T> {
     }
 
     /**
+     * Casts Java value to query value
+     * @param set
+     * @return query value string
+     */
+    protected String ValueToQueryValue(Object object) {
+        if (object == null) return "";
+        if(this.rawType.isAssignableFrom(Integer.class))    return "%s".formatted(object);
+        if(this.rawType.isAssignableFrom(String.class))     return "'%s'".formatted(object);
+        if(this.rawType.isAssignableFrom(Double.class))     return "%s".formatted(object);
+        if(this.rawType.isAssignableFrom(UUID.class))       return "'%s'".formatted(object);
+        if(this.rawType.isAssignableFrom(Long.class))       return "%s".formatted(object);
+        if(this.rawType.isAssignableFrom(Boolean.class))    return "%s".formatted((boolean) object ? 1 : 0);
+        assert false : "Unable to identify Column Type: (%s) for method Column#ValueToQueryValue(T value)".formatted(this.rawType);
+
+        return "";
+    }
+    
+    /**
      * Casts RowSet Column to column type of T
      * @param set
      * @return Casted RowSet to T
@@ -91,6 +111,7 @@ public class Column<T> {
         if(this.rawType.isAssignableFrom(Double.class))     return (T) Double.valueOf(set.getDouble(Name));
         if(this.rawType.isAssignableFrom(UUID.class))       return (T) UUID.fromString(set.getString(Name));
         if(this.rawType.isAssignableFrom(Long.class))       return (T) Long.valueOf(set.getLong(Name));
+        if(this.rawType.isAssignableFrom(Boolean.class))    return (T) Boolean.valueOf(set.getInt(Name) > 1);
         assert false : "Unable to identify Column Type: (%s) for method Column#ResultSetToRow(ResultSet set)".formatted(this.rawType);
 
         return null;
@@ -174,5 +195,25 @@ public class Column<T> {
      */
     protected boolean IsUnique() {
         return this.IsUnique;
+    }
+
+    /**
+     * Sets the default value for the collumn
+     * 
+     * @param value
+     * @return The column
+     */
+    public Column<T> Default(T value) {
+        this.DefaultValue = value;
+        return this;
+    }
+
+    /**
+     * Gets teh default value for the collumn
+     * 
+     * @return The default value for the collumn or null
+     */
+    protected T Default() {
+        return this.DefaultValue;
     }
 }
