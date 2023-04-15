@@ -8,7 +8,7 @@ public interface TableModel<T extends RowModel> {
 
     List<T> Select();
 
-    void Insert(T row);
+    T Insert(T row);
 
     void Update(T row);
 

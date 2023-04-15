@@ -67,12 +67,13 @@ public abstract class Table<T extends Row> implements TableModel<T> {
      * 
      * @see Table#GetInsertQuery()
      */
-    public void Insert(T row) {
+    public T Insert(T row) {
         var query = this.GetInsertQuery(row);
-        if (query.isEmpty()) return;
+        if (query.isEmpty()) return row;
         
         SQL.executeUpdate(query);
         this.TrySetLastRowId(row);
+        return row;
     }
     
     /**
@@ -84,6 +85,17 @@ public abstract class Table<T extends Row> implements TableModel<T> {
     @NotNull
     public List<T> Select() {
         var res = SQL.executeQuery(this.GetSelectQuery());
+        return GetRowsFromResultSet(res);
+    }
+    /**
+     * Executes the Select Query with a where statement
+     * 
+     * @return a List of row objects
+     * @see Table#GetSelectQuery()
+     */
+    @NotNull
+    public List<T> Select(String WhereStatement) {
+        var res = SQL.executeQuery(this.GetSelectQuery(WhereStatement));
         return GetRowsFromResultSet(res);
     }
     
@@ -141,6 +153,23 @@ public abstract class Table<T extends Row> implements TableModel<T> {
                 """.formatted(
                     GetNonTypedColumns(),
                     GetName()
+                );
+    }
+    /**
+     * Returns the Select query wtih a where statement
+     * 
+     * @return The Select query
+     */
+    @NotNull
+    private String GetSelectQuery(String WhereStatement) {
+        return """
+                SELECT %s
+                FROM %s
+                WHERE %s
+                """.formatted(
+                    GetNonTypedColumns(),
+                    GetName(),
+                    WhereStatement
                 );
     }
 
@@ -203,9 +232,9 @@ public abstract class Table<T extends Row> implements TableModel<T> {
             try {
                 var field = row.getClass().getDeclaredField(column.GetName());
                 if(column.IsPrimaryKey())
-                    whereList.add("%s = %s".formatted(column.GetName(), field.get(row)));
+                    whereList.add("%s = %s".formatted(column.GetName(), column.ValueToQueryValue(field.get(row))));
                 else
-                    setList.add("%s = %s".formatted(column.GetName(), field.get(row)));
+                    setList.add("%s = %s".formatted(column.GetName(), column.ValueToQueryValue(field.get(row))));
             } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -233,17 +262,22 @@ public abstract class Table<T extends Row> implements TableModel<T> {
             try {
                 var field = row.getClass().getDeclaredField(column.GetName());
                 if(column.HasAutoIncrement()) continue;
+                
+                var queryValue = column.ValueToQueryValue(field.get(row));
+                if (queryValue.isEmpty()) continue;
+
+                // TODO: skip inserting null elements if null is allowed
                 columnList.add(column.GetName());
-                valuesList.add(String.valueOf(field.get(row)));
+                valuesList.add(queryValue);
             } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
         String out = "";
         if (columnList.size() == 0) return "";
-        out += "(%s) VALUES ('%s')".formatted(
+        out += "(%s) VALUES (%s)".formatted(
             String.join(", ", columnList),
-            String.join("', '", valuesList)
+            String.join(", ", valuesList)
         );
         return out;
     }

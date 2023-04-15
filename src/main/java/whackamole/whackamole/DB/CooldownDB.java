@@ -19,8 +19,7 @@ public class CooldownDB extends Table<CooldownRow> {
         row.gameID = gameID;
         row.playerID = player;
         row.endTimeStamp = endTime;
-        this.Insert(row);
-        return row;
+        return this.Insert(row);
     }
 
     public void Delete(int gameID, UUID player) {
