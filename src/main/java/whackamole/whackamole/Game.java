@@ -21,13 +21,10 @@ import org.bukkit.util.Vector;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import whackamole.whackamole.DB.*;
 import whackamole.whackamole.Mole.MoleState;
 import whackamole.whackamole.Mole.MoleType;
-
-import static org.bukkit.Bukkit.spigot;
 
 public class Game {
     public static final BlockFace[] Directions = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST,
@@ -411,7 +408,7 @@ public class Game {
         this.name = result.Name;
         this.settings.world = Bukkit.getWorld(result.worldName);
         this.settings.spawnRotation = BlockFace.valueOf(result.spawnDirection);
-        this.settings.Jackpot = result.hasJackpot == 1;
+        this.settings.Jackpot = result.hasJackpot;
         this.settings.jackpotSpawn = result.jackpotSpawnChance;
         this.settings.maxMissed = result.missCount;
         this.settings.pointsPerKill = result.scorePoints;
@@ -438,7 +435,7 @@ public class Game {
             this.gameFile = new GameFile();
         }
 
-        this.ID = this.gameDB.Insert(this);
+        this.ID = this.gameDB.Insert(this).ID;
         this.gridDB.Insert(this.grid, this.ID);
     }
 

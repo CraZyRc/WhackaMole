@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.*;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -124,15 +125,15 @@ public final class GamesManager implements Listener {
         GamesManager.this.runnableTickCounter++;
     };
     public void loadFromDatabase() {
-        loadFromDatabase("");
+        loadFromDatabase(null);
     }
-    public boolean loadFromDatabase(String worldName) {
+    public boolean loadFromDatabase(World world) {
         List<GameRow> gameList;
-        if (worldName.isEmpty()) {
+        if (world == null) {
             gameList = SQLite.getGameDB().Select();
 
         } else {
-            gameList = SQLite.getGameDB().Select(worldName);
+            gameList = SQLite.getGameDB().Select(world);
         }
         if (gameList.size() == 0) {
             return false;
@@ -146,7 +147,7 @@ public final class GamesManager implements Listener {
     @EventHandler
     public void onWorldLoad(WorldLoadEvent e) {
         Logger.info(Translator.MANAGER_LOADINGGAMES.Format(e.getWorld().getName()));
-        if (!this.loadFromDatabase(e.getWorld().getName())) {
+        if (!this.loadFromDatabase(e.getWorld())) {
             Logger.warning(Translator.MANAGER_NOGAMESFOUND);
         }
     }

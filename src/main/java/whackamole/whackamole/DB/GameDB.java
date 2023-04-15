@@ -1,91 +1,69 @@
 package whackamole.whackamole.DB;
 
-import java.sql.SQLException;
 import java.util.List;
 
+import org.bukkit.World;
+
 import whackamole.whackamole.Game;
-import whackamole.whackamole.Logger;
+import whackamole.whackamole.DB.Model.Column;
+import whackamole.whackamole.DB.Model.Table;
 
-public class GameDB implements Table {
-    private SQLite sql;
-
+public class GameDB extends Table<GameRow> {
     public GameDB(SQLite sql) {
-        this.sql = sql;
+        super(sql, "GameDB", new Column<?>[] {
+            new Column<>("ID",                  Integer.class).IsPrimaryKey(true).IsUnique(true).AllowNull(false).HasAutoIncrement(true),
+            new Column<>("Name",                String.class).AllowNull(false),
+            new Column<>("worldName",           String.class),
+            new Column<>("spawnDirection",      String.class).Default("NORTH"),
+            new Column<>("hasJackpot",          Boolean.class).Default(true),
+            new Column<>("jackpotSpawnChance",  Integer.class).Default(1),
+            new Column<>("missCount",           Integer.class).Default(3),
+            new Column<>("scorePoints",         Integer.class).Default(1),
+            new Column<>("spawnTimer",          Double.class).Default((double) 1),
+            new Column<>("spawnChance",         Double.class).Default((double) 100),
+            new Column<>("moleSpeed",           Double.class).Default((double) 2),
+            new Column<>("difficultyScale",     Double.class).Default((double) 10),
+            new Column<>("difficultyScore",     Integer.class).Default(1),
+            new Column<>("Cooldown",            Long.class).Default(86400000L),
+        }, GameRow.class);
     }
 
-    public void Create() {
-        var query = """
-                CREATE TABLE IF NOT EXISTS Game (
-                    ID INTEGER NOT NULL UNIQUE
-                ,   Name TEXT NOT NULL
-                ,   worldName TEXT
-                ,   spawnDirection TEXT DEFAULT 'NORTH'
-                ,   hasJackpot INTEGER DEFAULT 1
-                ,   jackpotSpawnChance INTEGER DEFAULT 1
-                ,   missCount INTEGER DEFAULT 3
-                ,   scorePoints INTEGER DEFAULT 1
-                ,   spawnTimer REAL DEFAULT 1
-                ,   spawnChance REAL DEFAULT 100
-                ,   moleSpeed REAL DEFAULT 2
-                ,   difficultyScale REAL DEFAULT 10
-                ,   difficultyScore INTEGER DEFAULT 1
-                ,   Cooldown INTEGER DEFAULT 86400000
-                ,   PRIMARY KEY(ID AUTOINCREMENT)
-                )""";
-        this.sql.executeUpdate(query);
+    public List<GameRow> Select(World world) {
+        return this.Select("worldName = '%s'".formatted(world.getName()));
     }
 
-    public List<GameRow> Select() {
-        var query = "SELECT * FROM Game";
-        return Row.SetToList(this.sql.executeQuery(query));
-    }
-    public List<GameRow> Select(String worldName) {
-        var query = "SELECT * FROM Game WHERE worldName = ?";
-        return Row.SetToList(this.sql.executeQuery(query, worldName));
+    public List<GameRow> Select(int GameID) {
+        return this.Select("ID = '%s'".formatted(GameID));
     }
 
-    public int Insert(Game game) {
-        return this.Insert(GameRow.fromClass(game));
+    public GameRow Insert(Game game) {
+        var row = new GameRow();
+        var settings = game.getSettings();
+        row.Name = game.name;
+        row.worldName = settings.world.getName();
+        row.spawnDirection = settings.spawnRotation.name();
+        return this.Insert(row);
     }
 
-    public int Insert(Row row) {
-        var query = """
-            INSERT INTO Game (
-                    Name
-                ,   worldName
-                ,   spawnDirection
-            ) VALUES 
-            (?, ?, ?)
-        """;
-        this.sql.executeUpdate(query, row.insertSpread());
-        try {
-            var result = this.sql.executeQuery("SELECT last_insert_rowid()");
-            return result.getInt(1);
-        } catch (SQLException e) {
-            Logger.error(e.getMessage());
-            Logger.error(e.getStackTrace().toString());
-            return -1;
-        }
-    }
     public void Update(Game game) {
-        this.Update(GameRow.fromClass(game));
+        var row = new GameRow();
+        var settings = game.getSettings();
+        row.ID = game.ID;
+        row.Name = game.name;
+        row.worldName = settings.world.getName();
+        row.spawnDirection = settings.spawnRotation.name();
+        row.hasJackpot = settings.Jackpot;
+        row.jackpotSpawnChance = settings.jackpotSpawn;
+        row.missCount = settings.maxMissed;
+        row.scorePoints = settings.pointsPerKill;
+        row.spawnTimer = settings.Interval;
+        row.spawnChance = settings.spawnChance;
+        row.moleSpeed = settings.moleSpeed;
+        row.difficultyScale = settings.difficultyScale;
+        row.difficultyScore = settings.difficultyScore;
+        row.Cooldown = settings.Cooldown;
+        
+        this.Update(row);
     }
-    public void Update(Row row) {
-        var query = """
-                UPDATE Game 
-                SET spawnDirection = ?
-                ,   hasJackpot = ?
-                ,   jackpotSpawnChance = ?
-                ,   missCount = ?
-                ,   scorePoints = ?
-                ,   spawnTimer = ?
-                ,   spawnChance = ?
-                ,   moleSpeed = ?
-                ,   difficultyScale = ?
-                ,   difficultyScore = ?
-                ,   Cooldown = ?
-                WHERE ID = ?
-                """;
-        this.sql.executeUpdate(query, row.updateSpread());
-    }
+
 }
