@@ -49,6 +49,7 @@ public class SQLite {
             } catch (SQLException e) {
                 Logger.error(e.getMessage());
                 Logger.error(e.getStackTrace().toString());
+                assert false : e.getMessage();
             }
         }
         return SQLite.connection;
@@ -76,6 +77,7 @@ public class SQLite {
                 e.getMessage(),
                 ExceptionUtils.getStackTrace(e)
             ));
+            assert false : e.getMessage();
         }
     }
     
@@ -93,6 +95,7 @@ public class SQLite {
                     query,
                     e.getMessage(),
                     ExceptionUtils.getStackTrace(e)));
+            assert false : e.getMessage();
             return null;
         }
     }
