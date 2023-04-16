@@ -2,6 +2,7 @@ package whackamole.whackamole;
 
 import org.assertj.core.api.JUnitBDDSoftAssertions;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
@@ -9,6 +10,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
@@ -21,16 +23,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class TestBase {
     static public final JUnitBDDSoftAssertions softly = new JUnitBDDSoftAssertions();
 
+    public static Grid gridMock = mock(Grid.class);
+    public static Game gameMock = mock(Game.class);
     public static Game.GameRunner gameRunnerMock = mock(Game.GameRunner.class);
     public static Game.Settings gameSettingsMock = mock(Game.Settings.class);
     public static Game.Scoreboard.Score gameScoreBoardScoreMock = mock(Game.Scoreboard.Score.class);
-    public static Game gameMock = mock(Game.class);
-    public static YMLFile YMLfileMock = mock(YMLFile.class);
+
     public static File fileMock = mock(File.class);
+    public static YMLFile YMLfileMock = mock(YMLFile.class);
     
     public static Player playerMock = mock(Player.class);
     public static World worldMock = mock(World.class);
     public static BlockFace blockFaceMock = mock(BlockFace.class);
+    public static Block blockMock = mock(Block.class);
 
     @BeforeAll
     public static void setupMocks() {
@@ -70,6 +75,16 @@ public class TestBase {
 
         YMLfileMock.file = fileMock;
         when(fileMock.getName()).thenReturn("test file");
+
+        when(blockMock.getX()).thenReturn(1);
+        when(blockMock.getY()).thenReturn(1);
+        when(blockMock.getZ()).thenReturn(1);
+
+        gridMock.grid = new ArrayList<>() {
+            {
+                add(blockMock);
+            }
+        };
     }
 
     @AfterEach

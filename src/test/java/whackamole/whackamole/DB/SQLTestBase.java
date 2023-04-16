@@ -12,6 +12,7 @@ public class SQLTestBase extends TestBase {
     final static File DBfile = new File("./test/Storage.db");
     final static SQLite SQL = SQLite.getInstance();
     final static GameDB gameDB = SQLite.getGameDB();
+    final static GridDB gridDB = SQLite.getGridDB();
     final static CooldownDB cooldownDB = SQLite.getCooldownDB();
     final static ScoreboardDB scoreboardDB = SQLite.getScoreboardDB();
 
@@ -23,6 +24,7 @@ public class SQLTestBase extends TestBase {
         SQL.setUrl("jdbc:sqlite:" + DBfile.getPath());
 
         gameDB.Create();
+        gridDB.Create();
         cooldownDB.Create();
         scoreboardDB.Create();
     }

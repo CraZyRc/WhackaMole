@@ -1,11 +1,13 @@
 package whackamole.whackamole.DB;
 
+import whackamole.whackamole.DB.Model.Row;
+
 import org.bukkit.block.Block;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class GridRow implements Row {
+public class GridRow extends Row {
 
     public int
             gameID
