@@ -16,7 +16,7 @@ public class CooldownDB extends Table<CooldownRow> {
     }
 
     public List<CooldownRow> Select(int gameID, UUID player) {
-        return this.Select("gameID = '%s' AND playerID = '%s'".formatted(gameID, player));
+        return this.Select("gameID = ? AND playerID = ?", gameID, player);
     }
 
     public CooldownRow Insert(int gameID, UUID player, Long endTime) {
@@ -28,6 +28,9 @@ public class CooldownDB extends Table<CooldownRow> {
     }
 
     public void Delete(int gameID, UUID player) {
-        // TODO: Not implemented Yet
+        var row = new CooldownRow();
+        row.gameID = gameID;
+        row.playerID = player;
+        this.Delete(row);
     }
 }

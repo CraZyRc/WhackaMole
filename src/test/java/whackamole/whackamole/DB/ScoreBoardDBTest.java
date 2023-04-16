@@ -24,13 +24,9 @@ public class ScoreBoardDBTest extends SQLTestBase {
     @Test
     @Order(2)
     public void ScoreDeleteSuccessfull() {
-        return;
-        // TODO: delete not impletmented yet!
+        scoreboardDB.Delete(row.ID);
 
-        // scoreboardDB.Delete(row.gameID, row.playerID);
-
-        // var rowList = scoreboardDB.Select(row.gameID, row.playerID);
-        // softly.then(rowList).as("Row not correctly deleted").isEmpty();
+        var rowList = scoreboardDB.Select(row.gameID, row.playerID);
+        softly.then(rowList).as("Row not correctly deleted").isEmpty();
     }
-
 }

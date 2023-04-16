@@ -23,12 +23,22 @@ public abstract class Table<T extends Row> implements TableModel<T> {
     final private SQLite SQL;
     final private Class<T> rawType;
 
+    private boolean hasPrimaryKey = false;
+
     protected Table(SQLite SQL, String TableName, Column<?>[] ColumnNames, Class<T> type) {
         this.SQL = SQL;
         this.TableName = TableName;
         this.ColumnNames = ColumnNames;
 
         this.rawType = type;
+
+        for(var i : ColumnNames) {
+            if (i.IsPrimaryKey()) {
+                this.hasPrimaryKey = true;
+                break;
+            }
+        }
+
         assert this.ColumnsValidation() : "Columns are not fully valid";
     }
 
@@ -52,6 +62,24 @@ public abstract class Table<T extends Row> implements TableModel<T> {
     }
     
     /**
+     * Executes the Delete query
+     * 
+     * @see Table#GetDeleteQuery()
+     */
+    public void Delete(T row) {
+        SQL.executeUpdate(this.GetDeleteQuery(row));
+    }
+    
+    /**
+     * Executes the Delete query
+     * 
+     * @see Table#GetDeleteQuery()
+     */
+    public void Delete(String whereStatement, Object... wherevalues) {
+        SQL.executeUpdate(this.GetDeleteQuery(whereStatement), wherevalues);
+    }
+    
+    /**
      * Execute Update query
      * 
      * @see Table#GetUpdateQuery()
@@ -60,6 +88,17 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         var query = this.GetUpdateQuery(row);
         if (query.isEmpty()) return;
         SQL.executeUpdate(query);
+    }
+    
+    /**
+     * Execute Update query with Where statement
+     * 
+     * @see Table#GetUpdateQuery(T row, String WhereStatement)
+     */
+    public void Update(T row, String WhereStatement, Object... whereValues) {
+        var query = this.GetUpdateQuery(row, WhereStatement);
+        if (query.isEmpty()) return;
+        SQL.executeUpdate(query, whereValues);
     }
     
     /**
@@ -91,11 +130,11 @@ public abstract class Table<T extends Row> implements TableModel<T> {
      * Executes the Select Query with a where statement
      * 
      * @return a List of row objects
-     * @see Table#GetSelectQuery()
+     * @see Table#GetSelectQuery(String WhereStatement)
      */
     @NotNull
-    public List<T> Select(String WhereStatement) {
-        var res = SQL.executeQuery(this.GetSelectQuery(WhereStatement));
+    public List<T> Select(String WhereStatement, Object... whereValues) {
+        var res = SQL.executeQuery(this.GetSelectQuery(WhereStatement), whereValues);
         return GetRowsFromResultSet(res);
     }
     
@@ -117,15 +156,56 @@ public abstract class Table<T extends Row> implements TableModel<T> {
     }
     
     /**
+     * Returns the Delete query
+     * 
+     * @return The Delete query
+     */
+    @NotNull
+    private String GetDeleteQuery(T row) {
+        assert this.hasPrimaryKey : "This Table has no primary key, can't delete from this table";
+        // * DELETE FROM {TableName} WHERE {key}
+        String query = "DELETE FROM %s WHERE %s".formatted(this.GetName(), GetUpdateWhereString(row)) ;
+        return query;
+    }
+    
+    /**
+     * Returns the Delete query with where statement
+     * 
+     * @return The Delete query with where statement
+     */
+    @NotNull
+    private String GetDeleteQuery(String WhereStatement) {
+        // * DELETE FROM {TableName} WHERE {key}
+        String query = "DELETE FROM %s WHERE %s".formatted(this.GetName(), WhereStatement) ;
+        return query;
+    }
+    
+    /**
      * Returns the Create query
      * 
      * @return The Create query
      */
     private String GetUpdateQuery(T row) {
+        assert this.hasPrimaryKey : "This Table has no primary key, can't delete from this table";
         // * UPDATE {TABLE} SET {col} = {val} WHERE {col} = {val}
         var updateString = this.GetUpdateSetString(row);
+        var WhereString = this.GetUpdateWhereString(row);
         if (updateString.isEmpty()) return "";
-        return "UPDATE " + this.GetName() + " " + updateString;
+        return "UPDATE %s SET %s WHERE %s".formatted(this.GetName(), updateString, WhereString);
+    }
+    
+    
+    /**
+     * Returns the Create query
+     * 
+     * @return The Create query
+     */
+    private String GetUpdateQuery(T row, String WhereStatement) {
+        // * UPDATE {TABLE} SET {col} = {val} WHERE {col} = {val}
+        var updateString = this.GetUpdateSetString(row);
+        var WhereString = WhereStatement;
+        if (updateString.isEmpty()) return "";
+        return "UPDATE %s SET %s WHERE %s".formatted(this.GetName(), updateString, WhereString);
     }
     
     /**
@@ -224,9 +304,10 @@ public abstract class Table<T extends Row> implements TableModel<T> {
      * 
      * @return update columns as string with update where  
      */
-    private String GetUpdateSetString(T row) {
-        List<String> setList = new ArrayList<>();
+    private String GetUpdateWhereString(T row) {
         List<String> whereList = new ArrayList<>();
+
+        if (! this.hasPrimaryKey) return "";
 
         for(Column<?> column : this.ColumnNames) {
             try {
@@ -235,23 +316,38 @@ public abstract class Table<T extends Row> implements TableModel<T> {
                     throw new NoSuchFieldException("Field %s is not found".formatted(column.GetName()));
                 }
 
-                if(column.IsPrimaryKey())
-                    whereList.add("%s = %s".formatted(column.GetName(), column.ValueToQueryValue(field.get(row))));
-                else
+                if(column.IsPrimaryKey()) whereList.add("%s = %s".formatted(column.GetName(), column.ValueToQueryValue(field.get(row))));
+            } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+                e.printStackTrace();
+                assert false : e.getMessage();
+            }
+        }
+        return String.join(" AND ", whereList);
+    }
+    
+    /**
+     * Returns all update set collumns with where clauses
+     * 
+     * @return update columns as string with update where  
+     */
+    private String GetUpdateSetString(T row) {
+        List<String> setList = new ArrayList<>();
+        for(Column<?> column : this.ColumnNames) {
+            try {
+                var field = this.findDeclaredField(row.getClass(), column.GetName());
+                if (field == null) {
+                    throw new NoSuchFieldException("Field %s is not found".formatted(column.GetName()));
+                }
+
+                if(!column.IsPrimaryKey())
                     setList.add("%s = %s".formatted(column.GetName(), column.ValueToQueryValue(field.get(row))));
             } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
                 e.printStackTrace();
                 assert false : e.getMessage();
             }
         }
-        String out = "";
         if (setList.size() == 0) return "";
-        out += "SET " + String.join(", ", setList);
-
-        if (whereList.size() > 0) {
-            out += " WHERE " + String.join("AND ", whereList);
-        }
-        return out;
+        return String.join(", ", setList);
     }
     
     /**
@@ -370,7 +466,6 @@ public abstract class Table<T extends Row> implements TableModel<T> {
             assert false : e.getMessage();
         }
     }
-
 
     /**
      * Only ran when assetion is enabled

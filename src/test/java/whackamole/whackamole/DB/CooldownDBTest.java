@@ -23,13 +23,10 @@ public class CooldownDBTest extends SQLTestBase {
     @Test
     @Order(2)
     public void CooldownDeleteSuccessfull() {
-        return;
-        // TODO: delete not impletmented yet!
+        cooldownDB.Delete(cooldownRow.gameID, cooldownRow.playerID);
 
-        // cooldownDB.Delete(cooldownRow.gameID, cooldownRow.playerID);
-
-        // var rowList = cooldownDB.Select(cooldownRow.gameID, cooldownRow.playerID);
-        // softly.then(rowList).as("Row not correctly deleted").isEmpty();
+        var rowList = cooldownDB.Select(cooldownRow.gameID, cooldownRow.playerID);
+        softly.then(rowList).as("Row not correctly deleted").isEmpty();
     }
 
 }

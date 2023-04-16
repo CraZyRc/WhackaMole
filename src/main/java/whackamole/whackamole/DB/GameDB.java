@@ -29,20 +29,26 @@ public class GameDB extends Table<GameRow> {
     }
 
     public List<GameRow> Select(World world) {
-        return this.Select("worldName = '%s'".formatted(world.getName()));
+        return this.Select("worldName = ?", world.getName());
     }
 
     public List<GameRow> Select(int GameID) {
-        return this.Select("ID = '%s'".formatted(GameID));
+        return this.Select("ID = ?", GameID);
     }
 
     public GameRow Insert(Game game) {
-        GameRow row = game.getSettings();
+        var row = game.getSettings();
         return this.Insert(row);
     }
 
     public void Update(Game game) {
-        GameRow row = game.getSettings();
+        var row = game.getSettings();
         this.Update(row);
+    }
+
+    public void Delete(int gameID) {
+        var row = new GameRow();
+        row.ID = gameID;
+        this.Delete(row);
     }
 }

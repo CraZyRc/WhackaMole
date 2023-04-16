@@ -22,7 +22,7 @@ public class GridDB extends Table<GridRow> {
 
 
     public List<GridRow> Select(int gameID) {
-        return this.Select("gameID = %s".formatted(gameID));
+        return this.Select("gameID = ?", gameID);
     }
 
     public List<GridRow> Insert(Grid grid, int gameID) {
@@ -40,5 +40,9 @@ public class GridDB extends Table<GridRow> {
         row.Y = block.getY();
         row.Z = block.getZ();
         return this.Insert(row);
+    }
+
+    public void Delete(int gameID) {
+        this.Delete("GameID = ?", gameID);
     }
 }

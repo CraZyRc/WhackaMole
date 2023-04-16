@@ -24,8 +24,17 @@ public class GameDBTest extends SQLTestBase {
         gameDB.Update(gameMock);
 
         var gameList = gameDB.Select(gameSettingsMock.ID);
-        softly.then(gameList).as("Row with ID: (%s) is not found in table GameDB".formatted(gameMock.getID())).isNotEmpty();
+        softly.then(gameList).as("Row with ID: (%s) is not found in table GameDB".formatted(gameSettingsMock.ID)).isNotEmpty();
         var gameRow = gameList.get(0);
         softly.then(gameRow.spawnTimer).as("Row is not Inserted").isEqualTo(50);
+    }
+
+    @Test
+    @Order(3)
+    public void GameDeleteSuccessfull() {
+        gameDB.Delete(gameSettingsMock.ID);
+
+        var gameList = gameDB.Select(gameSettingsMock.ID);
+        softly.then(gameList).as("Row not correctly deleted").isEmpty();
     }
 }

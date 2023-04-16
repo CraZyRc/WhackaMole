@@ -18,12 +18,11 @@ public class ScoreboardDB extends Table<ScoreboardRow> {
         }, ScoreboardRow.class);
     }
 
-    public List<ScoreboardRow> Select(int Score) {
-        return this.Select("Score = %s".formatted(Score));
-    }
-
     public List<ScoreboardRow> Select(UUID player) {
-        return this.Select("playerID = '%s'".formatted(player));
+        return this.Select("playerID = ?", player);
+    }
+    public List<ScoreboardRow> Select(int gameID, UUID player) {
+        return this.Select("gameID = ? AND playerID = ?", gameID, player);
     }
 
     public ScoreboardRow Insert(UUID player, int gameID, int score, int scoreStreak) {
@@ -33,5 +32,11 @@ public class ScoreboardDB extends Table<ScoreboardRow> {
         row.Score = score;
         row.ScoreStreak = scoreStreak;
         return this.Insert(row);
+    }
+
+    public void Delete(int ID) {
+        var row = new ScoreboardRow();
+        row.ID = ID;
+        this.Delete(row);
     }
 }

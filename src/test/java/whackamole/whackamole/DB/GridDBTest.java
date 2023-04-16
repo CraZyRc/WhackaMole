@@ -23,13 +23,10 @@ public class GridDBTest extends SQLTestBase {
     @Test
     @Order(2)
     public void GridBlockDeleteSuccessfull() {
-        return;
-        // TODO: delete not impletmented yet!
+        gridDB.Delete(gameMock.getID());
 
-        // scoreboardDB.Delete(row.gameID, row.playerID);
-
-        // var rowList = scoreboardDB.Select(row.gameID, row.playerID);
-        // softly.then(rowList).as("Row not correctly deleted").isEmpty();
+        var rowList = gridDB.Select(gameMock.getID());
+        softly.then(rowList).as("Row not correctly deleted").isEmpty();
     }
 
 }
