@@ -42,102 +42,55 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         assert this.ColumnsValidation() : "Columns are not fully valid";
     }
 
-    /**
-     * Returns the Table Name
-     * 
-     * @return The Table Name
-     */
-    @NotNull
+    // * Interface
     public String GetName() {
         return this.TableName;
     }
 
-    /**
-     * Executes the Create Query
-     * 
-     * @see Table#GetCreateQuery()
-     */
     public void Create() {
         SQL.executeUpdate(this.GetCreateQuery());
     }
-    
-    /**
-     * Executes the Delete query
-     * 
-     * @see Table#GetDeleteQuery()
-     */
-    public void Delete(T row) {
-        SQL.executeUpdate(this.GetDeleteQuery(row));
-    }
-    
-    /**
-     * Executes the Delete query
-     * 
-     * @see Table#GetDeleteQuery()
-     */
-    public void Delete(String whereStatement, Object... wherevalues) {
-        SQL.executeUpdate(this.GetDeleteQuery(whereStatement), wherevalues);
-    }
-    
-    /**
-     * Execute Update query
-     * 
-     * @see Table#GetUpdateQuery()
-     */
-    public void Update(T row) {
-        var query = this.GetUpdateQuery(row);
-        if (query.isEmpty()) return;
-        SQL.executeUpdate(query);
-    }
-    
-    /**
-     * Execute Update query with Where statement
-     * 
-     * @see Table#GetUpdateQuery(T row, String WhereStatement)
-     */
-    public void Update(T row, String WhereStatement, Object... whereValues) {
-        var query = this.GetUpdateQuery(row, WhereStatement);
-        if (query.isEmpty()) return;
-        SQL.executeUpdate(query, whereValues);
-    }
-    
-    /**
-     * Execute Insert query
-     * 
-     * @see Table#GetInsertQuery()
-     */
-    public T Insert(T row) {
-        var query = this.GetInsertQuery(row);
-        if (query.isEmpty()) return row;
-        
-        SQL.executeUpdate(query);
-        this.TrySetLastRowId(row);
-        return row;
-    }
-    
-    /**
-     * Executes the Select Query
-     * 
-     * @return a List of row objects
-     * @see Table#GetSelectQuery()
-     */
-    @NotNull
+
     public List<T> Select() {
         var res = SQL.executeQuery(this.GetSelectQuery());
         return GetRowsFromResultSet(res);
     }
-    /**
-     * Executes the Select Query with a where statement
-     * 
-     * @return a List of row objects
-     * @see Table#GetSelectQuery(String WhereStatement)
-     */
-    @NotNull
     public List<T> Select(String WhereStatement, Object... whereValues) {
         var res = SQL.executeQuery(this.GetSelectQuery(WhereStatement), whereValues);
         return GetRowsFromResultSet(res);
     }
     
+    public T Insert(T row) {
+        var query = this.GetInsertQuery(row);
+        if (query.isEmpty())
+            return row;
+
+        SQL.executeUpdate(query);
+        this.TrySetLastRowId(row);
+        return row;
+    }
+
+    public void Update(T row) {
+        var query = this.GetUpdateQuery(row);
+        if (query.isEmpty())
+            return;
+        SQL.executeUpdate(query);
+    }
+    public void Update(T row, String WhereStatement, Object... whereValues) {
+        var query = this.GetUpdateQuery(row, WhereStatement);
+        if (query.isEmpty())
+            return;
+        SQL.executeUpdate(query, whereValues);
+    }
+
+    public void Delete(T row) {
+        SQL.executeUpdate(this.GetDeleteQuery(row));
+    }
+    public void Delete(String whereStatement, Object... wherevalues) {
+        SQL.executeUpdate(this.GetDeleteQuery(whereStatement), wherevalues);
+    }
+    
+    // * Query builders
     /**
      * Returns the Create query
      * 
@@ -147,14 +100,88 @@ public abstract class Table<T extends Row> implements TableModel<T> {
     private String GetCreateQuery() {
         String query = "CREATE TABLE IF NOT EXISTS " + this.GetName();
         query += "( " + this.GetTypedColumns();
-        String prime = this.GetPrimaryKeys();
-        if (prime != null) {
-            query += ", " + prime;
+        String primes = this.GetPrimaryKeys();
+        if (!primes.isEmpty()) {
+            query += ", PRIMARY KEY(%s)".formatted(primes);
         }
         query += " );";
         return query;
     }
     
+    /**
+     * Returns the Select query
+     * 
+     * @return The Select query
+     */
+    @NotNull
+    private String GetSelectQuery() {
+        return """
+                SELECT %s
+                FROM %s
+                """.formatted(
+                GetNonTypedColumns(),
+                GetName());
+    }
+
+    /**
+     * Returns the Select query wtih a where statement
+     * 
+     * @return The Select query
+     */
+    @NotNull
+    private String GetSelectQuery(String WhereStatement) {
+        return """
+                SELECT %s
+                FROM %s
+                WHERE %s
+                """.formatted(
+                GetNonTypedColumns(),
+                GetName(),
+                WhereStatement);
+    }
+
+    /**
+     * Returns the Insert query
+     * 
+     * @return The Insert query
+     */
+    private String GetInsertQuery(T row) {
+        // * INSERT INTO {TABLE} ({columns}) VALUEs ({values})
+        var insertString = this.GetInsertSetString(row);
+        if (insertString.isEmpty())
+            return "";
+        return "INSERT INTO " + this.GetName() + " " + insertString;
+    }
+
+    /**
+     * Returns the Create query
+     * 
+     * @return The Create query
+     */
+    private String GetUpdateQuery(T row) {
+        assert this.hasPrimaryKey : "This Table has no primary key, can't delete from this table";
+        // * UPDATE {TABLE} SET {col} = {val} WHERE {col} = {val}
+        var updateString = this.GetUpdateSetString(row);
+        var WhereString = this.GetUpdateWhereString(row);
+        if (updateString.isEmpty())
+            return "";
+        return "UPDATE %s SET %s WHERE %s".formatted(this.GetName(), updateString, WhereString);
+    }
+
+    /**
+     * Returns the Create query
+     * 
+     * @return The Create query
+     */
+    private String GetUpdateQuery(T row, String WhereStatement) {
+        // * UPDATE {TABLE} SET {col} = {val} WHERE {col} = {val}
+        var updateString = this.GetUpdateSetString(row);
+        var WhereString = WhereStatement;
+        if (updateString.isEmpty())
+            return "";
+        return "UPDATE %s SET %s WHERE %s".formatted(this.GetName(), updateString, WhereString);
+    }
+
     /**
      * Returns the Delete query
      * 
@@ -180,87 +207,15 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         return query;
     }
     
+    // * Query support methods
     /**
-     * Returns the Create query
-     * 
-     * @return The Create query
-     */
-    private String GetUpdateQuery(T row) {
-        assert this.hasPrimaryKey : "This Table has no primary key, can't delete from this table";
-        // * UPDATE {TABLE} SET {col} = {val} WHERE {col} = {val}
-        var updateString = this.GetUpdateSetString(row);
-        var WhereString = this.GetUpdateWhereString(row);
-        if (updateString.isEmpty()) return "";
-        return "UPDATE %s SET %s WHERE %s".formatted(this.GetName(), updateString, WhereString);
-    }
-    
-    
-    /**
-     * Returns the Create query
-     * 
-     * @return The Create query
-     */
-    private String GetUpdateQuery(T row, String WhereStatement) {
-        // * UPDATE {TABLE} SET {col} = {val} WHERE {col} = {val}
-        var updateString = this.GetUpdateSetString(row);
-        var WhereString = WhereStatement;
-        if (updateString.isEmpty()) return "";
-        return "UPDATE %s SET %s WHERE %s".formatted(this.GetName(), updateString, WhereString);
-    }
-    
-    /**
-     * Returns the Insert query
-     * 
-     * @return The Insert query
-     */
-    private String GetInsertQuery(T row) {
-        // * INSERT INTO {TABLE} ({columns}) VALUEs ({values}) 
-        var insertString = this.GetInsertSetString(row);
-        if (insertString.isEmpty()) return "";
-        return "INSERT INTO " + this.GetName() + " " + insertString;
-    }
-
-    /**
-     * Returns the Select query
-     * 
-     * @return The Select query
-     */
-    @NotNull
-    private String GetSelectQuery() {
-        return """
-                SELECT %s
-                FROM %s
-                """.formatted(
-                    GetNonTypedColumns(),
-                    GetName()
-                );
-    }
-    /**
-     * Returns the Select query wtih a where statement
-     * 
-     * @return The Select query
-     */
-    @NotNull
-    private String GetSelectQuery(String WhereStatement) {
-        return """
-                SELECT %s
-                FROM %s
-                WHERE %s
-                """.formatted(
-                    GetNonTypedColumns(),
-                    GetName(),
-                    WhereStatement
-                );
-    }
-
-    /**
-     * Returns the Primary key string for the Create query
+     * Returns a string with all primary keys
      * 
      * @return The Primary key string if one or more column are primary keys
      * @see Column#IsPrimaryKey(boolean isKey)
      */
-    @Nullable
     private String GetPrimaryKeys() {
+        if (! this.hasPrimaryKey) return "";
         List<String> keys = new ArrayList<>();
 
         for (Column<?> col : this.ColumnNames) {
@@ -268,9 +223,9 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         }
 
         if (!keys.isEmpty()) {
-            return "PRIMARY KEY(%s)".formatted(String.join(", ", keys));
+            return String.join(", ", keys);
         }
-        return null;
+        return "";
     }
 
     /**
@@ -300,9 +255,9 @@ public abstract class Table<T extends Row> implements TableModel<T> {
     }
     
     /**
-     * Returns all update set collumns with where clauses
+     * Returns all update where collumns
      * 
-     * @return update columns as string with update where  
+     * @return update where columns string  
      */
     private String GetUpdateWhereString(T row) {
         List<String> whereList = new ArrayList<>();
@@ -312,9 +267,6 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         for(Column<?> column : this.ColumnNames) {
             try {
                 var field = this.findDeclaredField(row.getClass(), column.GetName());
-                if (field == null) {
-                    throw new NoSuchFieldException("Field %s is not found".formatted(column.GetName()));
-                }
 
                 if(column.IsPrimaryKey()) whereList.add("%s = %s".formatted(column.GetName(), column.ValueToQueryValue(field.get(row))));
             } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
@@ -326,21 +278,17 @@ public abstract class Table<T extends Row> implements TableModel<T> {
     }
     
     /**
-     * Returns all update set collumns with where clauses
+     * Returns all update set collumns 
      * 
-     * @return update columns as string with update where  
+     * @return update set columns as string  
      */
     private String GetUpdateSetString(T row) {
         List<String> setList = new ArrayList<>();
         for(Column<?> column : this.ColumnNames) {
             try {
                 var field = this.findDeclaredField(row.getClass(), column.GetName());
-                if (field == null) {
-                    throw new NoSuchFieldException("Field %s is not found".formatted(column.GetName()));
-                }
-
-                if(!column.IsPrimaryKey())
-                    setList.add("%s = %s".formatted(column.GetName(), column.ValueToQueryValue(field.get(row))));
+                if(!column.IsPrimaryKey()) setList.add("%s = %s".formatted(column.GetName(), column.ValueToQueryValue(field.get(row))));
+                
             } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
                 e.printStackTrace();
                 assert false : e.getMessage();
@@ -364,14 +312,9 @@ public abstract class Table<T extends Row> implements TableModel<T> {
                 if(column.HasAutoIncrement()) continue;
 
                 var field = this.findDeclaredField(row.getClass(), column.GetName());
-                if (field == null) {
-                    throw new NoSuchFieldException("Field %s is not found".formatted(column.GetName()));
-                }
-
                 var queryValue = column.ValueToQueryValue(field.get(row));
                 if (queryValue.equals("NULL")) continue;
 
-                // TODO: skip inserting null elements if null is allowed
                 columnList.add(column.GetName());
                 valuesList.add(queryValue);
             } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
@@ -422,9 +365,6 @@ public abstract class Table<T extends Row> implements TableModel<T> {
             T i = this.rawType.getDeclaredConstructor().newInstance();
             for (var column : this.ColumnNames) {
                 var field = this.findDeclaredField(i.getClass(), column.GetName());
-                if (field == null) {
-                    throw new NoSuchFieldException("Field %s is not found".formatted(column.GetName()));
-                }
                 
                 var res = column.ResultSetToRow(set);
                 if (res == null) continue;
@@ -444,6 +384,8 @@ public abstract class Table<T extends Row> implements TableModel<T> {
      * Create a Row object from a RowSet
      * @param set
      * @return a new Row Object
+     * @throws SecurityException
+     * @throws NoSuchFieldException
      */
     private void TrySetLastRowId(T row) {
         try {
@@ -458,10 +400,9 @@ public abstract class Table<T extends Row> implements TableModel<T> {
             if (autoIColumn != null) {
                 var lastrow = SQL.executeQuery("SELECT last_insert_rowid()");
                 var field = this.findDeclaredField(row.getClass(), autoIColumn.GetName());
-                if (field == null) return;
                 field.set(row, lastrow.getObject(1));
             }
-        } catch (IllegalAccessException | IllegalArgumentException | SQLException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | SQLException | NoSuchFieldException | SecurityException e) {
             e.printStackTrace();
             assert false : e.getMessage();
         }
@@ -488,13 +429,10 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         try {
             T i = this.rawType.getDeclaredConstructor().newInstance();
             for (var column : this.ColumnNames) {
-                var field = this.findDeclaredField(i.getClass(), column.GetName());
-                if (field == null) {
-                    assert false : "Table Columns Didn't match Row class. On Column: (%s)".formatted(column.GetName());
-                }
+                this.findDeclaredField(i.getClass(), column.GetName());
             }
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
+                | NoSuchMethodException | NoSuchFieldException | SecurityException e) {
             e.printStackTrace();
             assert false : e.getMessage();
             return false;
@@ -503,16 +441,16 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         return true;
     }
 
-    private Field findDeclaredField(Class<?> type, String field) {
+    private Field findDeclaredField(Class<?> type, String field) 
+        throws NoSuchFieldException, SecurityException {
         try {
             return type.getDeclaredField(field);
         }
-        catch (Exception e) {
+        catch (NoSuchFieldException | SecurityException e) {
             if (type.getSuperclass() != null) {
                 return findDeclaredField(type.getSuperclass(), field);
             }
-            assert false : e.getMessage();
-            return null;
+            throw e;
         }
     }
 }
