@@ -32,6 +32,14 @@ public class SQLite {
         }
     }
 
+    public String getUrl() {
+        return SQLite.url;
+    }
+
+    public void setUrl(String url) {
+        SQLite.url = url;
+    }
+
     private static Connection connection;
     @Nullable
     private static Connection getConnection() {

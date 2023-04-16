@@ -3,6 +3,7 @@ package whackamole.whackamole.DB;
 import whackamole.whackamole.DB.Model.Column;
 import whackamole.whackamole.DB.Model.Table;
 
+import java.util.List;
 import java.util.UUID;
 
 public class CooldownDB extends Table<CooldownRow> {
@@ -12,6 +13,10 @@ public class CooldownDB extends Table<CooldownRow> {
             new Column<UUID>("playerID", UUID.class).IsPrimaryKey(true).AllowNull(true),
             new Column<Long>("endTimeStamp", Long.class),
         }, CooldownRow.class);
+    }
+
+    public List<CooldownRow> Select(int gameID, UUID player) {
+        return this.Select("gameID = '%s' AND playerID = '%s'".formatted(gameID, player));
     }
 
     public CooldownRow Insert(int gameID, UUID player, Long endTime) {
