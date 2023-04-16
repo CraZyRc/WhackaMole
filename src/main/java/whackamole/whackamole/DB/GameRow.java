@@ -6,22 +6,22 @@ public class GameRow extends Row {
     public String
         Name
     ,   worldName
-    ,   spawnDirection;
+    ,   spawnDirection = "NORTH";
 
-    public boolean hasJackpot;
+    public boolean hasJackpot = true;
 
     public int
-        ID
-    ,   jackpotSpawnChance
-    ,   missCount
-    ,   scorePoints
-    ,   difficultyScore;
+        ID = -1
+    ,   jackpotSpawnChance = 1
+    ,   missCount = 3
+    ,   scorePoints = 1
+    ,   difficultyScore = 1;
 
     public double
-        spawnTimer
-    ,   spawnChance
-    ,   moleSpeed
-    ,   difficultyScale;
+        spawnTimer = 1
+    ,   spawnChance = 100
+    ,   moleSpeed = 2
+    ,   difficultyScale = 10;
     
-    public Long Cooldown;
+    public Long Cooldown = 86400000L;
 }

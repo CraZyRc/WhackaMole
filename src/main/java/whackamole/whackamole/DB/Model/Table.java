@@ -1,12 +1,12 @@
 package whackamole.whackamole.DB.Model;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -230,13 +230,18 @@ public abstract class Table<T extends Row> implements TableModel<T> {
 
         for(Column<?> column : this.ColumnNames) {
             try {
-                var field = row.getClass().getDeclaredField(column.GetName());
+                var field = this.findDeclaredField(row.getClass(), column.GetName());
+                if (field == null) {
+                    throw new NoSuchFieldException("Field %s is not found".formatted(column.GetName()));
+                }
+
                 if(column.IsPrimaryKey())
                     whereList.add("%s = %s".formatted(column.GetName(), column.ValueToQueryValue(field.get(row))));
                 else
                     setList.add("%s = %s".formatted(column.GetName(), column.ValueToQueryValue(field.get(row))));
             } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
                 e.printStackTrace();
+                assert false : e.getMessage();
             }
         }
         String out = "";
@@ -260,17 +265,22 @@ public abstract class Table<T extends Row> implements TableModel<T> {
 
         for(Column<?> column : this.ColumnNames) {
             try {
-                var field = row.getClass().getDeclaredField(column.GetName());
                 if(column.HasAutoIncrement()) continue;
-                
+
+                var field = this.findDeclaredField(row.getClass(), column.GetName());
+                if (field == null) {
+                    throw new NoSuchFieldException("Field %s is not found".formatted(column.GetName()));
+                }
+
                 var queryValue = column.ValueToQueryValue(field.get(row));
-                if (queryValue.isEmpty()) continue;
+                if (queryValue.equals("NULL")) continue;
 
                 // TODO: skip inserting null elements if null is allowed
                 columnList.add(column.GetName());
                 valuesList.add(queryValue);
             } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
                 e.printStackTrace();
+                assert false : e.getMessage();
             }
         }
         String out = "";
@@ -300,6 +310,7 @@ public abstract class Table<T extends Row> implements TableModel<T> {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            assert false : e.getMessage();
         }
         return rows;
     }
@@ -314,7 +325,11 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         try {
             T i = this.rawType.getDeclaredConstructor().newInstance();
             for (var column : this.ColumnNames) {
-                var field = i.getClass().getDeclaredField(column.GetName());
+                var field = this.findDeclaredField(i.getClass(), column.GetName());
+                if (field == null) {
+                    throw new NoSuchFieldException("Field %s is not found".formatted(column.GetName()));
+                }
+                
                 var res = column.ResultSetToRow(set);
                 if (res == null) continue;
                 field.set(i, res);
@@ -324,6 +339,7 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException | NoSuchMethodException | NoSuchFieldException | SQLException e) {
             e.printStackTrace();
+            assert false : e.getMessage();
         }
         return null;
     }
@@ -345,12 +361,13 @@ public abstract class Table<T extends Row> implements TableModel<T> {
 
             if (autoIColumn != null) {
                 var lastrow = SQL.executeQuery("SELECT last_insert_rowid()");
-                
-                var field = row.getClass().getDeclaredField(autoIColumn.GetName());
+                var field = this.findDeclaredField(row.getClass(), autoIColumn.GetName());
+                if (field == null) return;
                 field.set(row, lastrow.getObject(1));
             }
-        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SQLException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | SQLException e) {
             e.printStackTrace();
+            assert false : e.getMessage();
         }
     }
 
@@ -376,18 +393,31 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         try {
             T i = this.rawType.getDeclaredConstructor().newInstance();
             for (var column : this.ColumnNames) {
-            try {
-                    i.getClass().getDeclaredField(column.GetName());
-                } catch (NoSuchFieldException e) {
-                    assert false : "Table Columns Didn't match Row class. On Column: (%s)\nStackTrace: %s".formatted(column.GetName(), ExceptionUtils.getStackTrace(e));
+                var field = this.findDeclaredField(i.getClass(), column.GetName());
+                if (field == null) {
+                    assert false : "Table Columns Didn't match Row class. On Column: (%s)".formatted(column.GetName());
                 }
             }
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
             e.printStackTrace();
+            assert false : e.getMessage();
             return false;
         }
 
         return true;
+    }
+
+    private Field findDeclaredField(Class<?> type, String field) {
+        try {
+            return type.getDeclaredField(field);
+        }
+        catch (Exception e) {
+            if (type.getSuperclass() != null) {
+                return findDeclaredField(type.getSuperclass(), field);
+            }
+            assert false : e.getMessage();
+            return null;
+        }
     }
 }

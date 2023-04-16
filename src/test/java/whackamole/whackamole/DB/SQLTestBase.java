@@ -31,6 +31,6 @@ public class SQLTestBase extends TestBase {
 
     @AfterAll
     public static void CleanupSQL() {
-        DBfile.delete();
+        // DBfile.delete();
     }
 }

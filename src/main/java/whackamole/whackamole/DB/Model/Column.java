@@ -86,7 +86,7 @@ public class Column<T> {
      * @return query value string
      */
     protected String ValueToQueryValue(Object object) {
-        if (object == null) return "";
+        if (object == null) return "NULL";
         if(this.rawType.isAssignableFrom(Integer.class))    return "%s".formatted(object);
         if(this.rawType.isAssignableFrom(String.class))     return "'%s'".formatted(object);
         if(this.rawType.isAssignableFrom(Double.class))     return "%s".formatted(object);
@@ -95,7 +95,7 @@ public class Column<T> {
         if(this.rawType.isAssignableFrom(Boolean.class))    return "%s".formatted((boolean) object ? 1 : 0);
         assert false : "Unable to identify Column Type: (%s) for method Column#ValueToQueryValue(T value)".formatted(this.rawType);
 
-        return "";
+        return "NULL";
     }
     
     /**
@@ -107,7 +107,7 @@ public class Column<T> {
     @SuppressWarnings("unchecked")
     protected T ResultSetToRow(ResultSet set) throws SQLException {
         Object V = set.getObject(Name);
-        if(V.equals("null")) return null;
+        if(V == null) return null;
         
         if(this.rawType.isAssignableFrom(Integer.class))    return (T) Integer.valueOf(set.getInt(Name));
         if(this.rawType.isAssignableFrom(String.class))     return (T) String.valueOf(set.getString(Name));
@@ -239,4 +239,13 @@ public class Column<T> {
     protected String BuildInDefault() {
         return this.BuildInDefault;
     }
+
+    /**
+     * Get if the column has a default defined
+     * @return if the default is present for this column
+     */
+    protected boolean HasDefault() {
+        return this.DefaultValue != null || ! this.BuildInDefault.isEmpty();
+    }
+
 }

@@ -130,15 +130,23 @@ public class Game {
             return Game.this.cooldown.formatSetCooldown(this.Cooldown);
         }
 
-        public void onLoad() {
+        private void onLoad() {
             this.world = Bukkit.getWorld(this.worldName);
             this.spawnRotation = BlockFace.valueOf(this.spawnDirection);
         }
 
-        public void Save() {
+        private void Setup(String name, Player player) {
+            this.Name = name;
+            this.spawnRotation = Directions[Math.round(player.getLocation().getYaw() / 45) & 0x7];
+            this.world = player.getWorld();
+            this.Save();
+        }
+
+        private void Save() {
             this.worldName = this.world.getName();
             this.spawnDirection = this.spawnRotation.name();
-            gameDB.Update(this);
+            if (this.ID == -1)  gameDB.Insert(this);
+            else                gameDB.Update(this);
         }
     }
 
@@ -402,7 +410,6 @@ public class Game {
     private List<UUID> currentyOnGird = new ArrayList<>();
 
     private Grid grid;
-    private GameDB gameDB = SQLite.getGameDB();
     private GridDB gridDB = SQLite.getGridDB();
 
     private Random random = new Random();
@@ -417,16 +424,14 @@ public class Game {
     }
 
     public Game(String name, Grid grid, Player player) {
-        this.settings.Name = formatName(name);
-        this.settings.spawnRotation = Directions[Math.round(player.getLocation().getYaw() / 45) & 0x7];
-        this.settings.world = player.getWorld();
+        this.settings.Setup(formatName(name), player);
+
         this.grid = grid;
+        this.gridDB.Insert(this.grid, this.getID());
+
         if (Config.Game.ENABLE_GAMECONFIG) {
             this.gameFile = new GameFile();
         }
-
-        this.gameDB.Insert(this);
-        this.gridDB.Insert(this.grid, this.getID());
     }
 
     private String formatName(String name) {

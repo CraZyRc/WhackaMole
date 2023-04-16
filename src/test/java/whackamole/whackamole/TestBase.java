@@ -42,7 +42,6 @@ public class TestBase {
 
         gameScoreBoardScoreMock.player = playerMock;
         gameScoreBoardScoreMock.score = 10;
-        gameScoreBoardScoreMock.timestamp = 1234567890L;
 
         gameRunnerMock.missed = 0;
         gameRunnerMock.score = 2;
