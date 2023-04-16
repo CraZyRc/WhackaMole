@@ -9,13 +9,14 @@ import whackamole.whackamole.TestBase;
 
 public class SQLTestBase extends TestBase {
     
+    final static File DBfile = new File("./test/Storage.db");
     final static SQLite SQL = SQLite.getInstance();
     final static GameDB gameDB = SQLite.getGameDB();
     final static CooldownDB cooldownDB = SQLite.getCooldownDB();
+    final static ScoreboardDB scoreboardDB = SQLite.getScoreboardDB();
 
     @BeforeAll
     public static void setupSQL() {
-        var DBfile = new File("./test/Storage.db");
         if (DBfile.exists()) {
             DBfile.delete();
         }
@@ -23,11 +24,11 @@ public class SQLTestBase extends TestBase {
 
         gameDB.Create();
         cooldownDB.Create();
+        scoreboardDB.Create();
     }
 
     @AfterAll
     public static void CleanupSQL() {
-        var DBfile = new File("./test/Storage.db");
         DBfile.delete();
     }
 }

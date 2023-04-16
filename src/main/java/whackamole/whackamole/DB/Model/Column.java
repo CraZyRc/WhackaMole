@@ -16,6 +16,7 @@ public class Column<T> {
     private boolean AllowNull = true;
     private boolean IsUnique = false;
     private T DefaultValue;
+    private String BuildInDefault = "";
 
     /**
      * Creates a Sql Table Column
@@ -41,8 +42,10 @@ public class Column<T> {
         if(this.rawType.isAssignableFrom(Boolean.class))    out += "INTEGER";
         assert ! out.isEmpty() : "Unable to identify Column Type: (%s) for method Column#GetType()".formatted(this.rawType);
 
-        if(!this.AllowNull)         out += " NOT NULL";
-        if(this.IsUnique)           out += " UNIQUE";
+        if(!this.AllowNull)                         out += " NOT NULL";
+        if(this.IsUnique)                           out += " UNIQUE";
+        if(this.DefaultValue != null)               out += " DEFAULT %s".formatted(this.ValueToQueryValue(this.DefaultValue));
+        else if (! this.BuildInDefault.isEmpty())   out += " DEFAULT %s".formatted(this.BuildInDefault);
         return out;
     }
 
@@ -215,5 +218,25 @@ public class Column<T> {
      */
     protected T Default() {
         return this.DefaultValue;
+    }
+
+    /**
+     * Sets a SQL default value for a column ex: 'CURRENT_TIMESTAMP'
+     * 
+     * @param value
+     * @return The column
+     */
+    public Column<T> BuildInDefault(String value) {
+        this.BuildInDefault = value;
+        return this;
+    }
+
+    /**
+     * Gets teh default value for the collumn
+     * 
+     * @return The default value for the collumn or null
+     */
+    protected String BuildInDefault() {
+        return this.BuildInDefault;
     }
 }
