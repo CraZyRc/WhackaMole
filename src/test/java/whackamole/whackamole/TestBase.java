@@ -27,7 +27,6 @@ public class TestBase {
     public static Game gameMock = mock(Game.class);
     public static Game.GameRunner gameRunnerMock = mock(Game.GameRunner.class);
     public static Game.Settings gameSettingsMock = mock(Game.Settings.class);
-    public static Game.Scoreboard.Score gameScoreBoardScoreMock = mock(Game.Scoreboard.Score.class);
 
     public static File fileMock = mock(File.class);
     public static YMLFile YMLfileMock = mock(YMLFile.class);
@@ -39,9 +38,6 @@ public class TestBase {
 
     @BeforeAll
     public static void setupMocks() {
-
-        gameScoreBoardScoreMock.player = playerMock;
-        gameScoreBoardScoreMock.score = 10;
 
         gameRunnerMock.missed = 0;
         gameRunnerMock.score = 2;

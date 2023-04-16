@@ -102,7 +102,7 @@ public class Game {
                     + ":" + (seconds > 0 ? seconds > 9 ? String.valueOf(seconds) : "0" + seconds : "00");
         }
 
-        public void walkOnGridHook(Player player) {
+        private void walkOnGridHook(Player player) {
             if (!this.contains(player.getUniqueId()))
                 return;
 
@@ -243,37 +243,21 @@ public class Game {
 
     public class Scoreboard {
 
-        public class Score {
-            public Player player;
-            public int score, molesHit, highestStreak;
-            public Long timestamp;
-
-            public Score(Player player, int score, int molesHit, int highestStreak, Long timestamp) {
-                this.player = player;
-                this.score = score;
-                this.molesHit = molesHit;
-                this.highestStreak = highestStreak;
-                this.timestamp = timestamp;
-            }
-        }
-
-        private ArrayList<Score> scores = new ArrayList<>();
+        private ArrayList<ScoreboardRow> scores = new ArrayList<>();
         private ScoreboardDB db = SQLite.getScoreboardDB();
 
-        public void add(Player player, int score, int molesHit, int highestStreak) {
-            Score scoreItem = new Score(player, score, molesHit, highestStreak, System.currentTimeMillis() / 1000);
+        public void add(Player player, int score) {
+            ScoreboardRow scoreItem = this.db.Insert(player.getUniqueId(), settings.ID, score, 0); // TODO: score streak
             this.scores.add(scoreItem);
-            this.db.Insert(scoreItem, settings.ID);
-
         }
 
-        public List<Score> getTop() {
+        public List<ScoreboardRow> getTop() {
             return getTop(10);
         }
 
-        public List<Score> getTop(int count) {
+        public List<ScoreboardRow> getTop(int count) {
             this.scores.sort((a, b) -> {
-                return a.score - b.score;
+                return a.Score - b.Score;
             });
             return this.scores.subList(0, count);
         }

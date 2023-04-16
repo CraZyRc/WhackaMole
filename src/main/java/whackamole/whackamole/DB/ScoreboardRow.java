@@ -12,5 +12,6 @@ public class ScoreboardRow extends Row {
     public int
         ID  
     ,   Score
-    ,   gameID;
+    ,   gameID
+    ,   ScoreStreak;
 }

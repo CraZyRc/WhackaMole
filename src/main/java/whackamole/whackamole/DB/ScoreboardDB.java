@@ -1,7 +1,5 @@
 package whackamole.whackamole.DB;
 
-
-import whackamole.whackamole.Game;
 import whackamole.whackamole.DB.Model.Column;
 import whackamole.whackamole.DB.Model.Table;
 
@@ -15,6 +13,7 @@ public class ScoreboardDB extends Table<ScoreboardRow> {
             new Column<>("playerID", UUID.class).AllowNull(false),
             new Column<>("gameID", Integer.class).AllowNull(false),
             new Column<>("Score", Integer.class).AllowNull(false),
+            new Column<>("ScoreStreak", Integer.class).AllowNull(false),
             new Column<>("Datetime", Long.class).BuildInDefault("CURRENT_TIMESTAMP"),
         }, ScoreboardRow.class);
     }
@@ -27,11 +26,12 @@ public class ScoreboardDB extends Table<ScoreboardRow> {
         return this.Select("playerID = '%s'".formatted(player));
     }
 
-    public ScoreboardRow Insert(Game.Scoreboard.Score score, int gameID) {
+    public ScoreboardRow Insert(UUID player, int gameID, int score, int scoreStreak) {
         var row = new ScoreboardRow();
         row.gameID = gameID;
-        row.playerID = score.player.getUniqueId();
-        row.Score = score.score;
+        row.playerID = player;
+        row.Score = score;
+        row.ScoreStreak = scoreStreak;
         return this.Insert(row);
     }
 }
