@@ -14,7 +14,7 @@ public class CooldownDBTest extends SQLTestBase {
     @Test
     @Order(1)
     public void cooldownInsertSuccessfull() {
-        cooldownRow = cooldownDB.Insert(gameMock.ID, playerMock.getUniqueId(), 5000L);
+        cooldownRow = cooldownDB.Insert(gameSettingsMock.ID, playerMock.getUniqueId(), 5000L);
         
         var rowList = cooldownDB.Select(cooldownRow.gameID, cooldownRow.playerID);
         softly.then(rowList).as("Row not correctly inserted").isNotEmpty();

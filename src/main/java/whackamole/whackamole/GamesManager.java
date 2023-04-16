@@ -70,7 +70,7 @@ public final class GamesManager implements Listener {
 
     private boolean gameExists(String name) {
         for (Game game : games) {
-            if (game.name.equalsIgnoreCase(name)) {
+            if (game.getName().equalsIgnoreCase(name)) {
                 return true;
             }
         }

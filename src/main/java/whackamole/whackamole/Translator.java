@@ -178,8 +178,8 @@ public enum Translator {
             this.formattedValue = this.formattedValue.replace("{Score}", String.valueOf(game.getRunning().score));
             this.formattedValue = this.formattedValue.replace("{missedMoles}", String.valueOf(game.getRunning().missed));
         }
-        this.formattedValue = this.formattedValue.replace("{gameName}", String.valueOf(game.name));
-        this.formattedValue = this.formattedValue.replace("{maxMissed}", String.valueOf(game.getSettings().maxMissed));
+        this.formattedValue = this.formattedValue.replace("{gameName}", String.valueOf(game.getName()));
+        this.formattedValue = this.formattedValue.replace("{maxMissed}", String.valueOf(game.getSettings().missCount));
     }
     private void Format(Player player) {
         this.formattedValue = this.formattedValue.replace("{Player}", player.getName());

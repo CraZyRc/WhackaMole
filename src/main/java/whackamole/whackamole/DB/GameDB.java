@@ -37,33 +37,12 @@ public class GameDB extends Table<GameRow> {
     }
 
     public GameRow Insert(Game game) {
-        var row = new GameRow();
-        var settings = game.getSettings();
-        row.Name = game.name;
-        row.worldName = settings.world.getName();
-        row.spawnDirection = settings.spawnRotation.name();
+        GameRow row = game.getSettings();
         return this.Insert(row);
     }
 
     public void Update(Game game) {
-        var row = new GameRow();
-        var settings = game.getSettings();
-        row.ID = game.ID;
-        row.Name = game.name;
-        row.worldName = settings.world.getName();
-        row.spawnDirection = settings.spawnRotation.name();
-        row.hasJackpot = settings.Jackpot;
-        row.jackpotSpawnChance = settings.jackpotSpawn;
-        row.missCount = settings.maxMissed;
-        row.scorePoints = settings.pointsPerKill;
-        row.spawnTimer = settings.Interval;
-        row.spawnChance = settings.spawnChance;
-        row.moleSpeed = settings.moleSpeed;
-        row.difficultyScale = settings.difficultyScale;
-        row.difficultyScore = settings.difficultyScore;
-        row.Cooldown = settings.Cooldown;
-        
+        GameRow row = game.getSettings();
         this.Update(row);
     }
-
 }

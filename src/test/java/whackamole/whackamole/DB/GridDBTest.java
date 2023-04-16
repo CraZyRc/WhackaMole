@@ -14,9 +14,9 @@ public class GridDBTest extends SQLTestBase {
     @Test
     @Order(1)
     public void GridBlockInsertSuccessfull() {
-        row = gridDB.Insert(gridMock, gameMock.ID).get(0);
+        row = gridDB.Insert(gridMock, gameMock.getID()).get(0);
         
-        var rowList = gridDB.Select(gameMock.ID);
+        var rowList = gridDB.Select(gameMock.getID());
         softly.then(rowList).as("Row not correctly inserted").isNotEmpty();
     }
     

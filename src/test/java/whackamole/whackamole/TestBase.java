@@ -48,27 +48,29 @@ public class TestBase {
         gameRunnerMock.score = 2;
         when(gameMock.getRunning()).thenReturn(gameRunnerMock);
         
-        gameSettingsMock.maxMissed = 3;
+        gameSettingsMock.missCount = 3;
         gameSettingsMock.world = worldMock;
         when(worldMock.getName()).thenReturn("Test World");
 
         gameSettingsMock.spawnRotation = blockFaceMock;
         when(blockFaceMock.name()).thenReturn("WEST");
         
+        gameSettingsMock.ID = 3;
+        gameSettingsMock.Name = "Test Game"; 
         gameSettingsMock.Cooldown = 86400000L;
-        gameSettingsMock.Jackpot = true;
-        gameSettingsMock.jackpotSpawn = 1;
+        gameSettingsMock.hasJackpot = true;
+        gameSettingsMock.spawnChance = 1;
         gameSettingsMock.difficultyScore = 1;
-        gameSettingsMock.pointsPerKill = 1;
-        gameSettingsMock.maxMissed = 3;
-        gameSettingsMock.Interval = 1;
+        gameSettingsMock.scorePoints = 1;
+        gameSettingsMock.missCount = 3;
+        gameSettingsMock.spawnTimer = 1;
         gameSettingsMock.spawnChance = 1;
         gameSettingsMock.difficultyScale = 10;
         gameSettingsMock.moleSpeed = 2;
         when(gameMock.getSettings()).thenReturn(gameSettingsMock);
 
-        gameMock.ID = 3;
-        gameMock.name = "Test Game"; 
+        when(gameMock.getName()).thenReturn(gameSettingsMock.Name);
+        when(gameMock.getID()).thenReturn(gameSettingsMock.ID);
 
         when(playerMock.getName()).thenReturn("test player");
         when(playerMock.getUniqueId()).thenReturn(UUID.randomUUID());
