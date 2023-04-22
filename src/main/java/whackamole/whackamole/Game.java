@@ -214,6 +214,7 @@ public class Game {
 
             this.gameConfig.FileConfig.options().header(header.toString());
 
+            this.gameConfig.set("Properties.ID", getID());
             this.gameConfig.set("Properties.Name", getName());
             this.gameConfig.set("Properties.Direction", Game.this.settings.spawnRotation.name());
             this.gameConfig.set("Properties.Jackpot", Game.this.settings.hasJackpot);
@@ -235,6 +236,7 @@ public class Game {
         }
 
         public void load() {
+            Game.this.settings.ID = this.gameConfig.getInt("Properties.ID");
             Game.this.settings.Name = this.gameConfig.getString("Properties.Name");
             Game.this.settings.world = Bukkit.getWorld(this.gameConfig.getString("Field Data.World"));
             Game.this.settings.spawnRotation = BlockFace.valueOf(this.gameConfig.getString("Properties.Direction"));
@@ -248,7 +250,11 @@ public class Game {
             Game.this.settings.difficultyScale = this.gameConfig.getDouble("Properties.Difficulty scaling");
             Game.this.settings.difficultyScore = this.gameConfig.getInt("Properties.Difficulty increase");
             Game.this.settings.Cooldown = cooldown.parseTime(this.gameConfig.getString("Properties.Cooldown"));
+            Game.this.settings.Save();
+            
             Game.this.grid = Grid.Deserialize(Game.this.settings.world, this.gameConfig.getList("Field Data.Grid"));
+            Game.this.grid.Delete(getID());
+            Game.this.grid.Save(getID());
 
             Logger.success(Translator.GAME_LOADSUCCESS.Format(Game.this));
         }
