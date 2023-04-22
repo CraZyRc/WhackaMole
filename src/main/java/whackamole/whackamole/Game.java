@@ -218,7 +218,7 @@ public class Game {
             this.gameConfig.set("Properties.Name", getName());
             this.gameConfig.set("Properties.Direction", Game.this.settings.spawnRotation.name());
             this.gameConfig.set("Properties.Jackpot", Game.this.settings.hasJackpot);
-            this.gameConfig.set("Properties.Jackpot spawn chance", Game.this.settings.spawnChance);
+            this.gameConfig.set("Properties.Jackpot spawn chance", Game.this.settings.jackpotSpawnChance);
             this.gameConfig.set("Properties.Game lost", Game.this.settings.missCount);
             this.gameConfig.set("Properties.Points per kill", Game.this.settings.scorePoints);
             this.gameConfig.set("Properties.Spawn rate", Game.this.settings.spawnTimer);
@@ -241,7 +241,7 @@ public class Game {
             Game.this.settings.world = Bukkit.getWorld(this.gameConfig.getString("Field Data.World"));
             Game.this.settings.spawnRotation = BlockFace.valueOf(this.gameConfig.getString("Properties.Direction"));
             Game.this.settings.hasJackpot = this.gameConfig.getBoolean("Properties.Jackpot");
-            Game.this.settings.spawnChance = this.gameConfig.getInt("Properties.Jackpot spawn chance");
+            Game.this.settings.jackpotSpawnChance = this.gameConfig.getInt("Properties.Jackpot spawn chance");
             Game.this.settings.missCount = this.gameConfig.getInt("Properties.Game lost");
             Game.this.settings.scorePoints = this.gameConfig.getInt("Properties.Points per kill");
             Game.this.settings.spawnTimer = this.gameConfig.getDouble("Properties.Spawn rate");

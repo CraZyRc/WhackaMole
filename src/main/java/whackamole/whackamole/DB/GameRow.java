@@ -67,7 +67,7 @@ public class GameRow extends Row {
     /**
      * The percentage fomr 0 to 100 to decrease the mole speed and spawn speed
      */
-    public double difficultyScale = 25;
+    public double difficultyScale = 10;
 
     /**
      * The aomunt of miliseconds the player has to wait before they can play the game again.

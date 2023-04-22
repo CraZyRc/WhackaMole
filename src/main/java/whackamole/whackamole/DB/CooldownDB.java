@@ -9,8 +9,8 @@ import java.util.UUID;
 public class CooldownDB extends Table<CooldownRow> {
     public CooldownDB(SQLite sql) {
         super(sql, "Cooldown", new Column<?>[] {
-            new Column<Integer>("gameID", Integer.class).IsPrimaryKey(true).AllowNull(true),
-            new Column<UUID>("playerID", UUID.class).IsPrimaryKey(true).AllowNull(true),
+            new Column<Integer>("gameID", Integer.class).IsPrimaryKey(true).AllowNull(false),
+            new Column<UUID>("playerID", UUID.class).IsPrimaryKey(true).AllowNull(false),
             new Column<Long>("endTimeStamp", Long.class),
         }, CooldownRow.class);
     }
