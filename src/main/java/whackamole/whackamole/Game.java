@@ -508,7 +508,7 @@ public class Game {
     }
 
     public void setJackpotSpawn(int jackpotSpawn) {
-        this.settings.spawnChance = jackpotSpawn;
+        this.settings.jackpotSpawnChance = jackpotSpawn;
         this.save();
     }
 
@@ -605,12 +605,12 @@ public class Game {
             e.setCancelled(true);
             return;
         }
-
+        
         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
         e.getPlayer().sendMessage(Config.AppConfig.PREFIX + Translator.MANAGER_TICKETUSE_SUCCESS);
         e.setUseItemInHand(Event.Result.DENY);
         player.getInventory().removeItem(Config.Game.TICKET);
-
+        this.cooldown.remove(player.getUniqueId());
     }
 
     private void actionbarParse(UUID player, String text) {
@@ -696,7 +696,7 @@ public class Game {
                 int DROP = random.nextInt(100);
                 if (DROP <= this.game.spawnChance) {
                     if (this.settings.hasJackpot) {
-                        if (DROP <= this.settings.spawnChance) {
+                        if (DROP <= this.settings.jackpotSpawnChance) {
                             this.grid.spawnRandomEntity(MoleType.Jackpot, Speed, this.settings.spawnRotation);
                         } else {
                             this.grid.spawnRandomEntity(MoleType.Mole, Speed, this.settings.spawnRotation);
