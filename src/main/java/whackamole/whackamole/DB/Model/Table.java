@@ -266,7 +266,7 @@ public abstract class Table<T extends Row> implements TableModel<T> {
 
         for(Column<?> column : this.ColumnNames) {
             try {
-                var field = this.findDeclaredField(row.getClass(), column.GetName());
+                var field = findDeclaredField(row.getClass(), column.GetName());
 
                 if(column.IsPrimaryKey()) whereList.add("%s = %s".formatted(column.GetName(), column.ValueToQueryValue(field.get(row))));
             } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
@@ -286,7 +286,7 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         List<String> setList = new ArrayList<>();
         for(Column<?> column : this.ColumnNames) {
             try {
-                var field = this.findDeclaredField(row.getClass(), column.GetName());
+                var field = findDeclaredField(row.getClass(), column.GetName());
                 if(!column.IsPrimaryKey()) setList.add("%s = %s".formatted(column.GetName(), column.ValueToQueryValue(field.get(row))));
                 
             } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
@@ -311,7 +311,7 @@ public abstract class Table<T extends Row> implements TableModel<T> {
             try {
                 if(column.HasAutoIncrement()) continue;
 
-                var field = this.findDeclaredField(row.getClass(), column.GetName());
+                var field = findDeclaredField(row.getClass(), column.GetName());
                 var queryValue = column.ValueToQueryValue(field.get(row));
                 if (queryValue.equals("NULL")) continue;
 
@@ -364,7 +364,7 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         try {
             T i = this.rawType.getDeclaredConstructor().newInstance();
             for (var column : this.ColumnNames) {
-                var field = this.findDeclaredField(i.getClass(), column.GetName());
+                var field = findDeclaredField(i.getClass(), column.GetName());
                 
                 var res = column.ResultSetToRow(set);
                 if (res == null) continue;
@@ -399,7 +399,7 @@ public abstract class Table<T extends Row> implements TableModel<T> {
 
             if (autoIColumn != null) {
                 var lastrow = SQL.executeQuery("SELECT last_insert_rowid()");
-                var field = this.findDeclaredField(row.getClass(), autoIColumn.GetName());
+                var field = findDeclaredField(row.getClass(), autoIColumn.GetName());
                 field.set(row, lastrow.getObject(1));
             }
         } catch (IllegalAccessException | IllegalArgumentException | SQLException | NoSuchFieldException | SecurityException e) {
@@ -429,7 +429,7 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         try {
             T i = this.rawType.getDeclaredConstructor().newInstance();
             for (var column : this.ColumnNames) {
-                this.findDeclaredField(i.getClass(), column.GetName());
+                findDeclaredField(i.getClass(), column.GetName());
             }
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | NoSuchFieldException | SecurityException e) {
@@ -441,7 +441,7 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         return true;
     }
 
-    private Field findDeclaredField(Class<?> type, String field) 
+    protected static Field findDeclaredField(Class<?> type, String field) 
         throws NoSuchFieldException, SecurityException {
         try {
             return type.getDeclaredField(field);

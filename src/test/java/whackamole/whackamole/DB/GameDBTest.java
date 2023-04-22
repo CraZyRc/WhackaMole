@@ -2,6 +2,8 @@ package whackamole.whackamole.DB;
 
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
+import whackamole.whackamole.DB.Model.Row;
+
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -36,5 +38,17 @@ public class GameDBTest extends SQLTestBase {
 
         var gameList = gameDB.Select(gameSettingsMock.ID);
         softly.then(gameList).as("Row not correctly deleted").isEmpty();
+    }
+
+    @Test
+    public void RowUpCastSuccessfull() throws Exception {
+        GameRow gameRow = new GameRow();
+        gameRow.ID = 1;
+        
+        Row testRow = gameRow;
+        GameRow outRow = new GameRow();
+        
+        Row.upCast(testRow, outRow);
+        softly.then(outRow.ID).as("Row not correctly Up Casted").isEqualTo(1);
     }
 }
