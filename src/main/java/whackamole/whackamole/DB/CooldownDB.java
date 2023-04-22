@@ -15,6 +15,10 @@ public class CooldownDB extends Table<CooldownRow> {
         }, CooldownRow.class);
     }
 
+    public List<CooldownRow> Select(int gameID) {
+        return this.Select("gameID = ?", gameID);
+    }
+    
     public List<CooldownRow> Select(int gameID, UUID player) {
         return this.Select("gameID = ? AND playerID = ?", gameID, player);
     }

@@ -9,9 +9,12 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
 import org.bukkit.util.Vector;
 
+import whackamole.whackamole.DB.SQLite;
+import whackamole.whackamole.DB.GridDB;
 import whackamole.whackamole.Mole.*;
 
 public class Grid {
+    private static final GridDB SQL = SQLite.getGridDB();
     private static ArrayList<Vector> neighborList = new ArrayList<>() {
         {
             add(new Vector(1, 0, -1)); // * topleft
@@ -44,6 +47,15 @@ public class Grid {
         this.world = world;
         Block startBlock = world.getBlockAt(player.getLocation().subtract(0, 1, 0));
         this.grid = this.findGrid(startBlock);
+    }
+
+    public Grid(Game.Settings game) {
+        this.grid = new ArrayList<>();
+        this.world = game.world;
+        var blockList = SQL.Select(game.ID);
+        for (var block : blockList) {
+            grid.add(game.world.getBlockAt(block.X, block.Y, block.Z));
+        }
     }
 
     private ArrayList<Block> findGrid(Block startBlock) throws Exception {
@@ -153,6 +165,14 @@ public class Grid {
             }
         }
         return null;
+    }
+
+    public void Save(int gameID) {
+        SQL.Insert(this, gameID);
+    }
+    
+    public void Delete(int gameID) {
+        SQL.Delete(gameID);
     }
 
     public List<List<Integer>> Serialize() {

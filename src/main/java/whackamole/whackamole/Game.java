@@ -34,13 +34,26 @@ public class Game {
         private HashMap<UUID, Long> cooldown = new HashMap<>();
         private CooldownDB db = SQLite.getCooldownDB();
 
+        private void onLoad() {
+            var list = db.Select(getID());
+            for (var item : list) {
+                this.cooldown.put(item.playerID, item.endTimeStamp);
+            }
+        }
+        
+        private void Delete() {
+            for (var player : cooldown.keySet()) {
+                this.remove(player);
+            }
+        }
+
         private void add(Player player) {
             this.add(player.getUniqueId(), settings.Cooldown);
         }
 
         private void add(UUID player, Long time) {
             this.cooldown.put(player, System.currentTimeMillis() + time);
-            this.db.Insert(settings.ID, player, System.currentTimeMillis() + time);
+            this.db.Insert(getID(), player, System.currentTimeMillis() + time);
         }
 
         private boolean contains(Player player) {
@@ -60,7 +73,7 @@ public class Game {
 
         private void remove(UUID player) {
             this.cooldown.remove(player);
-            this.db.Delete(settings.ID, player);
+            this.db.Delete(getID(), player);
         }
 
         private Long getTime(UUID player) {
@@ -119,15 +132,14 @@ public class Game {
 
         public World world;
         public BlockFace spawnRotation;
-        // public Long Cooldown = 86400000L;
-        // public boolean Jackpot = true;
-
-        // public int jackpotSpawn = 1, difficultyScore = 1, pointsPerKill = 1, maxMissed = 3;
-        // public double Interval = 1, spawnChance = 100, difficultyScale = 10, moleSpeed = 2;
-        
 
         public String getCooldown() {
             return Game.this.cooldown.formatSetCooldown(this.Cooldown);
+        }
+
+        private void onLoad(GameRow a) {
+            upCast(a, this);
+            this.onLoad();
         }
 
         private void onLoad() {
@@ -147,6 +159,11 @@ public class Game {
             this.spawnDirection = this.spawnRotation.name();
             if (this.ID == -1)  gameDB.Insert(this);
             else                gameDB.Update(this);
+        }
+
+        private void Delete() {
+            if (this.ID != -1) 
+            gameDB.Delete(this);
         }
     }
 
@@ -243,12 +260,22 @@ public class Game {
 
     public class Scoreboard {
 
-        private ArrayList<ScoreboardRow> scores = new ArrayList<>();
+        private List<ScoreboardRow> scores = new ArrayList<>();
         private ScoreboardDB db = SQLite.getScoreboardDB();
 
         public void add(Player player, int score) {
-            ScoreboardRow scoreItem = this.db.Insert(player.getUniqueId(), settings.ID, score, 0); // TODO: score streak
+            ScoreboardRow scoreItem = this.db.Insert(player.getUniqueId(), getID(), score, 0); // TODO: score streak
             this.scores.add(scoreItem);
+        }
+
+        private void onLoad() {
+            this.scores = db.Select(getID());
+        }
+        
+        private void Delete() {
+            for (var row : scores) {
+                db.Delete(row);
+            }
         }
 
         public List<ScoreboardRow> getTop() {
@@ -390,28 +417,30 @@ public class Game {
     private Scoreboard scoreboard = new Scoreboard();
     private GameFile gameFile;
     private GameRunner game;
-
-    private List<UUID> currentyOnGird = new ArrayList<>();
-
     private Grid grid;
-    private GridDB gridDB = SQLite.getGridDB();
 
     private Random random = new Random();
+    private List<UUID> currentyOnGird = new ArrayList<>();
+
+
     public Game(GameRow result) {
-        this.settings = (Settings) result;
-        this.settings.onLoad();
+        this.settings.onLoad(result);
+        this.cooldown.onLoad();
+        this.scoreboard.onLoad();
+        this.grid = new Grid(settings);
         Logger.success(Translator.GAME_LOADSUCCESS.Format(this.getName()));
     }
 
     public Game(YMLFile configFile) {
         this.gameFile = new GameFile(configFile);
+        this.settings.Save();
     }
 
     public Game(String name, Grid grid, Player player) {
         this.settings.Setup(formatName(name), player);
 
         this.grid = grid;
-        this.gridDB.Insert(this.grid, this.getID());
+        this.grid.Save(getID());
 
         if (Config.Game.ENABLE_GAMECONFIG) {
             this.gameFile = new GameFile();
@@ -451,6 +480,10 @@ public class Game {
         this.settings.Save();
     }
     public void delete() {
+        this.cooldown.Delete();
+        this.scoreboard.Delete();
+        this.grid.Delete(getID());
+        this.settings.Delete();
         if (this.gameFile != null)
             this.gameFile.delete();
     }

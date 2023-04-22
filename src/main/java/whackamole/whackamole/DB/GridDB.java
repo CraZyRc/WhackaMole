@@ -45,4 +45,7 @@ public class GridDB extends Table<GridRow> {
     public void Delete(int gameID) {
         this.Delete("GameID = ?", gameID);
     }
+    public void Delete(GridRow row) {
+        this.Delete("GameID = ? AND X = ? AND Y = ? AND Z = ?", row.gameID, row.X, row.Y, row.Z);
+    }
 }

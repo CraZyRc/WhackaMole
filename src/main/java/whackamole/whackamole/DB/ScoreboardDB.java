@@ -18,6 +18,9 @@ public class ScoreboardDB extends Table<ScoreboardRow> {
         }, ScoreboardRow.class);
     }
 
+    public List<ScoreboardRow> Select(int gameID) {
+        return this.Select("gameID = ?", gameID);
+    }
     public List<ScoreboardRow> Select(UUID player) {
         return this.Select("playerID = ?", player);
     }

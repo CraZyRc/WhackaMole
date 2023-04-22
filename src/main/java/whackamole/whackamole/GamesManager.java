@@ -49,21 +49,25 @@ public final class GamesManager implements Listener {
     }
 
     public void loadGames() {
-        File GamesFolder = new File(Config.AppConfig.storageFolder + "/Games");
-
         Logger.info(Translator.MANAGER_LOADINGGAMES);
-
-        if (GamesFolder.list() == null) {
-            Logger.warning(Translator.MANAGER_NOGAMESFOUND);
-            return;
-        }
-
-        for (File i : GamesFolder.listFiles()) {
-            try {
-                this.addGame(new YMLFile(i));
-            } catch (Exception e) {
-                Logger.error(e.getMessage());
-                e.printStackTrace();
+        if (Config.Game.ENABLE_GAMECONFIG) {
+            File GamesFolder = new File(Config.AppConfig.storageFolder + "/Games");
+            if (GamesFolder.list() == null) {
+                Logger.warning(Translator.MANAGER_NOGAMESFOUND);
+                return;
+            }
+    
+            for (File i : GamesFolder.listFiles()) {
+                try {
+                    this.addGame(new YMLFile(i));
+                } catch (Exception e) {
+                    Logger.error(e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            if (! this.loadFromDatabase()) {
+                Logger.warning(Translator.MANAGER_NOGAMESFOUND);
             }
         }
     }
@@ -124,8 +128,8 @@ public final class GamesManager implements Listener {
         }
         GamesManager.this.runnableTickCounter++;
     };
-    public void loadFromDatabase() {
-        loadFromDatabase(null);
+    public boolean loadFromDatabase() {
+        return loadFromDatabase(null);
     }
     public boolean loadFromDatabase(World world) {
         List<GameRow> gameList;
