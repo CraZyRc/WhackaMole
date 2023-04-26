@@ -235,12 +235,14 @@ public class Game {
 
         public class Score {
             public Player player;
-            public int score;
+            public int score, molesHit, highestStreak;
             public Long timestamp;
 
-            public Score(Player player, int score, Long timestamp) {
+            public Score(Player player, int score, int molesHit, int highestStreak, Long timestamp) {
                 this.player = player;
                 this.score = score;
+                this.molesHit = molesHit;
+                this.highestStreak = highestStreak;
                 this.timestamp = timestamp;
             }
         }
@@ -248,8 +250,8 @@ public class Game {
         private ArrayList<Score> scores = new ArrayList<>();
         private ScoreboardDB db = SQLite.getScoreboardDB();
 
-        public void add(Player player, int score) {
-            Score scoreItem = new Score(player, score, System.currentTimeMillis() / 1000);
+        public void add(Player player, int score, int molesHit, int highestStreak) {
+            Score scoreItem = new Score(player, score, molesHit, highestStreak, System.currentTimeMillis() / 1000);
             this.scores.add(scoreItem);
             this.db.Insert(scoreItem, Game.this.ID);
 
@@ -269,7 +271,7 @@ public class Game {
 
     public class GameRunner {
         public Player player;
-        public int score = 0, missed = 0, difficultyModifier = 0;
+        public int score = 0, missed = 0, difficultyModifier = 0, molesHit = 0, highestStreak = 0, Streak = 0;
 
         public double moleSpeed = settings.moleSpeed, interval = settings.Interval, spawnChance = settings.spawnChance;
 
@@ -310,8 +312,10 @@ public class Game {
             econ.depositPlayer(this.player, this.score);
 
             if (this.score > 0) {
+                if (this.Streak > this.highestStreak) { this.highestStreak = this.Streak; }
+                this.Streak = 0;
                 cooldown.add(this.player);
-                scoreboard.add(this.player, this.score);
+                scoreboard.add(this.player, this.score, this.molesHit, this.highestStreak);
             }
             this.player = null;
         }
@@ -345,9 +349,13 @@ public class Game {
             switch (mole.type) {
                 case Mole:
                     this.score += settings.pointsPerKill;
+                    this.molesHit ++;
+                    this.Streak ++;
                     break;
                 case Jackpot:
                     this.score += settings.pointsPerKill * 3;
+                    this.molesHit ++;
+                    this.Streak ++;
                     break;
                 case Null:
                     break;
@@ -652,6 +660,8 @@ public class Game {
         int missed = this.grid.entityUpdate();
         if (this.game != null && missed > 0) {
             this.game.missed += missed;
+            if (this.game.Streak > this.game.highestStreak) { this.game.highestStreak = this.game.Streak; }
+            this.game.Streak = 0;
             this.game.player.playSound(game.player.getLocation(), Config.Game.MISSSOUND, 1, 1);
             this.game.player.sendMessage(Config.AppConfig.PREFIX + Translator.GAME_MOLEMISSED.Format(this));
             if (this.getRunning().missed >= this.settings.maxMissed) {

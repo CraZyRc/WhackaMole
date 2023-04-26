@@ -15,6 +15,8 @@ public class ScoreboardRow implements Row {
     public int
     ID
             ,   Score
+            ,   molesHit
+            ,   highestStreak
             ,   gameID;
 
 
@@ -26,6 +28,8 @@ public class ScoreboardRow implements Row {
         item.Datetime           = set.getLong("Datetime");
         item.ID                 = set.getInt("ID");
         item.Score              = set.getInt("Score");
+        item.molesHit           = set.getInt("molesHit");
+        item.highestStreak      = set.getInt("highestStreak");
 
         return item;
     }
@@ -35,6 +39,8 @@ public class ScoreboardRow implements Row {
                 this.playerID
                 ,   this.gameID
                 ,   this.Score
+                ,   this.molesHit
+                ,   this.highestStreak
                 ,   this.Datetime
         };
     }
@@ -44,6 +50,8 @@ public class ScoreboardRow implements Row {
                 this.playerID
                 ,   this.gameID
                 ,   this.Score
+                ,   this.molesHit
+                ,   this.highestStreak
                 ,   this.Datetime
                 ,   this.ID
         };
@@ -54,6 +62,8 @@ public class ScoreboardRow implements Row {
         item.playerID = String.valueOf(Score.player.getUniqueId());
         item.gameID = gameID;
         item.Score = Score.score;
+        item.molesHit = Score.molesHit;
+        item.highestStreak = Score.highestStreak;
         item.Datetime = Score.timestamp;
 
         return item;

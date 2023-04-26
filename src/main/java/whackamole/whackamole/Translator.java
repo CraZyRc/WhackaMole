@@ -17,6 +17,7 @@ public enum Translator {
     ,   YML_DELETEDFILE                                     ("YML.deletedFile", YMLFile.class)
     ,   YML_CREATEFILE                                      ("YML.createFile", YMLFile.class)
     ,   YML_CREATEFAIL                                      ("YML.createFail", YMLFile.class)
+    ,   CONFIG_INVALIDHAMMERITEM                            ("Config.invalidHammerItem")
     ,   CONFIG_TICKET_NAME                                  ("Config.Ticket.Name")
     ,   CONFIG_TICKET_LORE1                                 ("Config.Ticket.Lore1")
     ,   CONFIG_TICKET_LORE2                                 ("Config.Ticket.Lore2")

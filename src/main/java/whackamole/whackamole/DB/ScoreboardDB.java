@@ -21,6 +21,8 @@ public class ScoreboardDB implements Table {
                 ,   playerID TEXT NOT NULL
                 ,   gameID INTEGER NOT NULL
                 ,   Score INTEGER NOT NULL
+                ,   molesHit INTEGER NOT NULL
+                ,   highestStreak INTEGER
                 ,   Datetime REAL DEFAULT CURRENT_TIMESTAMP
                 ,   PRIMARY KEY(ID AUTOINCREMENT)
                 )""";
@@ -50,9 +52,11 @@ public class ScoreboardDB implements Table {
                     playerID
                 ,   gameID
                 ,   Score
+                ,   molesHit
+                ,   highestStreak
                 ,   Datetime
             ) VALUES 
-            (?, ?, ?, ?)
+            (?, ?, ?, ?, ?, ?)
         """;
         this.sql.executeUpdate(query, row.insertSpread());
         try {
@@ -70,6 +74,8 @@ public class ScoreboardDB implements Table {
                 SET playerID = ?
                 ,   gameID = ?
                 ,   Score = ?
+                ,   molesHit = ?
+                ,   highestStreak = ?
                 ,   Datetime = ?
                 WHERE ID = ?
                 """;

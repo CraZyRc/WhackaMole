@@ -28,11 +28,10 @@ public class Config {
 
     public static class AppConfig {
         public static Locale Language = new Locale("en", "US");
-        public final static String configVersion = "1.5";
-        public final static String configFileName = "config.yml";
+        public final static String configFileName = "config.yml", configVersion = "1.5";
 
-        public static String storageFolder = "./plugins/WhackaMole",
-                PREFIX = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
+        public static String storageFolder = "./plugins/WhackaMole"
+                ,   PREFIX = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
 
         private static void LoadConfig(YMLFile configFile) {
             String[] fields = configFile.getString("Language").split("_");
@@ -57,7 +56,7 @@ public class Config {
     }
 
     public static class Game {
-        public static String ACTIONTEXT, HAMMERNAME = "Hammer";
+        public static String ACTIONTEXT, HAMMERNAME = "Hammer", HAMMER_ITEM;
         public static boolean ENABLE_GAMECONFIG;
 
         public static int FIELD_MAX_SIZE;
@@ -71,6 +70,7 @@ public class Config {
 
         private static void LoadConfig(YMLFile configFile) {
             ACTIONTEXT          = configFile.getString("Actionbar Message");
+            HAMMER_ITEM         = configFile.getString("Hammer item");
             HAMMERNAME          = Color(configFile.getString("Hammer Name"));
 
             FIELD_MAX_SIZE      = configFile.getInt("Max playfield");
@@ -86,17 +86,20 @@ public class Config {
             MOLE_SKULL          = getSkull(configFile.getString("Mole Skin"));
             JACKPOT_SKULL       = getSkull(configFile.getString("Jackpot Skin"));
 
-            PLAYER_AXE = new ItemStack(Material.GOLDEN_AXE);
-            ItemMeta axeMeta = PLAYER_AXE.getItemMeta();
-            ((Damageable) axeMeta).setDamage(31);
-            axeMeta.setUnbreakable(true);
-            axeMeta.addEnchant(Enchantment.LURE, 1, true);
-            axeMeta.addItemFlags(
-                    ItemFlag.HIDE_ATTRIBUTES,
-                    ItemFlag.HIDE_ENCHANTS,
-                    ItemFlag.HIDE_UNBREAKABLE);
-            axeMeta.setDisplayName(HAMMERNAME);
-            PLAYER_AXE.setItemMeta(axeMeta);
+            if (Material.getMaterial(HAMMER_ITEM) != null) {
+                PLAYER_AXE = new ItemStack(Material.valueOf(HAMMER_ITEM));
+                ItemMeta axeMeta = PLAYER_AXE.getItemMeta();
+                ((Damageable) axeMeta).setDamage(31);
+                axeMeta.setUnbreakable(true);
+                axeMeta.addEnchant(Enchantment.LURE, 1, true);
+                axeMeta.addItemFlags(
+                        ItemFlag.HIDE_ATTRIBUTES,
+                        ItemFlag.HIDE_ENCHANTS,
+                        ItemFlag.HIDE_UNBREAKABLE);
+                axeMeta.setDisplayName(HAMMERNAME);
+                PLAYER_AXE.setItemMeta(axeMeta);
+            } else
+                Logger.error(Translator.CONFIG_INVALIDHAMMERITEM);
 
             TICKET = new ItemStack(Material.MAP);
             ItemMeta ticketInfo = TICKET.getItemMeta();
