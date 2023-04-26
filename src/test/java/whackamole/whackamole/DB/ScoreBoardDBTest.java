@@ -14,7 +14,7 @@ public class ScoreBoardDBTest extends SQLTestBase {
     @Test
     @Order(1)
     public void ScoreInsertSuccessfull() {
-        row = scoreboardDB.Insert(playerMock.getUniqueId(), gameSettingsMock.ID, 10, 11);
+        row = scoreboardDB.Insert(playerMock.getUniqueId(), gameSettingsMock.ID, 10, 11, 5);
         softly.then(row.ID).as("row ID not updated correctly").isNotEqualTo(0);
         
         var rowList = scoreboardDB.Select(row.playerID);

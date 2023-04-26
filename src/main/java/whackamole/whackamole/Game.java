@@ -269,8 +269,8 @@ public class Game {
         private List<ScoreboardRow> scores = new ArrayList<>();
         private ScoreboardDB db = SQLite.getScoreboardDB();
 
-        public void add(Player player, int score) {
-            ScoreboardRow scoreItem = this.db.Insert(player.getUniqueId(), getID(), score, 0); // TODO: score streak
+        public void add(Player player, int score, int molesHit, int scoreStreak) {
+            ScoreboardRow scoreItem = this.db.Insert(player.getUniqueId(), getID(), score, molesHit, scoreStreak);
             this.scores.add(scoreItem);
         }
 
@@ -375,12 +375,12 @@ public class Game {
         public void moleHit(Mole mole) {
             switch (mole.type) {
                 case Mole:
-                    this.score += settings.pointsPerKill;
+                    this.score += settings.scorePoints;
                     this.molesHit ++;
                     this.Streak ++;
                     break;
                 case Jackpot:
-                    this.score += settings.pointsPerKill * 3;
+                    this.score += settings.scorePoints * 3;
                     this.molesHit ++;
                     this.Streak ++;
                     break;

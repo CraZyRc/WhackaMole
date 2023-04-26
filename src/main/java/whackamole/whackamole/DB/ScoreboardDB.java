@@ -13,6 +13,7 @@ public class ScoreboardDB extends Table<ScoreboardRow> {
             new Column<>("playerID", UUID.class).AllowNull(false),
             new Column<>("gameID", Integer.class).AllowNull(false),
             new Column<>("Score", Integer.class).AllowNull(false),
+            new Column<>("MolesHit", Integer.class).AllowNull(false),
             new Column<>("ScoreStreak", Integer.class).AllowNull(false),
             new Column<>("Datetime", Long.class).BuildInDefault("CURRENT_TIMESTAMP"),
         }, ScoreboardRow.class);
@@ -28,11 +29,12 @@ public class ScoreboardDB extends Table<ScoreboardRow> {
         return this.Select("gameID = ? AND playerID = ?", gameID, player);
     }
 
-    public ScoreboardRow Insert(UUID player, int gameID, int score, int scoreStreak) {
+    public ScoreboardRow Insert(UUID player, int gameID, int score, int molesHit, int scoreStreak) {
         var row = new ScoreboardRow();
         row.gameID = gameID;
         row.playerID = player;
         row.Score = score;
+        row.MolesHit = molesHit;
         row.ScoreStreak = scoreStreak;
         return this.Insert(row);
     }
