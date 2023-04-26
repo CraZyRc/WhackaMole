@@ -6,6 +6,7 @@ import dev.jorel.commandapi.StringTooltip;
 import dev.jorel.commandapi.arguments.*;
 import net.minecraft.commands.arguments.ArgumentEntity;
 import org.bukkit.ChatColor;
+import org.bukkit.scoreboard.Score;
 import whackamole.whackamole.DB.SQLite;
 
 import org.bukkit.block.BlockFace;
@@ -62,7 +63,6 @@ public class Commands {
     }
 
     public Commands(Main main) {
-
         new CommandAPICommand("WhackaMole")
                 .withAliases("WAM", "Whack")
                 .withSubcommand(new CommandAPICommand(String.valueOf(Translator.COMMANDS_CREATE))
@@ -227,6 +227,13 @@ public class Commands {
 
                         })
                 )
+                .withSubcommand(new CommandAPICommand(String.valueOf(Translator.COMMANDS_TOP))
+                        .withPermission(Config.Permissions.PERM_TOP)
+                        .withArguments(topTypeArgument())
+                        .executes((sender, args) ->{
+                            sender.sendMessage((String) args[1]);
+                        })
+                )
                 .register();
     }
     public Argument gameNameArgument(String name) {
@@ -361,6 +368,50 @@ public class Commands {
             }
             return new IStringTooltip[] {StringTooltip.ofString("","")};
         })));
+        return arguments;
+    }
+
+    private List<Argument<?>> topTypeArgument() {
+        List<Argument<?>> arguments = new ArrayList<>();
+        arguments.add(gameNameArgument("Game"));
+        arguments.add(new CustomArgument<>(new StringArgument("Type"), Info -> {
+            Game game = (Game) Info.previousArgs()[0];
+            String line = ChatColor.YELLOW + "\n| ";
+            StringBuilder outputString = new StringBuilder(ChatColor.YELLOW + "\n[>------------------------------------<]\n" +
+                    "|" + ChatColor.WHITE + " Game: " + ChatColor.AQUA + ChatColor.BOLD + game.name);
+
+
+            switch (Info.input()) {
+                case "score" -> {
+                    List<Game.Scoreboard.Score> score = game.getScoreboard().getTop(0);
+                    outputString.append(line).append(ChatColor.WHITE).append("Type: ").append(ChatColor.GOLD).append("Score").append(line);
+                    for (int i = 0; i < score.size(); i++) {
+                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score.get(i).player.getDisplayName(), 100)).append(" : ").append(score.get(i).score);
+                    }
+
+
+                }
+                case "streak" -> {
+                    List<Game.Scoreboard.Score> score = game.getScoreboard().getTop(1);
+                    outputString.append(line).append(ChatColor.WHITE).append("Type: ").append(ChatColor.GOLD).append("Streak").append(line);
+                    for (int i = 0; i < score.size(); i++) {
+                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score.get(i).player.getDisplayName(), 100)).append(" : ").append(score.get(i).highestStreak);
+                    }
+
+
+                }
+                case "moles" -> {
+                    List<Game.Scoreboard.Score> score = game.getScoreboard().getTop(2);
+                    outputString.append(line).append(ChatColor.WHITE).append("Type: ").append(ChatColor.GOLD).append("Moles").append(line);
+                    for (int i = 0; i < score.size(); i++) {
+                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score.get(i).player.getDisplayName(), 100)).append(" : ").append(score.get(i).molesHit);
+                    }
+                }
+            }
+            outputString.append(ChatColor.YELLOW + "\n| \n[>------------------------------------<]");
+            return outputString.toString();
+
+        }).replaceSuggestions(ArgumentSuggestions.strings("score", "streak", "moles")));
         return arguments;
     }
 

@@ -29,6 +29,7 @@ Actionbar Message: '[{"text":""},{"text":"[","Bold":true,"color":"#000000"},{"te
 
 # Item for the hammer (Only the Material name, ALL CAPS and without "Minecraft_"):
 Hammer item: GOLDEN_AXE
+
 # Name of the hammer (accepts color codes and hex colors).
 Hammer Name: "&0&l[&6&lWAM&0&l] #28c000&lS#2fca00&lM#37d500&lA#3edf00&lS#46ea00&lH#4df400&lE#55ff00&lR"
 
@@ -125,3 +126,4 @@ Commands:
   Reload: "Reload"
   Create: "create"
   Remove: "Remove"
+  TOP: "Top"

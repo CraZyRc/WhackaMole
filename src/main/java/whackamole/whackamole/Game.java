@@ -257,14 +257,19 @@ public class Game {
 
         }
 
-        public List<Score> getTop() {
-            return getTop(10);
+        public List<Score> getTop(int scoreType) {
+            return getTop(10, scoreType);
         }
 
-        public List<Score> getTop(int count) {
-            this.scores.sort((a, b) -> {
-                return a.score - b.score;
-            });
+        public List<Score> getTop(int count, int scoreType) {
+            count = Math.min(this.scores.size(), count);
+            if (scoreType == 0) {
+                this.scores.sort((a, b) -> b.score - a.score);
+            } else if (scoreType == 1) {
+                this.scores.sort((a, b) -> b.highestStreak - a.highestStreak);
+            } else if (scoreType == 2) {
+                this.scores.sort((a, b) -> b.molesHit - a.molesHit);
+            } else { Logger.error("getTop scoreType = " + scoreType + " unknown, please report this bug."); }
             return this.scores.subList(0, count);
         }
     }
@@ -492,6 +497,8 @@ public class Game {
         return this.settings;
     }
 
+    public Scoreboard getScoreboard() { return this.scoreboard;}
+
     public void setJackpotSpawn(int jackpotSpawn) {
         this.settings.jackpotSpawn = jackpotSpawn;
         this.save();
@@ -623,12 +630,12 @@ public class Game {
 
     public void updateActionBar() {
         if (Game.this.getRunning() != null) {
-            this.actionbarParse(this.game.player.getUniqueId(), ComponentSerializer.parse(Config.Game.ACTIONTEXT), Config.Color("&2&l ") + this.game.score);
+            this.actionbarParse(this.game.player.getUniqueId(), ComponentSerializer.parse(Config.Game.ACTIONTEXT), DefaultFontInfo.Color("&2&l ") + this.game.score);
         }
         for (UUID player : this.currentyOnGird) {
             if (this.cooldown.contains(player))
                 this.actionbarParse(player, Translator.GAME_ACTIONBAR_GAMEOVER, this.cooldown.getText(player));
-            else if (Bukkit.getPlayer(player).getInventory().firstEmpty() != -1)
+            else if (Bukkit.getPlayer(player).getInventory().firstEmpty() != -1 && Game.this.getRunning() != null)
                 this.actionbarParse(player, Translator.GAME_ACTIONBAR_RESTART.Format());
         }
     }

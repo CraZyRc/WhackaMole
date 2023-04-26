@@ -112,6 +112,7 @@ public enum Translator {
     ,   COMMANDS_SETTINGS_COOLDOWN_SUCCESS                  ("Commands.Settings.Cooldown.Success", String.class)
     ,   COMMANDS_RELOAD                                     ("Commands.Reload")
     ,   COMMANDS_RELOAD_SUCCESS                             ("Commands.Reload.Success")
+    ,   COMMANDS_TOP                                        ("Commands.Top")
     ,   COMMANDS_ARGUMENTS_UNKNOWNGAMENAME                  ("Commands.Arguments.unknownGameName", String.class)
     ,   COMMANDS_ARGUMENTS_INVALIDSETTING                   ("Commands.Arguments.invalidSetting")
     ,   ECON_INVALIDECONOMY                                 ("Econ.invalidEconomy")
@@ -169,7 +170,7 @@ public enum Translator {
         for(String item : stringReplacements) {
             type.Format(item);
         }
-        return Config.Color(type.formattedValue);
+        return DefaultFontInfo.Color(type.formattedValue);
     }
 
 
@@ -203,7 +204,7 @@ public enum Translator {
         .replace("{commandBuy}",       "/wam " + COMMANDS_BUY);
     }
     public String toString() {
-        return Config.Color(this.value);
+        return DefaultFontInfo.Color(this.value);
     }
 
 
