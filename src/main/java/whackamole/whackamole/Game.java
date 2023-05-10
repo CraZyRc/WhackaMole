@@ -188,7 +188,7 @@ public class Game {
                     "\n");
 
             if (Updater.versionCompare(Bukkit.getBukkitVersion().split("-")[0], "1.17.2")) {
-                this.gameConfig.FileConfig.options().header(header.stream().map(o -> String.format("# %s\n", o)).toString());
+                this.gameConfig.FileConfig.options().header(String.join("", header.stream().map(o -> String.format("# %s\n", o)).toList()));
             } else {
                 this.gameConfig.FileConfig.options().setHeader(header);
             }

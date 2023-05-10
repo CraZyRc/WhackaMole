@@ -42,7 +42,7 @@ public class Updater {
             return out;
         }
         
-        String[] versionList = version.split("\\d[.]", 0);
+        String[] versionList = version.split("[.]", 0);
         for (var i = versionList.length -1 ; i >= 0; i--) {
             out += Integer.parseInt(versionList[i]) << (8* (versionList.length - i));
         }
