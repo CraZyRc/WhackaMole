@@ -21,13 +21,10 @@ import org.bukkit.util.Vector;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import whackamole.whackamole.DB.*;
 import whackamole.whackamole.Mole.MoleState;
 import whackamole.whackamole.Mole.MoleType;
-
-import static org.bukkit.Bukkit.spigot;
 
 public class Game {
     public static final BlockFace[] Directions = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST,
@@ -37,13 +34,26 @@ public class Game {
         private HashMap<UUID, Long> cooldown = new HashMap<>();
         private CooldownDB db = SQLite.getCooldownDB();
 
+        private void onLoad() {
+            var list = db.Select(getID());
+            for (var item : list) {
+                this.cooldown.put(item.playerID, item.endTimeStamp);
+            }
+        }
+        
+        private void Delete() {
+            for (var player : cooldown.keySet()) {
+                this.remove(player);
+            }
+        }
+
         private void add(Player player) {
             this.add(player.getUniqueId(), settings.Cooldown);
         }
 
         private void add(UUID player, Long time) {
             this.cooldown.put(player, System.currentTimeMillis() + time);
-            this.db.Insert(Game.this.ID, player, System.currentTimeMillis() + time);
+            this.db.Insert(getID(), player, System.currentTimeMillis() + time);
         }
 
         private boolean contains(Player player) {
@@ -63,7 +73,7 @@ public class Game {
 
         private void remove(UUID player) {
             this.cooldown.remove(player);
-            this.db.Delete(Game.this.ID, player);
+            this.db.Delete(getID(), player);
         }
 
         private Long getTime(UUID player) {
@@ -105,7 +115,7 @@ public class Game {
                     + ":" + (seconds > 0 ? seconds > 9 ? String.valueOf(seconds) : "0" + seconds : "00");
         }
 
-        public void walkOnGridHook(Player player) {
+        private void walkOnGridHook(Player player) {
             if (!this.contains(player.getUniqueId()))
                 return;
 
@@ -117,34 +127,51 @@ public class Game {
         }
 
     }
-    public class Settings {
+    public class Settings extends GameRow {
+        public GameDB gameDB = SQLite.getGameDB();
+
         public World world;
         public BlockFace spawnRotation;
-        public Long Cooldown = 86400000L;
-        public boolean Jackpot = true;
-
-        public int jackpotSpawn = 1, difficultyScore = 1, pointsPerKill = 1, maxMissed = 3;
-        public String moleHead = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxMjUwM2Q2MWM0OWY3MDFmZWU4NjdkNzkzZjFkY2M1MjJlNGQ3YzVjNDFhNjhmMjk1MTU3OWYyNGU3Y2IyYSJ9fX0=", jackpotHead = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlkZGZiMDNjOGY3Zjc4MDA5YjgzNDRiNzgzMGY0YTg0MThmYTRiYzBlYjMzN2EzMzA1OGFiYjdhMDVlOTNlMSJ9fX0=";
-
-        public double Interval = 1, spawnChance = 100, difficultyScale = 10, moleSpeed = 2;
 
         public String getCooldown() {
             return Game.this.cooldown.formatSetCooldown(this.Cooldown);
         }
 
+        private void onLoad(GameRow a) {
+            upCast(a, this);
+            this.onLoad();
+        }
 
-    }
-    public class dataBase {
-        private final GameDB gameDB = SQLite.getGameDB();
-        public void save() {
-            gameDB.Update(Game.this);
+        private void onLoad() {
+            this.world = Bukkit.getWorld(this.worldName);
+            this.spawnRotation = BlockFace.valueOf(this.spawnDirection);
+        }
+
+        private void Setup(String name, Player player) {
+            this.Name = name;
+            this.spawnRotation = Directions[Math.round(player.getLocation().getYaw() / 45) & 0x7];
+            this.world = player.getWorld();
+            this.Save();
+        }
+
+        private void Save() {
+            this.worldName = this.world.getName();
+            this.spawnDirection = this.spawnRotation.name();
+            if (this.ID == -1)  gameDB.Insert(this);
+            else                gameDB.Update(this);
+        }
+
+        private void Delete() {
+            if (this.ID != -1) 
+            gameDB.Delete(this);
         }
     }
+
     public class GameFile {
         private final YMLFile gameConfig;
 
         public GameFile() {
-            gameConfig = new YMLFile(Config.AppConfig.storageFolder + "/Games/" + name + ".yml");
+            gameConfig = new YMLFile(Config.AppConfig.storageFolder + "/Games/" + getName() + ".yml");
             this.save();
         }
 
@@ -193,13 +220,14 @@ public class Game {
                 this.gameConfig.FileConfig.options().setHeader(header);
             }
 
-            this.gameConfig.set("Properties.Name", Game.this.name);
+            this.gameConfig.set("Properties.ID", getID());
+            this.gameConfig.set("Properties.Name", getName());
             this.gameConfig.set("Properties.Direction", Game.this.settings.spawnRotation.name());
-            this.gameConfig.set("Properties.Jackpot", Game.this.settings.Jackpot);
-            this.gameConfig.set("Properties.Jackpot spawn chance", Game.this.settings.jackpotSpawn);
-            this.gameConfig.set("Properties.Game lost", Game.this.settings.maxMissed);
-            this.gameConfig.set("Properties.Points per kill", Game.this.settings.pointsPerKill);
-            this.gameConfig.set("Properties.Spawn rate", Game.this.settings.Interval);
+            this.gameConfig.set("Properties.Jackpot", Game.this.settings.hasJackpot);
+            this.gameConfig.set("Properties.Jackpot spawn chance", Game.this.settings.jackpotSpawnChance);
+            this.gameConfig.set("Properties.Game lost", Game.this.settings.missCount);
+            this.gameConfig.set("Properties.Points per kill", Game.this.settings.scorePoints);
+            this.gameConfig.set("Properties.Spawn rate", Game.this.settings.spawnTimer);
             this.gameConfig.set("Properties.Spawn chance", Game.this.settings.spawnChance);
             this.gameConfig.set("Properties.Mole speed", Game.this.settings.moleSpeed);
             this.gameConfig.set("Properties.Difficulty scaling", Game.this.settings.difficultyScale);
@@ -215,55 +243,53 @@ public class Game {
         }
 
         public void load() {
-            Game.this.name = this.gameConfig.getString("Properties.Name");
+            Game.this.settings.ID = this.gameConfig.getInt("Properties.ID");
+            Game.this.settings.Name = this.gameConfig.getString("Properties.Name");
             Game.this.settings.world = Bukkit.getWorld(this.gameConfig.getString("Field Data.World"));
             Game.this.settings.spawnRotation = BlockFace.valueOf(this.gameConfig.getString("Properties.Direction"));
-            Game.this.settings.Jackpot = this.gameConfig.getBoolean("Properties.Jackpot");
-            Game.this.settings.jackpotSpawn = this.gameConfig.getInt("Properties.Jackpot spawn chance");
-            Game.this.settings.maxMissed = this.gameConfig.getInt("Properties.Game lost");
-            Game.this.settings.pointsPerKill = this.gameConfig.getInt("Properties.Points per kill");
-            Game.this.settings.Interval = this.gameConfig.getDouble("Properties.Spawn rate");
+            Game.this.settings.hasJackpot = this.gameConfig.getBoolean("Properties.Jackpot");
+            Game.this.settings.jackpotSpawnChance = this.gameConfig.getInt("Properties.Jackpot spawn chance");
+            Game.this.settings.missCount = this.gameConfig.getInt("Properties.Game lost");
+            Game.this.settings.scorePoints = this.gameConfig.getInt("Properties.Points per kill");
+            Game.this.settings.spawnTimer = this.gameConfig.getDouble("Properties.Spawn rate");
             Game.this.settings.spawnChance = this.gameConfig.getDouble("Properties.Spawn chance");
             Game.this.settings.moleSpeed = this.gameConfig.getDouble("Properties.Mole speed");
             Game.this.settings.difficultyScale = this.gameConfig.getDouble("Properties.Difficulty scaling");
             Game.this.settings.difficultyScore = this.gameConfig.getInt("Properties.Difficulty increase");
             Game.this.settings.Cooldown = cooldown.parseTime(this.gameConfig.getString("Properties.Cooldown"));
+            Game.this.settings.Save();
+            
             Game.this.grid = Grid.Deserialize(Game.this.settings.world, this.gameConfig.getList("Field Data.Grid"));
+            Game.this.grid.Delete(getID());
+            Game.this.grid.Save(getID());
             Game.this.grid.setSettings(settings);
-
+            
             Logger.success(Translator.GAME_LOADSUCCESS.Format(Game.this));
         }
 
         public void delete() {
             this.gameConfig.remove();
         }
-
     }
 
     public class Scoreboard {
 
-        public class Score {
-            public Player player;
-            public int score, molesHit, highestStreak;
-            public Long timestamp;
-
-            public Score(Player player, int score, int molesHit, int highestStreak, Long timestamp) {
-                this.player = player;
-                this.score = score;
-                this.molesHit = molesHit;
-                this.highestStreak = highestStreak;
-                this.timestamp = timestamp;
-            }
-        }
-
-        private ArrayList<Score> scores = new ArrayList<>();
+        private List<ScoreboardRow> scores = new ArrayList<>();
         private ScoreboardDB db = SQLite.getScoreboardDB();
 
-        public void add(Player player, int score, int molesHit, int highestStreak) {
-            Score scoreItem = new Score(player, score, molesHit, highestStreak, System.currentTimeMillis() / 1000);
+        public void add(Player player, int score, int molesHit, int scoreStreak) {
+            ScoreboardRow scoreItem = this.db.Insert(player.getUniqueId(), getID(), score, molesHit, scoreStreak);
             this.scores.add(scoreItem);
-            this.db.Insert(scoreItem, Game.this.ID);
+        }
 
+        private void onLoad() {
+            this.scores = db.Select(getID());
+        }
+        
+        private void Delete() {
+            for (var row : scores) {
+                db.Delete(row);
+            }
         }
 
         public List<Score> getTop(int scoreType) {
@@ -287,7 +313,7 @@ public class Game {
         public Player player;
         public int score = 0, missed = 0, difficultyModifier = 0, molesHit = 0, highestStreak = 0, Streak = 0;
 
-        public double moleSpeed = settings.moleSpeed, interval = settings.Interval, spawnChance = settings.spawnChance;
+        public double moleSpeed = settings.moleSpeed, interval = settings.spawnTimer, spawnChance = settings.spawnChance;
 
         public GameRunner() {
         }
@@ -362,12 +388,12 @@ public class Game {
         public void moleHit(Mole mole) {
             switch (mole.type) {
                 case Mole:
-                    this.score += settings.pointsPerKill;
+                    this.score += settings.scorePoints;
                     this.molesHit ++;
                     this.Streak ++;
                     break;
                 case Jackpot:
-                    this.score += settings.pointsPerKill * 3;
+                    this.score += settings.scorePoints * 3;
                     this.molesHit ++;
                     this.Streak ++;
                     break;
@@ -405,60 +431,40 @@ public class Game {
     }
 
     private Econ econ = new Econ();
-    private dataBase DB = new dataBase();
     private Settings settings = new Settings();
     private CooldownList cooldown = new CooldownList();
     private Scoreboard scoreboard = new Scoreboard();
     private GameFile gameFile;
     private GameRunner game;
-
-    private List<UUID> currentyOnGird = new ArrayList<>();
-    private boolean disabled = false;
-
-    public int ID;
-    public String name;
     private Grid grid;
-    private GameDB gameDB = SQLite.getGameDB();
-    private GridDB gridDB = SQLite.getGridDB();
 
     private Random random = new Random();
-    public Game(GameRow result) {
-        this.ID = result.ID;
-        this.name = result.Name;
-        this.settings.world                 = Bukkit.getWorld(result.worldName);
-        this.settings.spawnRotation         = BlockFace.valueOf(result.spawnDirection);
-        this.settings.Jackpot               = result.hasJackpot == 1;
-        this.settings.jackpotSpawn          = result.jackpotSpawnChance;
-        this.settings.maxMissed             = result.missCount;
-        this.settings.pointsPerKill         = result.scorePoints;
-        this.settings.Interval              = result.spawnTimer;
-        this.settings.spawnChance           = result.spawnChance;
-        this.settings.moleSpeed             = result.moleSpeed;
-        this.settings.difficultyScale       = result.difficultyScale;
-        this.settings.difficultyScore       = result.difficultyScore;
-        this.settings.Cooldown              = (long) result.Cooldown;
-        this.settings.moleHead              = result.moleHead;
-        this.settings.jackpotHead           = result.jackpotHead;
-        Logger.success(Translator.GAME_LOADSUCCESS.Format(this.name));
+    private List<UUID> currentyOnGird = new ArrayList<>();
 
+
+    public Game(GameRow result) {
+        this.settings.onLoad(result);
+        this.cooldown.onLoad();
+        this.scoreboard.onLoad();
+        this.grid = new Grid(settings);
+        Logger.success(Translator.GAME_LOADSUCCESS.Format(this.getName()));
     }
 
     public Game(YMLFile configFile) {
         this.gameFile = new GameFile(configFile);
+        this.settings.Save();
     }
 
     public Game(String name, Grid grid, Player player) {
-        this.name = formatName(name);
-        this.settings.spawnRotation = Directions[Math.round(player.getLocation().getYaw() / 45) & 0x7];
-        this.settings.world = player.getWorld();
+        this.settings.Setup(formatName(name), player);
+
         this.grid = grid;
+        this.grid.Save(getID());
         this.grid.setSettings(settings);
+      
         if (Config.Game.ENABLE_GAMECONFIG) {
             this.gameFile = new GameFile();
         }
-
-        this.ID = this.gameDB.Insert(this);
-        this.gridDB.Insert(this.grid, this.ID);
     }
 
     private String formatName(String name) {
@@ -491,11 +497,23 @@ public class Game {
         if (this.gameFile != null) {
             this.gameFile.save();
         }
-        this.DB.save();
+        this.settings.Save();
     }
     public void delete() {
+        this.cooldown.Delete();
+        this.scoreboard.Delete();
+        this.grid.Delete(getID());
+        this.settings.Delete();
         if (this.gameFile != null)
             this.gameFile.delete();
+    }
+
+    public int getID() {
+        return this.settings.ID;
+    }
+
+    public String getName() {
+        return this.settings.Name;
     }
 
     public GameRunner getRunning() {
@@ -512,7 +530,7 @@ public class Game {
     public Scoreboard getScoreboard() { return this.scoreboard;}
 
     public void setJackpotSpawn(int jackpotSpawn) {
-        this.settings.jackpotSpawn = jackpotSpawn;
+        this.settings.jackpotSpawnChance = jackpotSpawn;
         this.save();
     }
 
@@ -522,17 +540,17 @@ public class Game {
     }
 
     public void setPointsPerKill(int pointsPerKill) {
-        this.settings.pointsPerKill = pointsPerKill;
+        this.settings.scorePoints = pointsPerKill;
         this.save();
     }
 
     public void setMaxMissed(int maxMissed) {
-        this.settings.maxMissed = maxMissed;
+        this.settings.missCount = maxMissed;
         this.save();
     }
 
     public void setInterval(double Interval) {
-        this.settings.Interval = Interval;
+        this.settings.spawnTimer = Interval;
         this.save();
     }
 
@@ -552,7 +570,7 @@ public class Game {
     }
 
     public void setJackpot(boolean Jackpot) {
-        this.settings.Jackpot = Jackpot;
+        this.settings.hasJackpot = Jackpot;
         this.save();
     }
 
@@ -621,11 +639,12 @@ public class Game {
         }
 
         this.cooldown.remove(player.getUniqueId());
+
         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
         e.getPlayer().sendMessage(Config.AppConfig.PREFIX + Translator.MANAGER_TICKETUSE_SUCCESS);
         e.setUseItemInHand(Event.Result.DENY);
         player.getInventory().removeItem(Config.Game.TICKET);
-
+        this.cooldown.remove(player.getUniqueId());
     }
 
     private void actionbarParse(UUID player, String text) {
@@ -694,7 +713,7 @@ public class Game {
             this.game.Streak = 0;
             this.game.player.playSound(game.player.getLocation(), Config.Game.MISSSOUND, 1, 1);
             this.game.player.sendMessage(Config.AppConfig.PREFIX + Translator.GAME_MOLEMISSED.Format(this));
-            if (this.getRunning().missed >= this.settings.maxMissed) {
+            if (this.getRunning().missed >= this.settings.missCount) {
                 this.Stop();
             }
         }
@@ -710,8 +729,8 @@ public class Game {
                 double Speed = 1 / (this.game.moleSpeed * 10);
                 int DROP = random.nextInt(100);
                 if (DROP <= this.game.spawnChance) {
-                    if (this.settings.Jackpot) {
-                        if (DROP <= this.settings.jackpotSpawn) {
+                    if (this.settings.hasJackpot) {
+                        if (DROP <= this.settings.jackpotSpawnChance) {
                             this.grid.spawnRandomEntity(MoleType.Jackpot, Speed, this.settings.spawnRotation);
                         } else {
                             this.grid.spawnRandomEntity(MoleType.Mole, Speed, this.settings.spawnRotation);

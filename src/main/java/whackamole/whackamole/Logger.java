@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 
+
 public final class Logger {
     public static String Prefix;
 
@@ -15,7 +16,12 @@ public final class Logger {
     }
 
     private static void sendConsoleMessage(String message) {
-        Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "[" + Logger.Prefix + "] " + message);
+        try {
+            Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "[" + Logger.Prefix + "] " + message);
+        } catch (Exception e) { 
+            // * Primarily for testing purposes, or when it fails to load in Bukkit
+            System.out.println(message);
+        }
     }
 
     public static void info(String message) {

@@ -1,95 +1,56 @@
 package whackamole.whackamole.DB;
 
-import java.sql.SQLException;
 import java.util.List;
 
+import org.bukkit.World;
+
 import whackamole.whackamole.Game;
-import whackamole.whackamole.Logger;
+import whackamole.whackamole.DB.Model.Column;
+import whackamole.whackamole.DB.Model.Table;
 
-public class GameDB implements Table {
-    private SQLite sql;
-
+public class GameDB extends Table<GameRow> {
     public GameDB(SQLite sql) {
-        this.sql = sql;
+        super(sql, "Game", new Column<?>[] {
+            new Column<>("ID",                  Integer.class).IsPrimaryKey(true).IsUnique(true).AllowNull(false).HasAutoIncrement(true),
+            new Column<>("Name",                String.class).AllowNull(false),
+            new Column<>("worldName",           String.class),
+            new Column<>("spawnDirection",      String.class).Default("NORTH"),
+            new Column<>("hasJackpot",          Boolean.class).Default(true),
+            new Column<>("jackpotSpawnChance",  Integer.class).Default(1),
+            new Column<>("missCount",           Integer.class).Default(3),
+            new Column<>("scorePoints",         Integer.class).Default(1),
+            new Column<>("spawnTimer",          Double.class).Default((double) 1),
+            new Column<>("spawnChance",         Double.class).Default((double) 100),
+            new Column<>("moleSpeed",           Double.class).Default((double) 2),
+            new Column<>("difficultyScale",     Double.class).Default((double) 10),
+            new Column<>("difficultyScore",     Integer.class).Default(1),
+            new Column<>("Cooldown",            Long.class).Default(86400000L),
+            new Column<>("moleHead",            String.class).Default("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxMjUwM2Q2MWM0OWY3MDFmZWU4NjdkNzkzZjFkY2M1MjJlNGQ3YzVjNDFhNjhmMjk1MTU3OWYyNGU3Y2IyYSJ9fX0="),
+            new Column<>("jackpotHead",         String.class).Default("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlkZGZiMDNjOGY3Zjc4MDA5YjgzNDRiNzgzMGY0YTg0MThmYTRiYzBlYjMzN2EzMzA1OGFiYjdhMDVlOTNlMSJ9fX0="),
+        }, GameRow.class);
+    }
+  
+    public List<GameRow> Select(World world) {
+        return this.Select("worldName = ?", world.getName());
+    }
+  
+    public List<GameRow> Select(int GameID) {
+        return this.Select("ID = ?", GameID);
     }
 
-    public void Create() {
-        var query = """
-                CREATE TABLE IF NOT EXISTS Game (
-                    ID INTEGER NOT NULL UNIQUE
-                ,   Name TEXT NOT NULL
-                ,   worldName TEXT
-                ,   spawnDirection TEXT DEFAULT 'NORTH'
-                ,   hasJackpot INTEGER DEFAULT 1
-                ,   jackpotSpawnChance INTEGER DEFAULT 1
-                ,   missCount INTEGER DEFAULT 3
-                ,   scorePoints INTEGER DEFAULT 1
-                ,   spawnTimer REAL DEFAULT 1
-                ,   spawnChance REAL DEFAULT 100
-                ,   moleSpeed REAL DEFAULT 2
-                ,   difficultyScale REAL DEFAULT 10
-                ,   difficultyScore INTEGER DEFAULT 1
-                ,   Cooldown INTEGER DEFAULT 86400000
-                ,   moleHead TEXT DEFAULT 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxMjUwM2Q2MWM0OWY3MDFmZWU4NjdkNzkzZjFkY2M1MjJlNGQ3YzVjNDFhNjhmMjk1MTU3OWYyNGU3Y2IyYSJ9fX0='
-                ,   jackpotHead TEXT DEFAULT 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlkZGZiMDNjOGY3Zjc4MDA5YjgzNDRiNzgzMGY0YTg0MThmYTRiYzBlYjMzN2EzMzA1OGFiYjdhMDVlOTNlMSJ9fX0='
-                ,   PRIMARY KEY(ID AUTOINCREMENT)
-                )""";
-        this.sql.executeUpdate(query);
+    public GameRow Insert(Game game) {
+        var row = game.getSettings();
+        return this.Insert(row);
     }
 
-    public List<GameRow> Select() {
-        var query = "SELECT * FROM Game";
-        return Row.SetToList(this.sql.executeQuery(query));
-    }
-    public List<GameRow> Select(String worldName) {
-        var query = "SELECT * FROM Game WHERE worldName = ?";
-        return Row.SetToList(this.sql.executeQuery(query, worldName));
-    }
-
-    public int Insert(Game game) {
-        return this.Insert(GameRow.fromClass(game));
-    }
-
-    public int Insert(Row row) {
-        var query = """
-            INSERT INTO Game (
-                    Name
-                ,   worldName
-                ,   spawnDirection
-            ) VALUES 
-            (?, ?, ?)
-        """;
-        this.sql.executeUpdate(query, row.insertSpread());
-        try {
-            var result = this.sql.executeQuery("SELECT last_insert_rowid()");
-            return result.getInt(1);
-        } catch (SQLException e) {
-            Logger.error(e.getMessage());
-            Logger.error(e.getStackTrace().toString());
-            return -1;
-        }
-    }
     public void Update(Game game) {
-        this.Update(GameRow.fromClass(game));
+        var row = game.getSettings();
+        this.Update(row);
     }
-    public void Update(Row row) {
-        var query = """
-                UPDATE Game 
-                SET spawnDirection      = ?
-                ,   hasJackpot          = ?
-                ,   jackpotSpawnChance  = ?
-                ,   missCount           = ?
-                ,   scorePoints         = ?
-                ,   spawnTimer          = ?
-                ,   spawnChance         = ?
-                ,   moleSpeed           = ?
-                ,   difficultyScale     = ?
-                ,   difficultyScore     = ?
-                ,   Cooldown            = ?
-                ,   moleHead            = ?
-                ,   jackpotHead         = ?
-                WHERE ID = ?
-                """;
-        this.sql.executeUpdate(query, row.updateSpread());
+  
+    public void Delete(int gameID) {
+        var row = new GameRow();
+        row.ID = gameID;
+        this.Delete(row);
     }
 }

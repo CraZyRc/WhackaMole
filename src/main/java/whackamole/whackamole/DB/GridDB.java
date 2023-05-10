@@ -1,72 +1,51 @@
 package whackamole.whackamole.DB;
 
 import org.bukkit.block.Block;
-import whackamole.whackamole.Game;
 import whackamole.whackamole.Grid;
-import whackamole.whackamole.Logger;
 
-import java.sql.SQLException;
+import whackamole.whackamole.DB.Model.Table;
+import whackamole.whackamole.DB.Model.Column;
+
+import java.util.ArrayList;
 import java.util.List;
 
-public class GridDB implements Table {
-    private SQLite sql;
+public class GridDB extends Table<GridRow> {
 
     public GridDB(SQLite sql) {
-        this.sql = sql;
-    }
-
-    public void Create() {
-        var query = """
-                CREATE TABLE IF NOT EXISTS Grid (
-                    gameID INTEGER NOT NULL
-                ,   X INTEGER NOT NULL
-                ,   Y INTEGER NOT NULL
-                ,   Z INTEGER NOT NULL
-                )""";
-        this.sql.executeUpdate(query);
-    }
-
-    public List<GridRow> Select() {
-        var query = "SELECT * FROM Grid";
-        return Row.SetToList(this.sql.executeQuery(query));
+        super(sql, "Grid", new Column<?>[] {
+            new Column<>("gameID", Integer.class).AllowNull(false),
+            new Column<>("X", Integer.class).AllowNull(false),
+            new Column<>("Y", Integer.class).AllowNull(false),
+            new Column<>("Z", Integer.class).AllowNull(false),
+        }, GridRow.class);
     }
 
 
-    public void Insert(Grid grid, int gameID) {
+    public List<GridRow> Select(int gameID) {
+        return this.Select("gameID = ?", gameID);
+    }
 
+    public List<GridRow> Insert(Grid grid, int gameID) {
+        List<GridRow> rowList = new ArrayList<>();
         for (Block block : grid.grid) {
-            this.Insert(GridRow.fromClass(block, gameID));
+            rowList.add(this.Insert(block, gameID));
         }
+        return rowList;
     }
 
-    public int Insert(Row row) {
-        var query = """
-            INSERT INTO Grid (
-                    gameID
-                ,   X
-                ,   Y
-                ,   Z
-            ) VALUES 
-            (?, ?, ?, ?)
-        """;
-        this.sql.executeUpdate(query, row.insertSpread());
-        try {
-            var result = this.sql.executeQuery("SELECT last_insert_rowid()");
-            return result.getInt(1);
-        } catch (SQLException e) {
-            Logger.error(e.getMessage());
-            Logger.error(e.getStackTrace().toString());
-            return -1;
-        }
+    public GridRow Insert(Block block, int gameID) {
+        var row = new GridRow();
+        row.gameID = gameID;
+        row.X = block.getX();
+        row.Y = block.getY();
+        row.Z = block.getZ();
+        return this.Insert(row);
     }
-    public void Update(Row row) {
-        var query = """
-                UPDATE Grid 
-                SET X = ?
-                ,   Y = ?
-                ,   Z = ?
-                WHERE gameID = ?
-                """;
-        this.sql.executeUpdate(query, row.updateSpread());
+
+    public void Delete(int gameID) {
+        this.Delete("GameID = ?", gameID);
+    }
+    public void Delete(GridRow row) {
+        this.Delete("GameID = ? AND X = ? AND Y = ? AND Z = ?", row.gameID, row.X, row.Y, row.Z);
     }
 }

@@ -3,6 +3,7 @@ package whackamole.whackamole;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
 
 import org.bukkit.entity.Player;
 
@@ -157,9 +158,8 @@ public enum Translator {
         return Format(type, new Object[0]);
     }
     public static String Format(Translator type, Object... replacements) {
-        if(!typesToString(type.requiredTypes).equals(typesToString(replacements))) {
-            Logger.error("Translator format failed for " + type.key + ": " + typesToString(type.requiredTypes) + " | "+ typesToString(replacements));
-        }
+        assert typesToString(type.requiredTypes).equals(typesToString(replacements)) 
+            : "Translator format failed for " + type.key + ": " + typesToString(type.requiredTypes) + " | "+ typesToString(replacements); 
 
 
         type.formattedValue = type.value;
@@ -185,17 +185,17 @@ public enum Translator {
             this.formattedValue = this.formattedValue.replace("{Score}", String.valueOf(game.getRunning().score));
             this.formattedValue = this.formattedValue.replace("{missedMoles}", String.valueOf(game.getRunning().missed));
         }
-        this.formattedValue = this.formattedValue.replace("{gameName}", String.valueOf(game.name));
-        this.formattedValue = this.formattedValue.replace("{maxMissed}", String.valueOf(game.getSettings().maxMissed));
+        this.formattedValue = this.formattedValue.replace("{gameName}", String.valueOf(game.getName()));
+        this.formattedValue = this.formattedValue.replace("{maxMissed}", String.valueOf(game.getSettings().missCount));
     }
     private void Format(Player player) {
-        this.formattedValue = this.formattedValue.replace("{Player}", (player.getName()));
+        this.formattedValue = this.formattedValue.replace("{Player}", player.getName());
     }
     private void Format(YMLFile file) {
-        this.formattedValue = this.formattedValue.replace("{File}", (file.file.getName()));
+        this.formattedValue = this.formattedValue.replace("{File}", file.file.getName());
     }
     private void Format(String item) {
-        this.formattedValue = this.formattedValue.replaceFirst("\\{.*?\\}", item);
+        this.formattedValue = this.formattedValue.replaceFirst("\\{.*?\\}", Matcher.quoteReplacement(item));
     }   
     private void configFormat() {
         this.formattedValue = this.formattedValue

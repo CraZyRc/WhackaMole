@@ -1,11 +1,8 @@
 package whackamole.whackamole;
 
-import org.assertj.core.api.JUnitBDDSoftAssertions;
 import org.bukkit.entity.Player;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,45 +11,12 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Assert;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(MockitoExtension.class)
-public class TranslationTest {
-    static final JUnitBDDSoftAssertions  softly = new JUnitBDDSoftAssertions();
-
-    public static Game.GameRunner   gameRunnerMock = mock(Game.GameRunner.class);
-    public static Game.Settings     gameSettingsMock = mock(Game.Settings.class);
-    public static Game              gameMock = mock(Game.class);
-    public static Player            playerMock = mock(Player.class);
-    public static YMLFile           YMLfileMock = mock(YMLFile.class);
-    public static File              fileMock = mock(File.class);
-
-    @BeforeAll
-    public static void setupMocks() {
-        gameRunnerMock.missed = 0;
-        gameRunnerMock.score = 2;
-
-        gameSettingsMock.maxMissed = 3;
-        
-        when(gameMock.getRunning()).thenReturn(gameRunnerMock);
-        when(gameMock.getSettings()).thenReturn(gameSettingsMock);
-
-        when(playerMock.getName()).thenReturn("test player");
-
-        YMLfileMock.file = fileMock;
-        when(fileMock.getName()).thenReturn("test file");
-    }
-
-    @AfterEach
-    public void assertAll() {
-        softly.assertAll();
-    }
+public class TranslationTest extends TestBase{
 
     public static List<Locale> getLanguages() {
         List<Locale> languages = new ArrayList<Locale>();
@@ -129,10 +93,8 @@ public class TranslationTest {
 
     @Test
     public void NullParameterShouldFail() {
-        try (MockedStatic<Logger> logger = mockStatic(Logger.class)) {
-            softly.then(Translator.MANAGER_NAMEEXISTS.Format())
-            .as("name exists without parameters")
-            .isNotNull();
-        }
+        Assert.assertThrows(java.lang.AssertionError.class, () -> {
+            Translator.MANAGER_NAMEEXISTS.Format();
+        });
     }
 }

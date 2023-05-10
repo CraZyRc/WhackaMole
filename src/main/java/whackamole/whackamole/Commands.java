@@ -5,7 +5,6 @@ import dev.jorel.commandapi.IStringTooltip;
 import dev.jorel.commandapi.StringTooltip;
 import dev.jorel.commandapi.arguments.*;
 import org.bukkit.ChatColor;
-import whackamole.whackamole.DB.SQLite;
 
 import org.bukkit.block.BlockFace;
 
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class Commands {
-    private final SQLite SQL = SQLite.getInstance();
     private Econ econ = new Econ();
     public GamesManager manager = GamesManager.getInstance();
 
@@ -129,21 +127,22 @@ public class Commands {
                         .withArguments(gameNameArgument("Game"))
                         .executesPlayer((player, args) -> {
                             Game game = (Game) args[0];
+                            var settings = game.getSettings();
                             String line = ChatColor.YELLOW + "\n| ";
                             String outputString = ChatColor.YELLOW + "\n[>------------------------------------<]\n" +
-                                    "|" + ChatColor.WHITE + " Game: " + ChatColor.AQUA + game.name +
+                                    "|" + ChatColor.WHITE + " Game: " + ChatColor.AQUA + game.getName() +
                                     line +
-                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_DIRECTION            + ": " + ChatColor.AQUA + game.getSettings().spawnRotation +
-                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_JACKPOT              + ": " + ChatColor.AQUA + game.getSettings().Jackpot +
-                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE   + ": " + ChatColor.AQUA + game.getSettings().jackpotSpawn +
-                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_MAXMISSED            + ": " + ChatColor.AQUA + game.getSettings().maxMissed +
-                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_SCOREPOINTS          + ": " + ChatColor.AQUA + game.getSettings().pointsPerKill +
-                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_SPAWNRATE            + ": " + ChatColor.AQUA + game.getSettings().Interval +
-                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_SPAWNCHANCE          + ": " + ChatColor.AQUA + game.getSettings().spawnChance +
-                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_MOLESPEED            + ": " + ChatColor.AQUA + game.getSettings().moleSpeed +
-                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE      + ": " + ChatColor.AQUA + game.getSettings().difficultyScale +
-                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE   + ": " + ChatColor.AQUA + game.getSettings().difficultyScore +
-                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_COOLDOWN             + ": " + ChatColor.AQUA + game.getSettings().getCooldown() +
+                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_DIRECTION            + ": " + ChatColor.AQUA + settings.spawnRotation +
+                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_JACKPOT              + ": " + ChatColor.AQUA + settings.hasJackpot +
+                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE   + ": " + ChatColor.AQUA + settings.jackpotSpawnChance +
+                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_MAXMISSED            + ": " + ChatColor.AQUA + settings.missCount +
+                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_SCOREPOINTS          + ": " + ChatColor.AQUA + settings.scorePoints +
+                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_SPAWNRATE            + ": " + ChatColor.AQUA + settings.spawnTimer +
+                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_SPAWNCHANCE          + ": " + ChatColor.AQUA + settings.spawnChance +
+                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_MOLESPEED            + ": " + ChatColor.AQUA + settings.moleSpeed +
+                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE      + ": " + ChatColor.AQUA + settings.difficultyScale +
+                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE   + ": " + ChatColor.AQUA + settings.difficultyScore +
+                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_COOLDOWN             + ": " + ChatColor.AQUA + settings.getCooldown() +
                                     ChatColor.YELLOW + "\n| \n[>------------------------------------<]";
                             player.sendMessage(outputString);
 
@@ -245,10 +244,10 @@ public class Commands {
                 )
                 .register();
     }
-    public Argument gameNameArgument(String name) {
+    public Argument<Game> gameNameArgument(String name) {
         return new CustomArgument<>(new StringArgument(name), customArgumentInfo -> {
             for (Game game : this.manager.games) {
-                if (game.name.equals(customArgumentInfo.input())) {
+                if (game.getName().equals(customArgumentInfo.input())) {
                     return game;
                 }
             }
@@ -257,7 +256,7 @@ public class Commands {
         }).replaceSuggestions(ArgumentSuggestions.strings(S ->
                 (this.manager == null) ? List.of("").toArray(new String[0]) :
                         this.manager.games.stream()
-                                .map(object -> object.name)
+                                .map(object -> object.getName())
                                 .toList().toArray(new String[0])));
     }
     private List<Argument<?>> settingsArgument() {
