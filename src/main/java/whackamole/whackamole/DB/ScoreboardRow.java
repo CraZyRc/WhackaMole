@@ -7,12 +7,12 @@ import java.util.UUID;
 public class ScoreboardRow extends Row {
 
     public UUID playerID;
-    public Long Datetime;
+    public Long datetime;
 
     public int
         ID  
     ,   Score
-    ,   MolesHit
+    ,   molesHit
     ,   gameID
-    ,   ScoreStreak;
+    ,   scoreStreak;
 }

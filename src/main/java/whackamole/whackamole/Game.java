@@ -274,16 +274,29 @@ public class Game {
 
     public class Scoreboard {
 
-        private List<ScoreboardRow> scores = new ArrayList<>();
+        class Score extends ScoreboardRow {
+            public Player player;
+            private void onLoad() {
+                this.player = Bukkit.getPlayer(playerID);
+            }
+        }
+
+        private List<Score> scores = new ArrayList<>();
         private ScoreboardDB db = SQLite.getScoreboardDB();
 
         public void add(Player player, int score, int molesHit, int scoreStreak) {
             ScoreboardRow scoreItem = this.db.Insert(player.getUniqueId(), getID(), score, molesHit, scoreStreak);
-            this.scores.add(scoreItem);
+            this.scores.add((Score) scoreItem);
         }
 
         private void onLoad() {
-            this.scores = db.Select(getID());
+            this.scores.clear();
+            var dbScores = db.Select(getID());
+            for(var i : dbScores) {
+                Score score = (Score) i;
+                score.onLoad();
+                this.scores.add(score);
+            }
         }
         
         private void Delete() {
@@ -299,9 +312,9 @@ public class Game {
         public List<Score> getTop(int count, int scoreType) {
             count = Math.min(this.scores.size(), count);
             if (scoreType == 0) {
-                this.scores.sort((a, b) -> b.score - a.score);
+                this.scores.sort((a, b) -> b.Score - a.Score);
             } else if (scoreType == 1) {
-                this.scores.sort((a, b) -> b.highestStreak - a.highestStreak);
+                this.scores.sort((a, b) -> b.scoreStreak - a.scoreStreak);
             } else if (scoreType == 2) {
                 this.scores.sort((a, b) -> b.molesHit - a.molesHit);
             } else { Logger.error("getTop scoreType = " + scoreType + " unknown, please report this bug."); }

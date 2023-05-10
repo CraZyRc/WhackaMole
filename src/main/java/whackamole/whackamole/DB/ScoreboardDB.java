@@ -13,8 +13,8 @@ public class ScoreboardDB extends Table<ScoreboardRow> {
             new Column<>("playerID", UUID.class).AllowNull(false),
             new Column<>("gameID", Integer.class).AllowNull(false),
             new Column<>("Score", Integer.class).AllowNull(false),
-            new Column<>("MolesHit", Integer.class).AllowNull(false),
-            new Column<>("ScoreStreak", Integer.class).AllowNull(false),
+            new Column<>("molesHit", Integer.class).AllowNull(false),
+            new Column<>("scoreStreak", Integer.class).AllowNull(false),
             new Column<>("Datetime", Long.class).BuildInDefault("CURRENT_TIMESTAMP"),
         }, ScoreboardRow.class);
     }
@@ -34,8 +34,8 @@ public class ScoreboardDB extends Table<ScoreboardRow> {
         row.gameID = gameID;
         row.playerID = player;
         row.Score = score;
-        row.MolesHit = molesHit;
-        row.ScoreStreak = scoreStreak;
+        row.molesHit = molesHit;
+        row.scoreStreak = scoreStreak;
         return this.Insert(row);
     }
 

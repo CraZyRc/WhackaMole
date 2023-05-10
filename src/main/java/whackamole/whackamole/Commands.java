@@ -416,30 +416,30 @@ public class Commands {
             Game game = (Game) Info.previousArgs()[0];
             String line = ChatColor.YELLOW + "\n| ";
             StringBuilder outputString = new StringBuilder(ChatColor.YELLOW + "\n[>------------------------------------<]\n" +
-                    "|" + ChatColor.WHITE + " Game: " + ChatColor.AQUA + ChatColor.BOLD + game.name);
+                    "|" + ChatColor.WHITE + " Game: " + ChatColor.AQUA + ChatColor.BOLD + game.getName());
 
 
             switch (Info.input()) {
                 case "score" -> {
-                    List<Game.Scoreboard.Score> score = game.getScoreboard().getTop(0);
+                    var score = game.getScoreboard().getTop(0);
                     outputString.append(line).append(ChatColor.WHITE).append("Type: ").append(ChatColor.GOLD).append("Score").append(line);
                     for (int i = 0; i < score.size(); i++) {
-                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score.get(i).player.getDisplayName(), 100)).append(" : ").append(score.get(i).score);
+                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score.get(i).player.getDisplayName(), 100)).append(" : ").append(score.get(i).Score);
                     }
 
 
                 }
                 case "streak" -> {
-                    List<Game.Scoreboard.Score> score = game.getScoreboard().getTop(1);
+                    var score = game.getScoreboard().getTop(1);
                     outputString.append(line).append(ChatColor.WHITE).append("Type: ").append(ChatColor.GOLD).append("Streak").append(line);
                     for (int i = 0; i < score.size(); i++) {
-                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score.get(i).player.getDisplayName(), 100)).append(" : ").append(score.get(i).highestStreak);
+                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score.get(i).player.getDisplayName(), 100)).append(" : ").append(score.get(i).scoreStreak);
                     }
 
 
                 }
                 case "moles" -> {
-                    List<Game.Scoreboard.Score> score = game.getScoreboard().getTop(2);
+                    var score = game.getScoreboard().getTop(2);
                     outputString.append(line).append(ChatColor.WHITE).append("Type: ").append(ChatColor.GOLD).append("Moles").append(line);
                     for (int i = 0; i < score.size(); i++) {
                         outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score.get(i).player.getDisplayName(), 100)).append(" : ").append(score.get(i).molesHit);
