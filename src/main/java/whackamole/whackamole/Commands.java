@@ -256,7 +256,7 @@ public class Commands {
         }).replaceSuggestions(ArgumentSuggestions.strings(S ->
                 (this.manager == null) ? List.of("").toArray(new String[0]) :
                         this.manager.games.stream()
-                                .map(object -> object.getName())
+                                .map(Game::getName)
                                 .toList().toArray(new String[0])));
     }
     private List<Argument<?>> settingsArgument() {
@@ -442,7 +442,7 @@ public class Commands {
                     var score = game.getScoreboard().getTop(2);
                     outputString.append(line).append(ChatColor.WHITE).append("Type: ").append(ChatColor.GOLD).append("Moles").append(line);
                     for (int i = 0; i < score.size(); i++) {
-                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score.get(i).player.getDisplayName(), 100)).append(" : ").append(score.get(i).molesHit);
+                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score.get(i).player.getDisplayName(), 200)).append(" : ").append(score.get(i).molesHit);
                     }
                 }
             }
