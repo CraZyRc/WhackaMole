@@ -52,15 +52,16 @@ public class Updater {
     }
 
     /**
-     * Compares to version strings.
+     * Compares to version strings, if the compare version is newer its returns true.
+     * the versions strings are expacted to be a dot notated version, all non numeric characters will be removed and don't count in the comparison
      * 
      * @param currentVersion
      * @param compareVersion
      * @return True when the compare version is newer, else False
      */
     public static boolean versionCompare(String currentVersion, String compareVersion) {
-        int currentVersionNumber = Updater.versionToNumber(currentVersion);
-        int compareVersionNumber = Updater.versionToNumber(compareVersion);
+        int currentVersionNumber = Updater.versionToNumber(currentVersion.replaceAll("[A-Z]", ""));
+        int compareVersionNumber = Updater.versionToNumber(compareVersion.replaceAll("[A-Z]", ""));
         
         return currentVersionNumber < compareVersionNumber;
 

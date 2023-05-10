@@ -71,7 +71,7 @@ public class Config {
         private static void LoadConfig(YMLFile configFile) {
             ACTIONTEXT          = configFile.getString("Actionbar Message");
             HAMMER_ITEM         = configFile.getString("Hammer item");
-            HAMMERNAME          = Color(configFile.getString("Hammer Name"));
+            HAMMERNAME          = DefaultFontInfo.Color(configFile.getString("Hammer Name"));
 
             FIELD_MAX_SIZE      = configFile.getInt("Max playfield");
             FiELD_MARGIN_X      = configFile.getDouble("Field extension.width");
@@ -82,9 +82,6 @@ public class Config {
             MISSSOUND           = configFile.getSound("MissedSound");
 
             MOLEBLOCK           = configFile.getList("Blocklist");
-
-            MOLE_SKULL          = getSkull(configFile.getString("Mole Skin"));
-            JACKPOT_SKULL       = getSkull(configFile.getString("Jackpot Skin"));
 
             if (Material.getMaterial(HAMMER_ITEM) != null) {
                 PLAYER_AXE = new ItemStack(Material.valueOf(HAMMER_ITEM));
@@ -116,7 +113,7 @@ public class Config {
     }
 
     public static class Permissions {
-        public static String PERM_TICKET_USE, PERM_BUY, PERM_RELOAD, PERM_CREATE, PERM_REMOVE, PERM_SETTINGS, PERM_PLAY;
+        public static String PERM_TICKET_USE, PERM_BUY, PERM_RELOAD, PERM_CREATE, PERM_REMOVE, PERM_SETTINGS, PERM_PLAY, PERM_TOP;
 
         private static void LoadConfig(YMLFile configFile) {
             PERM_TICKET_USE     = "WAM." + configFile.getString("Play.Use Reset Ticket");
@@ -126,6 +123,7 @@ public class Config {
             PERM_RELOAD         = "WAM." + configFile.getString("Commands.Reload");
             PERM_CREATE         = "WAM." + configFile.getString("Commands.Create");
             PERM_REMOVE         = "WAM." + configFile.getString("Commands.Remove");
+            PERM_TOP            = "WAM." + configFile.getString("Commands.Top");
         }
     }
 
@@ -160,43 +158,5 @@ public class Config {
         Permissions.LoadConfig(ConfigFile);
 
         Loaded = true;
-    }
-
-    public static String Color(String message) {
-        Pattern pattern = Pattern.compile("#[a-fA-f0-9]{6}");
-        Matcher matcher = pattern.matcher(message);
-        while (matcher.find()) {
-            String hexCode = message.substring(matcher.start(), matcher.end());
-            String replaceSharp = hexCode.replace('#', 'x');
-
-            char[] ch = replaceSharp.toCharArray();
-            StringBuilder builder = new StringBuilder();
-            for (char c : ch) {
-                builder.append("&").append(c);
-            }
-
-            message = message.replace(hexCode, builder.toString());
-            matcher = pattern.matcher(message);
-        }
-        return ChatColor.translateAlternateColorCodes('&', message);
-    }
-
-    private static ItemStack getSkull(String url) {
-        ItemStack moleHead = new ItemStack(Material.PLAYER_HEAD);
-        if (url.isEmpty())
-            return moleHead;
-        SkullMeta moleMeta = (SkullMeta) moleHead.getItemMeta();
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-
-        profile.getProperties().put("textures", new Property("textures", url));
-        try {
-            Field profileField = moleMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(moleMeta, profile);
-        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        moleHead.setItemMeta(moleMeta);
-        return moleHead;
     }
 }

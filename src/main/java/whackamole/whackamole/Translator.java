@@ -61,6 +61,7 @@ public enum Translator {
     ,   GAME_CONFIG_DIFFICULTYSCALE                         ("Game.Config.difficultyScale")
     ,   GAME_CONFIG_DIFFICULTYINCREASE                      ("Game.Config.difficultyIncrease")
     ,   GAME_CONFIG_COOLDOWN                                ("Game.Config.Cooldown")
+    ,   GAME_CONFIG_MOLEHEAD                                ("Game.Config.moleHead")
     ,   GAME_CONFIG_ENDMESSAGE                              ("Game.Config.endMessage")
     ,   COMMANDS_TIPS_NAME                                  ("Commands.Tips.Name")
     ,   COMMANDS_TIPS_DIRECTION                             ("Commands.Tips.Direction")
@@ -74,6 +75,7 @@ public enum Translator {
     ,   COMMANDS_TIPS_DIFFICULTYSCALE                       ("Commands.Tips.difficultyScale")
     ,   COMMANDS_TIPS_DIFFICULTYINCREASE                    ("Commands.Tips.difficultyIncrease")
     ,   COMMANDS_TIPS_COOLDOWN                              ("Commands.Tips.Cooldown")
+    ,   COMMANDS_TIPS_MOLEHEAD                              ("Commands.Tips.moleHead")
     ,   COMMANDS_CREATE                                     ("Commands.Create")
     ,   COMMANDS_CREATE_SUCCESS                             ("Commands.Create.Success")
     ,   COMMANDS_REMOVE                                     ("Commands.Remove")
@@ -111,8 +113,13 @@ public enum Translator {
     ,   COMMANDS_SETTINGS_DIFFICULTYINCREASE_SUCCESS        ("Commands.Settings.difficultyIncrease.Success", String.class)
     ,   COMMANDS_SETTINGS_COOLDOWN                          ("Commands.Settings.Cooldown")
     ,   COMMANDS_SETTINGS_COOLDOWN_SUCCESS                  ("Commands.Settings.Cooldown.Success", String.class)
+    ,   COMMANDS_SETTINGS_MOLEHEAD                          ("Commands.Settings.moleHead")
+    ,   COMMANDS_SETTINGS_MOLEHEAD_SUCCESS                  ("Commands.Settings.moleHead.Success", String.class)
+    ,   COMMANDS_SETTINGS_JACKPOTHEAD                       ("Commands.Settings.jackpotHead")
+    ,   COMMANDS_SETTINGS_JACKPOTHEAD_SUCCESS               ("Commands.Settings.jackpotHead.Success", String.class)
     ,   COMMANDS_RELOAD                                     ("Commands.Reload")
     ,   COMMANDS_RELOAD_SUCCESS                             ("Commands.Reload.Success")
+    ,   COMMANDS_TOP                                        ("Commands.Top")
     ,   COMMANDS_ARGUMENTS_UNKNOWNGAMENAME                  ("Commands.Arguments.unknownGameName", String.class)
     ,   COMMANDS_ARGUMENTS_INVALIDSETTING                   ("Commands.Arguments.invalidSetting")
     ,   ECON_INVALIDECONOMY                                 ("Econ.invalidEconomy")
@@ -169,7 +176,7 @@ public enum Translator {
         for(String item : stringReplacements) {
             type.Format(item);
         }
-        return Config.Color(type.formattedValue);
+        return DefaultFontInfo.Color(type.formattedValue);
     }
 
 
@@ -203,7 +210,7 @@ public enum Translator {
         .replace("{commandBuy}",       "/wam " + COMMANDS_BUY);
     }
     public String toString() {
-        return Config.Color(this.value);
+        return DefaultFontInfo.Color(this.value);
     }
 
 

@@ -180,39 +180,45 @@ public class Game {
             this.load();
         }
 
+        @SuppressWarnings("deprecation")
         public void save() {
             List<String> header = Arrays.asList(
-                    "############################################################\n",
-                    "# ^------------------------------------------------------^ #\n",
-                    "# |                       GameFile                       | #\n",
-                    "# <------------------------------------------------------> #\n",
-                    "############################################################\n",
-                    "# " + Translator.GAME_CONFIG_FIRSTNOTE + "\n",
-                    "# " + Translator.GAME_CONFIG_SECONDNOTE + "\n",
-                    "# " + Translator.GAME_CONFIG_THIRDNOTE + "\n",
-                    "#\n",
-                    "#\n",
-                    "############################################################\n",
-                    "# ^------------------------------------------------------^ #\n",
-                    "# |                      Explanation                     | #\n",
-                    "# <------------------------------------------------------> #\n",
-                    "############################################################\n",
-                    "# " + Translator.GAME_CONFIG_NAME + "\n",
-                    "# " + Translator.GAME_CONFIG_DIRECTION + "\n",
-                    "# " + Translator.GAME_CONFIG_JACKPOT + "\n",
-                    "# " + Translator.GAME_CONFIG_JACKPOTSPAWN + "\n",
-                    "# " + Translator.GAME_CONFIG_GAMELOST + "\n",
-                    "# " + Translator.GAME_CONFIG_POINTSPERKILL + "\n",
-                    "# " + Translator.GAME_CONFIG_SPAWNRATE + "\n",
-                    "# " + Translator.GAME_CONFIG_SPAWNCHANCE + "\n",
-                    "# " + Translator.GAME_CONFIG_MOLESPEED + "\n",
-                    "# " + Translator.GAME_CONFIG_DIFFICULTYSCALE + "\n",
-                    "# " + Translator.GAME_CONFIG_DIFFICULTYINCREASE + "\n",
-                    "# " + Translator.GAME_CONFIG_COOLDOWN + "\n",
-                    "# " + Translator.GAME_CONFIG_ENDMESSAGE + "\n",
-                    "# \n");
+                    "###########################################################",
+                    " ^------------------------------------------------------^ #",
+                    " |                       GameFile                       | #",
+                    " <------------------------------------------------------> #",
+                    "###########################################################\n",
+                    Translator.GAME_CONFIG_FIRSTNOTE.toString(),
+                    Translator.GAME_CONFIG_SECONDNOTE.toString(),
+                    Translator.GAME_CONFIG_THIRDNOTE.toString(),
+                    "",
+                    "",
+                    "###########################################################",
+                    " ^------------------------------------------------------^ #",
+                    " |                      Explanation                     | #",
+                    " <------------------------------------------------------> #",
+                    "###########################################################\n",
+                    Translator.GAME_CONFIG_NAME.toString(),
+                    Translator.GAME_CONFIG_DIRECTION.toString(),
+                    Translator.GAME_CONFIG_JACKPOT.toString(),
+                    Translator.GAME_CONFIG_JACKPOTSPAWN.toString(),
+                    Translator.GAME_CONFIG_GAMELOST.toString(),
+                    Translator.GAME_CONFIG_POINTSPERKILL.toString(),
+                    Translator.GAME_CONFIG_SPAWNRATE.toString(),
+                    Translator.GAME_CONFIG_SPAWNCHANCE.toString(),
+                    Translator.GAME_CONFIG_MOLESPEED.toString(),
+                    Translator.GAME_CONFIG_DIFFICULTYSCALE.toString(),
+                    Translator.GAME_CONFIG_DIFFICULTYINCREASE.toString(),
+                    Translator.GAME_CONFIG_COOLDOWN.toString(),
+                    Translator.GAME_CONFIG_MOLEHEAD.toString(),
+                    Translator.GAME_CONFIG_ENDMESSAGE.toString(),
+                    "\n");
 
-            this.gameConfig.FileConfig.options().header(header.toString());
+            if (Updater.versionCompare(Bukkit.getBukkitVersion().split("-")[0], "1.17.2")) {
+                this.gameConfig.FileConfig.options().header(String.join("", header.stream().map(o -> String.format("# %s\n", o)).toList()));
+            } else {
+                this.gameConfig.FileConfig.options().setHeader(header);
+            }
 
             this.gameConfig.set("Properties.ID", getID());
             this.gameConfig.set("Properties.Name", getName());
@@ -227,12 +233,13 @@ public class Game {
             this.gameConfig.set("Properties.Difficulty scaling", Game.this.settings.difficultyScale);
             this.gameConfig.set("Properties.Difficulty increase", Game.this.settings.difficultyScore);
             this.gameConfig.set("Properties.Cooldown", Game.this.cooldown.formatSetCooldown(Game.this.settings.Cooldown));
+            this.gameConfig.set("Properties.moleHead", Game.this.settings.moleHead);
+            this.gameConfig.set("Properties.jackpotHead", Game.this.settings.jackpotHead);
             this.gameConfig.set("Field Data.World", Game.this.grid.world.getName());
             this.gameConfig.set("Field Data.Grid", Game.this.grid.Serialize());
             try {
                 this.gameConfig.save();
-            } catch (Exception ignored) {
-            }
+            } catch (Exception ignored) { }
         }
 
         public void load() {
@@ -255,7 +262,8 @@ public class Game {
             Game.this.grid = Grid.Deserialize(Game.this.settings.world, this.gameConfig.getList("Field Data.Grid"));
             Game.this.grid.Delete(getID());
             Game.this.grid.Save(getID());
-
+            Game.this.grid.setSettings(settings);
+            
             Logger.success(Translator.GAME_LOADSUCCESS.Format(Game.this));
         }
 
@@ -284,14 +292,19 @@ public class Game {
             }
         }
 
-        public List<ScoreboardRow> getTop() {
-            return getTop(10);
+        public List<Score> getTop(int scoreType) {
+            return getTop(10, scoreType);
         }
 
-        public List<ScoreboardRow> getTop(int count) {
-            this.scores.sort((a, b) -> {
-                return a.Score - b.Score;
-            });
+        public List<Score> getTop(int count, int scoreType) {
+            count = Math.min(this.scores.size(), count);
+            if (scoreType == 0) {
+                this.scores.sort((a, b) -> b.score - a.score);
+            } else if (scoreType == 1) {
+                this.scores.sort((a, b) -> b.highestStreak - a.highestStreak);
+            } else if (scoreType == 2) {
+                this.scores.sort((a, b) -> b.molesHit - a.molesHit);
+            } else { Logger.error("getTop scoreType = " + scoreType + " unknown, please report this bug."); }
             return this.scores.subList(0, count);
         }
     }
@@ -447,7 +460,8 @@ public class Game {
 
         this.grid = grid;
         this.grid.Save(getID());
-
+        this.grid.setSettings(settings);
+      
         if (Config.Game.ENABLE_GAMECONFIG) {
             this.gameFile = new GameFile();
         }
@@ -513,6 +527,8 @@ public class Game {
         return this.settings;
     }
 
+    public Scoreboard getScoreboard() { return this.scoreboard;}
+
     public void setJackpotSpawn(int jackpotSpawn) {
         this.settings.jackpotSpawnChance = jackpotSpawn;
         this.save();
@@ -563,6 +579,16 @@ public class Game {
         this.save();
     }
 
+    public void setMoleHead(String moleHead) {
+        this.settings.moleHead = moleHead;
+        this.save();
+    }
+
+    public void setJackpotHead(String jackpotHead) {
+        this.settings.jackpotHead = jackpotHead;
+        this.save();
+    }
+
     public void setSpawnRotation(BlockFace spawnRotation) {
         this.settings.spawnRotation = spawnRotation;
         this.save();
@@ -581,8 +607,8 @@ public class Game {
 
         // * Player walks on grid
         if (playerOnGrid && !currentyOnGird.contains(player.getUniqueId())) {
-            currentyOnGird.add(player.getUniqueId());
             this.Start(player);
+            currentyOnGird.add(player.getUniqueId());
             this.cooldown.walkOnGridHook(player);
             return playerOnGrid;
         }
@@ -611,7 +637,9 @@ public class Game {
             e.setCancelled(true);
             return;
         }
-        
+
+        this.cooldown.remove(player.getUniqueId());
+
         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
         e.getPlayer().sendMessage(Config.AppConfig.PREFIX + Translator.MANAGER_TICKETUSE_SUCCESS);
         e.setUseItemInHand(Event.Result.DENY);
@@ -644,12 +672,12 @@ public class Game {
 
     public void updateActionBar() {
         if (Game.this.getRunning() != null) {
-            this.actionbarParse(this.game.player.getUniqueId(), ComponentSerializer.parse(Config.Game.ACTIONTEXT), Config.Color("&2&l ") + this.game.score);
+            this.actionbarParse(this.game.player.getUniqueId(), ComponentSerializer.parse(Config.Game.ACTIONTEXT), DefaultFontInfo.Color("&2&l ") + this.game.score);
         }
         for (UUID player : this.currentyOnGird) {
             if (this.cooldown.contains(player))
                 this.actionbarParse(player, Translator.GAME_ACTIONBAR_GAMEOVER, this.cooldown.getText(player));
-            else if (Bukkit.getPlayer(player).getInventory().firstEmpty() != -1)
+            else if (Bukkit.getPlayer(player).getInventory().firstEmpty() != -1 && Game.this.getRunning() == null)
                 this.actionbarParse(player, Translator.GAME_ACTIONBAR_RESTART.Format());
         }
     }
