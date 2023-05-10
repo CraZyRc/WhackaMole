@@ -1,13 +1,11 @@
 package whackamole.whackamole;
 
-import org.apache.commons.lang3.compare.ObjectToStringComparator;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class Updater {
@@ -44,7 +42,7 @@ public class Updater {
             return out;
         }
         
-        String[] versionList = version.split("[.]", 0);
+        String[] versionList = version.split("\\d[.]", 0);
         for (var i = versionList.length -1 ; i >= 0; i--) {
             out += Integer.parseInt(versionList[i]) << (8* (versionList.length - i));
         }
@@ -54,15 +52,16 @@ public class Updater {
     }
 
     /**
-     * Compares to version strings.
+     * Compares to version strings, if the compare version is newer its returns true.
+     * the versions strings are expacted to be a dot notated version, all non numeric characters will be removed and don't count in the comparison
      * 
      * @param currentVersion
      * @param compareVersion
      * @return True when the compare version is newer, else False
      */
     public static boolean versionCompare(String currentVersion, String compareVersion) {
-        int currentVersionNumber = Updater.versionToNumber(currentVersion);
-        int compareVersionNumber = Updater.versionToNumber(compareVersion);
+        int currentVersionNumber = Updater.versionToNumber(currentVersion.replaceAll("[A-Z]", ""));
+        int compareVersionNumber = Updater.versionToNumber(compareVersion.replaceAll("[A-Z]", ""));
         
         return currentVersionNumber < compareVersionNumber;
 

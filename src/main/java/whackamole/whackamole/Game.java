@@ -21,13 +21,10 @@ import org.bukkit.util.Vector;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import whackamole.whackamole.DB.*;
 import whackamole.whackamole.Mole.MoleState;
 import whackamole.whackamole.Mole.MoleType;
-
-import static org.bukkit.Bukkit.spigot;
 
 public class Game {
     public static final BlockFace[] Directions = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST,
@@ -152,6 +149,7 @@ public class Game {
             this.load();
         }
 
+        @SuppressWarnings("deprecation")
         public void save() {
             List<String> header = Arrays.asList(
                     "############################################################\n",
@@ -184,7 +182,11 @@ public class Game {
                     "# " + Translator.GAME_CONFIG_ENDMESSAGE + "\n",
                     "# \n");
 
-            this.gameConfig.FileConfig.options().header(header.toString());
+            if (Updater.versionCompare(Bukkit.getBukkitVersion().split("-")[0], "1.17.2")) {
+                this.gameConfig.FileConfig.options().header(header.stream().map(o -> String.format("# %s\n", o)).toString());
+            } else {
+                this.gameConfig.FileConfig.options().setHeader(header);
+            }
 
             this.gameConfig.set("Properties.Name", Game.this.name);
             this.gameConfig.set("Properties.Direction", Game.this.settings.spawnRotation.name());
