@@ -162,8 +162,7 @@ public class Game {
         }
 
         private void Delete() {
-            if (this.ID != -1) 
-            gameDB.Delete(this);
+            if (this.ID != -1) gameDB.Delete(this);
         }
     }
 
@@ -285,8 +284,15 @@ public class Game {
         private ScoreboardDB db = SQLite.getScoreboardDB();
 
         public void add(Player player, int score, int molesHit, int scoreStreak) {
-            ScoreboardRow scoreItem = this.db.Insert(player.getUniqueId(), getID(), score, molesHit, scoreStreak);
-            this.scores.add((Score) scoreItem);
+            var scoreItem = new Score();
+            scoreItem.Score = score;
+            scoreItem.molesHit = molesHit;
+            scoreItem.scoreStreak = scoreStreak;
+            scoreItem.player = player;
+            scoreItem.gameID = getID();
+            scoreItem.playerID = player.getUniqueId();
+            this.db.Insert(scoreItem);
+            this.scores.add(scoreItem);
         }
 
         private void onLoad() {

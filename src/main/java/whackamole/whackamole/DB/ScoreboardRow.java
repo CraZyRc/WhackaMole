@@ -7,7 +7,7 @@ import java.util.UUID;
 public class ScoreboardRow extends Row {
 
     public UUID playerID;
-    public Long datetime;
+    public Long Datetime;
 
     public int
         ID  
