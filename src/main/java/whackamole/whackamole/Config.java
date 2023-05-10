@@ -83,9 +83,6 @@ public class Config {
 
             MOLEBLOCK           = configFile.getList("Blocklist");
 
-            MOLE_SKULL          = getSkull(configFile.getString("Mole Skin"));
-            JACKPOT_SKULL       = getSkull(configFile.getString("Jackpot Skin"));
-
             if (Material.getMaterial(HAMMER_ITEM) != null) {
                 PLAYER_AXE = new ItemStack(Material.valueOf(HAMMER_ITEM));
                 ItemMeta axeMeta = PLAYER_AXE.getItemMeta();
@@ -161,26 +158,5 @@ public class Config {
         Permissions.LoadConfig(ConfigFile);
 
         Loaded = true;
-    }
-
-
-
-    private static ItemStack getSkull(String url) {
-        ItemStack moleHead = new ItemStack(Material.PLAYER_HEAD);
-        if (url.isEmpty())
-            return moleHead;
-        SkullMeta moleMeta = (SkullMeta) moleHead.getItemMeta();
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-
-        profile.getProperties().put("textures", new Property("textures", url));
-        try {
-            Field profileField = moleMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(moleMeta, profile);
-        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        moleHead.setItemMeta(moleMeta);
-        return moleHead;
     }
 }

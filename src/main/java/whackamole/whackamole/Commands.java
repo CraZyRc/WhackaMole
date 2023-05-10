@@ -4,9 +4,7 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.IStringTooltip;
 import dev.jorel.commandapi.StringTooltip;
 import dev.jorel.commandapi.arguments.*;
-import net.minecraft.commands.arguments.ArgumentEntity;
 import org.bukkit.ChatColor;
-import org.bukkit.scoreboard.Score;
 import whackamole.whackamole.DB.SQLite;
 
 import org.bukkit.block.BlockFace;
@@ -35,6 +33,7 @@ public class Commands {
     String diffScaleTip     = String.valueOf(Translator.COMMANDS_TIPS_DIFFICULTYSCALE);
     String diffIncreaseTip  = String.valueOf(Translator.COMMANDS_TIPS_DIFFICULTYINCREASE);
     String cooldownTip      = String.valueOf(Translator.COMMANDS_TIPS_COOLDOWN);
+    String moleHeadTip      = String.valueOf(Translator.COMMANDS_TIPS_MOLEHEAD);
     public Settings settingType = Settings.NULL;
     enum Settings {
         NULL,
@@ -48,7 +47,9 @@ public class Commands {
         MOLESPEED(Translator.COMMANDS_SETTINGS_MOLESPEED),
         DIFFICULTYSCALE(Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE),
         DIFFICULTYSCORE(Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE),
-        COOLDOWN(Translator.COMMANDS_SETTINGS_COOLDOWN);
+        COOLDOWN(Translator.COMMANDS_SETTINGS_COOLDOWN),
+        MOLEHEAD(Translator.COMMANDS_SETTINGS_MOLEHEAD),
+        JACKPOTHEAD(Translator.COMMANDS_SETTINGS_JACKPOTHEAD);
 
         Translator value;
         Settings() {}
@@ -210,6 +211,14 @@ public class Commands {
                                     game.setCooldown((String) args[2]);
                                     player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_COOLDOWN_SUCCESS.Format(args[2]));
                                 }
+                                case MOLEHEAD -> {
+                                    game.setMoleHead((String) args[2]);
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MOLEHEAD_SUCCESS.Format(args[2]));
+                                }
+                                case JACKPOTHEAD -> {
+                                    game.setJackpotHead((String) args[2]);
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTHEAD_SUCCESS.Format(args[2]));
+                                }
                             }
                         })
                 )
@@ -245,7 +254,7 @@ public class Commands {
             }
             String Arg = String.valueOf(new CustomArgument.MessageBuilder().appendArgInput());
             throw new CustomArgument.CustomArgumentException(new CustomArgument.MessageBuilder(Translator.COMMANDS_ARGUMENTS_UNKNOWNGAMENAME.Format(Arg)));
-        }).replaceSuggestions(ArgumentSuggestions.strings(
+        }).replaceSuggestions(ArgumentSuggestions.strings(S ->
                 (this.manager == null) ? List.of("").toArray(new String[0]) :
                         this.manager.games.stream()
                                 .map(object -> object.name)
@@ -265,9 +274,23 @@ public class Commands {
             if (Settings.DIFFICULTYSCALE.toString().equals(Info.input()))           return Settings.DIFFICULTYSCALE;
             if (Settings.DIFFICULTYSCORE.toString().equals(Info.input()))           return Settings.DIFFICULTYSCORE;
             if (Settings.COOLDOWN.toString().equals(Info.input()))                  return Settings.COOLDOWN;
+            if (Settings.MOLEHEAD.toString().equals(Info.input()))                  return Settings.MOLEHEAD;
+            if (Settings.JACKPOTHEAD.toString().equals(Info.input()))               return Settings.JACKPOTHEAD;
             return Settings.NULL;
 
-        }).replaceSuggestions(ArgumentSuggestions.strings(String.valueOf(Translator.COMMANDS_SETTINGS_DIRECTION), String.valueOf(Translator.COMMANDS_SETTINGS_JACKPOT), String.valueOf(Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE), String.valueOf(Translator.COMMANDS_SETTINGS_MAXMISSED), String.valueOf(Translator.COMMANDS_SETTINGS_SCOREPOINTS), String.valueOf(Translator.COMMANDS_SETTINGS_SPAWNRATE), String.valueOf(Translator.COMMANDS_SETTINGS_SPAWNCHANCE), String.valueOf(Translator.COMMANDS_SETTINGS_MOLESPEED), String.valueOf(Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE), String.valueOf(Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE), String.valueOf(Translator.COMMANDS_SETTINGS_COOLDOWN)
+        }).replaceSuggestions(ArgumentSuggestions.strings(String.valueOf(Translator.COMMANDS_SETTINGS_DIRECTION)
+                , String.valueOf(Translator.COMMANDS_SETTINGS_JACKPOT)
+                , String.valueOf(Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE)
+                , String.valueOf(Translator.COMMANDS_SETTINGS_MAXMISSED)
+                , String.valueOf(Translator.COMMANDS_SETTINGS_SCOREPOINTS)
+                , String.valueOf(Translator.COMMANDS_SETTINGS_SPAWNRATE)
+                , String.valueOf(Translator.COMMANDS_SETTINGS_SPAWNCHANCE)
+                , String.valueOf(Translator.COMMANDS_SETTINGS_MOLESPEED)
+                , String.valueOf(Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE)
+                , String.valueOf(Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE)
+                , String.valueOf(Translator.COMMANDS_SETTINGS_COOLDOWN)
+                , String.valueOf(Translator.COMMANDS_SETTINGS_MOLEHEAD)
+                , String.valueOf(Translator.COMMANDS_SETTINGS_JACKPOTHEAD)
         )));
 
         arguments.add(new TextArgument("settingValue").replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(info -> {
@@ -363,6 +386,22 @@ public class Commands {
                         StringTooltip.ofString("\"00:30:00\"",      this.cooldownTip),
                         StringTooltip.ofString("\"00:10:00\"",      this.cooldownTip),
                         StringTooltip.ofString("\"00:00:10\"",      this.cooldownTip)
+                    };
+                }
+                case MOLEHEAD -> {
+                    return new IStringTooltip[] {
+                            StringTooltip.ofString("\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzIwNjczYTdhNTUyZmFjMDk0NjYxYjgzOGI3NWZiN2FiMTIwMGU2OTFkZTdiZWVjMGE4NDZhOWU5NzgxMDU4ZCJ9fX0=\"",      this.moleHeadTip),
+                            StringTooltip.ofString("\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzU4NGIzZjEwZGE2M2QzZDVhYTVlZTBhM2NjZDA1NmJlMjhkM2NlYWY3Mjk1YjJiMDdjOTc1ODQ2MTI0MWVjMiJ9fX0=\"",      this.moleHeadTip),
+                            StringTooltip.ofString("\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzFhMzU0NTlhNmI0ZjA3ZDhlNjBmMTE0YjU3ZTZiNzZlOTBkOTljNmY1Mzg3OGVkYWUxOTUzZDRlZDM5NjM2In19fQ==\"",      this.moleHeadTip),
+                            StringTooltip.ofString("\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE5ZWM3MTIwOGJhZWQ0NTIzOGQyNGM0MzA2MTU5Nzc5ZWFiMTUyZGRmNGUyZGQwMzA1MDdiZDI4NjNlMjFlIn19fQ==\"",      this.moleHeadTip),
+                    };
+                }
+                case JACKPOTHEAD -> {
+                    return new IStringTooltip[] {
+                            StringTooltip.ofString("\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmY0NzgwY2EwZTZjMjMwOTBiZDE0OWMyYzM2ZTY0MDViMjVhZTdlYmY2NWI0ZGZlYjMxOTNiZjBlYzQ4ZGFiMyJ9fX0=\"",      this.moleHeadTip),
+                            StringTooltip.ofString("\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTUyZTU2MDI4OWNlM2JlZTBjYzIzNDQ0MjdhMjc2MWE0OGQ3ODM5ZTgyZGM1MDYxNzM5NzQ4NWM0ZGEwY2I1MCJ9fX0=\"",      this.moleHeadTip),
+                            StringTooltip.ofString("\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2JhNWFiNjlhYjBlZmMyZmE1ZGRhMjMzYTYzMThjNWRlYmE0NTQzYmE0NjM1YWIyMWY5YmEyM2Q1ODlkZWViMCJ9fX0=\"",      this.moleHeadTip),
+                            StringTooltip.ofString("\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjViMjVlMWIyNjdlZTQxOGMwM2FmZjk0OGQzNDhiOWI0ZDQ2MDNmOTYwY2QxMWIwYWRjZDYzMDk5ZTRhNTBmZCJ9fX0=\"",      this.moleHeadTip),
                     };
                 }
             }

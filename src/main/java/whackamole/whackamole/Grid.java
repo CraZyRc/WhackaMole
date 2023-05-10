@@ -31,6 +31,7 @@ public class Grid {
 
     public ArrayList<Block> grid;
     public World world;
+    private Game.Settings settings;
 
     public Grid() {
     }
@@ -116,7 +117,8 @@ public class Grid {
                 new Mole(
                         type,
                         (ArmorStand) this.world.spawnEntity(loc, EntityType.ARMOR_STAND),
-                        moleSpeed));
+                        moleSpeed,
+                        settings));
     }
 
     public void removeEntities() {
@@ -178,5 +180,8 @@ public class Grid {
                     (Integer) loc.get(2)));
         }
         return new Grid(world, grid);
+    }
+    public void setSettings(Game.Settings settings) {
+        this.settings = settings;
     }
 }

@@ -10,7 +10,9 @@ public class GameRow implements Row {
     public String
         Name
     ,   worldName
-    ,   spawnDirection;
+    ,   spawnDirection
+    ,   moleHead
+    ,   jackpotHead;
 
     public int
         ID
@@ -44,6 +46,8 @@ public class GameRow implements Row {
         item.difficultyScale    = set.getLong("difficultyScale");
         item.difficultyScore    = set.getInt("difficultyScore");
         item.Cooldown           = set.getLong("Cooldown");
+        item.moleHead           = set.getString("moleHead");
+        item.jackpotHead        = set.getString("jackpotHead");
 
         return item;
     }
@@ -59,37 +63,41 @@ public class GameRow implements Row {
     public Object[] updateSpread() {
         return new Object[] {
                 this.spawnDirection
-            ,   this.hasJackpot
-            ,   this.jackpotSpawnChance
-            ,   this.missCount
-            ,   this.scorePoints
-            ,   this.spawnTimer
-            ,   this.spawnChance
-            ,   this.moleSpeed
-            ,   this.difficultyScale
-            ,   this.difficultyScore
-            ,   this.Cooldown
-            ,   this.ID
+                ,   this.hasJackpot
+                ,   this.jackpotSpawnChance
+                ,   this.missCount
+                ,   this.scorePoints
+                ,   this.spawnTimer
+                ,   this.spawnChance
+                ,   this.moleSpeed
+                ,   this.difficultyScale
+                ,   this.difficultyScore
+                ,   this.Cooldown
+                ,   this.moleHead
+                ,   this.jackpotHead
+                ,   this.ID
         };
     }
 
     public static GameRow fromClass(Game game) {
         var item = new GameRow();
         var settings = game.getSettings();
-        item.ID = game.ID;
-        item.Name = game.name;
-        item.worldName = settings.world.getName();
-        item.spawnDirection = settings.spawnRotation.toString();
-        item.hasJackpot = settings.Jackpot ? 1 : 0;
-        item.jackpotSpawnChance = settings.jackpotSpawn;
-        item.missCount = settings.maxMissed;
-        item.scorePoints = settings.pointsPerKill;
-        item.difficultyScore = settings.difficultyScore;
-        item.Cooldown = settings.Cooldown;
-        item.spawnTimer = settings.Interval;
-        item.spawnChance = settings.spawnChance;
-        item.moleSpeed = settings.moleSpeed;
-        item.difficultyScale = settings.difficultyScale;
+        item.ID                     = game.ID;
+        item.Name                   = game.name;
+        item.worldName              = settings.world.getName();
+        item.spawnDirection         = settings.spawnRotation.toString();
+        item.hasJackpot             = settings.Jackpot ? 1 : 0;
+        item.jackpotSpawnChance     = settings.jackpotSpawn;
+        item.missCount              = settings.maxMissed;
+        item.scorePoints            = settings.pointsPerKill;
+        item.difficultyScore        = settings.difficultyScore;
+        item.Cooldown               = settings.Cooldown;
+        item.moleHead               = settings.moleHead;
+        item.jackpotHead            = settings.jackpotHead;
+        item.spawnTimer             = settings.Interval;
+        item.spawnChance            = settings.spawnChance;
+        item.moleSpeed              = settings.moleSpeed;
+        item.difficultyScale        = settings.difficultyScale;
 
         return item;
     }

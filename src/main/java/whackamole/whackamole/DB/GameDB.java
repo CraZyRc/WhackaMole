@@ -30,6 +30,8 @@ public class GameDB implements Table {
                 ,   difficultyScale REAL DEFAULT 10
                 ,   difficultyScore INTEGER DEFAULT 1
                 ,   Cooldown INTEGER DEFAULT 86400000
+                ,   moleHead TEXT DEFAULT 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxMjUwM2Q2MWM0OWY3MDFmZWU4NjdkNzkzZjFkY2M1MjJlNGQ3YzVjNDFhNjhmMjk1MTU3OWYyNGU3Y2IyYSJ9fX0='
+                ,   jackpotHead TEXT DEFAULT 'eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlkZGZiMDNjOGY3Zjc4MDA5YjgzNDRiNzgzMGY0YTg0MThmYTRiYzBlYjMzN2EzMzA1OGFiYjdhMDVlOTNlMSJ9fX0='
                 ,   PRIMARY KEY(ID AUTOINCREMENT)
                 )""";
         this.sql.executeUpdate(query);
@@ -73,17 +75,19 @@ public class GameDB implements Table {
     public void Update(Row row) {
         var query = """
                 UPDATE Game 
-                SET spawnDirection = ?
-                ,   hasJackpot = ?
-                ,   jackpotSpawnChance = ?
-                ,   missCount = ?
-                ,   scorePoints = ?
-                ,   spawnTimer = ?
-                ,   spawnChance = ?
-                ,   moleSpeed = ?
-                ,   difficultyScale = ?
-                ,   difficultyScore = ?
-                ,   Cooldown = ?
+                SET spawnDirection      = ?
+                ,   hasJackpot          = ?
+                ,   jackpotSpawnChance  = ?
+                ,   missCount           = ?
+                ,   scorePoints         = ?
+                ,   spawnTimer          = ?
+                ,   spawnChance         = ?
+                ,   moleSpeed           = ?
+                ,   difficultyScale     = ?
+                ,   difficultyScore     = ?
+                ,   Cooldown            = ?
+                ,   moleHead            = ?
+                ,   jackpotHead         = ?
                 WHERE ID = ?
                 """;
         this.sql.executeUpdate(query, row.updateSpread());
