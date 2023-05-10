@@ -1,10 +1,7 @@
 package whackamole.whackamole;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,9 +15,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.util.Vector;
 
 import net.md_5.bungee.api.ChatMessageType;
@@ -158,6 +153,7 @@ public class Game {
             this.load();
         }
 
+        @SuppressWarnings("deprecation")
         public void save() {
             List<String> header = Arrays.asList(
                     "###########################################################",
@@ -191,7 +187,11 @@ public class Game {
                     Translator.GAME_CONFIG_ENDMESSAGE.toString(),
                     "\n");
 
-            this.gameConfig.FileConfig.options().setHeader(header);
+            if (Updater.versionCompare(Bukkit.getBukkitVersion().split("-")[0], "1.17.2")) {
+                this.gameConfig.FileConfig.options().header(header.stream().map(o -> String.format("# %s\n", o)).toString());
+            } else {
+                this.gameConfig.FileConfig.options().setHeader(header);
+            }
 
             this.gameConfig.set("Properties.Name", Game.this.name);
             this.gameConfig.set("Properties.Direction", Game.this.settings.spawnRotation.name());
@@ -584,7 +584,6 @@ public class Game {
             this.Stop();
     }
 
-
     public boolean onGrid(Player player) {
         boolean playerOnGrid = this.grid.onGrid(player);
 
@@ -627,7 +626,6 @@ public class Game {
         e.setUseItemInHand(Event.Result.DENY);
         player.getInventory().removeItem(Config.Game.TICKET);
 
-
     }
 
     private void actionbarParse(UUID player, String text) {
@@ -664,8 +662,6 @@ public class Game {
                 this.actionbarParse(player, Translator.GAME_ACTIONBAR_RESTART.Format());
         }
     }
-
-
 
 
     public boolean handleHitEvent(EntityDamageByEntityEvent e) {
