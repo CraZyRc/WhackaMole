@@ -10,6 +10,8 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -150,6 +152,7 @@ public class Game {
         private void Setup(String name, Player player) {
             this.Name = name;
             this.spawnRotation = Directions[Math.round(player.getLocation().getYaw() / 45) & 0x7];
+            this.teleportLocation = player.getLocation().add(0,2,0);
             this.world = player.getWorld();
             this.Save();
         }
@@ -162,8 +165,7 @@ public class Game {
         }
 
         private void Delete() {
-            if (this.ID != -1) 
-            gameDB.Delete(this);
+            if (this.ID != -1) gameDB.Delete(this);
         }
     }
 
@@ -211,6 +213,8 @@ public class Game {
                     Translator.GAME_CONFIG_DIFFICULTYINCREASE.toString(),
                     Translator.GAME_CONFIG_COOLDOWN.toString(),
                     Translator.GAME_CONFIG_MOLEHEAD.toString(),
+                    Translator.GAME_CONFIG_TPLOCATION.toString(),
+                    Translator.GAME_CONFIG_SCORELOCATION.toString(),
                     Translator.GAME_CONFIG_ENDMESSAGE.toString(),
                     "\n");
 
@@ -235,6 +239,8 @@ public class Game {
             this.gameConfig.set("Properties.Cooldown", Game.this.cooldown.formatSetCooldown(Game.this.settings.Cooldown));
             this.gameConfig.set("Properties.moleHead", Game.this.settings.moleHead);
             this.gameConfig.set("Properties.jackpotHead", Game.this.settings.jackpotHead);
+            this.gameConfig.set("Properties.teleportLocation", Game.this.settings.teleportLocation);
+            this.gameConfig.set("Properties.scoreLocation", Game.this.settings.scoreLocation);
             this.gameConfig.set("Field Data.World", Game.this.grid.world.getName());
             this.gameConfig.set("Field Data.Grid", Game.this.grid.Serialize());
             try {
@@ -257,6 +263,8 @@ public class Game {
             Game.this.settings.difficultyScale = this.gameConfig.getDouble("Properties.Difficulty scaling");
             Game.this.settings.difficultyScore = this.gameConfig.getInt("Properties.Difficulty increase");
             Game.this.settings.Cooldown = cooldown.parseTime(this.gameConfig.getString("Properties.Cooldown"));
+            Game.this.settings.teleportLocation = this.gameConfig.FileConfig.getLocation("Properties.teleportLocation");
+            Game.this.settings.scoreLocation = this.gameConfig.FileConfig.getLocation("Properties.scoreLocation");
             Game.this.settings.Save();
             
             Game.this.grid = Grid.Deserialize(Game.this.settings.world, this.gameConfig.getList("Field Data.Grid"));
@@ -286,10 +294,16 @@ public class Game {
 
         public void add(Player player, int score, int molesHit, int scoreStreak) {
             ScoreboardRow scoreItem = this.db.Insert(player.getUniqueId(), getID(), score, molesHit, scoreStreak);
-            this.scores.add((Score) scoreItem);
+            try {
+                Score scoreObj = (Score) scoreItem;
+                scoreObj.onLoad();
+                this.scores.add(scoreObj);
+            } catch (Exception ignored) {
+                Logger.error(ignored.getMessage());
+            }
         }
 
-        private void onLoad() {
+        private void onLoad() { //! I don't think this actually does something...
             this.scores.clear();
             var dbScores = db.Select(getID());
             for(var i : dbScores) {
@@ -320,6 +334,29 @@ public class Game {
             } else { Logger.error("getTop scoreType = " + scoreType + " unknown, please report this bug."); }
             return this.scores.subList(0, count);
         }
+
+        private void showTop() {
+            Location spawnloc = settings.scoreLocation;
+            List<ArmorStand> scores = new ArrayList<>();
+            ArmorStand highScore = (ArmorStand) Objects.requireNonNull(Bukkit.getWorld(spawnloc.getWorld().getUID())).spawnEntity(spawnloc, EntityType.ARMOR_STAND);
+            ArmorStand Score = (ArmorStand) Objects.requireNonNull(Bukkit.getWorld(spawnloc.getWorld().getUID())).spawnEntity(spawnloc.subtract(0,0.25,0), EntityType.ARMOR_STAND);
+            ArmorStand Streak = (ArmorStand) Objects.requireNonNull(Bukkit.getWorld(spawnloc.getWorld().getUID())).spawnEntity(spawnloc.subtract(0,0.25,0), EntityType.ARMOR_STAND);
+            ArmorStand molesHit = (ArmorStand) Objects.requireNonNull(Bukkit.getWorld(spawnloc.getWorld().getUID())).spawnEntity(spawnloc.subtract(0,0.25,0), EntityType.ARMOR_STAND);
+            scores.add(highScore);
+            scores.add(Score);
+            scores.add(Streak);
+            scores.add(molesHit);
+            for (ArmorStand armorStand : scores) {
+                armorStand.setVisible(true);
+                armorStand.setCustomNameVisible(true);
+                armorStand.setGravity(false);
+                armorStand.setInvisible(true);
+            }
+            highScore.setCustomName(DefaultFontInfo.Color("&e&l[-> &6&lHigh scores &e&l<-]"));
+            Score.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lScore: &b" + getTop(1, 0) + " &e&l-]"));
+            Streak.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lStreaks: &b" + getTop(1, 1) + " &e&l-]"));
+            molesHit.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lMoles hit: &b" + getTop(1, 2) + " &e&l-]"));
+        }
     }
 
     public class GameRunner {
@@ -327,13 +364,14 @@ public class Game {
         public int score = 0, missed = 0, difficultyModifier = 0, molesHit = 0, highestStreak = 0, Streak = 0;
 
         public double moleSpeed = settings.moleSpeed, interval = settings.spawnTimer, spawnChance = settings.spawnChance;
+        public Location teleportLocation = settings.teleportLocation;
 
         public GameRunner() {
         }
 
         private boolean Start(Player player) {
             if (cooldown.contains(player)
-//                 || player.hasPermission(Config.Permissions.PERM_PLAY)
+                 || !player.hasPermission(Config.Permissions.PERM_PLAY)
             ) {
                 return false;
             }
@@ -429,7 +467,9 @@ public class Game {
                 }
                 playerLocation = playerLocation.add(moveVector);
             }
-            player.teleport(playerLocation);
+            if (this.teleportLocation == null) {
+                player.teleport(playerLocation);
+            } else player.teleport(this.teleportLocation);
             player.sendMessage(Config.AppConfig.PREFIX + Translator.MANAGER_ALREADYACTIVE);
         }
 
@@ -469,11 +509,13 @@ public class Game {
     }
 
     public Game(String name, Grid grid, Player player) {
+        this.settings.scoreLocation = grid.grid.get(1).getLocation().add(0,2,0);
         this.settings.Setup(formatName(name), player);
 
         this.grid = grid;
         this.grid.Save(getID());
         this.grid.setSettings(settings);
+        scoreboard.showTop();
       
         if (Config.Game.ENABLE_GAMECONFIG) {
             this.gameFile = new GameFile();
@@ -604,6 +646,14 @@ public class Game {
 
     public void setSpawnRotation(BlockFace spawnRotation) {
         this.settings.spawnRotation = spawnRotation;
+        this.save();
+    }
+    public void setTeleportLocation(World world, double X, double Y, double Z) {
+        this.settings.teleportLocation = new Location(world, X,Y,Z);
+        this.save();
+    }
+    public void setScoreLocation(World world, double X, double Y, double Z) {
+        this.settings.scoreLocation = new Location(world, X, Y, Z);
         this.save();
     }
 

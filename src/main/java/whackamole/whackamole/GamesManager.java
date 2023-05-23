@@ -205,7 +205,7 @@ public final class GamesManager implements Listener {
     @EventHandler
     public void blockBreak(BlockBreakEvent e) {
         for (Game game : this.games) {
-            if (game.inGrid(e.getBlock())) {
+            if (game.inGrid(e.getBlock()) || (game.getRunning() != null && e.getPlayer() == game.getRunning().player)) {
                 e.setCancelled(true);
             }
         }

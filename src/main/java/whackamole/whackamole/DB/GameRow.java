@@ -1,5 +1,6 @@
 package whackamole.whackamole.DB;
 
+import org.bukkit.Location;
 import whackamole.whackamole.DB.Model.Row;
 
 public class GameRow extends Row {
@@ -39,7 +40,7 @@ public class GameRow extends Row {
     public int ID = -1;
     
     /**
-     * The the change that a jackpot will spawn
+     * The change that a jackpot will spawn
      * Requires `hasJackpot` to be `true`
      */
     public int jackpotSpawnChance = 1;
@@ -75,9 +76,19 @@ public class GameRow extends Row {
     public double moleSpeed = 2;
     
     /**
-     * The percentage fomr 0 to 100 to decrease the mole speed and spawn speed
+     * The percentage from 0 to 100 to decrease the mole speed and spawn speed
      */
     public double difficultyScale = 10;
+
+    /**
+     * The location where players that aren't playing the game should be teleported to when trying to enter the active grid
+     */
+    public Location teleportLocation;
+
+    /**
+     * The location where the top scores will be displayed in hologram style
+     */
+    public Location scoreLocation;
 
     /**
      * The aomunt of miliseconds the player has to wait before they can play the game again.

@@ -14,6 +14,12 @@ public class GameDB extends Table<GameRow> {
             new Column<>("ID",                  Integer.class).IsPrimaryKey(true).IsUnique(true).AllowNull(false).HasAutoIncrement(true),
             new Column<>("Name",                String.class).AllowNull(false),
             new Column<>("worldName",           String.class),
+            new Column<>("tpLocX",              Double.class),
+            new Column<>("tpLocY",              Double.class),
+            new Column<>("tpLocZ",              Double.class),
+            new Column<>("scoreLocX",           Double.class).AllowNull(false),
+            new Column<>("scoreLocY",           Double.class).AllowNull(false),
+            new Column<>("scoreLocZ",           Double.class).AllowNull(false),
             new Column<>("spawnDirection",      String.class).Default("NORTH"),
             new Column<>("hasJackpot",          Boolean.class).Default(true),
             new Column<>("jackpotSpawnChance",  Integer.class).Default(1),
@@ -26,7 +32,7 @@ public class GameDB extends Table<GameRow> {
             new Column<>("difficultyScore",     Integer.class).Default(1),
             new Column<>("Cooldown",            Long.class).Default(86400000L),
             new Column<>("moleHead",            String.class).Default("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxMjUwM2Q2MWM0OWY3MDFmZWU4NjdkNzkzZjFkY2M1MjJlNGQ3YzVjNDFhNjhmMjk1MTU3OWYyNGU3Y2IyYSJ9fX0="),
-            new Column<>("jackpotHead",         String.class).Default("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlkZGZiMDNjOGY3Zjc4MDA5YjgzNDRiNzgzMGY0YTg0MThmYTRiYzBlYjMzN2EzMzA1OGFiYjdhMDVlOTNlMSJ9fX0="),
+            new Column<>("jackpotHead",         String.class).Default("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlkZGZiMDNjOGY3Zjc4MDA5YjgzNDRiNzgzMGY0YTg0MThmYTRiYzBlYjMzN2EzMzA1OGFiYjdhMDVlOTNlMSJ9fX0=")
         }, GameRow.class);
     }
   

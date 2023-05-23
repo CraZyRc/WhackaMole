@@ -66,7 +66,7 @@ public class Config {
 
         public static List<?> MOLEBLOCK;
 
-        public static ItemStack PLAYER_AXE, TICKET, MOLE_SKULL, JACKPOT_SKULL;
+        public static ItemStack PLAYER_AXE, TICKET;
 
         private static void LoadConfig(YMLFile configFile) {
             ACTIONTEXT          = configFile.getString("Actionbar Message");
@@ -113,7 +113,7 @@ public class Config {
     }
 
     public static class Permissions {
-        public static String PERM_TICKET_USE, PERM_BUY, PERM_RELOAD, PERM_CREATE, PERM_REMOVE, PERM_SETTINGS, PERM_PLAY, PERM_TOP;
+        public static String PERM_TICKET_USE, PERM_BUY, PERM_RELOAD, PERM_CREATE, PERM_REMOVE, PERM_SETTINGS, PERM_PLAY, PERM_POSITIONS, PERM_TOP;
 
         private static void LoadConfig(YMLFile configFile) {
             PERM_TICKET_USE     = "WAM." + configFile.getString("Play.Use Reset Ticket");
@@ -123,6 +123,7 @@ public class Config {
             PERM_RELOAD         = "WAM." + configFile.getString("Commands.Reload");
             PERM_CREATE         = "WAM." + configFile.getString("Commands.Create");
             PERM_REMOVE         = "WAM." + configFile.getString("Commands.Remove");
+            PERM_POSITIONS      = "WAM." + configFile.getString("Commands.Positions");
             PERM_TOP            = "WAM." + configFile.getString("Commands.Top");
         }
     }

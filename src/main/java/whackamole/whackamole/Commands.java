@@ -7,6 +7,7 @@ import dev.jorel.commandapi.arguments.*;
 import org.bukkit.ChatColor;
 
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -32,6 +33,9 @@ public class Commands {
     String diffIncreaseTip  = String.valueOf(Translator.COMMANDS_TIPS_DIFFICULTYINCREASE);
     String cooldownTip      = String.valueOf(Translator.COMMANDS_TIPS_COOLDOWN);
     String moleHeadTip      = String.valueOf(Translator.COMMANDS_TIPS_MOLEHEAD);
+    String highscoreTip     = String.valueOf(Translator.COMMANDS_TIPS_HIGHSCORE);
+    String teleportTip     = String.valueOf(Translator.COMMANDS_TIPS_TELEPORT);
+    String streakTip     = String.valueOf(Translator.COMMANDS_TIPS_STREAK);
     public Settings settingType = Settings.NULL;
     enum Settings {
         NULL,
@@ -220,6 +224,13 @@ public class Commands {
                                 }
                             }
                         })
+                )
+                .withSubcommand(new CommandAPICommand(String.valueOf(Translator.COMMANDS_POSITIONS))
+                        .withPermission(Config.Permissions.PERM_POSITIONS)
+                        .withArguments(positionsTypeArgument())
+                        .executes(((sender, args) -> {
+                            sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_POSITIONS_SUCCESS.Format( args[1]));
+                        }))
                 )
                 .withSubcommand(new CommandAPICommand(String.valueOf(Translator.COMMANDS_RELOAD))
                         .withPermission(Config.Permissions.PERM_RELOAD)
@@ -424,7 +435,8 @@ public class Commands {
                     var score = game.getScoreboard().getTop(0);
                     outputString.append(line).append(ChatColor.WHITE).append("Type: ").append(ChatColor.GOLD).append("Score").append(line);
                     for (int i = 0; i < score.size(); i++) {
-                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score.get(i).player.getDisplayName(), 100)).append(" : ").append(score.get(i).Score);
+                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score.get(i).player.getDisplayName(), 200)).append(" : ").append(score.get(i).Score);
+//                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(score.get(i).player.getDisplayName()).append(" : ").append(score.get(i).Score);
                     }
 
 
@@ -433,7 +445,9 @@ public class Commands {
                     var score = game.getScoreboard().getTop(1);
                     outputString.append(line).append(ChatColor.WHITE).append("Type: ").append(ChatColor.GOLD).append("Streak").append(line);
                     for (int i = 0; i < score.size(); i++) {
-                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score.get(i).player.getDisplayName(), 100)).append(" : ").append(score.get(i).scoreStreak);
+                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score.get(i).player.getDisplayName(), 200)).append(" : ").append(score.get(i).scoreStreak);
+//                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(score.get(i).player.getDisplayName()).append(" : ").append(score.get(i).scoreStreak);
+
                     }
 
 
@@ -443,6 +457,8 @@ public class Commands {
                     outputString.append(line).append(ChatColor.WHITE).append("Type: ").append(ChatColor.GOLD).append("Moles").append(line);
                     for (int i = 0; i < score.size(); i++) {
                         outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score.get(i).player.getDisplayName(), 200)).append(" : ").append(score.get(i).molesHit);
+//                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(score.get(i).player.getDisplayName()).append(" : ").append(score.get(i).molesHit);
+
                     }
                 }
             }
@@ -454,6 +470,30 @@ public class Commands {
     }
 
 
+    private List<Argument<?>> positionsTypeArgument() {
+        List<Argument<?>> arguments = new ArrayList<>();
+        arguments.add(gameNameArgument("Game"));
+        arguments.add(new CustomArgument<>(new StringArgument("Positions"), Info -> {
+            Game game = (Game) Info.previousArgs()[0];
+            Player player = (Player) Info.sender();
+
+            switch (Info.input()) {
+                case "highscore" -> game.setScoreLocation(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() + 1, player.getLocation().getZ());
+                case "teleport" -> game.setTeleportLocation(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() + 1, player.getLocation().getZ());
+                case "streak" -> {
+                    //TODO: add logic for placement
+                    Logger.info(this.streakTip);
+
+                }
+            }
+            return Info.input();
+        }).replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(suggestionInfo -> new IStringTooltip[] {
+                StringTooltip.ofString("highscore", this.highscoreTip),
+                StringTooltip.ofString("teleport", this.teleportTip),
+                StringTooltip.ofString("streak", this.streakTip)
+        })));
+        return arguments;
+    }
 
     private boolean buyConfirmation(UUID player) {
         if (this.buyTicket.containsKey(player) && this.buyTicket.get(player) > System.currentTimeMillis()) {
