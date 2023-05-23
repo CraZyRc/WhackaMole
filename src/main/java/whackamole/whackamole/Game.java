@@ -152,7 +152,6 @@ public class Game {
         private void Setup(String name, Player player) {
             this.Name = name;
             this.spawnRotation = Directions[Math.round(player.getLocation().getYaw() / 45) & 0x7];
-            this.teleportLocation = player.getLocation().add(0,2,0);
             this.world = player.getWorld();
             this.Save();
         }
@@ -293,17 +292,18 @@ public class Game {
         private ScoreboardDB db = SQLite.getScoreboardDB();
 
         public void add(Player player, int score, int molesHit, int scoreStreak) {
-            ScoreboardRow scoreItem = this.db.Insert(player.getUniqueId(), getID(), score, molesHit, scoreStreak);
-            try {
-                Score scoreObj = (Score) scoreItem;
-                scoreObj.onLoad();
-                this.scores.add(scoreObj);
-            } catch (Exception ignored) {
-                Logger.error(ignored.getMessage());
-            }
+            var scoreItem = new Score();
+            scoreItem.Score = score;
+            scoreItem.molesHit = molesHit;
+            scoreItem.scoreStreak = scoreStreak;
+            scoreItem.player = player;
+            scoreItem.gameID = getID();
+            scoreItem.playerID = player.getUniqueId();
+            this.db.Insert(scoreItem);
+            this.scores.add(scoreItem);
         }
 
-        private void onLoad() { //! I don't think this actually does something...
+        private void onLoad() {
             this.scores.clear();
             var dbScores = db.Select(getID());
             for(var i : dbScores) {
@@ -516,7 +516,7 @@ public class Game {
         this.grid.Save(getID());
         this.grid.setSettings(settings);
         scoreboard.showTop();
-      
+
         if (Config.Game.ENABLE_GAMECONFIG) {
             this.gameFile = new GameFile();
         }
