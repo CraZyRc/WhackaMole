@@ -1,5 +1,7 @@
 package whackamole.whackamole.DB;
 
+import org.bukkit.Location;
+
 import whackamole.whackamole.DB.Model.Row;
 
 public class GameRow extends Row {
@@ -12,6 +14,16 @@ public class GameRow extends Row {
      * The name of the world the game is in
      */
     public String worldName;
+
+    /**
+     * The Location where the player is teleported to when a game is running
+     */
+    public Location TeleportLocation;
+
+    /**
+     * The Location where the Scoreboard is shown
+     */
+    public Location ScoreLocation;
 
     /**
      * The direction the moles face

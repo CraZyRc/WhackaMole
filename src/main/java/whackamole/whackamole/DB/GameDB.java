@@ -7,6 +7,7 @@ import org.bukkit.World;
 import whackamole.whackamole.Game;
 import whackamole.whackamole.DB.Model.Column;
 import whackamole.whackamole.DB.Model.Table;
+import whackamole.whackamole.DB.Model.Serializers.LocationSerializer;
 
 public class GameDB extends Table<GameRow> {
     public GameDB(SQLite sql) {
@@ -14,6 +15,8 @@ public class GameDB extends Table<GameRow> {
             new Column<>("ID",                  Integer.class).IsPrimaryKey(true).IsUnique(true).AllowNull(false).HasAutoIncrement(true),
             new Column<>("Name",                String.class).AllowNull(false),
             new Column<>("worldName",           String.class),
+            new Column<>("TeleportLocation",    LocationSerializer.class),
+            new Column<>("ScoreLocation",       LocationSerializer.class),
             new Column<>("spawnDirection",      String.class).Default("NORTH"),
             new Column<>("hasJackpot",          Boolean.class).Default(true),
             new Column<>("jackpotSpawnChance",  Integer.class).Default(1),
@@ -29,11 +32,11 @@ public class GameDB extends Table<GameRow> {
             new Column<>("jackpotHead",         String.class).Default("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlkZGZiMDNjOGY3Zjc4MDA5YjgzNDRiNzgzMGY0YTg0MThmYTRiYzBlYjMzN2EzMzA1OGFiYjdhMDVlOTNlMSJ9fX0="),
         }, GameRow.class);
     }
-  
+    
     public List<GameRow> Select(World world) {
         return this.Select("worldName = ?", world.getName());
     }
-  
+    
     public List<GameRow> Select(int GameID) {
         return this.Select("ID = ?", GameID);
     }

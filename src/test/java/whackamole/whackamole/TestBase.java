@@ -1,12 +1,15 @@
 package whackamole.whackamole;
 
 import org.assertj.core.api.JUnitBDDSoftAssertions;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -16,7 +19,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
-
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,6 +38,8 @@ public class TestBase {
     public static World worldMock = mock(World.class);
     public static BlockFace blockFaceMock = mock(BlockFace.class);
     public static Block blockMock = mock(Block.class);
+    
+    static MockedStatic<Bukkit> bukkitMock = mockStatic(Bukkit.class);
 
     @BeforeAll
     public static void setupMocks() {
@@ -62,6 +67,9 @@ public class TestBase {
         gameSettingsMock.spawnChance = 1;
         gameSettingsMock.difficultyScale = 10;
         gameSettingsMock.moleSpeed = 2;
+        gameSettingsMock.TeleportLocation = new Location(worldMock, 10, 20, 30, 0.0f, 2.0f);
+        gameSettingsMock.ScoreLocation = new Location(worldMock, 100, 200, 300, 10.0f, 20.0f);
+        
         when(gameMock.getSettings()).thenReturn(gameSettingsMock);
 
         when(gameMock.getName()).thenReturn(gameSettingsMock.Name);
@@ -82,6 +90,8 @@ public class TestBase {
                 add(blockMock);
             }
         };
+
+        bukkitMock.when(() -> Bukkit.getWorld(worldMock.getName())).thenReturn(worldMock);
     }
 
     @AfterEach

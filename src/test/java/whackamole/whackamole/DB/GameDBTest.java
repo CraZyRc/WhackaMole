@@ -4,6 +4,8 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
 import whackamole.whackamole.DB.Model.Row;
 
+import java.util.HashMap;
+
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -18,9 +20,29 @@ public class GameDBTest extends SQLTestBase {
         gameDB.Insert(gameMock);
         softly.then(gameSettingsMock.ID).isEqualTo(1).as("Row not correctly inserted");
     }
-    
+
     @Test
     @Order(2)
+    public void SelectGameSuccessfull() {
+        var gameList = gameDB.Select(gameSettingsMock.ID);
+
+        softly.then(gameList).as("Row with ID: (%s) is not found in table GameDB".formatted(gameSettingsMock.ID)).isNotEmpty();
+        var gameRow = gameList.get(0);
+
+        softly.then(gameRow.TeleportLocation.serialize()).as("Game Row TeleportLocation not correctly parsed").isEqualTo(new HashMap<String, Object>() {
+            {
+                put("world", worldMock.getName());
+                put("x", 10.0);
+                put("y", 20.0);
+                put("z", 30.0);
+                put("yaw", 0.0f);
+                put("pitch", 2.0f);
+            }
+        });
+    }
+
+    @Test
+    @Order(3)
     public void GameUpdateSuccessfull() {
         gameSettingsMock.spawnTimer = 50;
         gameDB.Update(gameMock);
