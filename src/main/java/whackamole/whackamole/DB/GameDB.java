@@ -2,12 +2,12 @@ package whackamole.whackamole.DB;
 
 import java.util.List;
 
+import org.bukkit.Location;
 import org.bukkit.World;
 
 import whackamole.whackamole.Game;
 import whackamole.whackamole.DB.Model.Column;
 import whackamole.whackamole.DB.Model.Table;
-import whackamole.whackamole.DB.Model.Serializers.LocationSerializer;
 
 public class GameDB extends Table<GameRow> {
     public GameDB(SQLite sql) {
@@ -15,8 +15,8 @@ public class GameDB extends Table<GameRow> {
             new Column<>("ID",                  Integer.class).IsPrimaryKey(true).IsUnique(true).AllowNull(false).HasAutoIncrement(true),
             new Column<>("Name",                String.class).AllowNull(false),
             new Column<>("worldName",           String.class),
-            new Column<>("TeleportLocation",    LocationSerializer.class),
-            new Column<>("ScoreLocation",       LocationSerializer.class),
+            new Column<>("TeleportLocation",    Location.class),
+            new Column<>("ScoreLocation",       Location.class),
             new Column<>("spawnDirection",      String.class).Default("NORTH"),
             new Column<>("hasJackpot",          Boolean.class).Default(true),
             new Column<>("jackpotSpawnChance",  Integer.class).Default(1),

@@ -1,20 +1,19 @@
 package whackamole.whackamole.DB.Model;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import whackamole.whackamole.Logger;
 import whackamole.whackamole.DB.Model.Serializers.ISerializer;
 
 public class Column<T> {
     private final String Name;
+
     private final Class<T> rawType;
-    private final T raw;
+    
+    private ISerializer<T> Serializable;
 
     // * Options
     private boolean IsPrimayKey = false;
@@ -32,7 +31,8 @@ public class Column<T> {
     public Column(String Name, Class<T> type) {
         this.Name = Name;
         this.rawType = type;
-        this.raw = getRaw();
+        
+        Serializable = ISerializer.GetSerializer(type).orElse(null);
     }
 
     /**
@@ -42,7 +42,8 @@ public class Column<T> {
     private String GetType() {
         // TODO: Convert ALL types to ISerializer class
         String out = "";
-        if(ISerializer.class.isAssignableFrom(rawType))         out += GetSerializer().GetType();
+        if(Serializable != null) out += Serializable.GetType();
+        
         if(this.rawType.isAssignableFrom(Integer.class))    out += "INTEGER";
         if(this.rawType.isAssignableFrom(String.class))     out += "TEXT";
         if(this.rawType.isAssignableFrom(UUID.class))       out += "TEXT";
@@ -94,9 +95,11 @@ public class Column<T> {
      * @param set
      * @return query value string
      */
+    @SuppressWarnings("unchecked")
     protected String ValueToQueryValue(Object object) {
         if (object == null) return "NULL";
-        if(ISerializer.class.isAssignableFrom(rawType))         return GetSerializer().Serialize(object);
+
+        if(Serializable != null) return Serializable.Serialize((T) object);
         if(this.rawType.isAssignableFrom(Integer.class))    return "%s".formatted(object);
         if(this.rawType.isAssignableFrom(String.class))     return "'%s'".formatted(object);
         if(this.rawType.isAssignableFrom(Double.class))     return "%s".formatted(object);
@@ -119,7 +122,7 @@ public class Column<T> {
         Object V = set.getObject(Name);
         if(V == null) return null;
         
-        if(ISerializer.class.isAssignableFrom(rawType))         return (T) GetSerializer().Deserialize(set.getString(Name));
+        if(Serializable != null) return Serializable.Deserialize(set.getString(Name));
         if(this.rawType.isAssignableFrom(Integer.class))    return (T) Integer.valueOf(set.getInt(Name));
         if(this.rawType.isAssignableFrom(String.class))     return (T) String.valueOf(set.getString(Name));
         if(this.rawType.isAssignableFrom(Double.class))     return (T) Double.valueOf(set.getDouble(Name));
@@ -129,28 +132,6 @@ public class Column<T> {
         assert false : "Unable to identify Column Type: (%s) for method Column#ResultSetToRow(ResultSet set)".formatted(this.rawType);
 
         return null;
-    }
-
-    @Nullable
-    private T getRaw() {
-        try {
-            if (ISerializer.class.isAssignableFrom(rawType))
-                return this.rawType.getDeclaredConstructor().newInstance();
-            else return null;
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
-            Logger.error("Raw type not Convertable" + e.getMessage());
-            assert false : "Failed to initilize Column Raw Type: " + this.rawType.getName();
-        }
-        return null;
-    }
-
-    @Nullable
-    @SuppressWarnings("unchecked")
-    private ISerializer<Object> GetSerializer() {
-        if (ISerializer.class.isAssignableFrom(rawType))
-            return (ISerializer<Object>) raw;
-        else return null;
     }
 
     // * Options

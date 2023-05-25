@@ -9,6 +9,11 @@ import org.bukkit.Location;
 public class LocationSerializer implements ISerializer<Location> {
 
     @Override
+    public Class<Location> GetRawType() {
+        return Location.class;
+    }
+
+    @Override
     public String GetType() {
         return "NVARCHAR";
     }
@@ -66,6 +71,4 @@ public class LocationSerializer implements ISerializer<Location> {
 
         return builder.toString();
     }
-
-    
 }
