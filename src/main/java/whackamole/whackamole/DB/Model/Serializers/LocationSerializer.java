@@ -1,5 +1,7 @@
 package whackamole.whackamole.DB.Model.Serializers;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,13 +11,8 @@ import org.bukkit.Location;
 public class LocationSerializer implements ISerializer<Location> {
 
     @Override
-    public Class<Location> GetRawType() {
-        return Location.class;
-    }
-
-    @Override
     public String GetType() {
-        return "NVARCHAR";
+        return "TEXT";
     }
 
     @Override
@@ -24,12 +21,12 @@ public class LocationSerializer implements ISerializer<Location> {
         return String.format("'%s'", data);
     }
 
-    @Override
-    public Location Deserialize(String data) {
-        var loc = FromString(data);
-        return loc;
-    }
 
+    @Override
+    public Location Deserialize(ResultSet set, String name) throws SQLException {
+        return FromString(set.getString(name));
+    }
+    
     private Location FromString(String data) {
         if (data == "NULL") {
             return null;
