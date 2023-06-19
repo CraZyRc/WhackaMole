@@ -48,11 +48,12 @@ public final class GamesManager implements Listener {
         Bukkit.getScheduler().cancelTask(this.tickId);
     }
 
+
     public void loadGames() {
         Logger.info(Translator.MANAGER_LOADINGGAMES);
         if (Config.Game.ENABLE_GAMECONFIG) {
             File GamesFolder = new File(Config.AppConfig.storageFolder + "/Games");
-            if (GamesFolder.list() == null) {
+            if (GamesFolder.list().length == 0) {
                 Logger.warning(Translator.MANAGER_NOGAMESFOUND);
                 return;
             }

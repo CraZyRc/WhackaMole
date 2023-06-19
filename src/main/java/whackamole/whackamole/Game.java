@@ -25,6 +25,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.chat.ComponentSerializer;
 import whackamole.whackamole.DB.*;
+import whackamole.whackamole.DB.Model.Row;
 import whackamole.whackamole.Mole.MoleState;
 import whackamole.whackamole.Mole.MoleType;
 
@@ -281,6 +282,9 @@ public class Game {
 
     public class Scoreboard {
 
+        List<ArmorStand> holoScores = new ArrayList<>();
+        ArmorStand highScore, Score, Streak, molesHit;
+
         class Score extends ScoreboardRow {
             public Player player;
             private void onLoad() {
@@ -293,21 +297,22 @@ public class Game {
 
         public void add(Player player, int score, int molesHit, int scoreStreak) {
             var scoreItem = new Score();
+            scoreItem.player = player;
             scoreItem.Score = score;
             scoreItem.molesHit = molesHit;
             scoreItem.scoreStreak = scoreStreak;
-            scoreItem.player = player;
             scoreItem.gameID = getID();
             scoreItem.playerID = player.getUniqueId();
-            this.db.Insert(scoreItem);
             this.scores.add(scoreItem);
+            this.db.Insert(scoreItem);
         }
 
         private void onLoad() {
             this.scores.clear();
             var dbScores = db.Select(getID());
             for(var i : dbScores) {
-                Score score = (Score) i;
+                Score score = new Score();
+                Row.upCast(i, score);
                 score.onLoad();
                 this.scores.add(score);
             }
@@ -317,13 +322,18 @@ public class Game {
             for (var row : scores) {
                 db.Delete(row);
             }
+            killTopHolo();
         }
 
-        public List<Score> getTop(int scoreType) {
+        public Score[] getTop(int scoreType) {
             return getTop(10, scoreType);
         }
 
-        public List<Score> getTop(int count, int scoreType) {
+        public Score[] getTop(int count, int scoreType) {
+            Score[] template = new Score[]{};
+            if (scores.size() == 0) {
+                return this.scores.toArray(template);
+            }
             count = Math.min(this.scores.size(), count);
             if (scoreType == 0) {
                 this.scores.sort((a, b) -> b.Score - a.Score);
@@ -332,30 +342,53 @@ public class Game {
             } else if (scoreType == 2) {
                 this.scores.sort((a, b) -> b.molesHit - a.molesHit);
             } else { Logger.error("getTop scoreType = " + scoreType + " unknown, please report this bug."); }
-            return this.scores.subList(0, count);
+
+            return this.scores.subList(0, count).toArray(template);
         }
 
-        private void showTop() {
-            Location spawnloc = settings.scoreLocation;
-            List<ArmorStand> scores = new ArrayList<>();
-            ArmorStand highScore = (ArmorStand) Objects.requireNonNull(Bukkit.getWorld(spawnloc.getWorld().getUID())).spawnEntity(spawnloc, EntityType.ARMOR_STAND);
-            ArmorStand Score = (ArmorStand) Objects.requireNonNull(Bukkit.getWorld(spawnloc.getWorld().getUID())).spawnEntity(spawnloc.subtract(0,0.25,0), EntityType.ARMOR_STAND);
-            ArmorStand Streak = (ArmorStand) Objects.requireNonNull(Bukkit.getWorld(spawnloc.getWorld().getUID())).spawnEntity(spawnloc.subtract(0,0.25,0), EntityType.ARMOR_STAND);
-            ArmorStand molesHit = (ArmorStand) Objects.requireNonNull(Bukkit.getWorld(spawnloc.getWorld().getUID())).spawnEntity(spawnloc.subtract(0,0.25,0), EntityType.ARMOR_STAND);
-            scores.add(highScore);
-            scores.add(Score);
-            scores.add(Streak);
-            scores.add(molesHit);
-            for (ArmorStand armorStand : scores) {
+        private void createTopHolo() {
+            Location spawnloc = settings.scoreLocation.add(0,2,0); //TODO: ADD LOGIC FOR THE MIDDLE OF THE GRID
+            this.highScore = (ArmorStand) Objects.requireNonNull(Bukkit.getWorld(spawnloc.getWorld().getUID())).spawnEntity(spawnloc, EntityType.ARMOR_STAND);
+            this.Score = (ArmorStand) Objects.requireNonNull(Bukkit.getWorld(spawnloc.getWorld().getUID())).spawnEntity(spawnloc.subtract(0,0.25,0), EntityType.ARMOR_STAND);
+            this.Streak = (ArmorStand) Objects.requireNonNull(Bukkit.getWorld(spawnloc.getWorld().getUID())).spawnEntity(spawnloc.subtract(0,0.25,0), EntityType.ARMOR_STAND);
+            this.molesHit = (ArmorStand) Objects.requireNonNull(Bukkit.getWorld(spawnloc.getWorld().getUID())).spawnEntity(spawnloc.subtract(0,0.25,0), EntityType.ARMOR_STAND);
+            this.holoScores.add(highScore);
+            this.holoScores.add(Score);
+            this.holoScores.add(Streak);
+            this.holoScores.add(molesHit);
+            for (ArmorStand armorStand : this.holoScores) {
                 armorStand.setVisible(true);
                 armorStand.setCustomNameVisible(true);
                 armorStand.setGravity(false);
                 armorStand.setInvisible(true);
+                armorStand.setMarker(true);
+                armorStand.isInvulnerable();
             }
-            highScore.setCustomName(DefaultFontInfo.Color("&e&l[-> &6&lHigh scores &e&l<-]"));
-            Score.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lScore: &b" + getTop(1, 0) + " &e&l-]"));
-            Streak.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lStreaks: &b" + getTop(1, 1) + " &e&l-]"));
-            molesHit.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lMoles hit: &b" + getTop(1, 2) + " &e&l-]"));
+            this.highScore.setCustomName(DefaultFontInfo.Color("&e&l[-> &6&lHigh scores &e&l<-]"));
+            this.Score.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lScore: &bNone &e&l-]"));
+            this.Streak.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lStreaks: &byou can &e&l-]"));
+            this.molesHit.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lMoles hit: &bbe the first! &e&l-]"));
+        }
+        private void updateTopHolo() {
+            var Score = getTop(1, 0);
+            var Streak = getTop(1, 1);
+            var molesHit = getTop(1, 2);
+
+            if (Score.length > 0) this.Score.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lScore: &b" + Score[0].player.getDisplayName() + ", " + Score[0].Score + " &e&l-]"));
+            if (Streak.length > 0) this.Streak.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lStreaks: &b" + Streak[0].player.getDisplayName() + ", " + Streak[0].scoreStreak + " &e&l-]"));
+            if (molesHit.length > 0) this.molesHit.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lMoles hit: &b" + molesHit[0].player.getDisplayName() + ", " + molesHit[0].molesHit + " &e&l-]"));
+        }
+
+        public void tpTopHolo(Location loc) {
+            highScore.teleport(loc);
+            Score.teleport(loc.subtract(0,0.25,0));
+            Streak.teleport(loc.subtract(0,0.25,0));
+            molesHit.teleport(loc.subtract(0,0.25,0));
+        }
+        public void killTopHolo() {
+            for (ArmorStand armorStand : this.holoScores) {
+                armorStand.remove();
+            }
         }
     }
 
@@ -405,8 +438,9 @@ public class Game {
             if (this.score > 0) {
                 if (this.Streak > this.highestStreak) { this.highestStreak = this.Streak; }
                 this.Streak = 0;
-                cooldown.add(this.player);
                 scoreboard.add(this.player, this.score, this.molesHit, this.highestStreak);
+                cooldown.add(this.player);
+                scoreboard.updateTopHolo();
             }
             this.player = null;
         }
@@ -506,6 +540,8 @@ public class Game {
     public Game(YMLFile configFile) {
         this.gameFile = new GameFile(configFile);
         this.settings.Save();
+        this.cooldown.onLoad();
+        this.scoreboard.onLoad();
     }
 
     public Game(String name, Grid grid, Player player) {
@@ -515,7 +551,7 @@ public class Game {
         this.grid = grid;
         this.grid.Save(getID());
         this.grid.setSettings(settings);
-        scoreboard.showTop();
+        this.scoreboard.createTopHolo();
 
         if (Config.Game.ENABLE_GAMECONFIG) {
             this.gameFile = new GameFile();

@@ -434,9 +434,9 @@ public class Commands {
                 case "score" -> {
                     var score = game.getScoreboard().getTop(0);
                     outputString.append(line).append(ChatColor.WHITE).append("Type: ").append(ChatColor.GOLD).append("Score").append(line);
-                    for (int i = 0; i < score.size(); i++) {
-                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score.get(i).player.getDisplayName(), 200)).append(" : ").append(score.get(i).Score);
-//                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(score.get(i).player.getDisplayName()).append(" : ").append(score.get(i).Score);
+                    for (int i = 0; i < score.length; i++) {
+//                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score[0.player.getDisplayName(), 200)).append(" : ").append(score[0.Score);
+                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(score[0].player.getDisplayName()).append(" : ").append(score[0].Score);
                     }
 
 
@@ -444,9 +444,9 @@ public class Commands {
                 case "streak" -> {
                     var score = game.getScoreboard().getTop(1);
                     outputString.append(line).append(ChatColor.WHITE).append("Type: ").append(ChatColor.GOLD).append("Streak").append(line);
-                    for (int i = 0; i < score.size(); i++) {
-                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score.get(i).player.getDisplayName(), 200)).append(" : ").append(score.get(i).scoreStreak);
-//                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(score.get(i).player.getDisplayName()).append(" : ").append(score.get(i).scoreStreak);
+                    for (int i = 0; i < score.length; i++) {
+//                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score[0.player.getDisplayName(), 200)).append(" : ").append(score[0.scoreStreak);
+                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(score[0].player.getDisplayName()).append(" : ").append(score[0].scoreStreak);
 
                     }
 
@@ -455,9 +455,9 @@ public class Commands {
                 case "moles" -> {
                     var score = game.getScoreboard().getTop(2);
                     outputString.append(line).append(ChatColor.WHITE).append("Type: ").append(ChatColor.GOLD).append("Moles").append(line);
-                    for (int i = 0; i < score.size(); i++) {
-                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score.get(i).player.getDisplayName(), 200)).append(" : ").append(score.get(i).molesHit);
-//                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(score.get(i).player.getDisplayName()).append(" : ").append(score.get(i).molesHit);
+                    for (int i = 0; i < score.length; i++) {
+//                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score[0.player.getDisplayName(), 200)).append(" : ").append(score[0.molesHit);
+                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(score[0].player.getDisplayName()).append(" : ").append(score[0].molesHit);
 
                     }
                 }
@@ -478,7 +478,7 @@ public class Commands {
             Player player = (Player) Info.sender();
 
             switch (Info.input()) {
-                case "highscore" -> game.setScoreLocation(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() + 1, player.getLocation().getZ());
+                case "highscore" -> game.getScoreboard().tpTopHolo(player.getLocation().add(0,2,0));
                 case "teleport" -> game.setTeleportLocation(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() + 1, player.getLocation().getZ());
                 case "streak" -> {
                     //TODO: add logic for placement
