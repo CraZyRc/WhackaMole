@@ -2,13 +2,15 @@ package whackamole.whackamole.DB.Model;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.UUID;
 
 import org.jetbrains.annotations.NotNull;
 
+import whackamole.whackamole.DB.Model.Serializers.ISerializer;
+
 public class Column<T> {
-    private String Name = "";
-    private Class<T> rawType;
+    private final String Name;
+    
+    private final ISerializer<T> Serializable;
 
     // * Options
     private boolean IsPrimayKey = false;
@@ -25,7 +27,7 @@ public class Column<T> {
      */
     public Column(String Name, Class<T> type) {
         this.Name = Name;
-        this.rawType = type;
+        this.Serializable = ISerializer.GetSerializer(type);
     }
 
     /**
@@ -34,13 +36,7 @@ public class Column<T> {
      */
     private String GetType() {
         String out = "";
-        if(this.rawType.isAssignableFrom(Integer.class))    out += "INTEGER";
-        if(this.rawType.isAssignableFrom(String.class))     out += "TEXT";
-        if(this.rawType.isAssignableFrom(UUID.class))       out += "TEXT";
-        if(this.rawType.isAssignableFrom(Double.class))     out += "REAL";
-        if(this.rawType.isAssignableFrom(Long.class))       out += "REAL";
-        if(this.rawType.isAssignableFrom(Boolean.class))    out += "INTEGER";
-        assert ! out.isEmpty() : "Unable to identify Column Type: (%s) for method Column#GetType()".formatted(this.rawType);
+        out += Serializable.GetType();
 
         if(!this.AllowNull)                         out += " NOT NULL";
         if(this.IsUnique)                           out += " UNIQUE";
@@ -85,17 +81,10 @@ public class Column<T> {
      * @param set
      * @return query value string
      */
+    @SuppressWarnings("unchecked")
     protected String ValueToQueryValue(Object object) {
         if (object == null) return "NULL";
-        if(this.rawType.isAssignableFrom(Integer.class))    return "%s".formatted(object);
-        if(this.rawType.isAssignableFrom(String.class))     return "'%s'".formatted(object);
-        if(this.rawType.isAssignableFrom(Double.class))     return "%s".formatted(object);
-        if(this.rawType.isAssignableFrom(UUID.class))       return "'%s'".formatted(object);
-        if(this.rawType.isAssignableFrom(Long.class))       return "%s".formatted(object);
-        if(this.rawType.isAssignableFrom(Boolean.class))    return "%s".formatted((boolean) object ? 1 : 0);
-        assert false : "Unable to identify Column Type: (%s) for method Column#ValueToQueryValue(T value)".formatted(this.rawType);
-
-        return "NULL";
+        return Serializable.Serialize((T) object);
     }
     
     /**
@@ -104,20 +93,10 @@ public class Column<T> {
      * @return Casted RowSet to T
      * @throws SQLException
      */
-    @SuppressWarnings("unchecked")
     protected T ResultSetToRow(ResultSet set) throws SQLException {
         Object V = set.getObject(Name);
         if(V == null) return null;
-        
-        if(this.rawType.isAssignableFrom(Integer.class))    return (T) Integer.valueOf(set.getInt(Name));
-        if(this.rawType.isAssignableFrom(String.class))     return (T) String.valueOf(set.getString(Name));
-        if(this.rawType.isAssignableFrom(Double.class))     return (T) Double.valueOf(set.getDouble(Name));
-        if(this.rawType.isAssignableFrom(UUID.class))       return (T) UUID.fromString(set.getString(Name));
-        if(this.rawType.isAssignableFrom(Long.class))       return (T) Long.valueOf(set.getLong(Name));
-        if(this.rawType.isAssignableFrom(Boolean.class))    return (T) Boolean.valueOf(set.getInt(Name) > 1);
-        assert false : "Unable to identify Column Type: (%s) for method Column#ResultSetToRow(ResultSet set)".formatted(this.rawType);
-
-        return null;
+        return Serializable.Deserialize(set, Name);
     }
 
     // * Options

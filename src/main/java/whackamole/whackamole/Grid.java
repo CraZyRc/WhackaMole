@@ -15,7 +15,7 @@ import whackamole.whackamole.Mole.*;
 
 public class Grid {
     private static final GridDB SQL = SQLite.getGridDB();
-    private static ArrayList<Vector> neighborList = new ArrayList<>() {
+    private static List<Vector> neighborList = new ArrayList<>() {
         {
             add(new Vector(1, 0, -1)); // * topleft
             add(new Vector(1, 0, 0)); // * top
@@ -30,9 +30,9 @@ public class Grid {
         }
     };
 
-    public ArrayList<Mole> entityList = new ArrayList<>();
+    public List<Mole> entityList = new ArrayList<>();
 
-    public ArrayList<Block> grid;
+    public List<Block> grid;
     public World world;
     private Game.Settings settings;
 

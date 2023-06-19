@@ -1,6 +1,7 @@
 package whackamole.whackamole.DB;
 
 import org.bukkit.Location;
+
 import whackamole.whackamole.DB.Model.Row;
 
 public class GameRow extends Row {
@@ -13,6 +14,16 @@ public class GameRow extends Row {
      * The name of the world the game is in
      */
     public String worldName;
+
+    /**
+     * The Location where the player is teleported to when a game is running
+     */
+    public Location teleportLocation;
+
+    /**
+     * The Location where the Scoreboard is shown
+     */
+    public Location scoreLocation;
 
     /**
      * The direction the moles face
@@ -79,16 +90,6 @@ public class GameRow extends Row {
      * The percentage from 0 to 100 to decrease the mole speed and spawn speed
      */
     public double difficultyScale = 10;
-
-    /**
-     * The location where players that aren't playing the game should be teleported to when trying to enter the active grid
-     */
-    public Location teleportLocation;
-
-    /**
-     * The location where the top scores will be displayed in hologram style
-     */
-    public Location scoreLocation;
 
     /**
      * The aomunt of miliseconds the player has to wait before they can play the game again.

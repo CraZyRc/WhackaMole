@@ -77,7 +77,10 @@ public class SQLite {
                 e.getMessage(),
                 ExceptionUtils.getStackTrace(e)
             ));
-            assert false : e.getMessage();
+            assert false : "Failed to execute Query: (%s)\nFor Reason: %s\nWith StackTrace:\n%s".formatted(
+                    query,
+                    e.getMessage(),
+                    ExceptionUtils.getStackTrace(e));
         }
     }
     
@@ -95,7 +98,10 @@ public class SQLite {
                     query,
                     e.getMessage(),
                     ExceptionUtils.getStackTrace(e)));
-            assert false : e.getMessage();
+            assert false : "Failed to execute Query: (%s)\nFor Reason: %s\nWith StackTrace:\n%s".formatted(
+                    query,
+                    e.getMessage(),
+                    ExceptionUtils.getStackTrace(e));
             return null;
         }
     }
