@@ -64,6 +64,7 @@ public enum Translator {
     ,   GAME_CONFIG_MOLEHEAD                                ("Game.Config.moleHead")
     ,   GAME_CONFIG_TPLOCATION                              ("Game.Config.teleportLocation")
     ,   GAME_CONFIG_SCORELOCATION                           ("Game.Config.scoreLocation")
+    ,   GAME_CONFIG_STREAKHOLOLOCATION                      ("Game.Config.streakHoloLocation")
     ,   GAME_CONFIG_ENDMESSAGE                              ("Game.Config.endMessage")
     ,   COMMANDS_TIPS_NAME                                  ("Commands.Tips.Name")
     ,   COMMANDS_TIPS_DIRECTION                             ("Commands.Tips.Direction")

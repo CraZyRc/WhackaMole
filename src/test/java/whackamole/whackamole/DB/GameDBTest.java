@@ -29,7 +29,7 @@ public class GameDBTest extends SQLTestBase {
         softly.then(gameList).as("Row with ID: (%s) is not found in table GameDB".formatted(gameSettingsMock.ID)).isNotEmpty();
         var gameRow = gameList.get(0);
 
-        softly.then(gameRow.TeleportLocation.serialize()).as("Game Row TeleportLocation not correctly parsed").isEqualTo(new HashMap<String, Object>() {
+        softly.then(gameRow.teleportLocation.serialize()).as("Game Row TeleportLocation not correctly parsed").isEqualTo(new HashMap<String, Object>() {
             {
                 put("world", worldMock.getName());
                 put("x", 10.0);

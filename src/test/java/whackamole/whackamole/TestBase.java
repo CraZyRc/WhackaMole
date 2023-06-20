@@ -59,7 +59,6 @@ public class TestBase {
         gameSettingsMock.Name = "Test Game"; 
         gameSettingsMock.Cooldown = 86400000L;
         gameSettingsMock.hasJackpot = true;
-        gameSettingsMock.spawnChance = 1;
         gameSettingsMock.difficultyScore = 1;
         gameSettingsMock.scorePoints = 1;
         gameSettingsMock.missCount = 3;
@@ -67,8 +66,8 @@ public class TestBase {
         gameSettingsMock.spawnChance = 1;
         gameSettingsMock.difficultyScale = 10;
         gameSettingsMock.moleSpeed = 2;
-        gameSettingsMock.TeleportLocation = new Location(worldMock, 10, 20, 30, 0.0f, 2.0f);
-        gameSettingsMock.ScoreLocation = new Location(worldMock, 100, 200, 300, 10.0f, 20.0f);
+        gameSettingsMock.teleportLocation = new Location(worldMock, 10, 20, 30, 0.0f, 2.0f);
+        gameSettingsMock.scoreLocation = new Location(worldMock, 100, 200, 300, 10.0f, 20.0f);
         
         when(gameMock.getSettings()).thenReturn(gameSettingsMock);
 

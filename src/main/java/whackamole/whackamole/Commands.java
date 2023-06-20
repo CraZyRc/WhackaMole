@@ -9,10 +9,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class Commands {
     private Econ econ = new Econ();
@@ -435,30 +433,23 @@ public class Commands {
                     var score = game.getScoreboard().getTop(0);
                     outputString.append(line).append(ChatColor.WHITE).append("Type: ").append(ChatColor.GOLD).append("Score").append(line);
                     for (int i = 0; i < score.length; i++) {
-//                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score[0.player.getDisplayName(), 200)).append(" : ").append(score[0.Score);
-                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(score[0].player.getDisplayName()).append(" : ").append(score[0].Score);
+                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(ChatColor.WHITE).append(score[i].player.getName()).append(" : ").append(ChatColor.AQUA).append(score[i].Score).append(ChatColor.WHITE).append(", ").append(ChatColor.YELLOW).append(new SimpleDateFormat("yyyy-MM-dd").format(score[i].Datetime));
                     }
-
 
                 }
                 case "streak" -> {
                     var score = game.getScoreboard().getTop(1);
                     outputString.append(line).append(ChatColor.WHITE).append("Type: ").append(ChatColor.GOLD).append("Streak").append(line);
                     for (int i = 0; i < score.length; i++) {
-//                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score[0.player.getDisplayName(), 200)).append(" : ").append(score[0.scoreStreak);
-                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(score[0].player.getDisplayName()).append(" : ").append(score[0].scoreStreak);
-
+                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(ChatColor.WHITE).append(score[i].player.getName()).append(" : ").append(ChatColor.AQUA).append(score[i].scoreStreak).append(ChatColor.WHITE).append(", ").append(ChatColor.YELLOW).append(new SimpleDateFormat("yyyy-MM-dd").format(score[i].Datetime));
                     }
-
 
                 }
                 case "moles" -> {
                     var score = game.getScoreboard().getTop(2);
                     outputString.append(line).append(ChatColor.WHITE).append("Type: ").append(ChatColor.GOLD).append("Moles").append(line);
                     for (int i = 0; i < score.length; i++) {
-//                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(DefaultFontInfo.padRight(score[0.player.getDisplayName(), 200)).append(" : ").append(score[0.molesHit);
-                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(score[0].player.getDisplayName()).append(" : ").append(score[0].molesHit);
-
+                        outputString.append(line).append(ChatColor.DARK_AQUA).append(i + 1).append(". ").append(ChatColor.WHITE).append(score[i].player.getName()).append(" : ").append(ChatColor.AQUA).append(score[i].molesHit).append(ChatColor.WHITE).append(", ").append(ChatColor.YELLOW).append(new SimpleDateFormat("yyyy-MM-dd").format(score[i].Datetime));
                     }
                 }
             }
@@ -480,11 +471,7 @@ public class Commands {
             switch (Info.input()) {
                 case "highscore" -> game.getScoreboard().tpTopHolo(player.getLocation().add(0,2,0));
                 case "teleport" -> game.setTeleportLocation(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() + 1, player.getLocation().getZ());
-                case "streak" -> {
-                    //TODO: add logic for placement
-                    Logger.info(this.streakTip);
-
-                }
+                case "streak" -> game.setStreakHoloLocation(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() + 1, player.getLocation().getZ());
             }
             return Info.input();
         }).replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(suggestionInfo -> new IStringTooltip[] {

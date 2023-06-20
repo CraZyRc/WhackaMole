@@ -26,6 +26,11 @@ public class GameRow extends Row {
     public Location scoreLocation;
 
     /**
+     * The Location where the current hit-streak-name is shown
+     */
+    public Location streakHoloLocation;
+
+    /**
      * The direction the moles face
      */
     public String spawnDirection = "NORTH";
