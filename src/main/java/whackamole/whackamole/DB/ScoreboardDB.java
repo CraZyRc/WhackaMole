@@ -3,6 +3,7 @@ package whackamole.whackamole.DB;
 import whackamole.whackamole.DB.Model.Column;
 import whackamole.whackamole.DB.Model.Table;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,7 +16,7 @@ public class ScoreboardDB extends Table<ScoreboardRow> {
             new Column<>("Score", Integer.class).AllowNull(false),
             new Column<>("molesHit", Integer.class).AllowNull(false),
             new Column<>("scoreStreak", Integer.class).AllowNull(false),
-            new Column<>("Datetime", Long.class).BuildInDefault("CURRENT_TIMESTAMP"),
+            new Column<>("Datetime", Date.class).BuildInDefault("CURRENT_TIMESTAMP"),
         }, ScoreboardRow.class);
     }
 

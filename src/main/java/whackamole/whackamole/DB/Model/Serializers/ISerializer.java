@@ -1,5 +1,6 @@
 package whackamole.whackamole.DB.Model.Serializers;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
@@ -48,7 +49,8 @@ public interface ISerializer<T extends Object> {
         if(from.isAssignableFrom(Double.class))     return (ISerializer<K>) new DoubleSerializer();
         if(from.isAssignableFrom(Long.class))       return (ISerializer<K>) new LongSerializer();
         if(from.isAssignableFrom(UUID.class))       return (ISerializer<K>) new UUIDSerializer();
+        if(from.isAssignableFrom(Date.class))       return (ISerializer<K>) new DateSerializer();
 
-        throw new UnsupportedOperationException("Class: " +from.getName()+ " Is not found in ISerializer#GetSerializer(Class<K> formraw)");
+        throw new UnsupportedOperationException("Class: " +from.getName()+ " Is not found in ISerializer#GetSerializer(Class<K> form raw)");
     }
 }
