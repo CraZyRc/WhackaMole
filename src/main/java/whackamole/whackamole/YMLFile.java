@@ -74,6 +74,7 @@ public class YMLFile {
 
     public void load() {
         try {
+            this.file.mkdirs();
             if(!this.file.exists()) created = true;
             this.FileConfig.load(this.file);
         } catch (Exception e) {
