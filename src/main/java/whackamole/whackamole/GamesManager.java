@@ -22,6 +22,7 @@ import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.Plugin;
 import whackamole.whackamole.DB.GameRow;
 import whackamole.whackamole.DB.SQLite;
+import whackamole.whackamole.Game.GameRunner;
 
 public final class GamesManager implements Listener {
 
@@ -95,23 +96,23 @@ public final class GamesManager implements Listener {
 
     public void unloadGames() {
         for (Game game : games) {
-            game.unload();
+            game.Unload();
         }
         this.games.clear();
     }
 
     public void deleteGame(Game game) {
-        game.delete();
+        game.Delete();
         this.games.remove(game);
     }
 
-    public Game getOnGrid(Player player) {
+    public Optional<Game> getOnGrid(Player player) {
         for (Game game : games) {
             if (game.onGrid(player)) {
-                return game;
+                return Optional.of(game);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     private int runnableTickCounter = 0;
@@ -136,7 +137,6 @@ public final class GamesManager implements Listener {
         List<GameRow> gameList;
         if (world == null) {
             gameList = SQLite.getGameDB().Select();
-
         } else {
             gameList = SQLite.getGameDB().Select(world);
         }
@@ -161,7 +161,7 @@ public final class GamesManager implements Listener {
     public void onWorldUnload(WorldUnloadEvent e) {
         for (int i = this.games.size() -1; i >= 0; i--) {
             if (this.games.get(i).getSettings().world.equals(e.getWorld())) {
-                this.games.get(i).unload();
+                this.games.get(i).Unload();
                 this.games.remove(i);
             }
         }
@@ -179,14 +179,14 @@ public final class GamesManager implements Listener {
     public void playerMoveEvent(PlayerMoveEvent e) {
         Player player = e.getPlayer();
         for (Game game : games) {
-            var gameRunner = game.getRunning();
+            var gameRunner = game.getRunning().orElseGet(null);
             if (game.onGrid(player)) {
                 if (gameRunner == null) continue;
-                if (gameRunner.player != e.getPlayer()) {
+                if (gameRunner.player != player) {
                     gameRunner.RemovePlayerFromGame(e);
                 }
                 break;
-            } else if (gameRunner != null && gameRunner.player == e.getPlayer()) {
+            } else if (gameRunner != null && gameRunner.player == player) {
                 game.Stop();
                 break;
             }
@@ -206,7 +206,7 @@ public final class GamesManager implements Listener {
     @EventHandler
     public void blockBreak(BlockBreakEvent e) {
         for (Game game : this.games) {
-            if (game.inGrid(e.getBlock()) || (game.getRunning() != null && e.getPlayer() == game.getRunning().player)) {
+            if (game.onGrid(e.getBlock()) || game.getRunning().map(GameRunner::getPlayer).orElse(null) == e.getPlayer()) {
                 e.setCancelled(true);
             }
         }
@@ -242,13 +242,12 @@ public final class GamesManager implements Listener {
             return;
         }
 
-        Game game = this.getOnGrid(player);
-        if (game == null) {
+        this.getOnGrid(player).ifPresentOrElse((game) -> {
+            game.useTicket(e);
+        }, () -> {
             player.sendMessage(Config.AppConfig.PREFIX + Translator.MANAGER_TICKETUSE_GAMENOTFOUND);
             e.setCancelled(true);
-            return;
-        }
+        });
 
-        game.useTicket(e);
     }
 }

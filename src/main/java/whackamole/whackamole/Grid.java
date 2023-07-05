@@ -98,6 +98,10 @@ public class Grid {
         return this.onGrid(player.getLocation());
     }
 
+    public boolean onGrid(Block block) {
+        return this.onGrid(block.getLocation());
+    }
+
     public boolean onGrid(Location loc) {
         for (Block block : this.grid) {
             Location blockLoc = block.getLocation().add(0.5, 0, 0.5);
@@ -160,21 +164,22 @@ public class Grid {
         return missedCount;
     }
 
-    public Mole handleHitEvent(Entity e) {
+    public Optional<Mole> handleHitEvent(Entity e) {
         for (Mole mole : this.entityList) {
             if (mole.equals(e) && mole.isMoving()) {
-                return mole;
+                return Optional.of(mole);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
-    public void Save(int gameID) {
-        SQL.Insert(this, gameID);
+    public void Save() {
+        SQL.Insert(this, this.settings.ID);
     }
     
-    public void Delete(int gameID) {
-        SQL.Delete(gameID);
+    public void Delete() {
+        this.removeEntities();
+        SQL.Delete(this.settings.ID);
     }
 
     public List<List<Integer>> Serialize() {
@@ -201,7 +206,10 @@ public class Grid {
         }
         return new Grid(world, grid);
     }
-    public void setSettings(Game.Settings settings) {
+    public Grid setSettings(Game.Settings settings) {
         this.settings = settings;
+        this.settings.scoreLocation = this.grid.get(1).getLocation().add(0, 2, 0);
+        this.Save();
+        return this;
     }
 }

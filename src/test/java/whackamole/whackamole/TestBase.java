@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
@@ -46,7 +47,7 @@ public class TestBase {
 
         gameRunnerMock.missed = 0;
         gameRunnerMock.score = 2;
-        when(gameMock.getRunning()).thenReturn(gameRunnerMock);
+        when(gameMock.getRunning()).thenReturn(Optional.of(gameRunnerMock));
         
         gameSettingsMock.missCount = 3;
         gameSettingsMock.world = worldMock;

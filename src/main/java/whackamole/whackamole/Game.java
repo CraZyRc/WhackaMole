@@ -6,7 +6,6 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -126,6 +125,7 @@ public class Game {
         }
 
     }
+    
     public class Settings extends GameRow {
         public GameDB gameDB = SQLite.getGameDB();
 
@@ -267,8 +267,8 @@ public class Game {
             Game.this.settings.Save();
             
             Game.this.grid = Grid.Deserialize(Game.this.settings.world, this.gameConfig.getList("Field Data.Grid"));
-            Game.this.grid.Delete(getID());
-            Game.this.grid.Save(getID());
+            Game.this.grid.Delete();
+            Game.this.grid.Save();
             Game.this.grid.setSettings(settings);
             
             Logger.success(Translator.GAME_LOADSUCCESS.Format(Game.this));
@@ -320,6 +320,7 @@ public class Game {
         }
         
         private void Delete() {
+            this.killTopHolo();
             for (var row : scores) {
                 db.Delete(row);
             }
@@ -347,11 +348,12 @@ public class Game {
         }
 
         private void createTopHolo() {
+            var settings = Game.this.getSettings();
             Location spawnloc = settings.scoreLocation.clone().add(0,1.75,0); //TODO: ADD LOGIC FOR THE MIDDLE OF THE GRID
-            this.highScore = (ArmorStand) Objects.requireNonNull(Bukkit.getWorld(spawnloc.getWorld().getUID())).spawnEntity(spawnloc, EntityType.ARMOR_STAND);
-            this.Score = (ArmorStand) Objects.requireNonNull(Bukkit.getWorld(spawnloc.getWorld().getUID())).spawnEntity(spawnloc.subtract(0,0.25,0), EntityType.ARMOR_STAND);
-            this.Streak = (ArmorStand) Objects.requireNonNull(Bukkit.getWorld(spawnloc.getWorld().getUID())).spawnEntity(spawnloc.subtract(0,0.25,0), EntityType.ARMOR_STAND);
-            this.molesHit = (ArmorStand) Objects.requireNonNull(Bukkit.getWorld(spawnloc.getWorld().getUID())).spawnEntity(spawnloc.subtract(0,0.25,0), EntityType.ARMOR_STAND);
+            this.highScore  = (ArmorStand) settings.world.spawnEntity(spawnloc, EntityType.ARMOR_STAND);
+            this.Score      = (ArmorStand) settings.world.spawnEntity(spawnloc.subtract(0,0.25,0), EntityType.ARMOR_STAND);
+            this.Streak     = (ArmorStand) settings.world.spawnEntity(spawnloc.subtract(0,0.25,0), EntityType.ARMOR_STAND);
+            this.molesHit   = (ArmorStand) settings.world.spawnEntity(spawnloc.subtract(0,0.25,0), EntityType.ARMOR_STAND);
             this.holoScores.add(highScore);
             this.holoScores.add(Score);
             this.holoScores.add(Streak);
@@ -392,6 +394,8 @@ public class Game {
     }
 
     public class GameRunner {
+        private Econ econ = new Econ();
+
         public Player player;
         public int score = 0, missed = 0, difficultyModifier = 0, molesHit = 0, highestStreak = 0, Streak = 0;
 
@@ -405,7 +409,7 @@ public class Game {
 
         private boolean Start(Player player) {
             if (cooldown.contains(player)
-                 || !player.hasPermission(Config.Permissions.PERM_PLAY)
+            || !player.hasPermission(Config.Permissions.PERM_PLAY)
             ) {
                 return false;
             }
@@ -433,21 +437,25 @@ public class Game {
         }
 
         private void Stop() {
-            grid.removeEntities();
+            Game.this.grid.removeEntities();
             Game.this.actionbarParse(this.player.getUniqueId(), "");
             this.removePlayerAxe(this.player);
             this.sendScoreToPlayer(this.player, this.score);
-            econ.depositPlayer(this.player, this.score);
-            removeStreakHolo();
+            this.econ.depositPlayer(this.player, this.score);
+            this.removeStreakHolo();
 
             if (this.score > 0) {
                 if (this.Streak > this.highestStreak) { this.highestStreak = this.Streak; }
                 this.Streak = 0;
-                scoreboard.add(this.player, this.score, this.molesHit, this.highestStreak);
-                cooldown.add(this.player);
+                Game.this.scoreboard.add(this.player, this.score, this.molesHit, this.highestStreak);
+                Game.this.cooldown.add(this.player);
             }
             Game.this.scoreboard.updateTopHolo();
             this.player = null;
+        }
+
+        public Player getPlayer() {
+            return this.player;
         }
 
         private boolean givePlayerAxe(Player player) {
@@ -481,17 +489,13 @@ public class Game {
                     this.score += settings.scorePoints;
                     this.molesHit ++;
                     this.Streak ++;
-                    if (streakScoreHolo != null) {
-                        updateStreakHolo();
-                    }
+                    this.updateStreakHolo();
                     break;
                 case Jackpot:
                     this.score += settings.scorePoints * 3;
                     this.molesHit ++;
                     this.Streak ++;
-                    if (streakScoreHolo != null) {
-                        updateStreakHolo();
-                    }
+                    this.updateStreakHolo();
                     break;
                 case Null:
                     break;
@@ -499,7 +503,7 @@ public class Game {
 
             this.difficultyModifier++;
             if (this.difficultyModifier >= settings.difficultyScore)
-                setSpeedScale();
+                this.setSpeedScale();
         }
 
         public void RemovePlayerFromGame(PlayerMoveEvent e) {
@@ -526,121 +530,146 @@ public class Game {
             this.difficultyModifier = 0;
         }
         public void createStreakHolo() {
-            Location spawnStreakLocation = settings.streakHoloLocation;
-            Location spawnScoreLocation = new Location(settings.streakHoloLocation.getWorld(), settings.streakHoloLocation.getX(), settings.streakHoloLocation.getY() -0.25, settings.streakHoloLocation.getZ());
-            this.streakNameHolo = (ArmorStand) Objects.requireNonNull(Bukkit.getWorld(spawnStreakLocation.getWorld().getUID())).spawnEntity(spawnStreakLocation, EntityType.ARMOR_STAND);
-            this.streakScoreHolo = (ArmorStand) Objects.requireNonNull(Bukkit.getWorld(spawnScoreLocation.getWorld().getUID())).spawnEntity(spawnScoreLocation, EntityType.ARMOR_STAND);
-            this.streakScoreHolo.setVisible(true);               this.streakNameHolo.setVisible(true);
-            this.streakScoreHolo.setCustomNameVisible(true);     this.streakNameHolo.setCustomNameVisible(true);
-            this.streakScoreHolo.setGravity(false);              this.streakNameHolo.setGravity(false);
-            this.streakScoreHolo.setInvisible(true);             this.streakNameHolo.setInvisible(true);
-            this.streakScoreHolo.setMarker(true);                this.streakNameHolo.setMarker(true);
-            this.streakScoreHolo.isInvulnerable();               this.streakNameHolo.isInvulnerable();
-
-            this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("&0"));
+            var settings = Game.this.getSettings();
+            this.streakNameHolo = (ArmorStand) settings.world.spawnEntity(settings.streakHoloLocation, EntityType.ARMOR_STAND);
+            this.streakNameHolo.setVisible(true);
+            this.streakNameHolo.setCustomNameVisible(true);
+            this.streakNameHolo.setGravity(false);
+            this.streakNameHolo.setInvisible(true);
+            this.streakNameHolo.setMarker(true);
+            this.streakNameHolo.isInvulnerable();
             this.streakNameHolo.setCustomName(DefaultFontInfo.Color("&6&l(<- &e&lHit-streak &6&l->)"));
+            
+            this.streakScoreHolo = (ArmorStand) settings.world.spawnEntity(settings.streakHoloLocation.clone().subtract(0, 0.25, 0), EntityType.ARMOR_STAND);
+            this.streakScoreHolo.setVisible(true);
+            this.streakScoreHolo.setCustomNameVisible(true);
+            this.streakScoreHolo.setGravity(false);
+            this.streakScoreHolo.setInvisible(true);
+            this.streakScoreHolo.setMarker(true);
+            this.streakScoreHolo.isInvulnerable();
+            this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("&0"));
         }
+
+        private String[] StreakColors = new String[] {
+            "#fb1200&l", "#f82500&l", "#f43800&l", "#f14b00&l", "#ee5e00&l", "#ea7100&l", "#e78400&l", "#e39700&l", "#e0aa00&l", "#ddbd00&l", "#c6c300&l", "#b0ca00&l", "#9ad000&l", "#84d700&l", "#6ede00&l", "#58e400&l", "#42eb00&l", "#2cf100&l", "#16f800&l"
+        };
+
         public void updateStreakHolo() {
-            Location particleLocation = new Location(settings.streakHoloLocation.getWorld(), settings.streakHoloLocation.getX(), settings.streakHoloLocation.getY() - 0.25, settings.streakHoloLocation.getZ());
-            for (int i = 0; this.Streak > i; i++) {
-                if (this.Streak == 1) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#fb1200&l" + (i+1)));
-                } else if (this.Streak == 2) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#f82500&l" + (i+1)));
-                } else if (this.Streak == 3) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#f43800&l" + (i+1)));
-                }else if (this.Streak == 4) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#f14b00&l" + (i+1)));
-                } else if (this.Streak == 5) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#ee5e00&l" + (i+1)));
-                } else if (this.Streak == 6) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#ea7100&l" + (i+1)));
-                } else if (this.Streak == 7) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#e78400&l" + (i+1)));
-                } else if (this.Streak == 8) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#e39700&l" + (i+1)));
-                } else if (this.Streak == 9) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#e0aa00&l" + (i+1)));
-                } else if (this.Streak == 10) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#ddbd00&l" + (i+1)));
-                } else if (this.Streak == 11) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#c6c300&l" + (i+1)));
-                } else if (this.Streak == 12) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#b0ca00&l" + (i+1)));
-                } else if (this.Streak == 13) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#9ad000&l" + (i+1)));
-                } else if (this.Streak == 14) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#84d700&l" + (i+1)));
-                } else if (this.Streak == 15) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#6ede00&l" + (i+1)));
-                } else if (this.Streak == 16) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#58e400&l" + (i+1)));
-                } else if (this.Streak == 17) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#42eb00&l" + (i+1)));
-                } else if (this.Streak == 18) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#2cf100&l" + (i+1)));
-                } else if (this.Streak == 19) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#16f800&l" + (i+1)));
-                } else if (this.Streak >= 20 && this.Streak < 40) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#00ff00&l" + (i+1)));
-                }
+            if (this.streakScoreHolo == null) return;
+            var settings = Game.this.getSettings();
+            Location particleLocation = settings.streakHoloLocation.clone().subtract(0, 0.25, 0);
 
-                if (this.Streak > 39) {
-                    this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#00ff00&l" + (i+1)));
-                }
+            if(this.Streak == 0) 
+                this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#ff0000&l0"));
+            else if (this.Streak < 20) 
+                this.streakScoreHolo.setCustomName(DefaultFontInfo.Color(this.StreakColors[this.Streak - 1] + (this.Streak + 1)));
+            else if (this.Streak < 40) 
+                this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#00ff00&l" + (this.Streak + 1)));
+            else 
+                this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#00ff00&l" + (this.Streak + 1)));
+                int red   = Math.min(255, Math.max(0, 255 - (this.Streak - 40) * 12));
+                int green = Math.min(255, Math.max(0, (this.Streak - 40) * 12));
+                settings.world.spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(red, green, 0), 2));
 
-                if (this.Streak == 40) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(255,0,0), 2));
-                } else if (this.Streak == 41) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(251,18,0), 2));
-                } else if (this.Streak == 42) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(248,37,0), 2));
-                } else if (this.Streak == 43) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(244,56,0), 2));
-                } else if (this.Streak == 44) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(241,75,0), 2));
-                } else if (this.Streak == 45) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(238,94,0), 2));
-                } else if (this.Streak == 46) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(234,113,0), 2));
-                } else if (this.Streak == 47) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(231,132,0), 2));
-                } else if (this.Streak == 48) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(227,151,0), 2));
-                } else if (this.Streak == 49) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(224,170,0), 2));
-                } else if (this.Streak == 50) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(221,189,0), 2));
-                } else if (this.Streak == 51) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(198,195,0), 2));
-                } else if (this.Streak == 52) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(176,202,0), 2));
-                } else if (this.Streak == 53) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(154,208,0), 2));
-                } else if (this.Streak == 54) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(132,215,0), 2));
-                } else if (this.Streak == 55) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(110,222,0), 2));
-                } else if (this.Streak == 56) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(88,228,0), 2));
-                } else if (this.Streak == 57) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(66,235,0), 2));
-                } else if (this.Streak == 58) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(44,241,0), 2));
-                } else if (this.Streak == 59) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(22,248,0), 2));
-                } else if (this.Streak >= 60) {
-                    this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(0,255,0), 2));
-                } else if (this.Streak == 0) this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#ff0000&l0"));
-            }
+            // for (int i = 0; this.Streak > i; i++) {
+            //     if (this.Streak == 1) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#fb1200&l" + (i+1)));
+            //     } else if (this.Streak == 2) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#f82500&l" + (i+1)));
+            //     } else if (this.Streak == 3) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#f43800&l" + (i+1)));
+            //     }else if (this.Streak == 4) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#f14b00&l" + (i+1)));
+            //     } else if (this.Streak == 5) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#ee5e00&l" + (i+1)));
+            //     } else if (this.Streak == 6) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#ea7100&l" + (i+1)));
+            //     } else if (this.Streak == 7) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#e78400&l" + (i+1)));
+            //     } else if (this.Streak == 8) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#e39700&l" + (i+1)));
+            //     } else if (this.Streak == 9) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#e0aa00&l" + (i+1)));
+            //     } else if (this.Streak == 10) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#ddbd00&l" + (i+1)));
+            //     } else if (this.Streak == 11) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#c6c300&l" + (i+1)));
+            //     } else if (this.Streak == 12) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#b0ca00&l" + (i+1)));
+            //     } else if (this.Streak == 13) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#9ad000&l" + (i+1)));
+            //     } else if (this.Streak == 14) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#84d700&l" + (i+1)));
+            //     } else if (this.Streak == 15) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#6ede00&l" + (i+1)));
+            //     } else if (this.Streak == 16) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#58e400&l" + (i+1)));
+            //     } else if (this.Streak == 17) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#42eb00&l" + (i+1)));
+            //     } else if (this.Streak == 18) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#2cf100&l" + (i+1)));
+            //     } else if (this.Streak == 19) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#16f800&l" + (i+1)));
+            //     } else if (this.Streak >= 20 && this.Streak < 40) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#00ff00&l" + (i+1)));
+            //     }
+
+            //     if (this.Streak > 39) {
+            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#00ff00&l" + (i+1)));
+            //     }
+
+            //     if (this.Streak == 40) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(255,0,0), 2));
+            //     } else if (this.Streak == 41) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(251,18,0), 2));
+            //     } else if (this.Streak == 42) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(248,37,0), 2));
+            //     } else if (this.Streak == 43) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(244,56,0), 2));
+            //     } else if (this.Streak == 44) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(241,75,0), 2));
+            //     } else if (this.Streak == 45) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(238,94,0), 2));
+            //     } else if (this.Streak == 46) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(234,113,0), 2));
+            //     } else if (this.Streak == 47) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(231,132,0), 2));
+            //     } else if (this.Streak == 48) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(227,151,0), 2));
+            //     } else if (this.Streak == 49) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(224,170,0), 2));
+            //     } else if (this.Streak == 50) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(221,189,0), 2));
+            //     } else if (this.Streak == 51) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(198,195,0), 2));
+            //     } else if (this.Streak == 52) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(176,202,0), 2));
+            //     } else if (this.Streak == 53) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(154,208,0), 2));
+            //     } else if (this.Streak == 54) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(132,215,0), 2));
+            //     } else if (this.Streak == 55) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(110,222,0), 2));
+            //     } else if (this.Streak == 56) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(88,228,0), 2));
+            //     } else if (this.Streak == 57) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(66,235,0), 2));
+            //     } else if (this.Streak == 58) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(44,241,0), 2));
+            //     } else if (this.Streak == 59) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(22,248,0), 2));
+            //     } else if (this.Streak >= 60) {
+            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(0,255,0), 2));
+            //     } else if (this.Streak == 0) this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#ff0000&l0"));
+            // }
         }
         public void removeStreakHolo() {
-            if (this.streakScoreHolo != null) { this.streakScoreHolo.remove(); streakNameHolo.remove(); }
+            if (this.streakScoreHolo != null) { this.streakScoreHolo.remove(); this.streakScoreHolo = null; }
+            if (this.streakNameHolo != null)  { this.streakNameHolo.remove();  this.streakNameHolo  = null; }
         }
 
     }
 
-    private Econ econ = new Econ();
     private Settings settings = new Settings();
     public CooldownList cooldown = new CooldownList();
     private Scoreboard scoreboard = new Scoreboard();
@@ -668,12 +697,9 @@ public class Game {
     }
 
     public Game(String name, Grid grid, Player player) {
-        this.settings.scoreLocation = grid.grid.get(1).getLocation().add(0,2,0);
         this.settings.Setup(formatName(name), player);
 
-        this.grid = grid;
-        this.grid.Save(getID());
-        this.grid.setSettings(settings);
+        this.grid = grid.setSettings(settings);
         this.scoreboard.createTopHolo();
 
         if (Config.Game.ENABLE_GAMECONFIG) {
@@ -688,14 +714,11 @@ public class Game {
     }
 
     public void Start(Player player) {
-        if (this.game != null)
-
-            return;
+        if (this.game != null) return;
         this.game = new GameRunner();
         if (!this.game.Start(player)) {
             this.game = null;
         }
-
     }
 
     public void Stop() {
@@ -705,25 +728,23 @@ public class Game {
         }
     }
 
-    public void unload() {
+    public void Unload() {
         this.Stop();
         this.scoreboard.killTopHolo();
     }
 
-    public void save() {
+    public void Save() {
         if (this.gameFile != null) {
             this.gameFile.save();
         }
         this.settings.Save();
     }
-    public void delete() {
+    public void Delete() {
+        this.grid.Delete();
         this.cooldown.Delete();
         this.scoreboard.Delete();
-        this.grid.Delete(getID());
+        if (this.gameFile != null) this.gameFile.delete();
         this.settings.Delete();
-        this.scoreboard.killTopHolo();
-        if (this.gameFile != null)
-            this.gameFile.delete();
     }
 
     public int getID() {
@@ -734,90 +755,89 @@ public class Game {
         return this.settings.Name;
     }
 
-    public GameRunner getRunning() {
-        if (this.game != null) {
-            return this.game;
-        }
-        return null;
+    public Optional<GameRunner> getRunning() {
+        return Optional.ofNullable(this.game);
     }
 
     public Settings getSettings() {
         return this.settings;
     }
 
-    public Scoreboard getScoreboard() { return this.scoreboard;}
+    public Scoreboard getScoreboard() { 
+        return this.scoreboard;
+    }
 
     public void setJackpotSpawn(int jackpotSpawn) {
         this.settings.jackpotSpawnChance = jackpotSpawn;
-        this.save();
+        this.Save();
     }
 
     public void setDifficultyScore(int difficultyScore) {
         this.settings.difficultyScore = difficultyScore;
-        this.save();
+        this.Save();
     }
 
     public void setPointsPerKill(int pointsPerKill) {
         this.settings.scorePoints = pointsPerKill;
-        this.save();
+        this.Save();
     }
 
     public void setMaxMissed(int maxMissed) {
         this.settings.missCount = maxMissed;
-        this.save();
+        this.Save();
     }
 
     public void setInterval(double Interval) {
         this.settings.spawnTimer = Interval;
-        this.save();
+        this.Save();
     }
 
     public void setSpawnChance(double spawnChance) {
         this.settings.spawnChance = spawnChance;
-        this.save();
+        this.Save();
     }
 
     public void setDifficultyScale(double difficultyScale) {
         this.settings.difficultyScale = difficultyScale;
-        this.save();
+        this.Save();
     }
 
     public void setMoleSpeed(double moleSpeed) {
         this.settings.moleSpeed = moleSpeed;
-        this.save();
+        this.Save();
     }
 
     public void setJackpot(boolean Jackpot) {
         this.settings.hasJackpot = Jackpot;
-        this.save();
+        this.Save();
     }
 
     public void setCooldown(String Cooldown) {
         this.settings.Cooldown = this.cooldown.parseTime(Cooldown);
-        this.save();
+        this.Save();
     }
 
     public void setMoleHead(String moleHead) {
         this.settings.moleHead = moleHead;
-        this.save();
+        this.Save();
     }
 
     public void setJackpotHead(String jackpotHead) {
         this.settings.jackpotHead = jackpotHead;
-        this.save();
+        this.Save();
     }
 
     public void setSpawnRotation(BlockFace spawnRotation) {
         this.settings.spawnRotation = spawnRotation;
-        this.save();
+        this.Save();
     }
     public void setTeleportLocation(World world, double X, double Y, double Z) {
         this.settings.teleportLocation = new Location(world, X,Y,Z);
-        this.save();
+        this.Save();
     }
     public void setStreakHoloLocation(World world, double X, double Y, double Z) {
         this.settings.streakHoloLocation = new Location(world, X, Y, Z);
-        this.save();
+        this.Save();
     }
 
 
@@ -825,14 +845,20 @@ public class Game {
         if (this.currentyOnGird.contains(player.getUniqueId()))
             this.currentyOnGird.remove(player.getUniqueId());
 
-        if (this.game != null && this.game.player == player)
-            this.Stop();
+        this.getRunning().ifPresent((game) -> {
+            if(game.player == player) this.Stop();
+        });
     }
 
+    /**
+     * Checks whether the player is currently on the grid
+     * @param player
+     * @return True if the player is on the grid
+     */
     public boolean onGrid(Player player) {
         boolean playerOnGrid = this.grid.onGrid(player);
 
-        // * Player walks on grid
+        // * Player walks on the grid
         if (playerOnGrid && !currentyOnGird.contains(player.getUniqueId())) {
             this.Start(player);
             currentyOnGird.add(player.getUniqueId());
@@ -840,7 +866,7 @@ public class Game {
             return playerOnGrid;
         }
 
-        // * Player walks of grid
+        // * Player walks of the grid
         if (!playerOnGrid && currentyOnGird.contains(player.getUniqueId())) {
             currentyOnGird.remove(player.getUniqueId());
             Game.this.actionbarParse(player.getUniqueId(), "");
@@ -849,11 +875,8 @@ public class Game {
 
         return playerOnGrid;
     }
-    public boolean inGrid(Block block) {
-        if (this.grid.grid.contains(block)) {
-            return true;
-        }
-        return false;
+    public boolean onGrid(Block block) {
+        return this.grid.onGrid(block);
     }
 
     public void useTicket(PlayerInteractEvent e) {
@@ -898,20 +921,20 @@ public class Game {
     }
 
     public void updateActionBar() {
-        if (Game.this.getRunning() != null) {
-            this.actionbarParse(this.game.player.getUniqueId(), ComponentSerializer.parse(Config.Game.ACTIONTEXT), DefaultFontInfo.Color("&2&l ") + this.game.score);
-        }
+        Game.this.getRunning().ifPresent((game) -> {
+            this.actionbarParse(game.player.getUniqueId(), ComponentSerializer.parse(Config.Game.ACTIONTEXT), DefaultFontInfo.Color("&2&l ") + game.score);
+        });
         for (UUID player : this.currentyOnGird) {
             if (this.cooldown.contains(player))
                 this.actionbarParse(player, Translator.GAME_ACTIONBAR_GAMEOVER, this.cooldown.getText(player));
-            else if (Bukkit.getPlayer(player).getInventory().firstEmpty() != -1 && Game.this.getRunning() == null)
+            else if (Bukkit.getPlayer(player).getInventory().firstEmpty() != -1 && Game.this.getRunning().isEmpty())
                 this.actionbarParse(player, Translator.GAME_ACTIONBAR_RESTART.Format());
         }
     }
 
 
     public boolean handleHitEvent(EntityDamageByEntityEvent e) {
-        if (this.game == null)
+        if (this.getRunning().isEmpty())
             return false;
 
         Player player = (Player) e.getDamager();
@@ -920,9 +943,11 @@ public class Game {
             return true;
         }
 
-        Mole mole = this.grid.handleHitEvent(e.getEntity());
-        if (mole == null)
+        Optional<Mole> optionalMole = this.grid.handleHitEvent(e.getEntity());
+        if (optionalMole.isEmpty())
             return false;
+        
+        Mole mole = optionalMole.get();
         this.game.moleHit(mole);
         mole.state = MoleState.Hit;
 
@@ -934,16 +959,18 @@ public class Game {
 
     public void moleUpdater() {
         int missed = this.grid.entityUpdate();
-        if (this.game != null && missed > 0) {
-            this.game.missed += missed;
-            if (this.game.Streak > this.game.highestStreak) { this.game.highestStreak = this.game.Streak; }
-            this.game.Streak = 0;
-            this.game.player.playSound(game.player.getLocation(), Config.Game.MISSSOUND, 1, 1);
-            this.game.player.sendMessage(Config.AppConfig.PREFIX + Translator.GAME_MOLEMISSED.Format(this));
-            if (this.getRunning().missed >= this.settings.missCount) {
-                this.Stop();
+        this.getRunning().ifPresent((game) -> {
+            if (missed > 0) {
+                game.missed += missed;
+                if (game.Streak > game.highestStreak) { game.highestStreak = game.Streak; }
+                game.Streak = 0;
+                game.player.playSound(game.player.getLocation(), Config.Game.MISSSOUND, 1, 1);
+                game.player.sendMessage(Config.AppConfig.PREFIX + Translator.GAME_MOLEMISSED.Format(this));
+                if (game.missed >= this.settings.missCount) {
+                    this.Stop();
+                }
             }
-        }
+        });
     }
 
     private int Tick = 0;

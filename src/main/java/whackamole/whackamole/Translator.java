@@ -189,10 +189,10 @@ public enum Translator {
 
 
     private void Format(Game game) {
-        if (game.getRunning() != null) {
-            this.formattedValue = this.formattedValue.replace("{Score}", String.valueOf(game.getRunning().score));
-            this.formattedValue = this.formattedValue.replace("{missedMoles}", String.valueOf(game.getRunning().missed));
-        }
+        game.getRunning().ifPresent((runner) -> {
+            this.formattedValue = this.formattedValue.replace("{Score}", String.valueOf(runner.score));
+            this.formattedValue = this.formattedValue.replace("{missedMoles}", String.valueOf(runner.missed));
+        });
         this.formattedValue = this.formattedValue.replace("{gameName}", String.valueOf(game.getName()));
         this.formattedValue = this.formattedValue.replace("{maxMissed}", String.valueOf(game.getSettings().missCount));
     }
