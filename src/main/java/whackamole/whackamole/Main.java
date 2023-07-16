@@ -14,7 +14,12 @@ public final class Main extends JavaPlugin {
         CommandAPI.onLoad(new CommandAPIConfig().verboseOutput(false));
 
         Logger.onLoad(this);
-        Config.onLoad(this);
+        if (!Config.onLoad(this)) {
+            // TODO: Add notification that loading of the config failed and the plugin will shutodwn.
+            Logger.error("The Configuration has fail to load, stopping the plugin!");
+            this.setEnabled(false);
+            return;
+        }
         Translator.onLoad();
 
         SQLite.onLoad();

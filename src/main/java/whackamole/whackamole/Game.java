@@ -410,6 +410,7 @@ public class Game {
         private boolean Start(Player player) {
             if (cooldown.contains(player)
             || !player.hasPermission(Config.Permissions.PERM_PLAY)
+            || Config.Game.PLAYER_AXE == null
             ) {
                 return false;
             }

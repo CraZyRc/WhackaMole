@@ -25,9 +25,10 @@ public class Config {
         public static String storageFolder = "./plugins/WhackaMole"
                 ,   PREFIX = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
 
-        private static void LoadConfig(YMLFile configFile) {
+        private static boolean LoadConfig(YMLFile configFile) {
             String[] fields = configFile.getString("Language").split("_");
             Language = new Locale(fields[0], fields[1], "");
+            return true;
         }
     }
 
@@ -37,13 +38,14 @@ public class Config {
 
         public static int TICKETPRICE;
 
-        private static void LoadConfig(YMLFile configFile) {
-            CURRENCY_SING = configFile.getString("Singular Currency");
-            CURRENCY_PLUR = configFile.getString("Plural Currency");
-            SYMBOL = configFile.getString("Currency Symbol");
-            ECONOMY = configFile.getString("Economy");
-            OBJECTIVE = configFile.getString("Scoreboard Objective");
-            TICKETPRICE = configFile.getInt("Ticket Price");
+        private static boolean LoadConfig(YMLFile configFile) {
+            CURRENCY_SING   = configFile.getString("Singular Currency");
+            CURRENCY_PLUR   = configFile.getString("Plural Currency");
+            SYMBOL          = configFile.getString("Currency Symbol");
+            ECONOMY         = configFile.getString("Economy");
+            OBJECTIVE       = configFile.getString("Scoreboard Objective");
+            TICKETPRICE     = configFile.getInt("Ticket Price");
+            return true;
         }
     }
 
@@ -60,7 +62,7 @@ public class Config {
 
         public static ItemStack PLAYER_AXE, TICKET;
 
-        private static void LoadConfig(YMLFile configFile) {
+        private static boolean LoadConfig(YMLFile configFile) {
             ACTIONTEXT          = configFile.getString("Actionbar Message");
             HAMMER_ITEM         = configFile.getString("Hammer item");
             HAMMERNAME          = DefaultFontInfo.Color(configFile.getString("Hammer Name"));
@@ -69,7 +71,7 @@ public class Config {
             FiELD_MARGIN_X      = configFile.getDouble("Field extension.width");
             FiELD_MARGIN_Y      = configFile.getDouble("Field extension.height");
 
-            ENABLE_GAMECONFIG    = configFile.getBoolean("Game config");
+            ENABLE_GAMECONFIG   = configFile.getBoolean("Game config");
             HITSOUND            = configFile.getSound("HitSound");
             MISSSOUND           = configFile.getSound("MissedSound");
 
@@ -87,8 +89,10 @@ public class Config {
                         ItemFlag.HIDE_UNBREAKABLE);
                 axeMeta.setDisplayName(HAMMERNAME);
                 PLAYER_AXE.setItemMeta(axeMeta);
-            } else
+            } else {
                 Logger.error(Translator.CONFIG_INVALIDHAMMERITEM);
+                return false;
+            }
 
             TICKET = new ItemStack(Material.MAP);
             ItemMeta ticketInfo = TICKET.getItemMeta();
@@ -101,13 +105,14 @@ public class Config {
                             Translator.CONFIG_TICKET_LORE3.toString()));
             ticketInfo.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
             TICKET.setItemMeta(ticketInfo);
+            return true;
         }
     }
 
     public static class Permissions {
         public static String PERM_TICKET_USE, PERM_BUY, PERM_RELOAD, PERM_CREATE, PERM_REMOVE, PERM_SETTINGS, PERM_PLAY, PERM_POSITIONS, PERM_TOP;
 
-        private static void LoadConfig(YMLFile configFile) {
+        private static boolean LoadConfig(YMLFile configFile) {
             PERM_TICKET_USE     = "WAM." + configFile.getString("Play.Use Reset Ticket");
             PERM_PLAY           = "WAM." + configFile.getString("Play.Play");
             PERM_BUY            = "WAM." + configFile.getString("Commands.Buy");
@@ -117,17 +122,19 @@ public class Config {
             PERM_REMOVE         = "WAM." + configFile.getString("Commands.Remove");
             PERM_POSITIONS      = "WAM." + configFile.getString("Commands.Positions");
             PERM_TOP            = "WAM." + configFile.getString("Commands.Top");
+            return true;
         }
     }
 
     private Config() {
     }
 
-    public static void onLoad(Plugin Main) {
+    public static boolean onLoad(Plugin Main) {
         try {
             ConfigFile = new YMLFile(AppConfig.storageFolder, AppConfig.configFileName);
         } catch (Exception e) {
             Logger.error(e.getMessage());
+            return false;
         }
 
         if (ConfigFile.created) {
@@ -137,19 +144,26 @@ public class Config {
                 ConfigFile = new YMLFile(AppConfig.storageFolder, AppConfig.configFileName);
             } catch (Exception e) {
                 Logger.error(e.getMessage());
+                return false;
             }
         }
+        return LoadConfig(ConfigFile);
+    }
 
-
-        if(Updater.versionCompare(ConfigFile.getString("Config Version"), AppConfig.configVersion)) {
+    protected static boolean LoadConfig(YMLFile ConfigFile) {
+        if (Updater.versionCompare(ConfigFile.getString("Config Version"), AppConfig.configVersion)) {
             Logger.warning(Translator.CONFIG_OLDVERSION.Format(ConfigFile.getString("Config Version")));
         }
 
-        AppConfig.LoadConfig(ConfigFile);
-        Currency.LoadConfig(ConfigFile);
-        Game.LoadConfig(ConfigFile);
-        Permissions.LoadConfig(ConfigFile);
+        if(!AppConfig.LoadConfig(ConfigFile)
+        || !Currency.LoadConfig(ConfigFile)
+        || !Game.LoadConfig(ConfigFile)
+        || !Permissions.LoadConfig(ConfigFile)) {
+            return false;
+        }
 
         Loaded = true;
+        return true;
     }
+
 }
