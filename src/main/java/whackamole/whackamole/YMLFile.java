@@ -36,6 +36,9 @@ public class YMLFile {
 
     public YMLFile(File file) {
         this.file = file;
+        if (!this.file.exists()) {
+            this.createFile();
+        }
         this.load();
     }
 
@@ -74,8 +77,10 @@ public class YMLFile {
 
     public void load() {
         try {
-            this.file.mkdirs();
-            if(!this.file.exists()) created = true;
+            if(!this.file.exists()) {
+                this.file.createNewFile();
+                created = true;
+            } 
             this.FileConfig.load(this.file);
         } catch (Exception e) {
             this.createFile();
@@ -97,5 +102,4 @@ public class YMLFile {
             e.printStackTrace();
         }
     }
-
 }
