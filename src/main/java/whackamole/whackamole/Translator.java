@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 public enum Translator {
         MAIN_OLDVERSION                                     ("Main.oldVersion")
-    ,   CONFIG_OLDVERSION                                   ("Config.oldVersion", String.class)
+    ,   MAIN_CONFIGLOADFAIL                                 ("Main.configLoadFail")
     ,   UPDATEFAIL                                          ("Update.updateFail", String.class)
     ,   LOGGER_WARNING                                      ("Logger.Warning", String.class)
     ,   LOGGER_ERROR                                        ("Logger.Error", String.class)
@@ -18,6 +18,7 @@ public enum Translator {
     ,   YML_DELETEDFILE                                     ("YML.deletedFile", YMLFile.class)
     ,   YML_CREATEFILE                                      ("YML.createFile", YMLFile.class)
     ,   YML_CREATEFAIL                                      ("YML.createFail", YMLFile.class)
+    ,   CONFIG_OLDVERSION                                   ("Config.oldVersion", String.class)
     ,   CONFIG_INVALIDHAMMERITEM                            ("Config.invalidHammerItem")
     ,   CONFIG_TICKET_NAME                                  ("Config.Ticket.Name")
     ,   CONFIG_TICKET_LORE1                                 ("Config.Ticket.Lore1")

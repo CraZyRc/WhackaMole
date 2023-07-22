@@ -28,7 +28,17 @@ Language: en_US
 Actionbar Message: '[{"text":""},{"text":"[","Bold":true,"color":"#000000"},{"text":"W","bold":true,"color":"#ffd700"},{"text":"h","bold":true,"color":"#ffce00"},{"text":"a","bold":true,"color":"#ffc600"},{"text":"c","bold":true,"color":"#ffbe00"},{"text":"k","bold":true,"color":"#ffb600"},{"text":"a","bold":true,"color":"#ffae00"},{"text":"M","bold":true,"color":"#ffa600"},{"text":"o","bold":true,"color":"#ff9e00"},{"text":"l","bold":true,"color":"#ff9600"},{"text":"e","bold":true,"color":"#ff8e00"},{"text":"] ","Bold":true,"color":"#000000"},{"text":"Your score is:","bold":true,"color":"#55ffff"}]'
 
 # Item for the hammer (Only the Material name, ALL CAPS and without "Minecraft_"):
-Hammer item: GOLDEN_AXE
+Hammer Item: GOLDEN_AXE
+
+# customModelData for the hammer item (in case you run a resource pack)
+# More info about customModelData: https://mcmodels.net/how-to-tutorials/resource-pack-tutorials/what-is-custommodeldata-2/
+# If you don't use this feature, leave the field to "0" or 2 single quotes ('')
+Hammer customModelData: ''
+
+# Custom damage value for the hammer item (in case you run a resourcepack)
+# More info about tool damage values: https://www.spigotmc.org/wiki/custom-item-models-in-1-9-and-up/ (halfway through the page where it says in capital bold letters "THE RESOURCE PACK")
+# If you don't use this feature, leave the field to "0" or 2 single quotes ('')
+Hammer itemDamage: ''
 
 # Name of the hammer (accepts color codes and hex colors).
 Hammer Name: "&0&l[&6&lWAM&0&l] #28c000&lS#2fca00&lM#37d500&lA#3edf00&lS#46ea00&lH#4df400&lE#55ff00&lR"
@@ -51,7 +61,7 @@ Economy: SCOREBOARD
 # Leave '' if you run VAULT.
 Scoreboard Objective: ''
 
-# For Vault users, you can specify the name of your economy currency (max 2 entries, first one is singular and second plural).
+# You can specify the name of your economy currency used in messages (max 2 entries, first one is singular and second plural).
 # The name of your server currency:
 Singular Currency: "Dollar"
 Plural Currency: "Dollars"
@@ -107,6 +117,10 @@ Field extension:
 # |                  Permission nodes                    | #
 # <------------------------------------------------------> #
 ############################################################
+
+# These are permission node names you can change so it won't interfere with permission nodes from other plugins that may use similar permission node names.
+# NOTE: When using these permission nodes, make sure to add "wam." in front of every permission node
+# NOTE: for example, if the Play permission node is called "Play", then the permission to use is "Wam.Play"
 
 Play:
   Use Reset Ticket: "Use"

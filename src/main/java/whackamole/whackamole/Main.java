@@ -14,12 +14,7 @@ public final class Main extends JavaPlugin {
         CommandAPI.onLoad(new CommandAPIConfig().verboseOutput(false));
 
         Logger.onLoad(this);
-        if (!Config.onLoad(this)) {
-            // TODO: Add notification that loading of the config failed and the plugin will shutodwn.
-            Logger.error("The Configuration has fail to load, stopping the plugin!");
-            this.setEnabled(false);
-            return;
-        }
+
         Translator.onLoad();
 
         SQLite.onLoad();
@@ -28,6 +23,11 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        if (!Config.onLoad(this)) {
+            Logger.error(Translator.MAIN_CONFIGLOADFAIL);
+            this.getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
         Econ.onEnable(this);
         this.manager.onLoad(this);
         new Commands(this);
