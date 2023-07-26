@@ -1,0 +1,119 @@
+############################################################
+# ^------------------------------------------------------^ #
+# |                       Notes                          | #
+# <------------------------------------------------------> #
+############################################################
+
+Config Version: 1.3
+
+# Welcome to the config file, here you can adjust the general settings of the plugin.
+# the lines must be in YAML format, so it doesn't accept tabs, only spaces.
+# And you need to make sure you have "escaped" all apostrophes in your text: If you want to write "don't", for example, write "don''t" instead (note the doubled apostrophe).
+
+# Select the plugin language (Config will always be in english), you can select one of following languages: "en_US", "nl_NL" and "fr_FR").
+# If you wish to contribute to the language translations (e.g. by making a translation for another language), then please visit https://github.com/CraZyRc/WhackaMole)
+Language: en_US
+
+############################################################
+# ^------------------------------------------------------^ #
+# |                  The written code                    | #
+# <------------------------------------------------------> #
+############################################################
+
+# This section is about customisable text.
+# Please do note that some text messages have to be in Json.
+# If you don't know how to write in Json, here's a tutorial: https://minecraft.fandom.com/wiki/Raw_JSON_text_format.
+
+# The message to display on the Actionbar (accepts only Json).
+Actionbar Message: '[{"text":""},{"text":"[","Bold":true,"color":"#000000"},{"text":"W","bold":true,"color":"#ffd700"},{"text":"h","bold":true,"color":"#ffce00"},{"text":"a","bold":true,"color":"#ffc600"},{"text":"c","bold":true,"color":"#ffbe00"},{"text":"k","bold":true,"color":"#ffb600"},{"text":"a","bold":true,"color":"#ffae00"},{"text":"M","bold":true,"color":"#ffa600"},{"text":"o","bold":true,"color":"#ff9e00"},{"text":"l","bold":true,"color":"#ff9600"},{"text":"e","bold":true,"color":"#ff8e00"},{"text":"] ","Bold":true,"color":"#000000"},{"text":"Your score is:","bold":true,"color":"#55ffff"}]'
+
+# Name of the hammer (accepts color codes and hex colors).
+Hammer Name: "&0&l[&6&lWAM&0&l] #28c000&lS#2fca00&lM#37d500&lA#3edf00&lS#46ea00&lH#4df400&lE#55ff00&lR"
+
+# Add your custom skin to the mole head. simple grab the link from an online database (like https://minecraft-heads.com/ ).
+# If you use minecraft-heads.com get the value code (it always starts with "eyJ0ZXh"... etc).
+# Default: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxMjUwM2Q2MWM0OWY3MDFmZWU4NjdkNzkzZjFkY2M1MjJlNGQ3YzVjNDFhNjhmMjk1MTU3OWYyNGU3Y2IyYSJ9fX0="
+Mole Skin: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxMjUwM2Q2MWM0OWY3MDFmZWU4NjdkNzkzZjFkY2M1MjJlNGQ3YzVjNDFhNjhmMjk1MTU3OWYyNGU3Y2IyYSJ9fX0="
+
+# Use the line below for the Jackpot skin.
+# Default: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlkZGZiMDNjOGY3Zjc4MDA5YjgzNDRiNzgzMGY0YTg0MThmYTRiYzBlYjMzN2EzMzA1OGFiYjdhMDVlOTNlMSJ9fX0="
+Jackpot Skin: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlkZGZiMDNjOGY3Zjc4MDA5YjgzNDRiNzgzMGY0YTg0MThmYTRiYzBlYjMzN2EzMzA1OGFiYjdhMDVlOTNlMSJ9fX0="
+
+
+############################################################
+# ^------------------------------------------------------^ #
+# |                  The economy side                    | #
+# <------------------------------------------------------> #
+############################################################
+
+# Does your server use an Economy plugin (and do you have Vault)?
+# If so then you can make it so the minigame adds the points to your economy balance.
+# If your server does not use an economy plugin but uses a scoreboard, then this is also possible.
+# Please select whether you'd like to be paid by "VAULT" or a "SCOREBOARD".
+Economy: SCOREBOARD
+
+# What is the Scoreboard objective name that runs as your economy?
+# Leave '' if you run VAULT.
+Scoreboard Objective: ''
+
+# For Vault users, you can specify the name of your economy currency (max 2 entries, first one is singular and second plural).
+# The name of your server currency:
+Singular Currency: "Dollar"
+Plural Currency: "Dollars"
+
+# Symbol of server currency.
+Currency Symbol: $
+
+# Costs to buy cooldown reset ticket.
+Ticket Price: 15
+
+
+############################################################
+# ^------------------------------------------------------^ #
+# |                     Game options                     | #
+# <------------------------------------------------------> #
+############################################################
+
+# Here you will find the general options regarding game creation and playability.
+
+# For sounds, please refer to the Sound enum to see the Java equivalent of the minecraft sound: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html.
+# What sound should be played when a mole has been hit.
+HitSound: BLOCK_NOTE_BLOCK_BIT
+
+# What sound should be played when a mole is missed.
+MissedSound: BLOCK_NOTE_BLOCK_BASS
+
+# The list of blocks the game can spawn on (generally what the surface blocks will be of the game, the visible layer of the game).
+Blocklist:
+  - SMOKER
+  - RESPAWN_ANCHOR
+  - REINFORCED_DEEPSLATE
+  - DISPENCER
+  - DROPPER
+  - END_PORTAL_FRAME
+
+# Maximum size of a created field.
+Max playfield: 25
+
+# To what range does the game extend horizontally and vertically?
+# NOTE: set the height to '2.0' to make it so the player doesn't exit the game by jumping.
+# NOTE: if you keep the width under '1.0' the player will exit the field when the player steps off the field, to add a little margin, make sure this is higher than '1.0'.
+Field extension:
+  width: 1.4
+  height: 2.0
+
+
+############################################################
+# ^------------------------------------------------------^ #
+# |                  Permission nodes                    | #
+# <------------------------------------------------------> #
+############################################################
+
+Commands:
+  Play: "Play"
+  Buy: "Buy"
+  Use Reset Ticket: "Use"
+  Create: "create"
+  Reload: "Reload"
+  Settings: "Settings"
+  Remove: "Remove"

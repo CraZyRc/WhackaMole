@@ -115,4 +115,5 @@ run/
 pom.xml
 
 plugins/
-/test/
+test/*
+!test/*.yml
