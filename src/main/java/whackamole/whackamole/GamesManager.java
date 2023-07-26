@@ -1,6 +1,7 @@
 package whackamole.whackamole;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 import org.bukkit.Bukkit;
@@ -39,7 +40,7 @@ public final class GamesManager implements Listener {
     }
 
     private int tickId = -1;
-    public void onLoad(Plugin main) {
+    public void onLoad(Plugin main) throws FileNotFoundException {
         this.loadGames();
         this.tickId = Bukkit.getScheduler().scheduleSyncRepeatingTask(main, Tick, 1L, 1L);
     }
@@ -50,10 +51,10 @@ public final class GamesManager implements Listener {
     }
 
 
-    public void loadGames() {
+    public void loadGames() throws FileNotFoundException {
         Logger.info(Translator.MANAGER_LOADINGGAMES);
         if (Config.Game.ENABLE_GAMECONFIG) {
-            YMLFile GamesFolder = new YMLFile(Config.AppConfig.storageFolder + "/Games");
+            YMLFile GamesFolder = new YMLFile(Config.AppConfig.storageFolder + "/Games", "");
             if (GamesFolder.file.list().length == 0) {
                 Logger.warning(Translator.MANAGER_NOGAMESFOUND);
                 return;

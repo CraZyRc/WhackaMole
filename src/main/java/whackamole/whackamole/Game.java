@@ -1,5 +1,6 @@
 package whackamole.whackamole;
 
+import java.io.FileNotFoundException;
 import java.util.*;
 
 import org.bukkit.*;
@@ -168,8 +169,8 @@ public class Game {
     public class GameFile {
         private final YMLFile gameConfig;
 
-        public GameFile() {
-            gameConfig = new YMLFile(Config.AppConfig.storageFolder + "/Games/" + getName() + ".yml");
+        public GameFile() throws FileNotFoundException {
+            gameConfig = new YMLFile(Config.AppConfig.storageFolder + "/Games",  getName() + ".yml");
             this.save();
         }
 
@@ -697,7 +698,7 @@ public class Game {
         this.scoreboard.onLoad();
     }
 
-    public Game(String name, Grid grid, Player player) {
+    public Game(String name, Grid grid, Player player) throws FileNotFoundException {
         this.settings.Setup(formatName(name), player);
 
         this.grid = grid.setSettings(settings);

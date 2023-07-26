@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
+import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -237,7 +238,11 @@ public class Commands {
                             Config.onLoad(main);
                             Logger.onLoad(main);
                             Econ.onEnable(main);
-                            this.manager.loadGames();
+                            try {
+                                this.manager.loadGames();
+                            } catch (FileNotFoundException e) {
+                                throw new RuntimeException(e);
+                            }
                             sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_RELOAD_SUCCESS);
                             Logger.success("Done! V" + main.getDescription().getVersion());
                             return 0;
