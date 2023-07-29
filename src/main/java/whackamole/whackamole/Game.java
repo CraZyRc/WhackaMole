@@ -1,6 +1,7 @@
 package whackamole.whackamole;
 
 import java.io.FileNotFoundException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import org.bukkit.*;
@@ -268,9 +269,9 @@ public class Game {
             Game.this.settings.Save();
             
             Game.this.grid = Grid.Deserialize(Game.this.settings.world, this.gameConfig.getList("Field Data.Grid"));
+            Game.this.grid.setSettings(settings);
             Game.this.grid.Delete();
             Game.this.grid.Save();
-            Game.this.grid.setSettings(settings);
             
             Logger.success(Translator.GAME_LOADSUCCESS.Format(Game.this));
         }
@@ -301,6 +302,7 @@ public class Game {
             scoreItem.Score = score;
             scoreItem.molesHit = molesHit;
             scoreItem.scoreStreak = scoreStreak;
+            scoreItem.Datetime = LocalDateTime.now();
             scoreItem.gameID = getID();
             scoreItem.playerID = player.getUniqueId();
             this.scores.add(scoreItem);
