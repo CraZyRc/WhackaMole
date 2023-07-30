@@ -1,6 +1,7 @@
 package whackamole.whackamole;
 
 import java.io.FileNotFoundException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import org.bukkit.*;
@@ -301,8 +302,8 @@ public class Game {
             scoreItem.Score = score;
             scoreItem.molesHit = molesHit;
             scoreItem.scoreStreak = scoreStreak;
+            scoreItem.Datetime = LocalDateTime.now();
             scoreItem.gameID = getID();
-            scoreItem.Datetime = new java.sql.Date(System.currentTimeMillis());
             scoreItem.playerID = player.getUniqueId();
             this.scores.add(scoreItem);
             this.db.Insert(scoreItem);

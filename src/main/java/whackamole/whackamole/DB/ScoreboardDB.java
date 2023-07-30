@@ -3,7 +3,7 @@ package whackamole.whackamole.DB;
 import whackamole.whackamole.DB.Model.Column;
 import whackamole.whackamole.DB.Model.Table;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,7 +16,7 @@ public class ScoreboardDB extends Table<ScoreboardRow> {
             new Column<>("Score", Integer.class).AllowNull(false),
             new Column<>("molesHit", Integer.class).AllowNull(false),
             new Column<>("scoreStreak", Integer.class).AllowNull(false),
-            new Column<>("Datetime", Date.class).BuildInDefault("CURRENT_TIMESTAMP"),
+            new Column<>("Datetime", LocalDateTime.class).AllowNull(false) //.BuildInDefault("CURRENT_TIMESTAMP"),
         }, ScoreboardRow.class);
     }
 
@@ -30,13 +30,14 @@ public class ScoreboardDB extends Table<ScoreboardRow> {
         return this.Select("gameID = ? AND playerID = ?", gameID, player);
     }
 
-    public ScoreboardRow Insert(UUID player, int gameID, int score, int molesHit, int scoreStreak) {
+    public ScoreboardRow Insert(UUID player, int gameID, int score, int molesHit, int scoreStreak, LocalDateTime date) {
         var row = new ScoreboardRow();
         row.gameID = gameID;
         row.playerID = player;
         row.Score = score;
         row.molesHit = molesHit;
         row.scoreStreak = scoreStreak;
+        row.Datetime = date;
         return this.Insert(row);
     }
 
