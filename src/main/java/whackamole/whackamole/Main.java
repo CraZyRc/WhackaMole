@@ -10,12 +10,15 @@ import java.io.FileNotFoundException;
 
 public final class Main extends JavaPlugin {
     public GamesManager manager = GamesManager.getInstance();
+    private boolean valid_config = false;
 
     @Override
     public void onLoad() {
         CommandAPI.onLoad(new CommandAPIConfig().verboseOutput(false));
 
         Logger.onLoad(this);
+        valid_config = Config.onLoad(this);
+        if (! valid_config) return;
 
         Translator.onLoad();
 
@@ -25,7 +28,7 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        if (!Config.onLoad(this)) {
+        if (!valid_config) {
             Logger.error(Translator.MAIN_CONFIGLOADFAIL);
             this.getServer().getPluginManager().disablePlugin(this);
             return;
