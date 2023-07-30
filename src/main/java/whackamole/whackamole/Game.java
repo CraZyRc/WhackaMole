@@ -268,10 +268,10 @@ public class Game {
             Game.this.settings.Save();
             
             Game.this.grid = Grid.Deserialize(Game.this.settings.world, this.gameConfig.getList("Field Data.Grid"));
+            Game.this.grid.setSettings(settings);
             Game.this.grid.Delete();
             Game.this.grid.Save();
-            Game.this.grid.setSettings(settings);
-            
+
             Logger.success(Translator.GAME_LOADSUCCESS.Format(Game.this));
         }
 
@@ -302,6 +302,7 @@ public class Game {
             scoreItem.molesHit = molesHit;
             scoreItem.scoreStreak = scoreStreak;
             scoreItem.gameID = getID();
+            scoreItem.Datetime = new java.sql.Date(System.currentTimeMillis());
             scoreItem.playerID = player.getUniqueId();
             this.scores.add(scoreItem);
             this.db.Insert(scoreItem);
@@ -559,111 +560,21 @@ public class Game {
         public void updateStreakHolo() {
             if (this.streakScoreHolo == null) return;
             var settings = Game.this.getSettings();
-            Location particleLocation = settings.streakHoloLocation.clone().subtract(0, 0.25, 0);
+            Location particleLocation = settings.streakHoloLocation.clone().subtract(0, 0.05, 0);
 
             if(this.Streak == 0) 
                 this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#ff0000&l0"));
             else if (this.Streak < 20) 
-                this.streakScoreHolo.setCustomName(DefaultFontInfo.Color(this.StreakColors[this.Streak - 1] + (this.Streak + 1)));
+                this.streakScoreHolo.setCustomName(DefaultFontInfo.Color(this.StreakColors[this.Streak - 1] + this.Streak));
             else if (this.Streak < 40) 
-                this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#00ff00&l" + (this.Streak + 1)));
+                this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#00ff00&l" + this.Streak));
             else 
-                this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#00ff00&l" + (this.Streak + 1)));
+                this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#00ff00&l" + this.Streak));
                 int red   = Math.min(255, Math.max(0, 255 - (this.Streak - 40) * 12));
                 int green = Math.min(255, Math.max(0, (this.Streak - 40) * 12));
                 settings.world.spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(red, green, 0), 2));
 
-            // for (int i = 0; this.Streak > i; i++) {
-            //     if (this.Streak == 1) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#fb1200&l" + (i+1)));
-            //     } else if (this.Streak == 2) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#f82500&l" + (i+1)));
-            //     } else if (this.Streak == 3) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#f43800&l" + (i+1)));
-            //     }else if (this.Streak == 4) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#f14b00&l" + (i+1)));
-            //     } else if (this.Streak == 5) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#ee5e00&l" + (i+1)));
-            //     } else if (this.Streak == 6) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#ea7100&l" + (i+1)));
-            //     } else if (this.Streak == 7) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#e78400&l" + (i+1)));
-            //     } else if (this.Streak == 8) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#e39700&l" + (i+1)));
-            //     } else if (this.Streak == 9) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#e0aa00&l" + (i+1)));
-            //     } else if (this.Streak == 10) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#ddbd00&l" + (i+1)));
-            //     } else if (this.Streak == 11) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#c6c300&l" + (i+1)));
-            //     } else if (this.Streak == 12) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#b0ca00&l" + (i+1)));
-            //     } else if (this.Streak == 13) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#9ad000&l" + (i+1)));
-            //     } else if (this.Streak == 14) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#84d700&l" + (i+1)));
-            //     } else if (this.Streak == 15) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#6ede00&l" + (i+1)));
-            //     } else if (this.Streak == 16) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#58e400&l" + (i+1)));
-            //     } else if (this.Streak == 17) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#42eb00&l" + (i+1)));
-            //     } else if (this.Streak == 18) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#2cf100&l" + (i+1)));
-            //     } else if (this.Streak == 19) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#16f800&l" + (i+1)));
-            //     } else if (this.Streak >= 20 && this.Streak < 40) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#00ff00&l" + (i+1)));
-            //     }
 
-            //     if (this.Streak > 39) {
-            //         this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#00ff00&l" + (i+1)));
-            //     }
-
-            //     if (this.Streak == 40) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(255,0,0), 2));
-            //     } else if (this.Streak == 41) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(251,18,0), 2));
-            //     } else if (this.Streak == 42) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(248,37,0), 2));
-            //     } else if (this.Streak == 43) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(244,56,0), 2));
-            //     } else if (this.Streak == 44) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(241,75,0), 2));
-            //     } else if (this.Streak == 45) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(238,94,0), 2));
-            //     } else if (this.Streak == 46) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(234,113,0), 2));
-            //     } else if (this.Streak == 47) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(231,132,0), 2));
-            //     } else if (this.Streak == 48) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(227,151,0), 2));
-            //     } else if (this.Streak == 49) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(224,170,0), 2));
-            //     } else if (this.Streak == 50) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(221,189,0), 2));
-            //     } else if (this.Streak == 51) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(198,195,0), 2));
-            //     } else if (this.Streak == 52) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(176,202,0), 2));
-            //     } else if (this.Streak == 53) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(154,208,0), 2));
-            //     } else if (this.Streak == 54) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(132,215,0), 2));
-            //     } else if (this.Streak == 55) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(110,222,0), 2));
-            //     } else if (this.Streak == 56) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(88,228,0), 2));
-            //     } else if (this.Streak == 57) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(66,235,0), 2));
-            //     } else if (this.Streak == 58) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(44,241,0), 2));
-            //     } else if (this.Streak == 59) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(22,248,0), 2));
-            //     } else if (this.Streak >= 60) {
-            //         this.streakScoreHolo.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(0,255,0), 2));
-            //     } else if (this.Streak == 0) this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#ff0000&l0"));
-            // }
         }
         public void removeStreakHolo() {
             if (this.streakScoreHolo != null) { this.streakScoreHolo.remove(); this.streakScoreHolo = null; }

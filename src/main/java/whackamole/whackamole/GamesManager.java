@@ -180,7 +180,7 @@ public final class GamesManager implements Listener {
     public void playerMoveEvent(PlayerMoveEvent e) {
         Player player = e.getPlayer();
         for (Game game : games) {
-            var gameRunner = game.getRunning().orElseGet(null);
+            var gameRunner = game.getRunning().orElse(null);
             if (game.onGrid(player)) {
                 if (gameRunner == null) continue;
                 if (gameRunner.player != player) {
