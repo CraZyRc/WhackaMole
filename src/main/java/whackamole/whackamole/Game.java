@@ -745,9 +745,14 @@ public class Game {
         this.settings.spawnRotation = spawnRotation;
         this.Save();
     }
-    public void setTeleportLocation(World world, double X, double Y, double Z) {
-        this.settings.teleportLocation = new Location(world, X,Y,Z);
-        this.Save();
+    public boolean setTeleportLocation(World world, double X, double Y, double Z) {
+        if (this.grid.onGrid(new Location(world, X, Y, Z))) {
+            return false;
+        } else {
+            this.settings.teleportLocation = new Location(world, X, Y, Z);
+            this.Save();
+            return true;
+        }
     }
     public void setStreakHoloLocation(World world, double X, double Y, double Z) {
         this.settings.streakHoloLocation = new Location(world, X, Y, Z);

@@ -127,6 +127,7 @@ public enum Translator {
     ,   COMMANDS_RELOAD                                     ("Commands.Reload")
     ,   COMMANDS_RELOAD_SUCCESS                             ("Commands.Reload.Success")
     ,   COMMANDS_POSITIONS                                  ("Commands.Positions")
+    ,   COMMANDS_POSITIONS_TELEPORT_ONGRID                  ("Commands.Positions.Teleport.onGrid")
     ,   COMMANDS_POSITIONS_SUCCESS                          ("Commands.Positions.Success", String.class)
     ,   COMMANDS_TOP                                        ("Commands.Top")
     ,   COMMANDS_ARGUMENTS_UNKNOWNGAMENAME                  ("Commands.Arguments.unknownGameName", String.class)
