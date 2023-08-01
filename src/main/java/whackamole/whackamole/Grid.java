@@ -53,6 +53,7 @@ public class Grid {
     public Grid(Game.Settings game) {
         this.grid = new ArrayList<>();
         this.world = game.world;
+        this.settings = game;
         var blockList = SQL.Select(game.ID);
         for (var block : blockList) {
             grid.add(game.world.getBlockAt(block.X, block.Y, block.Z));
