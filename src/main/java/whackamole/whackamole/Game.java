@@ -242,7 +242,6 @@ public class Game {
             this.gameConfig.set("Properties.scoreLocation", Game.this.settings.scoreLocation);
             this.gameConfig.set("Properties.streakLocation", Game.this.settings.streakHoloLocation);
             this.gameConfig.set("Field Data.World", Game.this.grid.world.getName());
-            this.gameConfig.set("Field Data.Grid", Game.this.grid.Serialize());
             try {
                 this.gameConfig.save();
             } catch (Exception ignored) { }
@@ -267,11 +266,6 @@ public class Game {
             Game.this.settings.scoreLocation = this.gameConfig.FileConfig.getLocation("Properties.scoreLocation");
             Game.this.settings.streakHoloLocation = this.gameConfig.FileConfig.getLocation("Properties.streakLocation");
             Game.this.settings.Save();
-            
-            Game.this.grid = Grid.Deserialize(Game.this.settings.world, this.gameConfig.getList("Field Data.Grid"));
-            Game.this.grid.setSettings(settings);
-            Game.this.grid.Delete();
-            Game.this.grid.Save();
 
             Logger.success(Translator.GAME_LOADSUCCESS.Format(Game.this));
         }
@@ -606,6 +600,8 @@ public class Game {
     public Game(YMLFile configFile) {
         this.gameFile = new GameFile(configFile);
         this.settings.Save();
+        this.grid = new Grid(settings);
+
         this.cooldown.onLoad();
         this.scoreboard.onLoad();
     }
