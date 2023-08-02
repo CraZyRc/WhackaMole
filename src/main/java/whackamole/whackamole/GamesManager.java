@@ -90,6 +90,7 @@ public final class GamesManager implements Listener {
 
     public void addGame(String gameName, Grid grid, Player player) throws Exception {
         if (this.gameExists(gameName)) {
+            player.sendMessage(Config.AppConfig.PREFIX + Translator.Format(Translator.MANAGER_NAMEEXISTS, gameName));
             throw new Exception(Translator.Format(Translator.MANAGER_NAMEEXISTS, gameName));
         }
         this.games.add(new Game(gameName, grid, player));
@@ -207,7 +208,7 @@ public final class GamesManager implements Listener {
     @EventHandler
     public void blockBreak(BlockBreakEvent e) {
         for (Game game : this.games) {
-            if (game.onGrid(e.getBlock()) || game.getRunning().map(GameRunner::getPlayer).orElse(null) == e.getPlayer()) {
+            if (game.onGrid(e.getBlock().getLocation().add(0,1,0)) || game.getRunning().map(GameRunner::getPlayer).orElse(null) == e.getPlayer()) {
                 e.setCancelled(true);
             }
         }

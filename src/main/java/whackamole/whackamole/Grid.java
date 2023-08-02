@@ -47,7 +47,7 @@ public class Grid {
     public Grid(World world, Player player) throws Exception {
         this.world = world;
         Block startBlock = world.getBlockAt(player.getLocation().subtract(0, 1, 0));
-        this.grid = this.findGrid(startBlock);
+        this.grid = this.findGrid(startBlock, player);
     }
 
     public Grid(Game.Settings game) {
@@ -60,7 +60,7 @@ public class Grid {
         }
     }
 
-    private ArrayList<Block> findGrid(Block startBlock) throws Exception {
+    private ArrayList<Block> findGrid(Block startBlock, Player player) throws Exception {
         ArrayList<Block> returnList = new ArrayList<>();
         ArrayList<Block> queue = this.getNeighbors(startBlock);
 
@@ -77,8 +77,10 @@ public class Grid {
         }
 
         if (returnList.isEmpty()) {
+            player.sendMessage(Config.AppConfig.PREFIX + Translator.GRID_EMPTYGRID);
             throw new Exception(Translator.GRID_EMPTYGRID.toString());
         } else if (returnList.size() > Config.Game.FIELD_MAX_SIZE) {
+            player.sendMessage(Config.AppConfig.PREFIX + Translator.GRID_INVALIDSIZE);
             throw new Exception(Translator.GRID_INVALIDSIZE.toString());
         }
         return returnList;
@@ -99,9 +101,6 @@ public class Grid {
         return this.onGrid(player.getLocation());
     }
 
-    public boolean onGrid(Block block) {
-        return this.onGrid(block.getLocation());
-    }
 
     public boolean onGrid(Location loc) {
         for (Block block : this.grid) {
@@ -209,7 +208,6 @@ public class Grid {
     }
     public Grid setSettings(Game.Settings settings) {
         this.settings = settings;
-        this.settings.scoreLocation = this.grid.get(1).getLocation().add(0, 2, 0);
         this.Save();
         return this;
     }

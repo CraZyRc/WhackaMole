@@ -267,12 +267,11 @@ public class Game {
             Game.this.settings.scoreLocation = this.gameConfig.FileConfig.getLocation("Properties.scoreLocation");
             Game.this.settings.streakHoloLocation = this.gameConfig.FileConfig.getLocation("Properties.streakLocation");
             Game.this.settings.Save();
-            
+
             Game.this.grid = Grid.Deserialize(Game.this.settings.world, this.gameConfig.getList("Field Data.Grid"));
             Game.this.grid.setSettings(settings);
             Game.this.grid.Delete();
             Game.this.grid.Save();
-
             Logger.success(Translator.GAME_LOADSUCCESS.Format(Game.this));
         }
 
@@ -352,7 +351,7 @@ public class Game {
 
         private void createTopHolo() {
             var settings = Game.this.getSettings();
-            Location spawnloc = settings.scoreLocation.clone().add(0,1.75,0); //TODO: ADD LOGIC FOR THE MIDDLE OF THE GRID
+            Location spawnloc = settings.scoreLocation.clone().add(0,1.75,0);
             this.highScore  = (ArmorStand) settings.world.spawnEntity(spawnloc, EntityType.ARMOR_STAND);
             this.Score      = (ArmorStand) settings.world.spawnEntity(spawnloc.subtract(0,0.25,0), EntityType.ARMOR_STAND);
             this.Streak     = (ArmorStand) settings.world.spawnEntity(spawnloc.subtract(0,0.25,0), EntityType.ARMOR_STAND);
@@ -611,6 +610,7 @@ public class Game {
     }
 
     public Game(String name, Grid grid, Player player) throws FileNotFoundException {
+        this.settings.scoreLocation = player.getLocation().add(0,1,0);
         this.settings.Setup(formatName(name), player);
 
         this.grid = grid.setSettings(settings);
@@ -745,6 +745,10 @@ public class Game {
         this.settings.spawnRotation = spawnRotation;
         this.Save();
     }
+    public void setHighScoreLocation(Location loc) {
+        this.settings.scoreLocation = loc;
+        this.Save();
+    }
     public boolean setTeleportLocation(World world, double X, double Y, double Z) {
         if (this.grid.onGrid(new Location(world, X, Y, Z))) {
             return false;
@@ -794,9 +798,10 @@ public class Game {
 
         return playerOnGrid;
     }
-    public boolean onGrid(Block block) {
-        return this.grid.onGrid(block);
+    public boolean onGrid(Location loc) {
+        return this.grid.onGrid(loc);
     }
+
 
     public void useTicket(PlayerInteractEvent e) {
         Player player = e.getPlayer();

@@ -144,6 +144,8 @@ public class Commands {
                                     line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_MOLESPEED            + ": " + ChatColor.AQUA + settings.moleSpeed +
                                     line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE      + ": " + ChatColor.AQUA + settings.difficultyScale +
                                     line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE   + ": " + ChatColor.AQUA + settings.difficultyScore +
+                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_MOLEHEAD             + ": " + ChatColor.AQUA + settings.moleHead +
+                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_JACKPOTHEAD          + ": " + ChatColor.AQUA + settings.jackpotHead +
                                     line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_COOLDOWN             + ": " + ChatColor.AQUA + settings.getCooldown() +
                                     ChatColor.YELLOW + "\n| \n[>------------------------------------<]";
                             player.sendMessage(outputString);
@@ -472,7 +474,10 @@ public class Commands {
             Player player = (Player) Info.sender();
 
             switch (Info.input()) {
-                case "highscore" -> game.getScoreboard().tpTopHolo(player.getLocation().add(0,2,0));
+                case "highscore" -> {
+                    game.setHighScoreLocation(player.getLocation().add(0,2,0));
+                    game.getScoreboard().tpTopHolo(player.getLocation().add(0,2,0));
+                }
                 case "teleport" -> {
                     if (!game.setTeleportLocation(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() + 1, player.getLocation().getZ())){
                         player.sendMessage(Config.AppConfig.PREFIX + ChatColor.DARK_RED + Translator.COMMANDS_POSITIONS_TELEPORT_ONGRID);
