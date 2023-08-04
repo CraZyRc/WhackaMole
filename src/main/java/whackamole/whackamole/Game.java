@@ -599,6 +599,8 @@ public class Game {
     public Game(YMLFile configFile) {
         this.gameFile = new GameFile(configFile);
         this.settings.Save();
+        this.grid = new Grid(settings);
+
         this.cooldown.onLoad();
         this.scoreboard.onLoad();
     }

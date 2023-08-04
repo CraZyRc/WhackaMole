@@ -113,6 +113,9 @@ public class Grid {
         return this.onGrid(player.getLocation());
     }
 
+    public boolean onGrid(Block block) {
+        return this.onGrid(block.getLocation());
+    }
 
     public boolean onGrid(Location loc) {
         for (Block block : this.grid) {
