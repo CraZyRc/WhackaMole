@@ -79,9 +79,10 @@ public class Commands {
                         .executesPlayer((player, args) -> {
                             try {
                                 String gameName = (String) args[0];
-                                this.manager.addGame(gameName, new Grid(player.getWorld(), player), player);
+                                this.manager.addGame(gameName, Grid.searchGrid(player.getWorld(), player), player);
                                 player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_CREATE_SUCCESS.Format());
                             } catch (Exception e) {
+                                player.sendMessage(Config.AppConfig.PREFIX + e.getMessage());
                                 Logger.error(e.getMessage());
                             }
                         })

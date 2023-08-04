@@ -34,6 +34,7 @@ public enum Translator {
     ,   MANAGER_TICKETUSE_NOPERMISSION                      ("Manager.ticketUse.noPremission")
     ,   GRID_EMPTYGRID                                      ("Grid.emptyGrid")
     ,   GRID_INVALIDSIZE                                    ("Grid.invalidSize")
+    ,   GRID_OVERLAP                                        ("Grid.Overlap", String.class)
     ,   GAME_INVALIDECONOMY                                 ("Game.invalidEconomy")
     ,   GAME_STOP_REWARD_SING                               ("Game.Stop.Reward.Sing", Game.class)
     ,   GAME_STOP_REWARD_PLUR                               ("Game.Stop.Reward.Plur", Game.class)

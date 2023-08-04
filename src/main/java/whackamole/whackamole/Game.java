@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
@@ -242,7 +241,6 @@ public class Game {
             this.gameConfig.set("Properties.scoreLocation", Game.this.settings.scoreLocation);
             this.gameConfig.set("Properties.streakLocation", Game.this.settings.streakHoloLocation);
             this.gameConfig.set("Field Data.World", Game.this.grid.world.getName());
-            this.gameConfig.set("Field Data.Grid", Game.this.grid.Serialize());
             try {
                 this.gameConfig.save();
             } catch (Exception ignored) { }
@@ -268,10 +266,6 @@ public class Game {
             Game.this.settings.streakHoloLocation = this.gameConfig.FileConfig.getLocation("Properties.streakLocation");
             Game.this.settings.Save();
 
-            Game.this.grid = Grid.Deserialize(Game.this.settings.world, this.gameConfig.getList("Field Data.Grid"));
-            Game.this.grid.setSettings(settings);
-            Game.this.grid.Delete();
-            Game.this.grid.Save();
             Logger.success(Translator.GAME_LOADSUCCESS.Format(Game.this));
         }
 
@@ -801,7 +795,6 @@ public class Game {
     public boolean onGrid(Location loc) {
         return this.grid.onGrid(loc);
     }
-
 
     public void useTicket(PlayerInteractEvent e) {
         Player player = e.getPlayer();

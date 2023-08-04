@@ -103,6 +103,7 @@ public class TestBase {
         when(blockMock.getY()).thenReturn(1);
         when(blockMock.getZ()).thenReturn(1);
 
+        gridMock.world = worldMock;
         gridMock.grid = new ArrayList<>() {
             {
                 add(blockMock);
