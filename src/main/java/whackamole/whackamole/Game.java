@@ -247,7 +247,8 @@ public class Game {
         }
 
         public void load() {
-            Game.this.settings.ID = this.gameConfig.getInt("Properties.ID");
+            boolean First = false;
+            Game.this.settings.ID = this.gameConfig.getInt("Properties.ID", -1);
             Game.this.settings.Name = this.gameConfig.getString("Properties.Name");
             Game.this.settings.world = Bukkit.getWorld(this.gameConfig.getString("Field Data.World"));
             Game.this.settings.spawnRotation = BlockFace.valueOf(this.gameConfig.getString("Properties.Direction"));
@@ -264,7 +265,22 @@ public class Game {
             Game.this.settings.teleportLocation = this.gameConfig.FileConfig.getLocation("Properties.teleportLocation");
             Game.this.settings.scoreLocation = this.gameConfig.FileConfig.getLocation("Properties.scoreLocation");
             Game.this.settings.streakHoloLocation = this.gameConfig.FileConfig.getLocation("Properties.streakLocation");
+
+            if  (Game.this.settings.ID == -1) {
+                First = true;
+                Game.this.grid = Grid.Deserialize(Game.this.settings.world, this.gameConfig.getList("Field Data.Grid"));
+                this.gameConfig.set("Field Data.Grid", null);
+            }
             Game.this.settings.Save();
+            if (First) {
+                this.gameConfig.set("Properties.ID", Game.this.settings.ID);
+                Game.this.grid.setSettings(Game.this.settings);
+                this.gameConfig.set("Properties.scoreLocation", Game.this.settings.scoreLocation);
+                try {
+                    this.gameConfig.save();
+                } catch (Exception ignored) { }
+
+            }
 
             Logger.success(Translator.GAME_LOADSUCCESS.Format(Game.this));
         }

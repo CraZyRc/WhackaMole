@@ -54,7 +54,7 @@ public class Grid {
         }
     }
     public static Grid searchGrid(World world, Player player) throws InvalidGridException {
-        Block startBlock = world.getBlockAt(player.getLocation().subtract(0, 1, 0));
+        Block startBlock = world.getBlockAt(player.getLocation().subtract(0, 0.5, 0));
         var grid = findGrid(world, startBlock);
         validateFoundGrid(world, grid);
         return new Grid(world, grid);
@@ -69,7 +69,7 @@ public class Grid {
                 block.getX() == loc.X && block.getY() == loc.Y && block.getZ() == loc.Z
             );
             if(matched) {
-                throw new InvalidGridException(Translator.Format(Translator.GRID_OVERLAP, loc.gameID));
+                throw new InvalidGridException(Translator.GRID_OVERLAP.toString());
             }
         };
     }

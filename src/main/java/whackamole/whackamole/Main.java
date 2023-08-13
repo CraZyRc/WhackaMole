@@ -33,7 +33,10 @@ public final class Main extends JavaPlugin {
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        Econ.onEnable(this);
+        if (!Econ.onEnable()) {
+            this.getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
         try {
             this.manager.onLoad(this);
         } catch (FileNotFoundException e) {

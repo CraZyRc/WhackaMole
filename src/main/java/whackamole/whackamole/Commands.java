@@ -83,7 +83,6 @@ public class Commands {
                                 player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_CREATE_SUCCESS.Format());
                             } catch (Exception e) {
                                 player.sendMessage(Config.AppConfig.PREFIX + e.getMessage());
-                                Logger.error(e.getMessage());
                             }
                         })
                 )
@@ -239,7 +238,10 @@ public class Commands {
                             this.manager.unloadGames();
                             Config.onLoad(main);
                             Logger.onLoad(main);
-                            Econ.onEnable(main);
+                            if (!Econ.onEnable()) {
+                                main.getServer().getPluginManager().disablePlugin(main);
+                                return 0;
+                            }
                             try {
                                 this.manager.loadGames();
                             } catch (FileNotFoundException e) {

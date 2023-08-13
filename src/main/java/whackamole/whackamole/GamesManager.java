@@ -90,7 +90,6 @@ public final class GamesManager implements Listener {
 
     public void addGame(String gameName, Grid grid, Player player) throws Exception {
         if (this.gameExists(gameName)) {
-            player.sendMessage(Config.AppConfig.PREFIX + Translator.Format(Translator.MANAGER_NAMEEXISTS, gameName));
             throw new Exception(Translator.Format(Translator.MANAGER_NAMEEXISTS, gameName));
         }
         this.games.add(new Game(gameName, grid, player));

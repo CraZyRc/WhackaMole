@@ -26,11 +26,12 @@ public class Econ {
     public Econ() {
     }
 
-    public static void onEnable(Plugin plugin) {
+    public static boolean onEnable() {
         try {
             currencyType = Currency.valueOf(Config.Currency.ECONOMY);
         } catch (IllegalArgumentException e) {
             Logger.error(Translator.ECON_INVALIDECONOMY);
+            return false;
         }
 
         switch (currencyType) {
@@ -38,17 +39,19 @@ public class Econ {
                 if (!setupEconomy()) {
                     Logger.error(Translator.ECON_INVALIDVAULT);
                     currencyType = Currency.NULL;
-                    plugin.getPluginLoader().disablePlugin(plugin);
+                    return false;
                 }
             }
             case SCOREBOARD -> {
                 if (!setupScoreboard(Config.Currency.OBJECTIVE)) {
                     Logger.error(Translator.ECON_INVALIDOBJECTIVE);
                     currencyType = Currency.NULL;
+                    return false;
                 }
             }
             case NULL -> {}
         }
+        return true;
     }
 
 

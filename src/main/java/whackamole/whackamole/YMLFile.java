@@ -54,6 +54,8 @@ public class YMLFile {
         return this.FileConfig.getInt(path);
     }
 
+    public int getInt(String path, int def) { return this.FileConfig.getInt(path, def); }
+
     public double getDouble(String path) {
         return this.FileConfig.getDouble(path);
     }
