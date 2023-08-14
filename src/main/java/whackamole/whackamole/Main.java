@@ -6,20 +6,20 @@ import whackamole.whackamole.DB.SQLite;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.FileNotFoundException;
+
 public final class Main extends JavaPlugin {
     public GamesManager manager = GamesManager.getInstance();
+    private boolean valid_config = false;
 
     @Override
     public void onLoad() {
         CommandAPI.onLoad(new CommandAPIConfig().verboseOutput(false));
 
         Logger.onLoad(this);
-        if (!Config.onLoad(this)) {
-            // TODO: Add notification that loading of the config failed and the plugin will shutodwn.
-            Logger.error("The Configuration has fail to load, stopping the plugin!");
-            this.setEnabled(false);
-            return;
-        }
+        valid_config = Config.onLoad(this);
+        if (! valid_config) return;
+
         Translator.onLoad();
 
         SQLite.onLoad();
@@ -28,8 +28,20 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Econ.onEnable(this);
-        this.manager.onLoad(this);
+        if (!valid_config) {
+            Logger.error(Translator.MAIN_CONFIGLOADFAIL);
+            this.getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        if (!Econ.onEnable()) {
+            this.getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        try {
+            this.manager.onLoad(this);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         new Commands(this);
 
         CommandAPI.onEnable(this);

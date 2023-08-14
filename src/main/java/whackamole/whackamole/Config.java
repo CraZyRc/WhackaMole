@@ -53,7 +53,7 @@ public class Config {
         public static String ACTIONTEXT, HAMMERNAME = "Hammer", HAMMER_ITEM;
         public static boolean ENABLE_GAMECONFIG;
 
-        public static int FIELD_MAX_SIZE;
+        public static int FIELD_MAX_SIZE, HAMMER_CUSTOMMODELDATA, HAMMER_ITEMDAMAGE;
         public static Double FiELD_MARGIN_X, FiELD_MARGIN_Y;
 
         public static Sound HITSOUND, MISSSOUND;
@@ -63,24 +63,31 @@ public class Config {
         public static ItemStack PLAYER_AXE, TICKET;
 
         private static boolean LoadConfig(YMLFile configFile) {
-            ACTIONTEXT          = configFile.getString("Actionbar Message");
-            HAMMER_ITEM         = configFile.getString("Hammer item");
-            HAMMERNAME          = DefaultFontInfo.Color(configFile.getString("Hammer Name"));
+            ACTIONTEXT              = configFile.getString("Actionbar Message");
+            HAMMER_ITEM             = configFile.getString("Hammer Item");
+            HAMMER_CUSTOMMODELDATA  = configFile.getInt("Hammer customModelData");
+            HAMMER_ITEMDAMAGE       = configFile.getInt("Hammer itemDamage");
+            HAMMERNAME              = DefaultFontInfo.Color(configFile.getString("Hammer Name"));
 
-            FIELD_MAX_SIZE      = configFile.getInt("Max playfield");
-            FiELD_MARGIN_X      = configFile.getDouble("Field extension.width");
-            FiELD_MARGIN_Y      = configFile.getDouble("Field extension.height");
+            FIELD_MAX_SIZE          = configFile.getInt("Max playfield");
+            FiELD_MARGIN_X          = configFile.getDouble("Field extension.width");
+            FiELD_MARGIN_Y          = configFile.getDouble("Field extension.height");
 
-            ENABLE_GAMECONFIG   = configFile.getBoolean("Game config");
-            HITSOUND            = configFile.getSound("HitSound");
-            MISSSOUND           = configFile.getSound("MissedSound");
+            ENABLE_GAMECONFIG       = configFile.getBoolean("Game config");
+            HITSOUND                = configFile.getSound("HitSound");
+            MISSSOUND               = configFile.getSound("MissedSound");
 
-            MOLEBLOCK           = configFile.getList("Blocklist");
+            MOLEBLOCK               = configFile.getList("Blocklist");
 
             if (Material.getMaterial(HAMMER_ITEM) != null) {
                 PLAYER_AXE = new ItemStack(Material.valueOf(HAMMER_ITEM));
                 ItemMeta axeMeta = PLAYER_AXE.getItemMeta();
-                ((Damageable) axeMeta).setDamage(31);
+                if (HAMMER_ITEMDAMAGE != 0) {
+                    ((Damageable) axeMeta).setDamage(HAMMER_ITEMDAMAGE);
+                }
+                if (HAMMER_CUSTOMMODELDATA != 0) {
+                    axeMeta.setCustomModelData(HAMMER_CUSTOMMODELDATA);
+                }
                 axeMeta.setUnbreakable(true);
                 axeMeta.addEnchant(Enchantment.LURE, 1, true);
                 axeMeta.addItemFlags(

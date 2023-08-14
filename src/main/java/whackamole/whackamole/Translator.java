@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 public enum Translator {
         MAIN_OLDVERSION                                     ("Main.oldVersion")
-    ,   CONFIG_OLDVERSION                                   ("Config.oldVersion", String.class)
+    ,   MAIN_CONFIGLOADFAIL                                 ("Main.configLoadFail")
     ,   UPDATEFAIL                                          ("Update.updateFail", String.class)
     ,   LOGGER_WARNING                                      ("Logger.Warning", String.class)
     ,   LOGGER_ERROR                                        ("Logger.Error", String.class)
@@ -18,6 +18,7 @@ public enum Translator {
     ,   YML_DELETEDFILE                                     ("YML.deletedFile", YMLFile.class)
     ,   YML_CREATEFILE                                      ("YML.createFile", YMLFile.class)
     ,   YML_CREATEFAIL                                      ("YML.createFail", YMLFile.class)
+    ,   CONFIG_OLDVERSION                                   ("Config.oldVersion", String.class)
     ,   CONFIG_INVALIDHAMMERITEM                            ("Config.invalidHammerItem")
     ,   CONFIG_TICKET_NAME                                  ("Config.Ticket.Name")
     ,   CONFIG_TICKET_LORE1                                 ("Config.Ticket.Lore1")
@@ -33,6 +34,7 @@ public enum Translator {
     ,   MANAGER_TICKETUSE_NOPERMISSION                      ("Manager.ticketUse.noPremission")
     ,   GRID_EMPTYGRID                                      ("Grid.emptyGrid")
     ,   GRID_INVALIDSIZE                                    ("Grid.invalidSize")
+    ,   GRID_OVERLAP                                        ("Grid.Overlap")
     ,   GAME_INVALIDECONOMY                                 ("Game.invalidEconomy")
     ,   GAME_STOP_REWARD_SING                               ("Game.Stop.Reward.Sing", Game.class)
     ,   GAME_STOP_REWARD_PLUR                               ("Game.Stop.Reward.Plur", Game.class)
@@ -126,6 +128,7 @@ public enum Translator {
     ,   COMMANDS_RELOAD                                     ("Commands.Reload")
     ,   COMMANDS_RELOAD_SUCCESS                             ("Commands.Reload.Success")
     ,   COMMANDS_POSITIONS                                  ("Commands.Positions")
+    ,   COMMANDS_POSITIONS_TELEPORT_ONGRID                  ("Commands.Positions.Teleport.onGrid")
     ,   COMMANDS_POSITIONS_SUCCESS                          ("Commands.Positions.Success", String.class)
     ,   COMMANDS_TOP                                        ("Commands.Top")
     ,   COMMANDS_ARGUMENTS_UNKNOWNGAMENAME                  ("Commands.Arguments.unknownGameName", String.class)

@@ -9,7 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
-import java.text.SimpleDateFormat;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Commands {
@@ -79,10 +79,10 @@ public class Commands {
                         .executesPlayer((player, args) -> {
                             try {
                                 String gameName = (String) args[0];
-                                this.manager.addGame(gameName, new Grid(player.getWorld(), player), player);
+                                this.manager.addGame(gameName, Grid.searchGrid(player.getWorld(), player), player);
                                 player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_CREATE_SUCCESS.Format());
                             } catch (Exception e) {
-                                Logger.error(e.getMessage());
+                                player.sendMessage(Config.AppConfig.PREFIX + e.getMessage());
                             }
                         })
                 )
@@ -144,6 +144,8 @@ public class Commands {
                                     line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_MOLESPEED            + ": " + ChatColor.AQUA + settings.moleSpeed +
                                     line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE      + ": " + ChatColor.AQUA + settings.difficultyScale +
                                     line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE   + ": " + ChatColor.AQUA + settings.difficultyScore +
+                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_MOLEHEAD             + ": " + ChatColor.AQUA + settings.moleHead +
+                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_JACKPOTHEAD          + ": " + ChatColor.AQUA + settings.jackpotHead +
                                     line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_COOLDOWN             + ": " + ChatColor.AQUA + settings.getCooldown() +
                                     ChatColor.YELLOW + "\n| \n[>------------------------------------<]";
                             player.sendMessage(outputString);
@@ -227,7 +229,7 @@ public class Commands {
                         .withPermission(Config.Permissions.PERM_POSITIONS)
                         .withArguments(positionsTypeArgument())
                         .executes(((sender, args) -> {
-                            sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_POSITIONS_SUCCESS.Format( args[1]));
+                            if (!args[1].equals("failed")) sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_POSITIONS_SUCCESS.Format( args[1]));
                         }))
                 )
                 .withSubcommand(new CommandAPICommand(String.valueOf(Translator.COMMANDS_RELOAD))
@@ -236,8 +238,15 @@ public class Commands {
                             this.manager.unloadGames();
                             Config.onLoad(main);
                             Logger.onLoad(main);
-                            Econ.onEnable(main);
-                            this.manager.loadGames();
+                            if (!Econ.onEnable()) {
+                                main.getServer().getPluginManager().disablePlugin(main);
+                                return 0;
+                            }
+                            try {
+                                this.manager.loadGames();
+                            } catch (FileNotFoundException e) {
+                                throw new RuntimeException(e);
+                            }
                             sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_RELOAD_SUCCESS);
                             Logger.success("Done! V" + main.getDescription().getVersion());
                             return 0;
@@ -427,21 +436,20 @@ public class Commands {
             StringBuilder outputString = new StringBuilder(ChatColor.YELLOW + "\n[>------------------------------------<]\n" +
                     "|" + ChatColor.WHITE + " Game: " + ChatColor.AQUA + ChatColor.BOLD + game.getName());
 
-
             switch (Info.input()) {
                 case "score" -> {
                     var score = game.getScoreboard().getTop(0);
                     outputString.append(line).append(ChatColor.WHITE).append("Type: ").append(ChatColor.GOLD).append("Score").append(line);
                     for (int i = 0; i < score.length; i++) {
-                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(ChatColor.WHITE).append(score[i].player.getName()).append(" : ").append(ChatColor.AQUA).append(score[i].Score).append(ChatColor.WHITE).append(", ").append(ChatColor.YELLOW).append(new SimpleDateFormat("yyyy-MM-dd").format(score[i].Datetime));
+                        outputString.append(line).append(ChatColor.DARK_AQUA).append(i + 1).append(". ").append(ChatColor.WHITE).append(score[i].player.getName()).append(" : ").append(ChatColor.AQUA).append(score[i].Score).append(ChatColor.WHITE).append(", ").append(ChatColor.YELLOW).append(score[i].Datetime.toLocalDate().toString());
                     }
-
+                    
                 }
                 case "streak" -> {
                     var score = game.getScoreboard().getTop(1);
                     outputString.append(line).append(ChatColor.WHITE).append("Type: ").append(ChatColor.GOLD).append("Streak").append(line);
                     for (int i = 0; i < score.length; i++) {
-                        outputString.append(line).append(ChatColor.WHITE).append(i + 1).append(". ").append(ChatColor.WHITE).append(score[i].player.getName()).append(" : ").append(ChatColor.AQUA).append(score[i].scoreStreak).append(ChatColor.WHITE).append(", ").append(ChatColor.YELLOW).append(new SimpleDateFormat("yyyy-MM-dd").format(score[i].Datetime));
+                        outputString.append(line).append(ChatColor.DARK_AQUA).append(i + 1).append(". ").append(ChatColor.WHITE).append(score[i].player.getName()).append(" : ").append(ChatColor.AQUA).append(score[i].scoreStreak).append(ChatColor.WHITE).append(", ").append(ChatColor.YELLOW).append(score[i].Datetime.toLocalDate().toString());
                     }
 
                 }
@@ -449,7 +457,7 @@ public class Commands {
                     var score = game.getScoreboard().getTop(2);
                     outputString.append(line).append(ChatColor.WHITE).append("Type: ").append(ChatColor.GOLD).append("Moles").append(line);
                     for (int i = 0; i < score.length; i++) {
-                        outputString.append(line).append(ChatColor.DARK_AQUA).append(i + 1).append(". ").append(ChatColor.WHITE).append(score[i].player.getName()).append(" : ").append(ChatColor.AQUA).append(score[i].molesHit).append(ChatColor.WHITE).append(", ").append(ChatColor.YELLOW).append(new SimpleDateFormat("yyyy-MM-dd").format(score[i].Datetime));
+                        outputString.append(line).append(ChatColor.DARK_AQUA).append(i + 1).append(". ").append(ChatColor.WHITE).append(score[i].player.getName()).append(" : ").append(ChatColor.AQUA).append(score[i].molesHit).append(ChatColor.WHITE).append(", ").append(ChatColor.YELLOW).append(score[i].Datetime.toLocalDate().toString());
                     }
                 }
             }
@@ -469,8 +477,16 @@ public class Commands {
             Player player = (Player) Info.sender();
 
             switch (Info.input()) {
-                case "highscore" -> game.getScoreboard().tpTopHolo(player.getLocation().add(0,2,0));
-                case "teleport" -> game.setTeleportLocation(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() + 1, player.getLocation().getZ());
+                case "highscore" -> {
+                    game.setHighScoreLocation(player.getLocation().add(0,2,0));
+                }
+                case "teleport" -> {
+                    if (!game.setTeleportLocation(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() + 1, player.getLocation().getZ())){
+                        player.sendMessage(Config.AppConfig.PREFIX + ChatColor.DARK_RED + Translator.COMMANDS_POSITIONS_TELEPORT_ONGRID);
+                        return "failed";
+                    }
+
+                }
                 case "streak" -> game.setStreakHoloLocation(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() + 1, player.getLocation().getZ());
             }
             return Info.input();

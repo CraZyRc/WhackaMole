@@ -54,6 +54,8 @@ public class YMLFile {
         return this.FileConfig.getInt(path);
     }
 
+    public int getInt(String path, int def) { return this.FileConfig.getInt(path, def); }
+
     public double getDouble(String path) {
         return this.FileConfig.getDouble(path);
     }
@@ -80,7 +82,7 @@ public class YMLFile {
             if(!this.file.exists()) {
                 this.file.createNewFile();
                 created = true;
-            } 
+            }
             this.FileConfig.load(this.file);
         } catch (Exception e) {
             this.createFile();
@@ -102,4 +104,5 @@ public class YMLFile {
             e.printStackTrace();
         }
     }
+
 }

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 public class GameConfigTest extends TestBase{
     static YMLFile OldConfigFile = new YMLFile("test/config_1.3.yml");
-    static YMLFile NewConfigFile = new YMLFile("test/config_1.5.yml");
+    static YMLFile NewConfigFile = new YMLFile("src/main/resources/config.yml");
 
     @Test
     void Loading_new_config_should_succeed() {

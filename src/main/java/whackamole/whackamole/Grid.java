@@ -44,24 +44,39 @@ public class Grid {
         this.grid = grid;
     }
 
-    public Grid(World world, Player player) throws Exception {
-        this.world = world;
-        Block startBlock = world.getBlockAt(player.getLocation().subtract(0, 1, 0));
-        this.grid = this.findGrid(startBlock);
-    }
-
     public Grid(Game.Settings game) {
         this.grid = new ArrayList<>();
         this.world = game.world;
+        this.settings = game;
         var blockList = SQL.Select(game.ID);
         for (var block : blockList) {
             grid.add(game.world.getBlockAt(block.X, block.Y, block.Z));
         }
     }
+    public static Grid searchGrid(World world, Player player) throws InvalidGridException {
+        Block startBlock = world.getBlockAt(player.getLocation().subtract(0, 0.5, 0));
+        var grid = findGrid(world, startBlock);
+        validateFoundGrid(world, grid);
+        return new Grid(world, grid);
+    }
 
-    private ArrayList<Block> findGrid(Block startBlock) throws Exception {
+    private static void validateFoundGrid(World world, List<Block> grid) throws InvalidGridException {
+        var DB_list = SQL.Select(world.getName());
+        var itter = DB_list.iterator();
+        while(itter.hasNext()) {
+            var loc = itter.next();
+            boolean matched = grid.stream().anyMatch(block ->
+                block.getX() == loc.X && block.getY() == loc.Y && block.getZ() == loc.Z
+            );
+            if(matched) {
+                throw new InvalidGridException(Translator.GRID_OVERLAP.toString());
+            }
+        };
+    }
+
+    private static ArrayList<Block> findGrid(World world, Block startBlock) throws InvalidGridException {
         ArrayList<Block> returnList = new ArrayList<>();
-        ArrayList<Block> queue = this.getNeighbors(startBlock);
+        ArrayList<Block> queue = getNeighbors(world, startBlock);
 
         while (!queue.isEmpty()) {
             Block block = queue.remove(0);
@@ -70,23 +85,23 @@ public class Grid {
             } else {
                 continue;
             }
-            ArrayList<Block> queueAdd = this.getNeighbors(block);
+            ArrayList<Block> queueAdd = getNeighbors(world, block);
             queueAdd.removeIf(returnList::contains);
             queue.addAll(queueAdd);
         }
 
         if (returnList.isEmpty()) {
-            throw new Exception(Translator.GRID_EMPTYGRID.toString());
+            throw new InvalidGridException(Translator.GRID_EMPTYGRID.toString());
         } else if (returnList.size() > Config.Game.FIELD_MAX_SIZE) {
-            throw new Exception(Translator.GRID_INVALIDSIZE.toString());
+            throw new InvalidGridException(Translator.GRID_INVALIDSIZE.toString());
         }
         return returnList;
     }
 
-    private ArrayList<Block> getNeighbors(Block MiddleBlock) {
+    private static ArrayList<Block> getNeighbors(World world, Block MiddleBlock) {
         ArrayList<Block> returnlist = new ArrayList<>();
         for (Vector vector : neighborList) {
-            Block CurBlock = this.world.getBlockAt(MiddleBlock.getLocation().add(vector));
+            Block CurBlock = world.getBlockAt(MiddleBlock.getLocation().add(vector));
             if (Config.Game.MOLEBLOCK.contains(CurBlock.getType().name())) {
                 returnlist.add(CurBlock);
             }
@@ -211,5 +226,9 @@ public class Grid {
         this.settings.scoreLocation = this.grid.get(1).getLocation().add(0, 2, 0);
         this.Save();
         return this;
+    }
+
+    static protected class InvalidGridException extends Exception {
+        InvalidGridException(String message) { super(message); }
     }
 }
