@@ -247,7 +247,6 @@ public class Game {
         }
 
         public void load() {
-            boolean First = false;
             Game.this.settings.ID = this.gameConfig.getInt("Properties.ID", -1);
             Game.this.settings.Name = this.gameConfig.getString("Properties.Name");
             Game.this.settings.world = Bukkit.getWorld(this.gameConfig.getString("Field Data.World"));
@@ -267,19 +266,16 @@ public class Game {
             Game.this.settings.streakHoloLocation = this.gameConfig.FileConfig.getLocation("Properties.streakLocation");
 
             if  (Game.this.settings.ID == -1) {
-                First = true;
                 Game.this.grid = Grid.Deserialize(Game.this.settings.world, this.gameConfig.getList("Field Data.Grid"));
                 this.gameConfig.set("Field Data.Grid", null);
-            }
-            Game.this.settings.Save();
-            if (First) {
-                this.gameConfig.set("Properties.ID", Game.this.settings.ID);
+                Game.this.settings.Save();
                 Game.this.grid.setSettings(Game.this.settings);
-                this.gameConfig.set("Properties.scoreLocation", Game.this.settings.scoreLocation);
                 try {
                     this.gameConfig.save();
                 } catch (Exception ignored) { }
-
+                
+            } else {
+                Game.this.settings.Save();
             }
 
             Logger.success(Translator.GAME_LOADSUCCESS.Format(Game.this));
@@ -759,6 +755,7 @@ public class Game {
     }
     public void setHighScoreLocation(Location loc) {
         this.settings.scoreLocation = loc;
+        scoreboard.tpTopHolo(loc);
         this.Save();
     }
     public boolean setTeleportLocation(World world, double X, double Y, double Z) {

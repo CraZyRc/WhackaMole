@@ -479,7 +479,6 @@ public class Commands {
             switch (Info.input()) {
                 case "highscore" -> {
                     game.setHighScoreLocation(player.getLocation().add(0,2,0));
-                    game.getScoreboard().tpTopHolo(player.getLocation().add(0,2,0));
                 }
                 case "teleport" -> {
                     if (!game.setTeleportLocation(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() + 1, player.getLocation().getZ())){
