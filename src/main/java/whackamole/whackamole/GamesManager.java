@@ -21,6 +21,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
+
 import whackamole.whackamole.DB.GameRow;
 import whackamole.whackamole.DB.SQLite;
 import whackamole.whackamole.Game.GameRunner;
@@ -40,8 +42,8 @@ public final class GamesManager implements Listener {
     }
 
     private int tickId = -1;
-    public void onLoad(Plugin main) throws FileNotFoundException {
-        this.loadGames();
+    public void onLoad(Plugin main) {
+        this.GameLoading(null);
         this.tickId = Bukkit.getScheduler().scheduleSyncRepeatingTask(main, Tick, 1L, 1L);
     }
 
@@ -51,28 +53,54 @@ public final class GamesManager implements Listener {
     }
 
 
-    public void loadGames() throws FileNotFoundException {
-        Logger.info(Translator.MANAGER_LOADINGGAMES);
+    public boolean GameLoading(@Nullable World world) {
+        List<GameRow> DBGameList;
+        if(world == null) { DBGameList = SQLite.getGameDB().Select(world); }
+        else {              DBGameList = SQLite.getGameDB().Select(world); }
+
+
+        List<YMLFile> fileGameList = new ArrayList<YMLFile>();
         if (Config.Game.ENABLE_GAMECONFIG) {
-            YMLFile GamesFolder = new YMLFile(Config.AppConfig.storageFolder + "/Games", "");
-            if (GamesFolder.file.list().length == 0) {
-                Logger.warning(Translator.MANAGER_NOGAMESFOUND);
-                return;
+            YMLFile GamesFolder;
+            try {
+                GamesFolder = new YMLFile(Config.AppConfig.storageFolder + "/Games", "");
+            } catch (FileNotFoundException e) {
+                Logger.error("Game folder could not be created");
+                Logger.error(e.getMessage());
+                e.printStackTrace();
+                return false;
             }
-    
-            for (File i : GamesFolder.file.listFiles()) {
-                try {
-                    this.addGame(new YMLFile(i));
-                } catch (Exception e) {
-                    Logger.error(e.getMessage());
-                    e.printStackTrace();
+
+            file_loop: for (File i : GamesFolder.file.listFiles()) {
+                var yGame = new YMLFile(i);
+                var yWorld = yGame.getString("Field Data.World");
+                var yID = yGame.getInt("Properties.ID", -1);
+                var yGrid = yGame.getList("Field Data.Grid");
+
+                if(yGrid == null) {
+                    // * if file does not contain grid, then it souhld not be considerd a valid game file to load.
+                    continue;
+                }
+
+                if (world == null || yWorld.equals(world.getName())) {
+                    for (var game : DBGameList) {
+                        if(game.ID == yID) {
+                            continue file_loop;
+                        }
+                    }
+                    fileGameList.add(yGame);
                 }
             }
-        } else {
-            if (! this.loadFromDatabase()) {
-                Logger.warning(Translator.MANAGER_NOGAMESFOUND);
-            }
         }
+        
+        for(var game : DBGameList) {
+            this.games.add(new Game(game));
+        }
+        for(var game : fileGameList) {
+            this.games.add(new Game(game));
+        }
+
+        return DBGameList.size() > 0 || fileGameList.size() > 0;
     }
 
     private boolean gameExists(String name) {
@@ -82,10 +110,6 @@ public final class GamesManager implements Listener {
             }
         }
         return false;
-    }
-
-    public void addGame(YMLFile gameName) {
-        this.games.add(new Game(gameName));
     }
 
     public void addGame(String gameName, Grid grid, Player player) throws Exception {
@@ -131,29 +155,11 @@ public final class GamesManager implements Listener {
         }
         GamesManager.this.runnableTickCounter++;
     };
-    public boolean loadFromDatabase() {
-        return loadFromDatabase(null);
-    }
-    public boolean loadFromDatabase(World world) {
-        List<GameRow> gameList;
-        if (world == null) {
-            gameList = SQLite.getGameDB().Select();
-        } else {
-            gameList = SQLite.getGameDB().Select(world);
-        }
-        if (gameList.size() == 0) {
-            return false;
-        }
-        for (var game : gameList) {
-            this.games.add(new Game(game));
-        }
-        return true;
-    }
 
     @EventHandler
     public void onWorldLoad(WorldLoadEvent e) {
         Logger.info(Translator.MANAGER_LOADINGGAMES.Format(e.getWorld().getName()));
-        if (!this.loadFromDatabase(e.getWorld())) {
+        if (!this.GameLoading(e.getWorld())) {
             Logger.warning(Translator.MANAGER_NOGAMESFOUND);
         }
     }

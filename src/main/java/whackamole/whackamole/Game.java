@@ -1,6 +1,5 @@
 package whackamole.whackamole;
 
-import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -169,14 +168,24 @@ public class Game {
     public class GameFile {
         private final YMLFile gameConfig;
 
-        public GameFile() throws FileNotFoundException {
-            gameConfig = new YMLFile(Config.AppConfig.storageFolder + "/Games",  getName() + ".yml");
-            this.save();
-        }
-
         public GameFile(YMLFile gameFile) {
             gameConfig = gameFile;
             this.load();
+        }
+
+        public GameFile() {
+            gameConfig = new YMLFile(Config.AppConfig.storageFolder + "/Games/" + getName() + ".yml");
+            
+            if (! Config.Game.ENABLE_GAMECONFIG) {
+                this.delete();
+                return;
+            }
+            
+            if (gameConfig.created) {
+                this.save();
+            } else {
+                this.load();
+            }
         }
 
         @SuppressWarnings("deprecation")
@@ -602,6 +611,8 @@ public class Game {
 
     public Game(GameRow result) {
         this.settings.onLoad(result);
+        this.gameFile = new GameFile();
+
         this.cooldown.onLoad();
         this.scoreboard.onLoad();
         this.grid = new Grid(settings);
@@ -615,18 +626,17 @@ public class Game {
 
         this.cooldown.onLoad();
         this.scoreboard.onLoad();
+        Logger.success(Translator.GAME_LOADSUCCESS.Format(this.getName()));
     }
 
-    public Game(String name, Grid grid, Player player) throws FileNotFoundException {
+    public Game(String name, Grid grid, Player player) {
         this.settings.scoreLocation = player.getLocation().add(0,1,0);
         this.settings.Setup(formatName(name), player);
 
         this.grid = grid.setSettings(settings);
         this.scoreboard.createTopHolo();
 
-        if (Config.Game.ENABLE_GAMECONFIG) {
-            this.gameFile = new GameFile();
-        }
+        this.gameFile = new GameFile();
     }
 
     private String formatName(String name) {
@@ -656,7 +666,7 @@ public class Game {
     }
 
     public void Save() {
-        if (this.gameFile != null) {
+        if (Config.Game.ENABLE_GAMECONFIG) {
             this.gameFile.save();
         }
         this.settings.Save();

@@ -6,8 +6,6 @@ import whackamole.whackamole.DB.SQLite;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.FileNotFoundException;
-
 public final class Main extends JavaPlugin {
     public GamesManager manager = GamesManager.getInstance();
     private boolean valid_config = false;
@@ -37,11 +35,7 @@ public final class Main extends JavaPlugin {
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        try {
-            this.manager.onLoad(this);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        this.manager.onLoad(this);
         new Commands(this);
 
         CommandAPI.onEnable(this);

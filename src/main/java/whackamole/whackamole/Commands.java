@@ -9,7 +9,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
-import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Commands {
@@ -242,11 +241,8 @@ public class Commands {
                                 main.getServer().getPluginManager().disablePlugin(main);
                                 return 0;
                             }
-                            try {
-                                this.manager.loadGames();
-                            } catch (FileNotFoundException e) {
-                                throw new RuntimeException(e);
-                            }
+                            this.manager.GameLoading(null);
+
                             sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_RELOAD_SUCCESS);
                             Logger.success("Done! V" + main.getDescription().getVersion());
                             return 0;
