@@ -1,7 +1,7 @@
 package whackamole.whackamole;
 
 import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandAPIConfig;
+import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import whackamole.whackamole.DB.SQLite;
 
 import org.bukkit.plugin.java.JavaPlugin;
@@ -12,7 +12,7 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        CommandAPI.onLoad(new CommandAPIConfig().verboseOutput(false));
+            CommandAPI.onLoad(new CommandAPIBukkitConfig(this));
 
         Logger.onLoad(this);
         valid_config = Config.onLoad(this);
@@ -38,7 +38,7 @@ public final class Main extends JavaPlugin {
         this.manager.onLoad(this);
         new Commands(this);
 
-        CommandAPI.onEnable(this);
+        CommandAPI.onEnable();
         
         this.getServer().getPluginManager().registerEvents(this.manager, this);
         
