@@ -38,6 +38,7 @@ public class YMLFile {
         this.file = file;
         if (!this.file.exists()) {
             this.createFile();
+            created = true;
         }
         this.load();
     }

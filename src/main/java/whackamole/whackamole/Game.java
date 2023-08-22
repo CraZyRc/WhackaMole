@@ -177,7 +177,7 @@ public class Game {
             gameConfig = new YMLFile(Config.AppConfig.storageFolder + "/Games/" + getName() + ".yml");
             
             if (! Config.Game.ENABLE_GAMECONFIG) {
-                this.delete();
+                this.gameConfig.file.delete();
                 return;
             }
             
@@ -249,7 +249,7 @@ public class Game {
             this.gameConfig.set("Properties.teleportLocation", Game.this.settings.teleportLocation);
             this.gameConfig.set("Properties.scoreLocation", Game.this.settings.scoreLocation);
             this.gameConfig.set("Properties.streakLocation", Game.this.settings.streakHoloLocation);
-            this.gameConfig.set("Field Data.World", Game.this.grid.world.getName());
+            this.gameConfig.set("Field Data.World", Game.this.settings.worldName);
             try {
                 this.gameConfig.save();
             } catch (Exception ignored) { }
@@ -280,14 +280,12 @@ public class Game {
                 Game.this.settings.Save();
                 Game.this.grid.setSettings(Game.this.settings);
                 try {
-                    this.gameConfig.save();
+                    this.save();
                 } catch (Exception ignored) { }
                 
             } else {
                 Game.this.settings.Save();
             }
-
-            Logger.success(Translator.GAME_LOADSUCCESS.Format(Game.this));
         }
 
         public void delete() {
