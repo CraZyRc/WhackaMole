@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import java.util.*;
 
 public class Commands {
-    private Econ econ = new Econ();
+    private final Econ econ = new Econ();
     public GamesManager manager = GamesManager.getInstance();
 
     private final Hashtable<UUID, Long> buyTicket = new Hashtable<>();
@@ -33,7 +33,7 @@ public class Commands {
     String highscoreTip     = String.valueOf(Translator.COMMANDS_TIPS_HIGHSCORE);
     String teleportTip     = String.valueOf(Translator.COMMANDS_TIPS_TELEPORT);
     String streakTip     = String.valueOf(Translator.COMMANDS_TIPS_STREAK);
-    public Settings settingType = Settings.NULL;
+    private Settings settingType = Settings.NULL;
     enum Settings {
         NULL,
         DIRECTION(Translator.COMMANDS_SETTINGS_DIRECTION),
@@ -77,7 +77,7 @@ public class Commands {
                         )
                         .executesPlayer((player, args) -> {
                             try {
-                                String gameName = (String) args[0];
+                                String gameName = (String) args.get(0);
                                 this.manager.addGame(gameName, Grid.searchGrid(player.getWorld(), player), player);
                                 player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_CREATE_SUCCESS.Format());
                             } catch (Exception e) {
@@ -90,7 +90,7 @@ public class Commands {
                         .withArguments(gameNameArgument("Game"))
                         .executesPlayer((player, args) -> {
                             if (this.removeConfirmation(player.getUniqueId())) {
-                                Game game = (Game) args[0];
+                                Game game = (Game) args.get("Game");
                                 this.manager.deleteGame(game);
                                 player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_REMOVE_SUCCESS);
                             } else {
@@ -127,7 +127,7 @@ public class Commands {
                         .withPermission(Config.Permissions.PERM_SETTINGS)
                         .withArguments(gameNameArgument("Game"))
                         .executesPlayer((player, args) -> {
-                            Game game = (Game) args[0];
+                            Game game = (Game) args.get(0);
                             var settings = game.getSettings();
                             String line = ChatColor.YELLOW + "\n| ";
                             String outputString = ChatColor.YELLOW + "\n[>------------------------------------<]\n" +
@@ -156,70 +156,70 @@ public class Commands {
                         .withArguments(gameNameArgument("Game"))
                         .withArguments(settingsArgument())
                         .executesPlayer((player, args) -> {
-                            Game game = (Game) args[0];
+                            Game game = (Game) args.get(0);
                             switch (this.settingType) {
                                 case NULL -> Logger.error(Translator.COMMANDS_ARGUMENTS_INVALIDSETTING);
                                 case DIRECTION -> {
-                                    game.setSpawnRotation(BlockFace.valueOf((String) args[2]));
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIRECTION_SUCCESS.Format(args[2]));
+                                    game.setSpawnRotation(BlockFace.valueOf((String) args.get(2)));
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIRECTION_SUCCESS.Format(args.get(2)));
                                 }
                                 case HASJACKPOT -> {
-                                    game.setJackpot(Boolean.parseBoolean((String) args[2]));
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOT_SUCCESS.Format(args[2]));
+                                    game.setJackpot(Boolean.parseBoolean((String) args.get(2)));
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOT_SUCCESS.Format(args.get(2)));
                                 }
                                 case JACKPOTSPAWNCHANCE -> {
-                                    if (Integer.parseInt((String) args[2]) <= 100) {
-                                        game.setJackpotSpawn(Integer.parseInt((String) args[2]));
-                                        player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_SUCCESS.Format(args[2].toString()));
+                                    if (Integer.parseInt((String) args.get(2)) <= 100) {
+                                        game.setJackpotSpawn(Integer.parseInt((String) args.get(2)));
+                                        player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_SUCCESS.Format(args.get(2).toString()));
                                     } else {
                                         Logger.error(Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_CONSOLE.Format(player.getDisplayName()));
                                         player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_PLAYER);
                                     }
                                 }
                                 case MISSCOUNT -> {
-                                    game.setMaxMissed(Integer.parseInt((String) args[2]));
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MAXMISSED_SUCCESS.Format(args[2].toString()));
+                                    game.setMaxMissed(Integer.parseInt((String) args.get(2)));
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MAXMISSED_SUCCESS.Format(args.get(2).toString()));
                                 }
                                 case SCOREPOINTS -> {
-                                    game.setPointsPerKill (Integer.parseInt((String) args[2]));
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SCOREPOINTS_SUCCESS.Format(args[2].toString()));
+                                    game.setPointsPerKill (Integer.parseInt((String) args.get(2)));
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SCOREPOINTS_SUCCESS.Format(args.get(2).toString()));
                                 }
                                 case SPAWNTIMER -> {
-                                    game.setInterval (Double.parseDouble((String) args[2]));
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SPAWNRATE_SUCCESS.Format(args[2].toString()));
+                                    game.setInterval (Double.parseDouble((String) args.get(2)));
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SPAWNRATE_SUCCESS.Format(args.get(2).toString()));
                                 }
                                 case SPAWNCHANCE -> {
-                                    if (Double.parseDouble((String) args[2]) <= 100) {
-                                        game.setSpawnChance(Double.parseDouble((String) args[2]));
-                                        player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SPAWNCHANCE_SUCCESS.Format(args[2].toString()));
+                                    if (Double.parseDouble((String) args.get(2)) <= 100) {
+                                        game.setSpawnChance(Double.parseDouble((String) args.get(2)));
+                                        player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SPAWNCHANCE_SUCCESS.Format(args.get(2).toString()));
                                     } else {
                                         Logger.error(Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_CONSOLE.Format(player.getDisplayName()));
                                         player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR_PLAYER);
                                     }
                                 }
                                 case MOLESPEED -> {
-                                    game.setMoleSpeed(Double.parseDouble((String) args[2]));
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MOLESPEED_SUCCESS.Format(args[2].toString()));
+                                    game.setMoleSpeed(Double.parseDouble((String) args.get(2)));
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MOLESPEED_SUCCESS.Format(args.get(2).toString()));
                                 }
                                 case DIFFICULTYSCALE -> {
-                                    game.setDifficultyScale(Double.parseDouble((String) args[2]));
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE_SUCCESS.Format(args[2].toString()));
+                                    game.setDifficultyScale(Double.parseDouble((String) args.get(2)));
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE_SUCCESS.Format(args.get(2).toString()));
                                 }
                                 case DIFFICULTYSCORE -> {
-                                    game.setDifficultyScore(Integer.parseInt((String) args[2]));
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE_SUCCESS.Format(args[2].toString()));
+                                    game.setDifficultyScore(Integer.parseInt((String) args.get(2)));
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE_SUCCESS.Format(args.get(2).toString()));
                                 }
                                 case COOLDOWN -> {
-                                    game.setCooldown((String) args[2]);
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_COOLDOWN_SUCCESS.Format(args[2]));
+                                    game.setCooldown((String) args.get(2));
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_COOLDOWN_SUCCESS.Format(args.get(2)));
                                 }
                                 case MOLEHEAD -> {
-                                    game.setMoleHead((String) args[2]);
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MOLEHEAD_SUCCESS.Format(args[2]));
+                                    game.setMoleHead((String) args.get(2));
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MOLEHEAD_SUCCESS.Format(args.get(2)));
                                 }
                                 case JACKPOTHEAD -> {
-                                    game.setJackpotHead((String) args[2]);
-                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTHEAD_SUCCESS.Format(args[2]));
+                                    game.setJackpotHead((String) args.get(2));
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTHEAD_SUCCESS.Format(args.get(2)));
                                 }
                             }
                         })
@@ -228,7 +228,7 @@ public class Commands {
                         .withPermission(Config.Permissions.PERM_POSITIONS)
                         .withArguments(positionsTypeArgument())
                         .executes(((sender, args) -> {
-                            if (!args[1].equals("failed")) sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_POSITIONS_SUCCESS.Format( args[1]));
+                            if (!args.get(1).equals("failed")) sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_POSITIONS_SUCCESS.Format( args.get(1)));
                         }))
                 )
                 .withSubcommand(new CommandAPICommand(String.valueOf(Translator.COMMANDS_RELOAD))
@@ -253,7 +253,7 @@ public class Commands {
                         .withPermission(Config.Permissions.PERM_TOP)
                         .withArguments(topTypeArgument())
                         .executes((sender, args) ->{
-                            sender.sendMessage((String) args[1]);
+                            sender.sendMessage((String) args.get(1));
                         })
                 )
                 .register();
@@ -266,7 +266,7 @@ public class Commands {
                 }
             }
             String Arg = String.valueOf(new CustomArgument.MessageBuilder().appendArgInput());
-            throw new CustomArgument.CustomArgumentException(new CustomArgument.MessageBuilder(Translator.COMMANDS_ARGUMENTS_UNKNOWNGAMENAME.Format(Arg)));
+            throw CustomArgument.CustomArgumentException.fromString(Translator.COMMANDS_ARGUMENTS_UNKNOWNGAMENAME.Format(Arg));
         }).replaceSuggestions(ArgumentSuggestions.strings(S ->
                 (this.manager == null) ? List.of("").toArray(new String[0]) :
                         this.manager.games.stream()
@@ -307,7 +307,7 @@ public class Commands {
         )));
 
         arguments.add(new TextArgument("settingValue").replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(info -> {
-            this.settingType = (Settings) info.previousArgs()[1];
+            this.settingType = (Settings) info.previousArgs().get(1);
             switch (this.settingType) {
                 case NULL -> Logger.error(Translator.COMMANDS_ARGUMENTS_INVALIDSETTING);
                 case DIRECTION -> {
@@ -427,7 +427,7 @@ public class Commands {
         List<Argument<?>> arguments = new ArrayList<>();
         arguments.add(gameNameArgument("Game"));
         arguments.add(new CustomArgument<>(new StringArgument("Type"), Info -> {
-            Game game = (Game) Info.previousArgs()[0];
+            Game game = (Game) Info.previousArgs().get(0);
             String line = ChatColor.YELLOW + "\n| ";
             StringBuilder outputString = new StringBuilder(ChatColor.YELLOW + "\n[>------------------------------------<]\n" +
                     "|" + ChatColor.WHITE + " Game: " + ChatColor.AQUA + ChatColor.BOLD + game.getName());
@@ -469,7 +469,7 @@ public class Commands {
         List<Argument<?>> arguments = new ArrayList<>();
         arguments.add(gameNameArgument("Game"));
         arguments.add(new CustomArgument<>(new StringArgument("Positions"), Info -> {
-            Game game = (Game) Info.previousArgs()[0];
+            Game game = (Game) Info.previousArgs().get(0);
             Player player = (Player) Info.sender();
 
             switch (Info.input()) {
