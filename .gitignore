@@ -113,3 +113,7 @@ buildNumber.properties
 run/
 
 pom.xml
+
+plugins/
+test/*
+!test/*.yml

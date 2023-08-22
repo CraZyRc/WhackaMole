@@ -1,269 +1,176 @@
 package whackamole.whackamole;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import org.bukkit.inventory.meta.SkullMeta;
+public class Config {
+    private static YMLFile ConfigFile;
+    public static boolean Loaded = false;
 
-import java.io.*;
-import java.lang.reflect.Field;
-import org.bukkit.*;
-import java.util.*;
-import org.bukkit.enchantments.Enchantment;
+    public static class AppConfig {
+        public static Locale Language = new Locale("en", "US");
+        public final static String configFileName = "config.yml", configVersion = "1.5";
 
-import java.util.List;
+        public static String storageFolder = "./plugins/WhackaMole"
+                ,   PREFIX = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
 
-public final class Config {
-
-    private static Config Instance;
-    private static Logger logger = Logger.getInstance();
-    private Translator translator;
-    private String MOLE_SKIN;
-    private String JACKPOT_SKIN;
-    public String language;
-    public String configVersion;
-    public String newConfigVersion = "1.3";
-    public YMLFile configFile;
-    public String PREFIX;
-    public String CURRENCY_SING;
-    public String CURRENCY_PLUR;
-    public String SYMBOL;
-    public int TICKETPRICE;
-    public String ACTIONTEXT;
-    public String HAMMERNAME;
-    public Sound HITSOUND;
-    public Sound MISSSOUND;
-    public List<?> MOLEBLOCK;
-    public String PERM_TICKET_USE;
-    public String PERM_BUY;
-    public String PERM_RELOAD;
-    public String PERM_CREATE;
-    public String PERM_REMOVE;
-    public String PERM_SETTINGS;
-    public String PERM_PLAY;
-    public String ECONOMY;
-    public String OBJECTIVE;
-    public Double FiELD_MARGIN_X;
-    public Double FiELD_MARGIN_Y;
-    public int FIELD_MAX_SIZE;
-    public File gamesData = new File("./plugins/WhackaMole/Games/");
-
-    public ItemStack PLAYER_AXE; 
-    public ItemStack MOLE_SKULL; 
-    public ItemStack JACKPOT_SKULL;
-    public ItemStack TICKET;
-
-    private Config(Plugin main) {
-        if (!new File("./plugins/WhackaMole/config.yml").exists()) main.saveResource("config.yml", false);
-        if (!gamesData.exists()) gamesData.mkdirs();
-        this.configFile = new YMLFile("./plugins/WhackaMole/config.yml");
-        this.setup();
-
-
-    }
-    private Config() {}
-
-    public void onEnable() {
-        this.translator = Translator.getInstance();
-        this.translator.configLoad(this.language);
-        this.loadNBTData();
-        if (!this.configVersion.equals(newConfigVersion)) {
-            this.logger.warning(this.translator.Format(this.translator.CONFIG_OLDVERSION));
+        private static boolean LoadConfig(YMLFile configFile) {
+            String[] fields = configFile.getString("Language").split("_");
+            Language = new Locale(fields[0], fields[1], "");
+            return true;
         }
     }
 
-    public void setup() {
-        this.PREFIX             = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
-        this.language           = this.configFile.getString("Language");
-        this.configVersion      = this.configFile.getString("Config Version");
-        this.ECONOMY            = this.configFile.getString("Economy");
-        this.OBJECTIVE          = this.configFile.getString("Scoreboard Objective");
-        this.CURRENCY_SING      = this.configFile.getString("Singular Currency");
-        this.CURRENCY_PLUR      = this.configFile.getString("Plural Currency");
-        this.SYMBOL             = this.configFile.getString("Currency Symbol");
-        this.TICKETPRICE        = this.configFile.getInt("Ticket Price");
-        this.HITSOUND           = this.configFile.getSound("HitSound");
-        this.MISSSOUND          = this.configFile.getSound("MissedSound");
-        this.MOLEBLOCK          = this.configFile.getList("Blocklist");
-        this.ACTIONTEXT         = this.configFile.getString("Actionbar Message");
-        this.MOLE_SKIN          = this.configFile.getString("Mole Skin");
-        this.JACKPOT_SKIN       = this.configFile.getString("Jackpot Skin");
-        this.HAMMERNAME         = Translator.Color(this.configFile.getString("Hammer Name"));
-        this.PERM_TICKET_USE    = "WAM." + this.configFile.getString("Commands.Use Reset Ticket");
-        this.PERM_BUY           = "WAM." + this.configFile.getString("Commands.Buy");
-        this.PERM_RELOAD        = "WAM." + this.configFile.getString("Commands.Reload");
-        this.PERM_CREATE        = "WAM." + this.configFile.getString("Commands.Create");
-        this.PERM_REMOVE        = "WAM." + this.configFile.getString("Commands.Remove");
-        this.PERM_PLAY          = "WAM." + this.configFile.getString("Commands.Play");
-        this.PERM_SETTINGS      = "WAM." + this.configFile.getString("Commands.Settings");
+    public static class Currency {
+        public static String CURRENCY_SING = "Dollar", CURRENCY_PLUR = "Dollars", SYMBOL = "$", ECONOMY = "",
+                OBJECTIVE = "";
 
-        this.FIELD_MAX_SIZE     = this.configFile.getInt("Max playfield");
-        this.FiELD_MARGIN_X     = this.configFile.getDouble("Field extension.width");
-        this.FiELD_MARGIN_Y     = this.configFile.getDouble("Field extension.height");
-    }
+        public static int TICKETPRICE;
 
-
-
-    public static Config getInstance(Plugin main) {
-        if (Config.Instance == null) {
-            Config.Instance = new Config(main);
-            return Config.Instance;
-        }
-        return Config.Instance;
-    }
-
-    public static Config getInstance() {
-        if (Config.Instance == null) {
-            Config.Instance = new Config();
-            return Config.Instance;
-        }
-        return Config.Instance;
-    }
-
-    public static Config reload(Main main) {
-        Config.Instance = null;
-        return Config.getInstance(main);
-    }
-
-    private void loadNBTData() {
-        ItemStack axe = new ItemStack(Material.GOLDEN_AXE);
-        ItemMeta axeMeta = axe.getItemMeta();
-        ((Damageable) axeMeta).setDamage(31);
-        axeMeta.setUnbreakable(true);
-        axeMeta.addEnchant(Enchantment.LURE, 1, true);
-        axeMeta.addItemFlags(
-                ItemFlag.HIDE_ATTRIBUTES,
-                ItemFlag.HIDE_ENCHANTS,
-                ItemFlag.HIDE_UNBREAKABLE);
-        axeMeta.setDisplayName(this.HAMMERNAME);
-        axe.setItemMeta(axeMeta);
-
-        ItemStack ticket = new ItemStack(Material.MAP);
-        ItemMeta ticketInfo = ticket.getItemMeta();
-        ticketInfo.addEnchant(Enchantment.LURE, 1, true);
-        ticketInfo.setDisplayName(this.translator.CONFIG_TICKET_NAME);
-        ticketInfo.setLore(
-                Arrays.asList(
-                        this.translator.CONFIG_TICKET_LORE1,
-                        this.translator.CONFIG_TICKET_LORE2,
-                        this.translator.CONFIG_TICKET_LORE3));
-        ticketInfo.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
-        ticket.setItemMeta(ticketInfo);
-
-        this.PLAYER_AXE = axe;
-        this.TICKET = ticket;
-        this.MOLE_SKULL = this.getSkull(this.MOLE_SKIN);
-        this.JACKPOT_SKULL = this.getSkull(this.JACKPOT_SKIN);
-
-
-    }
-
-    private ItemStack getSkull(String url) {
-        ItemStack moleHead = new ItemStack(Material.PLAYER_HEAD);
-        if (url.isEmpty())
-            return moleHead;
-        SkullMeta moleMeta = (SkullMeta) moleHead.getItemMeta();
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-
-        profile.getProperties().put("textures", new Property("textures", url));
-        try {
-            Field profileField = moleMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(moleMeta, profile);
-        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        moleHead.setItemMeta(moleMeta);
-        return moleHead;
-    }
-}
-
-class YMLFile {
-    public FileConfiguration FileConfig = new YamlConfiguration();
-    public File file;
-    private final Logger logger = Logger.getInstance();
-    private Translator translator = Translator.getInstance();
-
-    public YMLFile(File folder, String child) throws FileNotFoundException {
-        if (!folder.isDirectory()) throw new FileNotFoundException(this.translator.Format(this.translator.YML_NOTFOUNDEXCEPTION, folder));
-        this.file = new File(folder, child);
-        this.load();
-    }
-
-    public YMLFile(String path) {
-        this.file = new File(path);
-        this.load();
-    }
-    public YMLFile(File file) {
-        this.file = file;
-        this.load();
-    }
-
-    public String getString(String path) {
-        return this.FileConfig.getString(path);
-    }
-    public boolean getBoolean(String path) {
-        return this.FileConfig.getBoolean(path);
-    }
-    public int getInt(String path) {
-        return this.FileConfig.getInt(path);
-    }
-    public double getDouble(String path) {
-        return this.FileConfig.getDouble(path);
-    }
-    public List<?> getList(String path) {
-        return this.FileConfig.getList(path);
-    }
-    public Sound getSound(String path) { return Sound.valueOf(this.FileConfig.getString(path));}
-
-
-    public void set (String path, Object value) {
-        this.FileConfig.set(path, value);
-    }
-
-    public void save() {
-        try {
-            this.FileConfig.save(this.file);
-            this.logger.success(this.translator.Format(this.translator.YML_SAVEDFILE, this.file));
-        } catch(Exception e) {
-            e.printStackTrace();
+        private static boolean LoadConfig(YMLFile configFile) {
+            CURRENCY_SING   = configFile.getString("Singular Currency");
+            CURRENCY_PLUR   = configFile.getString("Plural Currency");
+            SYMBOL          = configFile.getString("Currency Symbol");
+            ECONOMY         = configFile.getString("Economy");
+            OBJECTIVE       = configFile.getString("Scoreboard Objective");
+            TICKETPRICE     = configFile.getInt("Ticket Price");
+            return true;
         }
     }
-    
-    public void load() {
-        try {
-            this.FileConfig.load(this.file);
-        } catch (Exception e) {
-            this.createFile();
-        }
-    }
-    public void remove() {
-        try {
-            this.file.delete();
-            this.logger.success(this.translator.Format(this.translator.YML_DELETEDFILE, this.file));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
-    public void createFile() {
-        try {
-            this.logger.success(this.translator.Format(this.translator.YML_CREATEFILE, this.file));
-            if (this.file.getParentFile().mkdirs()) {
-                this.load();
+
+    public static class Game {
+        public static String ACTIONTEXT, HAMMERNAME = "Hammer", HAMMER_ITEM;
+        public static boolean ENABLE_GAMECONFIG;
+
+        public static int FIELD_MAX_SIZE, HAMMER_CUSTOMMODELDATA, HAMMER_ITEMDAMAGE;
+        public static Double FiELD_MARGIN_X, FiELD_MARGIN_Y;
+
+        public static Sound HITSOUND, MISSSOUND;
+
+        public static List<?> MOLEBLOCK;
+
+        public static ItemStack PLAYER_AXE, TICKET;
+
+        private static boolean LoadConfig(YMLFile configFile) {
+            ACTIONTEXT              = configFile.getString("Actionbar Message");
+            HAMMER_ITEM             = configFile.getString("Hammer Item");
+            HAMMER_CUSTOMMODELDATA  = configFile.getInt("Hammer customModelData");
+            HAMMER_ITEMDAMAGE       = configFile.getInt("Hammer itemDamage");
+            HAMMERNAME              = DefaultFontInfo.Color(configFile.getString("Hammer Name"));
+
+            FIELD_MAX_SIZE          = configFile.getInt("Max playfield");
+            FiELD_MARGIN_X          = configFile.getDouble("Field extension.width");
+            FiELD_MARGIN_Y          = configFile.getDouble("Field extension.height");
+
+            ENABLE_GAMECONFIG       = configFile.getBoolean("Game config");
+            HITSOUND                = configFile.getSound("HitSound");
+            MISSSOUND               = configFile.getSound("MissedSound");
+
+            MOLEBLOCK               = configFile.getList("Blocklist");
+
+            if (Material.getMaterial(HAMMER_ITEM) != null) {
+                PLAYER_AXE = new ItemStack(Material.valueOf(HAMMER_ITEM));
+                ItemMeta axeMeta = PLAYER_AXE.getItemMeta();
+                if (HAMMER_ITEMDAMAGE != 0) {
+                    ((Damageable) axeMeta).setDamage(HAMMER_ITEMDAMAGE);
+                }
+                if (HAMMER_CUSTOMMODELDATA != 0) {
+                    axeMeta.setCustomModelData(HAMMER_CUSTOMMODELDATA);
+                }
+                axeMeta.setUnbreakable(true);
+                axeMeta.addEnchant(Enchantment.LURE, 1, true);
+                axeMeta.addItemFlags(
+                        ItemFlag.HIDE_ATTRIBUTES,
+                        ItemFlag.HIDE_ENCHANTS,
+                        ItemFlag.HIDE_UNBREAKABLE);
+                axeMeta.setDisplayName(HAMMERNAME);
+                PLAYER_AXE.setItemMeta(axeMeta);
+            } else {
+                Logger.error(Translator.CONFIG_INVALIDHAMMERITEM);
+                return false;
             }
-        } catch (Exception e) {
-            this.logger.error(this.translator.Format(this.translator.YML_CREATEFAIL, this.file));
-            e.printStackTrace();
+
+            TICKET = new ItemStack(Material.MAP);
+            ItemMeta ticketInfo = TICKET.getItemMeta();
+            ticketInfo.addEnchant(Enchantment.LURE, 1, true);
+            ticketInfo.setDisplayName(Translator.CONFIG_TICKET_NAME.toString());
+            ticketInfo.setLore(
+                    Arrays.asList(
+                            Translator.CONFIG_TICKET_LORE1.toString(),
+                            Translator.CONFIG_TICKET_LORE2.toString(),
+                            Translator.CONFIG_TICKET_LORE3.toString()));
+            ticketInfo.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
+            TICKET.setItemMeta(ticketInfo);
+            return true;
         }
+    }
+
+    public static class Permissions {
+        public static String PERM_TICKET_USE, PERM_BUY, PERM_RELOAD, PERM_CREATE, PERM_REMOVE, PERM_SETTINGS, PERM_PLAY, PERM_POSITIONS, PERM_TOP;
+
+        private static boolean LoadConfig(YMLFile configFile) {
+            PERM_TICKET_USE     = "WAM." + configFile.getString("Play.Use Reset Ticket");
+            PERM_PLAY           = "WAM." + configFile.getString("Play.Play");
+            PERM_BUY            = "WAM." + configFile.getString("Commands.Buy");
+            PERM_SETTINGS       = "WAM." + configFile.getString("Commands.Settings");
+            PERM_RELOAD         = "WAM." + configFile.getString("Commands.Reload");
+            PERM_CREATE         = "WAM." + configFile.getString("Commands.Create");
+            PERM_REMOVE         = "WAM." + configFile.getString("Commands.Remove");
+            PERM_POSITIONS      = "WAM." + configFile.getString("Commands.Positions");
+            PERM_TOP            = "WAM." + configFile.getString("Commands.Top");
+            return true;
+        }
+    }
+
+    private Config() {
+    }
+
+    public static boolean onLoad(Plugin Main) {
+        try {
+            ConfigFile = new YMLFile(AppConfig.storageFolder, AppConfig.configFileName);
+        } catch (Exception e) {
+            Logger.error(e.getMessage());
+            return false;
+        }
+
+        if (ConfigFile.created) {
+            Main.saveResource("config.yml", true);
+            Logger.info(Translator.YML_CREATEFILE.Format(ConfigFile));
+            try {
+                ConfigFile = new YMLFile(AppConfig.storageFolder, AppConfig.configFileName);
+            } catch (Exception e) {
+                Logger.error(e.getMessage());
+                return false;
+            }
+        }
+        return LoadConfig(ConfigFile);
+    }
+
+    protected static boolean LoadConfig(YMLFile ConfigFile) {
+        if (Updater.versionCompare(ConfigFile.getString("Config Version"), AppConfig.configVersion)) {
+            Logger.warning(Translator.CONFIG_OLDVERSION.Format(ConfigFile.getString("Config Version")));
+        }
+
+        if(!AppConfig.LoadConfig(ConfigFile)
+        || !Currency.LoadConfig(ConfigFile)
+        || !Game.LoadConfig(ConfigFile)
+        || !Permissions.LoadConfig(ConfigFile)) {
+            return false;
+        }
+
+        Loaded = true;
+        return true;
     }
 
 }
