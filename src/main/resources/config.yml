@@ -10,7 +10,8 @@ Config Version: 1.5
 # the lines must be in YAML format, so it doesn't accept tabs, only spaces.
 # And you need to make sure you have "escaped" all apostrophes in your text: If you want to write "don't", for example, write "don''t" instead (note the doubled apostrophe).
 
-# Select the plugin language (Config will always be in english), you can select one of following languages: "en_US", "nl_NL" and "fr_FR").
+# Select the plugin language (Config will always be in english), you can select one of following languages: "en_US", "nl_NL", "zh_TW" and "fr_FR").
+# Shout-out to Kevin_H (https://www.spigotmc.org/members/kevin_h.1393842/) for the "zh_TW" translation
 # If you wish to contribute to the language translations (e.g. by making a translation for another language), then please visit https://github.com/CraZyRc/WhackaMole)
 Language: en_US
 
