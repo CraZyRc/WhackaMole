@@ -3,14 +3,17 @@ package whackamole.whackamole.DB.Model;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import whackamole.whackamole.DB.SQLite;
+import whackamole.whackamole.Logger;
 
 /**
  * All Classes that implement {@link Table} Must call
@@ -81,6 +84,17 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         if (query.isEmpty())
             return;
         SQL.executeUpdate(query, whereValues);
+    }
+    public void Alter(String tableName, String columName, String columDefinition)  {
+        var query = this.getAlterQuery(columName, columDefinition);
+        try {
+            if (query.isEmpty() || this.ColumExists(tableName, columName)) {
+                return;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        SQL.executeUpdate(query);
     }
 
     public void Delete(T row) {
@@ -180,6 +194,17 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         if (updateString.isEmpty())
             return "";
         return "UPDATE %s SET %s WHERE %s".formatted(this.GetName(), updateString, WhereString);
+    }
+
+    /**
+     * Adds new Colum to Table
+     *
+     * @return The Alter Query
+     */
+    private String getAlterQuery(String columName, String columDefinition) {
+        // * ALTER TABLE {TableName} ADD {ColumName} {ColumDefinition}
+
+        return "ALTER TABLE %s ADD %s %s".formatted(this.GetName(), columName, columDefinition);
     }
 
     /**
@@ -406,6 +431,14 @@ public abstract class Table<T extends Row> implements TableModel<T> {
             e.printStackTrace();
             assert false : e.getMessage();
         }
+    }
+
+    private boolean ColumExists(String tableName, String columName) throws SQLException {
+        var query = SQL.executeQuery("PRAGMA table_info(%s)".formatted(tableName));
+        while (query.next()) {
+            if (query.getString("name").equals(columName)) return true;
+        }
+        return false;
     }
 
     /**
