@@ -6,12 +6,15 @@ import java.util.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -156,6 +159,16 @@ public final class GamesManager implements Listener {
         GamesManager.this.runnableTickCounter++;
     };
 
+    @EventHandler
+    public void entitySpawnEvent(EntitySpawnEvent e) {
+        Entity entity = e.getEntity();
+        if (entity.getScoreboardTags().contains("Mole_new")) {
+            entity.getScoreboardTags().remove("Mole_new");
+            entity.addScoreboardTag("Mole");
+        } else if (entity.getScoreboardTags().contains("Mole")){
+            entity.remove();
+        }
+    }
     @EventHandler
     public void onWorldLoad(WorldLoadEvent e) {
         Logger.info(Translator.MANAGER_LOADINGGAMES.Format(e.getWorld().getName()));

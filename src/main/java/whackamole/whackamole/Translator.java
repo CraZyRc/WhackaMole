@@ -1,7 +1,10 @@
 package whackamole.whackamole;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 
@@ -63,6 +66,7 @@ public enum Translator {
     ,   GAME_CONFIG_DIFFICULTYSCALE                         ("Game.Config.difficultyScale")
     ,   GAME_CONFIG_DIFFICULTYINCREASE                      ("Game.Config.difficultyIncrease")
     ,   GAME_CONFIG_COOLDOWN                                ("Game.Config.Cooldown")
+    ,   GAME_CONFIG_MUSIC                                   ("Game.Config.Music")
     ,   GAME_CONFIG_MOLEHEAD                                ("Game.Config.moleHead")
     ,   GAME_CONFIG_TPLOCATION                              ("Game.Config.teleportLocation")
     ,   GAME_CONFIG_SCORELOCATION                           ("Game.Config.scoreLocation")
@@ -80,6 +84,7 @@ public enum Translator {
     ,   COMMANDS_TIPS_DIFFICULTYSCALE                       ("Commands.Tips.difficultyScale")
     ,   COMMANDS_TIPS_DIFFICULTYINCREASE                    ("Commands.Tips.difficultyIncrease")
     ,   COMMANDS_TIPS_COOLDOWN                              ("Commands.Tips.Cooldown")
+    ,   COMMANDS_TIPS_MUSIC                                 ("Commands.Tips.Music")
     ,   COMMANDS_TIPS_MOLEHEAD                              ("Commands.Tips.moleHead")
     ,   COMMANDS_TIPS_HIGHSCORE                             ("Commands.Tips.Highscore")
     ,   COMMANDS_TIPS_TELEPORT                              ("Commands.Tips.Teleport")
@@ -121,6 +126,8 @@ public enum Translator {
     ,   COMMANDS_SETTINGS_DIFFICULTYINCREASE_SUCCESS        ("Commands.Settings.difficultyIncrease.Success", String.class)
     ,   COMMANDS_SETTINGS_COOLDOWN                          ("Commands.Settings.Cooldown")
     ,   COMMANDS_SETTINGS_COOLDOWN_SUCCESS                  ("Commands.Settings.Cooldown.Success", String.class)
+    ,   COMMANDS_SETTINGS_MUSIC                             ("Commands.Settings.Music")
+    ,   COMMANDS_SETTINGS_MUSIC_SUCCESS                     ("Commands.Settings.Music.Success", String.class)
     ,   COMMANDS_SETTINGS_MOLEHEAD                          ("Commands.Settings.moleHead")
     ,   COMMANDS_SETTINGS_MOLEHEAD_SUCCESS                  ("Commands.Settings.moleHead.Success", String.class)
     ,   COMMANDS_SETTINGS_JACKPOTHEAD                       ("Commands.Settings.jackpotHead")
@@ -151,6 +158,7 @@ public enum Translator {
         this(key);
         this.requiredTypes = requiredTypes;
     }
+
 
     private void LookupTranslation() {
         try {

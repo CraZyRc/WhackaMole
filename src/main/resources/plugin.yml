@@ -1,7 +1,7 @@
 name: WhackaMole
 version: '${project.version}'
 main: whackamole.whackamole.Main
-api-version: 1.17
+api-version: '1.20'
 prefix: WAM
 authors: [ CraZy ]
 softdepend: [ Vault ]
