@@ -100,4 +100,9 @@ public class GameRow extends Row {
      * The aomunt of miliseconds the player has to wait before they can play the game again.
      */
     public Long Cooldown = 86400000L;
+
+    /**
+     * The minecraft name of the song the player hears when a game starts
+     */
+    public String Music = "";
 }

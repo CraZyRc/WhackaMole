@@ -211,7 +211,7 @@ public class Column<T> {
     }
 
     /**
-     * Gets teh default value for the collumn
+     * Gets the default value for the collumn
      * 
      * @return The default value for the collumn or null
      */

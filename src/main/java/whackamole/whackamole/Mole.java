@@ -48,6 +48,7 @@ public class Mole {
         this.mole = switch (type) {
             case Null -> e;
             case Mole -> {
+                e.addScoreboardTag("Mole_new");
                 e.setGravity(false);
                 e.setInvisible(true);
                 e.getEquipment().setHelmet(getSkull(settings.moleHead));
@@ -56,6 +57,7 @@ public class Mole {
                 yield e;
             }
             case Jackpot -> {
+                e.addScoreboardTag("Mole_new");
                 e.setGravity(false);
                 e.setInvisible(true);
                 e.getEquipment().setHelmet(getSkull(settings.jackpotHead));

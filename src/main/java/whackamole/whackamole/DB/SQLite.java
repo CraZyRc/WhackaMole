@@ -30,6 +30,8 @@ public class SQLite {
             getCooldownDB().Create();
             getScoreboardDB().Create();
         }
+        getGameDB().Alter("Game", "Music", "TEXT");
+
     }
 
     public String getUrl() {

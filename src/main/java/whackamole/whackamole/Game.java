@@ -40,9 +40,7 @@ public class Game {
         }
         
         private void Delete() {
-            for (var player : cooldown.keySet()) {
-                this.remove(player);
-            }
+            this.cooldown.clear();
         }
 
         private void add(Player player) {
@@ -218,6 +216,7 @@ public class Game {
                     Translator.GAME_CONFIG_DIFFICULTYSCALE.toString(),
                     Translator.GAME_CONFIG_DIFFICULTYINCREASE.toString(),
                     Translator.GAME_CONFIG_COOLDOWN.toString(),
+                    Translator.GAME_CONFIG_MUSIC.toString(),
                     Translator.GAME_CONFIG_MOLEHEAD.toString(),
                     Translator.GAME_CONFIG_TPLOCATION.toString(),
                     Translator.GAME_CONFIG_SCORELOCATION.toString(),
@@ -244,6 +243,7 @@ public class Game {
             this.gameConfig.set("Properties.Difficulty scaling", Game.this.settings.difficultyScale);
             this.gameConfig.set("Properties.Difficulty increase", Game.this.settings.difficultyScore);
             this.gameConfig.set("Properties.Cooldown", Game.this.cooldown.formatSetCooldown(Game.this.settings.Cooldown));
+            this.gameConfig.set("Properties.Music", Game.this.settings.Music);
             this.gameConfig.set("Properties.moleHead", Game.this.settings.moleHead);
             this.gameConfig.set("Properties.jackpotHead", Game.this.settings.jackpotHead);
             this.gameConfig.set("Properties.teleportLocation", Game.this.settings.teleportLocation);
@@ -270,6 +270,9 @@ public class Game {
             Game.this.settings.difficultyScale = this.gameConfig.getDouble("Properties.Difficulty scaling");
             Game.this.settings.difficultyScore = this.gameConfig.getInt("Properties.Difficulty increase");
             Game.this.settings.Cooldown = cooldown.parseTime(this.gameConfig.getString("Properties.Cooldown"));
+            Game.this.settings.Music = this.gameConfig.getString("Properties.Music");
+            Game.this.settings.moleHead = this.gameConfig.getString("Properties.moleHead");
+            Game.this.settings.jackpotHead = this.gameConfig.getString("Properties.jackpotHead");
             Game.this.settings.teleportLocation = this.gameConfig.FileConfig.getLocation("Properties.teleportLocation");
             Game.this.settings.scoreLocation = this.gameConfig.FileConfig.getLocation("Properties.scoreLocation");
             Game.this.settings.streakHoloLocation = this.gameConfig.FileConfig.getLocation("Properties.streakLocation");
@@ -374,6 +377,7 @@ public class Game {
             this.holoScores.add(Streak);
             this.holoScores.add(molesHit);
             for (ArmorStand armorStand : this.holoScores) {
+                armorStand.addScoreboardTag("Mole_new");
                 armorStand.setVisible(true);
                 armorStand.setCustomNameVisible(true);
                 armorStand.setGravity(false);
@@ -449,10 +453,20 @@ public class Game {
             if (settings.streakHoloLocation != null) {
                 this.createStreakHolo();
             }
+            if (settings.Music != null) {
+                try {
+                    this.player.playSound(player, settings.Music, 1, 1);
+                } catch (Exception e) {
+                    Logger.error(e.getMessage());
+                }
+            }
             return true;
         }
 
         private void Stop() {
+            if (settings.Music != null) {
+                this.player.stopSound(settings.Music);
+            }
             Game.this.grid.removeEntities();
             Game.this.actionbarParse(this.player.getUniqueId(), "");
             this.removePlayerAxe(this.player);
@@ -488,7 +502,9 @@ public class Game {
         }
 
         private void removePlayerAxe(Player player) {
-            player.getInventory().removeItem(Config.Game.PLAYER_AXE);
+            while (player.getInventory().contains(Config.Game.PLAYER_AXE)) {
+                player.getInventory().removeItem(Config.Game.PLAYER_AXE);
+            }
         }
 
         private void sendScoreToPlayer(Player player, int score) {
@@ -744,6 +760,11 @@ public class Game {
 
     public void setCooldown(String Cooldown) {
         this.settings.Cooldown = this.cooldown.parseTime(Cooldown);
+        this.Save();
+    }
+
+    public void setMusic(String Music) {
+        this.settings.Music = Music;
         this.Save();
     }
 

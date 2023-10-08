@@ -29,6 +29,7 @@ public class Commands {
     String diffScaleTip     = String.valueOf(Translator.COMMANDS_TIPS_DIFFICULTYSCALE);
     String diffIncreaseTip  = String.valueOf(Translator.COMMANDS_TIPS_DIFFICULTYINCREASE);
     String cooldownTip      = String.valueOf(Translator.COMMANDS_TIPS_COOLDOWN);
+    String musicTip      = String.valueOf(Translator.COMMANDS_TIPS_MUSIC);
     String moleHeadTip      = String.valueOf(Translator.COMMANDS_TIPS_MOLEHEAD);
     String highscoreTip     = String.valueOf(Translator.COMMANDS_TIPS_HIGHSCORE);
     String teleportTip     = String.valueOf(Translator.COMMANDS_TIPS_TELEPORT);
@@ -47,6 +48,7 @@ public class Commands {
         DIFFICULTYSCALE(Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE),
         DIFFICULTYSCORE(Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE),
         COOLDOWN(Translator.COMMANDS_SETTINGS_COOLDOWN),
+        MUSIC(Translator.COMMANDS_SETTINGS_MUSIC),
         MOLEHEAD(Translator.COMMANDS_SETTINGS_MOLEHEAD),
         JACKPOTHEAD(Translator.COMMANDS_SETTINGS_JACKPOTHEAD);
 
@@ -146,6 +148,7 @@ public class Commands {
                                     line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_MOLEHEAD             + ": " + ChatColor.AQUA + settings.moleHead +
                                     line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_JACKPOTHEAD          + ": " + ChatColor.AQUA + settings.jackpotHead +
                                     line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_COOLDOWN             + ": " + ChatColor.AQUA + settings.getCooldown() +
+                                    line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_MUSIC                + ": " + ChatColor.AQUA + settings.Music +
                                     ChatColor.YELLOW + "\n| \n[>------------------------------------<]";
                             player.sendMessage(outputString);
 
@@ -212,6 +215,10 @@ public class Commands {
                                 case COOLDOWN -> {
                                     game.setCooldown((String) args.get(2));
                                     player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_COOLDOWN_SUCCESS.Format(args.get(2)));
+                                }
+                                case MUSIC -> {
+                                    game.setMusic((String) args.get(2));
+                                    player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MUSIC_SUCCESS.Format(args.get(2)));
                                 }
                                 case MOLEHEAD -> {
                                     game.setMoleHead((String) args.get(2));
@@ -287,6 +294,7 @@ public class Commands {
             if (Settings.DIFFICULTYSCALE.toString().equals(Info.input()))           return Settings.DIFFICULTYSCALE;
             if (Settings.DIFFICULTYSCORE.toString().equals(Info.input()))           return Settings.DIFFICULTYSCORE;
             if (Settings.COOLDOWN.toString().equals(Info.input()))                  return Settings.COOLDOWN;
+            if (Settings.MUSIC.toString().equals(Info.input()))                     return Settings.MUSIC;
             if (Settings.MOLEHEAD.toString().equals(Info.input()))                  return Settings.MOLEHEAD;
             if (Settings.JACKPOTHEAD.toString().equals(Info.input()))               return Settings.JACKPOTHEAD;
             return Settings.NULL;
@@ -302,6 +310,7 @@ public class Commands {
                 , String.valueOf(Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE)
                 , String.valueOf(Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE)
                 , String.valueOf(Translator.COMMANDS_SETTINGS_COOLDOWN)
+                , String.valueOf(Translator.COMMANDS_SETTINGS_MUSIC)
                 , String.valueOf(Translator.COMMANDS_SETTINGS_MOLEHEAD)
                 , String.valueOf(Translator.COMMANDS_SETTINGS_JACKPOTHEAD)
         )));
@@ -399,6 +408,14 @@ public class Commands {
                         StringTooltip.ofString("\"00:30:00\"",      this.cooldownTip),
                         StringTooltip.ofString("\"00:10:00\"",      this.cooldownTip),
                         StringTooltip.ofString("\"00:00:10\"",      this.cooldownTip)
+                    };
+                }
+                case MUSIC -> {
+                    return new IStringTooltip[] {
+                            StringTooltip.ofString("\"minecraft:music.dragon\"", this.musicTip),
+                            StringTooltip.ofString("\"minecraft:music.under_water\"", this.musicTip),
+                            StringTooltip.ofString("\"minecraft:music_disc.pigstep\"", this.musicTip),
+                            StringTooltip.ofString("\"minecraft:music_disc.ward\"", this.musicTip)
                     };
                 }
                 case MOLEHEAD -> {
