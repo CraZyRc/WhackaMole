@@ -11,7 +11,7 @@ Config Version: 1.6
 # And you need to make sure you have "escaped" all apostrophes in your text: If you want to write "don't", for example, write "don''t" instead (note the doubled apostrophe).
 
 # Select the plugin language (Config will always be in english), you can select one of following languages: "en_US", "fr_FR", "es_ES", "nl_NL", "de_DE", "zh_TW", "tr_TR" and "ru_RU").
-# Shout-out to Kevin_H (https://www.spigotmc.org/members/kevin_h.1393842/) for the "zh_TW" translation, K-ReportBot (https://www.spigotmc.org/members/k-reportbot.1777793/) for the "ru_RU" and "de_DE" translation and Dami1603 for the "es_ES" translation
+# Shout-out to Kevin_H (https://www.spigotmc.org/members/kevin_h.1393842/) for the "zh_TW" translation, K-ReportBot (https://www.spigotmc.org/members/k-reportbot.1777793/) for the "ru_RU" and "de_DE" translation, WinTone01 (https://www.spigotmc.org/members/wintone01.1485313/) for "tr_TR" and Dami1603 for the "es_ES" translation
 # If you wish to contribute to the language translations (e.g. by making a translation for another language), then please visit https://github.com/CraZyRc/WhackaMole)
 Language: en_US
 
