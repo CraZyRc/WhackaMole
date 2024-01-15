@@ -43,12 +43,12 @@ public class GameRow extends Row {
     /**
     * The Mole head to be used
     */
-    public String moleHead = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWIxMjUwM2Q2MWM0OWY3MDFmZWU4NjdkNzkzZjFkY2M1MjJlNGQ3YzVjNDFhNjhmMjk1MTU3OWYyNGU3Y2IyYSJ9fX0=";
+    public String moleHead = "1b12503d61c49f701fee867d793f1dcc522e4d7c5c41a68f2951579f24e7cb2a";
     
     /**
     * The Jackpot head to be used
     */  
-    public String jackpotHead = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTlkZGZiMDNjOGY3Zjc4MDA5YjgzNDRiNzgzMGY0YTg0MThmYTRiYzBlYjMzN2EzMzA1OGFiYjdhMDVlOTNlMSJ9fX0=";
+    public String jackpotHead = "40726284b8c12a1a3768bdc32185c155e19196dc080f04d5a67d50e492d563bb";
     
     /**
      * The Game ID

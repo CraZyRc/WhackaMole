@@ -4,6 +4,7 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.IStringTooltip;
 import dev.jorel.commandapi.StringTooltip;
 import dev.jorel.commandapi.arguments.*;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import org.bukkit.block.BlockFace;
@@ -85,6 +86,39 @@ public class Commands {
                             } catch (Exception e) {
                                 player.sendMessage(Config.AppConfig.PREFIX + e.getMessage());
                             }
+                        })
+                )
+                .withSubcommand(new CommandAPICommand(String.valueOf(Translator.COMMANDS_START))
+                        .withPermission(Config.Permissions.PERM_START)
+                        .withArguments(gameNameArgument("Game"))
+                        .executesPlayer((player, args) -> {
+                            Game game = (Game) args.get("Game");
+                            Player p1 = null;
+                            for (Player p : Bukkit.getOnlinePlayers()) {
+                                if (game.onGrid(p)) {
+                                    if (p1 == null)  p1 = p; else {
+                                        player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_START_ERROR_TOOMANYPLAYERS);
+                                        return;
+                                    }
+                                }
+                            }
+                            if (p1 != null) {
+                                game.cooldown.remove(p1.getUniqueId());
+                                game.Start(p1);
+                                player.sendMessage(Config.AppConfig.PREFIX + Translator.Format(Translator.COMMANDS_START_SUCCESS, game.getName()));
+                            } else player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_START_ERROR_NOPLAYERFOUND);
+                        })
+                )
+                .withSubcommand(new CommandAPICommand(String.valueOf(Translator.COMMANDS_STOP))
+                        .withPermission(Config.Permissions.PERM_STOP)
+                        .withArguments(gameNameArgument("Game"))
+                        .executesPlayer((player, args) -> {
+                            Game game = (Game) args.get(0);
+                            if (game != null) {
+                                game.Stop();
+                                player.sendMessage(Config.AppConfig.PREFIX + Translator.Format(Translator.COMMANDS_STOP_SUCCESS, game.getName()));
+                            } else player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_STOP_ERROR_NOACTIVEGAME);
+
                         })
                 )
                 .withSubcommand(new CommandAPICommand(String.valueOf(Translator.COMMANDS_REMOVE))
@@ -412,26 +446,26 @@ public class Commands {
                 }
                 case MUSIC -> {
                     return new IStringTooltip[] {
-                            StringTooltip.ofString("\"minecraft:music.dragon\"", this.musicTip),
-                            StringTooltip.ofString("\"minecraft:music.under_water\"", this.musicTip),
-                            StringTooltip.ofString("\"minecraft:music_disc.pigstep\"", this.musicTip),
-                            StringTooltip.ofString("\"minecraft:music_disc.ward\"", this.musicTip)
+                            StringTooltip.ofString("\"minecraft:music.dragon\"",        this.musicTip),
+                            StringTooltip.ofString("\"minecraft:music.under_water\"",   this.musicTip),
+                            StringTooltip.ofString("\"minecraft:music_disc.pigstep\"",  this.musicTip),
+                            StringTooltip.ofString("\"minecraft:music_disc.ward\"",     this.musicTip)
                     };
                 }
                 case MOLEHEAD -> {
                     return new IStringTooltip[] {
-                            StringTooltip.ofString("\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzIwNjczYTdhNTUyZmFjMDk0NjYxYjgzOGI3NWZiN2FiMTIwMGU2OTFkZTdiZWVjMGE4NDZhOWU5NzgxMDU4ZCJ9fX0=\"",      this.moleHeadTip),
-                            StringTooltip.ofString("\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzU4NGIzZjEwZGE2M2QzZDVhYTVlZTBhM2NjZDA1NmJlMjhkM2NlYWY3Mjk1YjJiMDdjOTc1ODQ2MTI0MWVjMiJ9fX0=\"",      this.moleHeadTip),
-                            StringTooltip.ofString("\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzFhMzU0NTlhNmI0ZjA3ZDhlNjBmMTE0YjU3ZTZiNzZlOTBkOTljNmY1Mzg3OGVkYWUxOTUzZDRlZDM5NjM2In19fQ==\"",      this.moleHeadTip),
-                            StringTooltip.ofString("\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE5ZWM3MTIwOGJhZWQ0NTIzOGQyNGM0MzA2MTU5Nzc5ZWFiMTUyZGRmNGUyZGQwMzA1MDdiZDI4NjNlMjFlIn19fQ==\"",      this.moleHeadTip),
+                            StringTooltip.ofString("eba5bff4334deceaba7b267777d0eb19386a325a0a80de42783d4e4fac7ea41d",      this.moleHeadTip),
+                            StringTooltip.ofString("1280329dc03ae541a7b3fb7e1cfe63a8dd85f3ecb97f353b092ad6c0e0fb1c95",      this.moleHeadTip),
+                            StringTooltip.ofString("cc1df0db8d4773cc255a63b8f0b0e4cdd7d74c3b4c675362168460bc67bb302e",      this.moleHeadTip),
+                            StringTooltip.ofString("ebda5f31937b2ff755271d97f01be84d52a407b36ca77451856162ac6cfbb34f",      this.moleHeadTip),
                     };
                 }
                 case JACKPOTHEAD -> {
                     return new IStringTooltip[] {
-                            StringTooltip.ofString("\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmY0NzgwY2EwZTZjMjMwOTBiZDE0OWMyYzM2ZTY0MDViMjVhZTdlYmY2NWI0ZGZlYjMxOTNiZjBlYzQ4ZGFiMyJ9fX0=\"",      this.moleHeadTip),
-                            StringTooltip.ofString("\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTUyZTU2MDI4OWNlM2JlZTBjYzIzNDQ0MjdhMjc2MWE0OGQ3ODM5ZTgyZGM1MDYxNzM5NzQ4NWM0ZGEwY2I1MCJ9fX0=\"",      this.moleHeadTip),
-                            StringTooltip.ofString("\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2JhNWFiNjlhYjBlZmMyZmE1ZGRhMjMzYTYzMThjNWRlYmE0NTQzYmE0NjM1YWIyMWY5YmEyM2Q1ODlkZWViMCJ9fX0=\"",      this.moleHeadTip),
-                            StringTooltip.ofString("\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjViMjVlMWIyNjdlZTQxOGMwM2FmZjk0OGQzNDhiOWI0ZDQ2MDNmOTYwY2QxMWIwYWRjZDYzMDk5ZTRhNTBmZCJ9fX0=\"",      this.moleHeadTip),
+                            StringTooltip.ofString("a50f09a9acbb71b696c6b51cc9f5f51c5125e8001c44a4963564b15da08df254",      this.moleHeadTip),
+                            StringTooltip.ofString("572c1040fd40e4e83a5be50edcb1cd037c9c66b9d0c9171e7080a02d3f4cfbf",       this.moleHeadTip),
+                            StringTooltip.ofString("5d8e1ebc83f0f5662821bc6600981e17f3ce26b2574edf67de228c749481f230",      this.moleHeadTip),
+                            StringTooltip.ofString("95fd67d56ffc53fb360a17879d9b5338d7332d8f129491a5e17e8d6e8aea6c3a",      this.moleHeadTip),
                     };
                 }
             }
@@ -495,7 +529,7 @@ public class Commands {
                 }
                 case "teleport" -> {
                     if (!game.setTeleportLocation(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() + 1, player.getLocation().getZ())){
-                        player.sendMessage(Config.AppConfig.PREFIX + ChatColor.DARK_RED + Translator.COMMANDS_POSITIONS_TELEPORT_ONGRID);
+                        player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_POSITIONS_TELEPORT_ONGRID);
                         return "failed";
                     }
 
