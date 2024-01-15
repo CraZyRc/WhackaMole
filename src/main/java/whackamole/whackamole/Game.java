@@ -40,6 +40,9 @@ public class Game {
         }
         
         private void Delete() {
+            this.cooldown.forEach((key, value) -> {
+                this.db.Delete(getSettings().ID, key);
+            });
             this.cooldown.clear();
         }
 
@@ -52,7 +55,7 @@ public class Game {
             this.db.Insert(getID(), player, System.currentTimeMillis() + time);
         }
 
-        private boolean contains(Player player) {
+        public boolean contains(Player player) {
             return this.contains(player.getUniqueId());
         }
 
@@ -67,7 +70,7 @@ public class Game {
             return false;
         }
 
-        private void remove(UUID player) {
+        public void remove(UUID player) {
             this.cooldown.remove(player);
             this.db.Delete(getID(), player);
         }
@@ -855,7 +858,6 @@ public class Game {
         e.getPlayer().sendMessage(Config.AppConfig.PREFIX + Translator.MANAGER_TICKETUSE_SUCCESS);
         e.setUseItemInHand(Event.Result.DENY);
         player.getInventory().removeItem(Config.Game.TICKET);
-        this.cooldown.remove(player.getUniqueId());
     }
 
     private void actionbarParse(UUID player, String text) {

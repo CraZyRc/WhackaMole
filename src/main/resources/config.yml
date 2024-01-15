@@ -4,7 +4,7 @@
 # <------------------------------------------------------> #
 ############################################################
 
-Config Version: 1.6
+Config Version: 1.7
 
 # Welcome to the config file, here you can adjust the general settings of the plugin.
 # the lines must be in YAML format, so it doesn't accept tabs, only spaces.
@@ -135,3 +135,5 @@ Commands:
   Remove: "Remove"
   Positions: "Positions"
   Top: "Top"
+  Start: "Start"
+  Stop: "Stop"

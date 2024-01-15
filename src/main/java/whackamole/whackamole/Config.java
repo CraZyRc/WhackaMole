@@ -20,7 +20,7 @@ public class Config {
 
     public static class AppConfig {
         public static Locale Language = new Locale("en", "US");
-        public final static String configFileName = "config.yml", configVersion = "1.5";
+        public final static String configFileName = "config.yml", configVersion = "1.7";
 
         public static String storageFolder = "./plugins/WhackaMole"
                 ,   PREFIX = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
@@ -117,7 +117,7 @@ public class Config {
     }
 
     public static class Permissions {
-        public static String PERM_TICKET_USE, PERM_BUY, PERM_RELOAD, PERM_CREATE, PERM_REMOVE, PERM_SETTINGS, PERM_PLAY, PERM_POSITIONS, PERM_TOP;
+        public static String PERM_TICKET_USE, PERM_BUY, PERM_RELOAD, PERM_CREATE, PERM_REMOVE, PERM_SETTINGS, PERM_PLAY, PERM_POSITIONS, PERM_TOP, PERM_START, PERM_STOP;
 
         private static boolean LoadConfig(YMLFile configFile) {
             PERM_TICKET_USE     = "WAM." + configFile.getString("Play.Use Reset Ticket");
@@ -129,6 +129,8 @@ public class Config {
             PERM_REMOVE         = "WAM." + configFile.getString("Commands.Remove");
             PERM_POSITIONS      = "WAM." + configFile.getString("Commands.Positions");
             PERM_TOP            = "WAM." + configFile.getString("Commands.Top");
+            PERM_START          = "WAM." + configFile.getString("Commands.Start");
+            PERM_STOP           = "WAM." + configFile.getString("Commands.Stop");
             return true;
         }
     }

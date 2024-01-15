@@ -1,20 +1,24 @@
 package whackamole.whackamole;
 
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.PlayerTextures;
 
 public class Mole {
     public MoleType type;
+    private static final UUID randomUUID = UUID.randomUUID();
 
     public enum MoleType {
         Null,
@@ -124,16 +128,19 @@ public class Mole {
         if (url.isEmpty())
             return moleHead;
         SkullMeta moleMeta = (SkullMeta) moleHead.getItemMeta();
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+        PlayerProfile profile = Bukkit.createPlayerProfile(Mole.randomUUID);
+        PlayerTextures textures = profile.getTextures();
 
-        profile.getProperties().put("textures", new Property("textures", url));
+        URL urlObject;
         try {
-            Field profileField = moleMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(moleMeta, profile);
-        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
+            urlObject = new URL("http://textures.minecraft.net/texture/" + url);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Invalid URL", e);
         }
+        textures.setSkin(urlObject);
+        profile.setTextures(textures);
+        moleMeta.setOwnerProfile(profile);
+
         moleHead.setItemMeta(moleMeta);
 
         return moleHead;
