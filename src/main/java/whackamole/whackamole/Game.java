@@ -40,6 +40,9 @@ public class Game {
         }
         
         private void Delete() {
+            this.cooldown.forEach((key, value) -> {
+                this.db.Delete(getSettings().ID, key);
+            });
             this.cooldown.clear();
         }
 
@@ -52,7 +55,7 @@ public class Game {
             this.db.Insert(getID(), player, System.currentTimeMillis() + time);
         }
 
-        private boolean contains(Player player) {
+        public boolean contains(Player player) {
             return this.contains(player.getUniqueId());
         }
 
