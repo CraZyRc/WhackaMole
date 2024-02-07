@@ -14,7 +14,7 @@ body:
         ----
         
         ### 1. Version
-        Include the outputs of `/version` and `/version Citizens` in the respective fields.
+        Include the outputs of `/version` and `/version Whackamole` in the respective fields.
   - type: 'textarea'
     attributes:
       label: '/version'
