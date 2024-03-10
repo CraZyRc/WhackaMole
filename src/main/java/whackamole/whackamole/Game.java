@@ -820,6 +820,10 @@ public class Game {
      * @return True if the player is on the grid
      */
     public boolean onGrid(Player player) {
+        if (player.getWorld() != settings.world ) {
+            return false;
+        }
+
         boolean playerOnGrid = this.grid.onGrid(player);
 
         // * Player walks on the grid
@@ -840,6 +844,10 @@ public class Game {
         return playerOnGrid;
     }
     public boolean onGrid(Location loc) {
+        if (loc.getWorld() != settings.world ) {
+            return false;
+        }
+        
         return this.grid.onGrid(loc);
     }
 

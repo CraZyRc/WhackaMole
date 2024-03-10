@@ -1,10 +1,7 @@
 package whackamole.whackamole;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 
