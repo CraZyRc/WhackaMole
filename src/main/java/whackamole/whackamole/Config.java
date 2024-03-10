@@ -52,6 +52,7 @@ public class Config {
     public static class Game {
         public static String ACTIONTEXT, HAMMERNAME = "Hammer", HAMMER_ITEM;
         public static boolean ENABLE_GAMECONFIG;
+        public static List<?> ENABLED_WOLRDS;
 
         public static int FIELD_MAX_SIZE, HAMMER_CUSTOMMODELDATA, HAMMER_ITEMDAMAGE;
         public static Double FiELD_MARGIN_X, FiELD_MARGIN_Y;
@@ -74,6 +75,7 @@ public class Config {
             FiELD_MARGIN_Y          = configFile.getDouble("Field extension.height");
 
             ENABLE_GAMECONFIG       = configFile.getBoolean("Game config");
+            ENABLED_WOLRDS          = configFile.getList("Enabled worlds");
             HITSOUND                = configFile.getSound("HitSound");
             MISSSOUND               = configFile.getSound("MissedSound");
 
