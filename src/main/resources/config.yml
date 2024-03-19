@@ -4,7 +4,7 @@
 # <------------------------------------------------------> #
 ############################################################
 
-Config Version: 1.7
+Config Version: 1.8
 
 # Welcome to the config file, here you can adjust the general settings of the plugin.
 # the lines must be in YAML format, so it doesn't accept tabs, only spaces.
@@ -85,6 +85,10 @@ Ticket Price: 15
 # Game data is stored in a SQL database, optionally you can choose to generate a config file for each WAM game.
 # Having the config file allows you to make multiple changes in one go, if this is disabled, game settings can only be changed and seen by commands (/wam settings).
 Game config: true
+
+
+# The list of worlds Whackamole should interact with. If this list is empty then all worlds are enabled. 
+Enabled worlds:
 
 # For sounds, please refer to the Sound enum to see the Java equivalent of the minecraft sound: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html.
 # What sound should be played when a mole has been hit.
