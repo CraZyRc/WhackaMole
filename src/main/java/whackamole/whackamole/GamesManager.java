@@ -1,10 +1,7 @@
 package whackamole.whackamole;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.*;
 
-import com.mojang.logging.LogQueues;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -26,6 +23,8 @@ import org.jetbrains.annotations.Nullable;
 import whackamole.whackamole.DB.GameRow;
 import whackamole.whackamole.DB.SQLite;
 import whackamole.whackamole.Game.GameRunner;
+import whackamole.whackamole.Utils.Logger;
+import whackamole.whackamole.Utils.Translator;
 
 public final class GamesManager implements Listener {
 
@@ -57,45 +56,6 @@ public final class GamesManager implements Listener {
         List<GameRow> DBGameList;
         if(world == null) { DBGameList = SQLite.getGameDB().Select(); }
         else {              DBGameList = SQLite.getGameDB().Select(world); }
-
-
-        List<YMLFile> fileGameList = new ArrayList<YMLFile>();
-        if (Config.Game.ENABLE_GAMECONFIG) {
-            YMLFile GamesFolder;
-            try {
-                GamesFolder = new YMLFile(Config.AppConfig.storageFolder + "/Games", "");
-            } catch (FileNotFoundException e) {
-                Logger.error("Game folder could not be created");
-                Logger.error(e.getMessage());
-                e.printStackTrace();
-                return false;
-            }
-
-            file_loop: for (File i : GamesFolder.file.listFiles()) {
-                var yGame = new YMLFile(i);
-                var yWorld = yGame.getString("Field Data.World");
-                var yID = yGame.getInt("Properties.ID", -1);
-                var yGrid = yGame.getList("Field Data.Grid");
-
-                if(yGrid == null) {
-                    // * if file does not contain grid, then it souhld not be considerd a valid game file to load.
-                    continue;
-                }
-
-                if (world == null || yWorld.equals(world.getName())) {
-                    if(!Config.Game.ENABLED_WOLRDS.isEmpty() && ! Config.Game.ENABLED_WOLRDS.contains(yWorld)) {
-                        Logger.warning(String.format("Skipping game file %s since the world %s is not enabled in the config", i.getName(), yWorld));
-                        continue file_loop;
-                    }
-                    for (var game : DBGameList) {
-                        if(game.ID == yID) {
-                            continue file_loop;
-                        }
-                    }
-                    fileGameList.add(yGame);
-                }
-            }
-        }
         
         for(var game : DBGameList) {
             if(!Config.Game.ENABLED_WOLRDS.isEmpty() && ! Config.Game.ENABLED_WOLRDS.contains(game.worldName)) {
@@ -104,11 +64,8 @@ public final class GamesManager implements Listener {
             }
             this.games.add(new Game(game));
         }
-        for(var game : fileGameList) {
-            this.games.add(new Game(game));
-        }
 
-        return DBGameList.size() > 0 || fileGameList.size() > 0;
+        return !DBGameList.isEmpty();
     }
 
     private boolean gameExists(String name) {

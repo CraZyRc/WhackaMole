@@ -1,7 +1,7 @@
 package whackamole.whackamole.DB;
 
 import whackamole.whackamole.Config;
-import whackamole.whackamole.Logger;
+import whackamole.whackamole.Utils.Logger;
 
 import java.io.File;
 import java.sql.*;
@@ -30,8 +30,6 @@ public class SQLite {
             getCooldownDB().Create();
             getScoreboardDB().Create();
         }
-        getGameDB().Alter("Game", "Music", "TEXT");
-        getGameDB().Alter("Game", "toggleScoreboard", "INTEGER");
 
     }
 

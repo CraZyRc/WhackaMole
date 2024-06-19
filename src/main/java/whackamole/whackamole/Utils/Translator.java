@@ -1,4 +1,4 @@
-package whackamole.whackamole;
+package whackamole.whackamole.Utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,9 +7,13 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import whackamole.whackamole.Config;
+import whackamole.whackamole.Game;
 
 public enum Translator {
         MAIN_OLDVERSION                                     ("Main.oldVersion")
@@ -54,28 +58,6 @@ public enum Translator {
     ,   GAME_ACTIONBAR_GAMEOVER                             ("Game.Actionbar.gameOver")
     ,   GAME_MOLEMISSED                                     ("Game.moleMissed", Game.class)
     ,   GAME_LOADSUCCESS                                    ("Game.loadSuccess", Game.class)
-    ,   GAME_CONFIG_FIRSTNOTE                               ("Game.Config.firstNote")
-    ,   GAME_CONFIG_SECONDNOTE                              ("Game.Config.secondNote")
-    ,   GAME_CONFIG_THIRDNOTE                               ("Game.Config.thirdNote")
-    ,   GAME_CONFIG_NAME                                    ("Game.Config.Name")
-    ,   GAME_CONFIG_DIRECTION                               ("Game.Config.Direction")
-    ,   GAME_CONFIG_JACKPOT                                 ("Game.Config.Jackpot")
-    ,   GAME_CONFIG_JACKPOTSPAWN                            ("Game.Config.jackpotSpawn")
-    ,   GAME_CONFIG_GAMELOST                                ("Game.Config.gameLost")
-    ,   GAME_CONFIG_POINTSPERKILL                           ("Game.Config.pointsPerKill")
-    ,   GAME_CONFIG_SPAWNRATE                               ("Game.Config.spawnRate")
-    ,   GAME_CONFIG_SPAWNCHANCE                             ("Game.Config.spawnChance")
-    ,   GAME_CONFIG_MOLESPEED                               ("Game.Config.Molespeed")
-    ,   GAME_CONFIG_DIFFICULTYSCALE                         ("Game.Config.difficultyScale")
-    ,   GAME_CONFIG_DIFFICULTYINCREASE                      ("Game.Config.difficultyIncrease")
-    ,   GAME_CONFIG_COOLDOWN                                ("Game.Config.Cooldown")
-    ,   GAME_CONFIG_MUSIC                                   ("Game.Config.Music")
-    ,   GAME_CONFIG_MOLEHEAD                                ("Game.Config.moleHead")
-    ,   GAME_CONFIG_TPLOCATION                              ("Game.Config.teleportLocation")
-    ,   GAME_CONFIG_SCORELOCATION                           ("Game.Config.scoreLocation")
-    ,   GAME_CONFIG_STREAKHOLOLOCATION                      ("Game.Config.streakHoloLocation")
-    ,   GAME_CONFIG_TOGGLESCOREBOARD                        ("Game.Config.toggleScoreboard")
-    ,   GAME_CONFIG_ENDMESSAGE                              ("Game.Config.endMessage")
     ,   COMMANDS_TIPS_NAME                                  ("Commands.Tips.Name")
     ,   COMMANDS_TIPS_DIRECTION                             ("Commands.Tips.Direction")
     ,   COMMANDS_TIPS_JACKPOT                               ("Commands.Tips.Jackpot")
@@ -186,6 +168,25 @@ public enum Translator {
         } catch(Exception e) {}
     }
 
+    public static String Color(String message) {
+        Pattern pattern = Pattern.compile("#[a-fA-f0-9]{6}");
+        Matcher matcher = pattern.matcher(message);
+        while (matcher.find()) {
+            String hexCode = message.substring(matcher.start(), matcher.end());
+            String replaceSharp = hexCode.replace('#', 'x');
+
+            char[] ch = replaceSharp.toCharArray();
+            StringBuilder builder = new StringBuilder();
+            for (char c : ch) {
+                builder.append("&").append(c);
+            }
+
+            message = message.replace(hexCode, builder.toString());
+            matcher = pattern.matcher(message);
+        }
+        return ChatColor.translateAlternateColorCodes('&', message);
+    }
+
     public String Format() {
         return Format(this, new Object[0]);
     }
@@ -214,7 +215,7 @@ public enum Translator {
         for(String item : stringReplacements) {
             type.Format(item);
         }
-        return DefaultFontInfo.Color(type.formattedValue);
+        return Color(type.formattedValue);
     }
 
 
@@ -249,7 +250,7 @@ public enum Translator {
         .replace("{commandBuy}",       "/wam " + COMMANDS_BUY);
     }
     public String toString() {
-        return DefaultFontInfo.Color(this.value);
+        return Color(this.value);
     }
 
 
@@ -288,6 +289,7 @@ public enum Translator {
         } catch (IOException e) {
             Logger.error(e.getMessage());
         }
+
     }
 
     public static void onLoad() {

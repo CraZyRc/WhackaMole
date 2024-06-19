@@ -15,6 +15,9 @@ import org.junit.Assert;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
+import whackamole.whackamole.Utils.Logger;
+import whackamole.whackamole.Utils.Translator;
+import whackamole.whackamole.Utils.YMLFile;
 
 public class TranslationTest extends TestBase{
 

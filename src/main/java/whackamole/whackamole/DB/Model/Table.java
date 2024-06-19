@@ -3,17 +3,14 @@ package whackamole.whackamole.DB.Model;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import whackamole.whackamole.DB.SQLite;
-import whackamole.whackamole.Logger;
 
 /**
  * All Classes that implement {@link Table} Must call

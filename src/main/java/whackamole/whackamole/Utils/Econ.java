@@ -1,4 +1,4 @@
-package whackamole.whackamole;
+package whackamole.whackamole.Utils;
 
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
+import whackamole.whackamole.Config;
 
 import static org.bukkit.Bukkit.getServer;
 
@@ -16,7 +17,7 @@ public class Econ {
 
     public static Currency currencyType = Currency.NULL;
 
-    enum Currency {
+    public enum Currency {
         NULL,
         SCOREBOARD,
         VAULT

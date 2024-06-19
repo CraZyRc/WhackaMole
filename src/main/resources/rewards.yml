@@ -1,0 +1,30 @@
+# Welcome to Custom rewards.
+# Here you can add some special rewards if players hit a certain threshold of points.
+# You can create custom rewards bby duplicating the "Example" reward underneath it and then change the parameters.
+# More info and documentation can be found on the wiki: https://github.com/CraZyRc/Wiki
+
+
+Example:
+  Threshold: 30 # amount of points to reach for this reward
+  Animation: Spiral, RED / Butterfly, BLUE / CROWN, GOLD / DragonWings, GREEN / RITUAL, AQUA # display aniamtion when receiving the reward
+  Games: # on what games is this reward achievable
+    - Wam
+    - WhackaMole
+  Reward Type: item # type of reward, possible reward types: Item, Effect, Teleport, Currency, Message.
+    Name: Minecraft:Diamond_axe
+    Amount: 1
+    NBT: {Unbreakable:1}
+  Reward Type: effect
+    Name: Minecraft:glow
+    Duration: 15 # in ticks
+  Reward Type: teleport
+    Entity: @s # indicating the playing player, vanilla selectors can be used
+    X: 0
+    Y: 60
+    Z: 0
+  Reward Type: money
+    Quantity: 60
+  Reward Type: message
+    Entity: @s
+    messageType: Json # Json or String/Vanilla/Minecraft
+    Message: '["",{"text":"! JACKPOT ! ","bold":true,"color":"gold"},{"text":"well played !"}]'

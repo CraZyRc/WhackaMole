@@ -23,6 +23,9 @@ import whackamole.whackamole.DB.*;
 import whackamole.whackamole.DB.Model.Row;
 import whackamole.whackamole.Mole.MoleState;
 import whackamole.whackamole.Mole.MoleType;
+import whackamole.whackamole.Utils.Econ;
+import whackamole.whackamole.Utils.Logger;
+import whackamole.whackamole.Utils.Translator;
 
 public class Game {
     public static final BlockFace[] Directions = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST,
@@ -166,138 +169,6 @@ public class Game {
         }
     }
 
-    public class GameFile {
-        private final YMLFile gameConfig;
-
-        public GameFile(YMLFile gameFile) {
-            gameConfig = gameFile;
-            this.load();
-        }
-
-        public GameFile() {
-            gameConfig = new YMLFile(Config.AppConfig.storageFolder + "/Games/" + getName() + ".yml");
-            
-            if (! Config.Game.ENABLE_GAMECONFIG) {
-                this.gameConfig.file.delete();
-                return;
-            }
-            
-            if (gameConfig.created) {
-                this.save();
-            } else {
-                this.load();
-            }
-        }
-
-        @SuppressWarnings("deprecation")
-        public void save() {
-            List<String> header = Arrays.asList(
-                    "###########################################################",
-                    " ^------------------------------------------------------^ #",
-                    " |                       GameFile                       | #",
-                    " <------------------------------------------------------> #",
-                    "###########################################################\n",
-                    Translator.GAME_CONFIG_FIRSTNOTE.toString(),
-                    Translator.GAME_CONFIG_SECONDNOTE.toString(),
-                    Translator.GAME_CONFIG_THIRDNOTE.toString(),
-                    "",
-                    "",
-                    "###########################################################",
-                    " ^------------------------------------------------------^ #",
-                    " |                      Explanation                     | #",
-                    " <------------------------------------------------------> #",
-                    "###########################################################\n",
-                    Translator.GAME_CONFIG_NAME.toString(),
-                    Translator.GAME_CONFIG_DIRECTION.toString(),
-                    Translator.GAME_CONFIG_JACKPOT.toString(),
-                    Translator.GAME_CONFIG_JACKPOTSPAWN.toString(),
-                    Translator.GAME_CONFIG_GAMELOST.toString(),
-                    Translator.GAME_CONFIG_POINTSPERKILL.toString(),
-                    Translator.GAME_CONFIG_SPAWNRATE.toString(),
-                    Translator.GAME_CONFIG_SPAWNCHANCE.toString(),
-                    Translator.GAME_CONFIG_MOLESPEED.toString(),
-                    Translator.GAME_CONFIG_DIFFICULTYSCALE.toString(),
-                    Translator.GAME_CONFIG_DIFFICULTYINCREASE.toString(),
-                    Translator.GAME_CONFIG_COOLDOWN.toString(),
-                    Translator.GAME_CONFIG_MUSIC.toString(),
-                    Translator.GAME_CONFIG_MOLEHEAD.toString(),
-                    Translator.GAME_CONFIG_TPLOCATION.toString(),
-                    Translator.GAME_CONFIG_SCORELOCATION.toString(),
-                    Translator.GAME_CONFIG_STREAKHOLOLOCATION.toString(),
-                    Translator.GAME_CONFIG_TOGGLESCOREBOARD.toString(),
-                    Translator.GAME_CONFIG_ENDMESSAGE.toString(),
-                    "\n");
-
-            this.gameConfig.FileConfig.options().setHeader(header);
-
-            this.gameConfig.set("Properties.ID", getID());
-            this.gameConfig.set("Properties.Name", getName());
-            this.gameConfig.set("Properties.Direction", Game.this.settings.spawnRotation.name());
-            this.gameConfig.set("Properties.Jackpot", Game.this.settings.hasJackpot);
-            this.gameConfig.set("Properties.Jackpot spawn chance", Game.this.settings.jackpotSpawnChance);
-            this.gameConfig.set("Properties.Game lost", Game.this.settings.missCount);
-            this.gameConfig.set("Properties.Points per kill", Game.this.settings.scorePoints);
-            this.gameConfig.set("Properties.Spawn rate", Game.this.settings.spawnTimer);
-            this.gameConfig.set("Properties.Spawn chance", Game.this.settings.spawnChance);
-            this.gameConfig.set("Properties.Mole speed", Game.this.settings.moleSpeed);
-            this.gameConfig.set("Properties.Difficulty scaling", Game.this.settings.difficultyScale);
-            this.gameConfig.set("Properties.Difficulty increase", Game.this.settings.difficultyScore);
-            this.gameConfig.set("Properties.Cooldown", Game.this.cooldown.formatSetCooldown(Game.this.settings.Cooldown));
-            this.gameConfig.set("Properties.Music", Game.this.settings.Music);
-            this.gameConfig.set("Properties.moleHead", Game.this.settings.moleHead);
-            this.gameConfig.set("Properties.jackpotHead", Game.this.settings.jackpotHead);
-            this.gameConfig.set("Properties.teleportLocation", Game.this.settings.teleportLocation);
-            this.gameConfig.set("Properties.scoreLocation", Game.this.settings.scoreLocation);
-            this.gameConfig.set("Properties.streakLocation", Game.this.settings.streakHoloLocation);
-            this.gameConfig.set("Properties.toggleScoreboard", Game.this.settings.toggleScoreboard);
-            this.gameConfig.set("Field Data.World", Game.this.settings.worldName);
-            try {
-                this.gameConfig.save();
-            } catch (Exception ignored) { }
-        }
-
-        public void load() {
-            Game.this.settings.ID = this.gameConfig.getInt("Properties.ID", -1);
-            Game.this.settings.Name = this.gameConfig.getString("Properties.Name");
-            Game.this.settings.world = Bukkit.getWorld(this.gameConfig.getString("Field Data.World"));
-            Game.this.settings.spawnRotation = BlockFace.valueOf(this.gameConfig.getString("Properties.Direction"));
-            Game.this.settings.hasJackpot = this.gameConfig.getBoolean("Properties.Jackpot");
-            Game.this.settings.jackpotSpawnChance = this.gameConfig.getInt("Properties.Jackpot spawn chance");
-            Game.this.settings.missCount = this.gameConfig.getInt("Properties.Game lost");
-            Game.this.settings.scorePoints = this.gameConfig.getInt("Properties.Points per kill");
-            Game.this.settings.spawnTimer = this.gameConfig.getDouble("Properties.Spawn rate");
-            Game.this.settings.spawnChance = this.gameConfig.getDouble("Properties.Spawn chance");
-            Game.this.settings.moleSpeed = this.gameConfig.getDouble("Properties.Mole speed");
-            Game.this.settings.difficultyScale = this.gameConfig.getDouble("Properties.Difficulty scaling");
-            Game.this.settings.difficultyScore = this.gameConfig.getInt("Properties.Difficulty increase");
-            Game.this.settings.Cooldown = cooldown.parseTime(this.gameConfig.getString("Properties.Cooldown"));
-            Game.this.settings.Music = this.gameConfig.getString("Properties.Music");
-            Game.this.settings.moleHead = this.gameConfig.getString("Properties.moleHead");
-            Game.this.settings.jackpotHead = this.gameConfig.getString("Properties.jackpotHead");
-            Game.this.settings.teleportLocation = this.gameConfig.FileConfig.getLocation("Properties.teleportLocation");
-            Game.this.settings.scoreLocation = this.gameConfig.FileConfig.getLocation("Properties.scoreLocation");
-            Game.this.settings.streakHoloLocation = this.gameConfig.FileConfig.getLocation("Properties.streakLocation");
-            Game.this.settings.toggleScoreboard = this.gameConfig.FileConfig.getBoolean("Properties.toggleScoreboard");
-
-            if  (Game.this.settings.ID == -1) {
-                Game.this.grid = Grid.Deserialize(Game.this.settings.world, this.gameConfig.getList("Field Data.Grid"));
-                this.gameConfig.set("Field Data.Grid", null);
-                Game.this.settings.Save();
-                Game.this.grid.setSettings(Game.this.settings);
-                try {
-                    this.save();
-                } catch (Exception ignored) { }
-                
-            } else {
-                Game.this.settings.Save();
-            }
-        }
-
-        public void delete() {
-            this.gameConfig.remove();
-        }
-    }
-
     public class Scoreboard {
 
         List<ArmorStand> holoScores = new ArrayList<>();
@@ -423,22 +294,22 @@ public class Game {
             var StreakSTR = getTop(1, 1);
             var molesHitSTR = getTop(1, 2);
 
-            this.highScore.setCustomName(DefaultFontInfo.Color("&e&l[-> &6&lHigh scores &e&l<-]"));
-            if (ScoreSTR.length > 0) this.Score.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lScore: &3" + ScoreSTR[0].player.getName() + "&f - &b" + ScoreSTR[0].Score + " &e&l-]"));
-            else this.Score.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lScore: &bNone &e&l-]"));
-            if (StreakSTR.length > 0) this.Streak.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lStreaks: &3" + StreakSTR[0].player.getName() + "&f - &b" + StreakSTR[0].scoreStreak + " &e&l-]"));
-            else this.Streak.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lStreaks: &byou can &e&l-]"));
-            if (molesHitSTR.length > 0) this.molesHit.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lMoles hit: &3" + molesHitSTR[0].player.getName() + "&f - &b" + molesHitSTR[0].molesHit + " &e&l-]"));
-            else this.molesHit.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lMoles hit: &bbe the first! &e&l-]"));
+            this.highScore.setCustomName(Translator.Color("&e&l[-> &6&lHigh scores &e&l<-]"));
+            if (ScoreSTR.length > 0) this.Score.setCustomName(Translator.Color("&e&l[- &6&lScore: &3" + ScoreSTR[0].player.getName() + "&f - &b" + ScoreSTR[0].Score + " &e&l-]"));
+            else this.Score.setCustomName(Translator.Color("&e&l[- &6&lScore: &bNone &e&l-]"));
+            if (StreakSTR.length > 0) this.Streak.setCustomName(Translator.Color("&e&l[- &6&lStreaks: &3" + StreakSTR[0].player.getName() + "&f - &b" + StreakSTR[0].scoreStreak + " &e&l-]"));
+            else this.Streak.setCustomName(Translator.Color("&e&l[- &6&lStreaks: &byou can &e&l-]"));
+            if (molesHitSTR.length > 0) this.molesHit.setCustomName(Translator.Color("&e&l[- &6&lMoles hit: &3" + molesHitSTR[0].player.getName() + "&f - &b" + molesHitSTR[0].molesHit + " &e&l-]"));
+            else this.molesHit.setCustomName(Translator.Color("&e&l[- &6&lMoles hit: &bbe the first! &e&l-]"));
 
         }
         private void updateTopHolo() {
             var Score = getTop(1, 0);
             var Streak = getTop(1, 1);
             var molesHit = getTop(1, 2);
-            if (Score.length > 0) this.Score.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lScore: &3" + Score[0].player.getName() + "&f - &b" + Score[0].Score + " &e&l-]"));
-            if (Streak.length > 0) this.Streak.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lStreaks: &3" + Streak[0].player.getName() + "&f - &b" + Streak[0].scoreStreak + " &e&l-]"));
-            if (molesHit.length > 0) this.molesHit.setCustomName(DefaultFontInfo.Color("&e&l[- &6&lMoles hit: &3" + molesHit[0].player.getName() + "&f - &b" + molesHit[0].molesHit + " &e&l-]"));
+            if (Score.length > 0) this.Score.setCustomName(Translator.Color("&e&l[- &6&lScore: &3" + Score[0].player.getName() + "&f - &b" + Score[0].Score + " &e&l-]"));
+            if (Streak.length > 0) this.Streak.setCustomName(Translator.Color("&e&l[- &6&lStreaks: &3" + Streak[0].player.getName() + "&f - &b" + Streak[0].scoreStreak + " &e&l-]"));
+            if (molesHit.length > 0) this.molesHit.setCustomName(Translator.Color("&e&l[- &6&lMoles hit: &3" + molesHit[0].player.getName() + "&f - &b" + molesHit[0].molesHit + " &e&l-]"));
         }
 
         public void tpTopHolo(Location loc) {
@@ -522,7 +393,7 @@ public class Game {
             Game.this.grid.removeEntities();
             Game.this.actionbarParse(this.player.getUniqueId(), "");
             this.removePlayerAxe(this.player);
-            this.sendScoreToPlayer(this.player, this.score);
+            Rewards.sendScoreToPlayer(this.player, this.score, Game.this);
             this.econ.depositPlayer(this.player, this.score);
             this.removeStreakHolo();
 
@@ -561,13 +432,7 @@ public class Game {
             }
         }
 
-        private void sendScoreToPlayer(Player player, int score) {
-            var message = "";
-            if(score == 0) message = Translator.GAME_STOP_REWARD_NONE.Format(); 
-            if(score == 1) message = Translator.GAME_STOP_REWARD_SING.Format(Game.this); 
-            if(score >  1) message = Translator.GAME_STOP_REWARD_PLUR.Format(Game.this); 
-            player.sendMessage(Config.AppConfig.PREFIX + message);
-        }
+
 
         public void moleHit(Mole mole) {
             switch (mole.type) {
@@ -623,7 +488,7 @@ public class Game {
             this.streakNameHolo.setInvisible(true);
             this.streakNameHolo.setMarker(true);
             this.streakNameHolo.isInvulnerable();
-            this.streakNameHolo.setCustomName(DefaultFontInfo.Color("&6&l(<- &e&lHit-streak &6&l->)"));
+            this.streakNameHolo.setCustomName(Translator.Color("&6&l(<- &e&lHit-streak &6&l->)"));
             
             this.streakScoreHolo = (ArmorStand) settings.world.spawnEntity(settings.streakHoloLocation.clone().subtract(0, 0.25, 0), EntityType.ARMOR_STAND);
             this.streakScoreHolo.setVisible(true);
@@ -632,7 +497,7 @@ public class Game {
             this.streakScoreHolo.setInvisible(true);
             this.streakScoreHolo.setMarker(true);
             this.streakScoreHolo.isInvulnerable();
-            this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("&0"));
+            this.streakScoreHolo.setCustomName(Translator.Color("&0"));
         }
 
         private String[] StreakColors = new String[] {
@@ -645,13 +510,13 @@ public class Game {
             Location particleLocation = settings.streakHoloLocation.clone().subtract(0, 0.05, 0);
 
             if(this.Streak == 0) 
-                this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#ff0000&l0"));
+                this.streakScoreHolo.setCustomName(Translator.Color("#ff0000&l0"));
             else if (this.Streak < 20) 
-                this.streakScoreHolo.setCustomName(DefaultFontInfo.Color(this.StreakColors[this.Streak - 1] + this.Streak));
+                this.streakScoreHolo.setCustomName(Translator.Color(this.StreakColors[this.Streak - 1] + this.Streak));
             else if (this.Streak < 40) 
-                this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#00ff00&l" + this.Streak));
+                this.streakScoreHolo.setCustomName(Translator.Color("#00ff00&l" + this.Streak));
             else 
-                this.streakScoreHolo.setCustomName(DefaultFontInfo.Color("#00ff00&l" + this.Streak));
+                this.streakScoreHolo.setCustomName(Translator.Color("#00ff00&l" + this.Streak));
                 int red   = Math.min(255, Math.max(0, 255 - (this.Streak - 40) * 12));
                 int green = Math.min(255, Math.max(0, (this.Streak - 40) * 12));
                 settings.world.spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(red, green, 0), 2));
@@ -668,7 +533,6 @@ public class Game {
     private Settings settings = new Settings();
     public CooldownList cooldown = new CooldownList();
     private Scoreboard scoreboard = new Scoreboard();
-    private GameFile gameFile;
     private GameRunner game;
     private Grid grid;
 
@@ -678,7 +542,6 @@ public class Game {
 
     public Game(GameRow result) {
         this.settings.onLoad(result);
-        this.gameFile = new GameFile();
 
         this.cooldown.onLoad();
         this.scoreboard.onLoad();
@@ -686,15 +549,6 @@ public class Game {
         Logger.success(Translator.GAME_LOADSUCCESS.Format(this.getName()));
     }
 
-    public Game(YMLFile configFile) {
-        this.gameFile = new GameFile(configFile);
-        this.settings.Save();
-        this.grid = new Grid(settings);
-
-        this.cooldown.onLoad();
-        this.scoreboard.onLoad();
-        Logger.success(Translator.GAME_LOADSUCCESS.Format(this.getName()));
-    }
 
     public Game(String name, Grid grid, Player player) {
         this.settings.scoreLocation = player.getLocation().add(0,1,0);
@@ -703,7 +557,6 @@ public class Game {
         this.grid = grid.setSettings(settings);
         this.scoreboard.createTopHolo();
 
-        this.gameFile = new GameFile();
     }
 
     private String formatName(String name) {
@@ -732,16 +585,12 @@ public class Game {
     }
 
     public void Save() {
-        if (Config.Game.ENABLE_GAMECONFIG) {
-            this.gameFile.save();
-        }
         this.settings.Save();
     }
     public void Delete() {
         this.grid.Delete();
         this.cooldown.Delete();
         this.scoreboard.Delete();
-        if (this.gameFile != null) this.gameFile.delete();
         this.settings.Delete();
     }
 
@@ -972,7 +821,7 @@ public class Game {
 
     public void updateActionBar() {
         Game.this.getRunning().ifPresent((game) -> {
-            this.actionbarParse(game.player.getUniqueId(), ComponentSerializer.parse(Config.Game.ACTIONTEXT), DefaultFontInfo.Color("&2&l ") + game.score);
+            this.actionbarParse(game.player.getUniqueId(), ComponentSerializer.parse(Config.Game.ACTIONTEXT), Translator.Color("&2&l ") + game.score);
         });
         for (UUID player : this.currentyOnGird) {
             if (this.cooldown.contains(player))

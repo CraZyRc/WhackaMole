@@ -9,6 +9,9 @@ import org.bukkit.ChatColor;
 
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import whackamole.whackamole.Utils.Econ;
+import whackamole.whackamole.Utils.Logger;
+import whackamole.whackamole.Utils.Translator;
 
 import java.util.*;
 

@@ -1,4 +1,4 @@
-package whackamole.whackamole;
+package whackamole.whackamole.Utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

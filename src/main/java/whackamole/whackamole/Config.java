@@ -14,6 +14,10 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
+import whackamole.whackamole.Utils.Logger;
+import whackamole.whackamole.Utils.Translator;
+import whackamole.whackamole.Utils.Updater;
+import whackamole.whackamole.Utils.YMLFile;
 
 public class Config {
     private static YMLFile ConfigFile;
@@ -21,9 +25,9 @@ public class Config {
 
     public static class AppConfig {
         public static Locale Language = new Locale("en", "US");
-        public final static String configFileName = "config.yml", configVersion = "1.8";
-        public static String storageFolder = "./plugins/WhackaMole"
-                ,   PREFIX = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
+        public final static String configFileName = "config.yml", configVersion = "1.9";
+        public static String storageFolder = "./plugins/WhackaMole",   PREFIX = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
+
 
         private static boolean LoadConfig(YMLFile configFile) {
             String[] fields = configFile.getString("Language").split("_");
@@ -33,8 +37,7 @@ public class Config {
     }
 
     public static class Currency {
-        public static String CURRENCY_SING = "Dollar", CURRENCY_PLUR = "Dollars", SYMBOL = "$", ECONOMY = "",
-                OBJECTIVE = "";
+        public static String CURRENCY_SING = "Dollar", CURRENCY_PLUR = "Dollars", SYMBOL = "$", ECONOMY = "", OBJECTIVE = "";
 
         public static int TICKETPRICE;
 
@@ -51,7 +54,6 @@ public class Config {
 
     public static class Game {
         public static String ACTIONTEXT, HAMMERNAME = "Hammer", HAMMER_ITEM;
-        public static boolean ENABLE_GAMECONFIG;
         public static List<?> ENABLED_WOLRDS;
 
         public static int FIELD_MAX_SIZE, HAMMER_CUSTOMMODELDATA, HAMMER_ITEMDAMAGE;
@@ -68,13 +70,12 @@ public class Config {
             HAMMER_ITEM             = configFile.getString("Hammer Item");
             HAMMER_CUSTOMMODELDATA  = configFile.getInt("Hammer customModelData");
             HAMMER_ITEMDAMAGE       = configFile.getInt("Hammer itemDamage");
-            HAMMERNAME              = DefaultFontInfo.Color(configFile.getString("Hammer Name"));
+            HAMMERNAME              = Translator.Color(configFile.getString("Hammer Name"));
 
             FIELD_MAX_SIZE          = configFile.getInt("Max playfield");
             FiELD_MARGIN_X          = configFile.getDouble("Field extension.width");
             FiELD_MARGIN_Y          = configFile.getDouble("Field extension.height");
 
-            ENABLE_GAMECONFIG       = configFile.getBoolean("Game config");
             ENABLED_WOLRDS          = configFile.getList("Enabled worlds", new ArrayList<>());
             HITSOUND                = configFile.getSound("HitSound");
             MISSSOUND               = configFile.getSound("MissedSound");

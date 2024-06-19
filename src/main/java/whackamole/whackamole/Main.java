@@ -5,6 +5,12 @@ import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import whackamole.whackamole.DB.SQLite;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import whackamole.whackamole.Utils.Econ;
+import whackamole.whackamole.Utils.Logger;
+import whackamole.whackamole.Utils.Translator;
+import whackamole.whackamole.Utils.Updater;
+
+import java.io.File;
 
 public final class Main extends JavaPlugin {
     public GamesManager manager = GamesManager.getInstance();
@@ -19,9 +25,18 @@ public final class Main extends JavaPlugin {
         if (! valid_config) return;
 
         Translator.onLoad();
-
         SQLite.onLoad();
-        
+        Rewards.onLoad(this);
+
+        File gamesFolder = new File(Config.AppConfig.storageFolder + "/Games");
+        if (gamesFolder.exists()) {
+            for (File f : gamesFolder.listFiles()) {
+                f.delete();
+            }
+            gamesFolder.delete();
+        }
+
+
     }
 
     @Override

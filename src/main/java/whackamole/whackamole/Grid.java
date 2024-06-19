@@ -12,6 +12,7 @@ import org.bukkit.util.Vector;
 import whackamole.whackamole.DB.SQLite;
 import whackamole.whackamole.DB.GridDB;
 import whackamole.whackamole.Mole.*;
+import whackamole.whackamole.Utils.Translator;
 
 public class Grid {
     private static final GridDB SQL = SQLite.getGridDB();
