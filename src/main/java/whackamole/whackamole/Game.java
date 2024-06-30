@@ -26,6 +26,7 @@ import whackamole.whackamole.Mole.MoleType;
 import whackamole.whackamole.Utils.Econ;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
+import whackamole.whackamole.Rewards.RewardsManager;
 
 public class Game {
     public static final BlockFace[] Directions = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST,
@@ -393,7 +394,7 @@ public class Game {
             Game.this.grid.removeEntities();
             Game.this.actionbarParse(this.player.getUniqueId(), "");
             this.removePlayerAxe(this.player);
-            Rewards.sendScoreToPlayer(this.player, this.score, Game.this);
+            RewardsManager.sendScoreToPlayer(this.player, this.score, Game.this);
             this.econ.depositPlayer(this.player, this.score);
             this.removeStreakHolo();
 

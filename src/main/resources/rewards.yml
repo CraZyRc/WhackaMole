@@ -3,28 +3,35 @@
 # You can create custom rewards bby duplicating the "Example" reward underneath it and then change the parameters.
 # More info and documentation can be found on the wiki: https://github.com/CraZyRc/Wiki
 
-
-Example:
-  Threshold: 30 # amount of points to reach for this reward
-  Animation: Spiral, RED / Butterfly, BLUE / CROWN, GOLD / DragonWings, GREEN / RITUAL, AQUA # display aniamtion when receiving the reward
-  Games: # on what games is this reward achievable
-    - Wam
-    - WhackaMole
-  Reward Type: item # type of reward, possible reward types: Item, Effect, Teleport, Currency, Message.
-    Name: Minecraft:Diamond_axe
-    Amount: 1
-    NBT: {Unbreakable:1}
-  Reward Type: effect
-    Name: Minecraft:glow
-    Duration: 15 # in ticks
-  Reward Type: teleport
-    Entity: @s # indicating the playing player, vanilla selectors can be used
-    X: 0
-    Y: 60
-    Z: 0
-  Reward Type: money
-    Quantity: 60
-  Reward Type: message
-    Entity: @s
-    messageType: Json # Json or String/Vanilla/Minecraft
-    Message: '["",{"text":"! JACKPOT ! ","bold":true,"color":"gold"},{"text":"well played !"}]'
+Rewards:
+  Example:
+    Threshold: 30 # amount of points to reach for this reward
+    Animation: Spiral, RED / Butterfly, BLUE / CROWN, GOLD / DragonWings, GREEN / RITUAL, AQUA # display aniamtion when receiving the reward
+    Games: # on what games is this reward achievable
+      - Wam
+      - WhackaMole
+#   Reward Type: item # type of reward, possible reward types: Item, Effect, Teleport, Currency, Message, Sound.
+#     Material: Minecraft:Diamond_axe
+#     Name: ["",{"text":"HAMMER ","bold":true,"italic":true},{"text":"MODE","bold":true,"italic":true,"color":"red"}] # in Json, for help, try: https://minecraft.tools/en/json_text.php
+#     Lore: ['["",{"text":"The Unkillable","italic":false}]','["",{"text":" ","italic":false}]'] # in Json, for help, try: https://minecraft.tools/en/json_text.php
+#     Flags: # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/inventory/ItemFlag.html
+#       - HIDE_ENCHANTS
+#     Enchantments: # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/enchantments/Enchantment.html
+#       - SHARPNESS, 3
+#       - UNBREAKING, 2
+#     UNBREAKABLE: true
+#     Damage: 12
+#     CustomModelData: 000000
+#     Tags: ["tag1", "tag2"]
+    Reward Type: effect
+      Name: Minecraft:glow
+      Duration: 15 # in ticks
+    Reward Type: teleport
+      X: 0
+      Y: 60
+      Z: 0
+    Reward Type: Currency
+      Quantity: 60
+    Reward Type: Message
+      messageType: Json # Json or String
+      Message: '["",{"text":"! JACKPOT ! ","bold":true,"color":"gold"},{"text":"well played !"}]'
