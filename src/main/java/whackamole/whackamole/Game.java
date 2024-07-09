@@ -394,7 +394,7 @@ public class Game {
             Game.this.grid.removeEntities();
             Game.this.actionbarParse(this.player.getUniqueId(), "");
             this.removePlayerAxe(this.player);
-            RewardsManager.sendScoreToPlayer(this.player, this.score, Game.this);
+            RewardsManager.sendScoreToPlayer(this.player, this.score);
             this.econ.depositPlayer(this.player, this.score);
             this.removeStreakHolo();
 

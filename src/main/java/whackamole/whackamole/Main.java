@@ -26,7 +26,7 @@ public final class Main extends JavaPlugin {
 
         Translator.onLoad();
         SQLite.onLoad();
-        Rewards.onLoad(this);
+
 
         File gamesFolder = new File(Config.AppConfig.storageFolder + "/Games");
         if (gamesFolder.exists()) {

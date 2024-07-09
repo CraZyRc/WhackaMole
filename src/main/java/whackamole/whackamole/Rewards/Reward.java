@@ -1,21 +1,18 @@
 package whackamole.whackamole.Rewards;
 
-import com.google.protobuf.Value;
+import whackamole.whackamole.Rewards.Types.*;
+import whackamole.whackamole.Rewards.Types.CurrencyType;
 import whackamole.whackamole.Utils.YMLFile;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Reward {
-    private int Threshold;
-    private String Name;
-    private String rewardType;
-    private String Animation;
-    private List<String> Games;
-    private Map<String, Value> rewards = new HashMap<>();
-    private static List<String> rewardTypes = Arrays.asList(
+    public int Threshold;
+    public String Name;
+    public String Animation;
+    public List<String> Games;
+    public static List<RewardType> rewards = new ArrayList<>();
+    public List<String> rewardTypes = Arrays.asList(
             "Item"
             ,   "Effect"
             ,   "Teleport"
@@ -31,6 +28,12 @@ public class Reward {
             Threshold = rewardsFile.getInt("Rewards." + key + "Threshold");
             Animation = rewardsFile.getString("Rewards." + key + "Animation");
             Games = (List<String>) rewardsFile.getList("Rewards." + key + "Games");
+            rewards.add(new CurrencyType());
+            rewards.add(new EffectType());
+            rewards.add(new ItemType());
+            rewards.add(new MessageType());
+            rewards.add(new SoundType());
+            rewards.add(new TeleportType());
 
         }
     }

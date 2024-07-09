@@ -5,7 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -61,6 +63,8 @@ public class YMLFile {
         return this.FileConfig.getDouble(path);
     }
 
+    public float getFloat(String path) { return Float.parseFloat((String) this.FileConfig.get(path)); }
+
     public List<?> getList(String path) {
         return this.FileConfig.getList(path);
     }
@@ -69,9 +73,9 @@ public class YMLFile {
         return this.FileConfig.getList(path, def);
     }
 
-    public Sound getSound(String path) {
-        return Sound.valueOf(this.FileConfig.getString(path));
-    }
+    public Sound getSound(String path) { return Sound.valueOf(this.FileConfig.getString(path)); }
+
+    public World getWorld(String path) { return Bukkit.getWorld(this.FileConfig.getString(path));}
 
     public void set(String path, Object value) {
         this.FileConfig.set(path, value);
