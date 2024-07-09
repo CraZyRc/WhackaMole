@@ -19,15 +19,18 @@ import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
 import whackamole.whackamole.Utils.YMLFile;
 
-public class TranslationTest extends TestBase{
+import whackamole.whackamole.helpers.TestBase;
+
+public class TranslationTest extends TestBase {
 
     public static List<Locale> getLanguages() {
         List<Locale> languages = new ArrayList<Locale>();
         File resourceDir = new File("src/main/resources");
         for (File resource : resourceDir.listFiles()) {
-            if (resource.getName().startsWith("Lang_")) {
-                String[] fields = resource.getName().substring(5, 10).split("_", 0);
+            if (resource.getName().endsWith(".properties")) {
+                String[] fields = resource.getName().substring(0, 5).split("_", 0);
                 languages.add(new Locale(fields[0], fields[1]));
+                    
             }
         }
         return languages;

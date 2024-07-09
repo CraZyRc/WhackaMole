@@ -1,4 +1,4 @@
-package whackamole.whackamole;
+package whackamole.whackamole.helpers;
 
 import org.assertj.core.api.JUnitBDDSoftAssertions;
 import org.bukkit.Bukkit;
@@ -7,14 +7,8 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.Damageable;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
@@ -23,23 +17,22 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import whackamole.whackamole.Utils.YMLFile;
+
+import whackamole.whackamole.Game;
+import whackamole.whackamole.Grid;
+import whackamole.whackamole.YMLFile;
 
 
 @ExtendWith(MockitoExtension.class)
 public class TestBase {
     static public final JUnitBDDSoftAssertions softly = new JUnitBDDSoftAssertions();
     
-
     public static Grid gridMock = mock(Grid.class);
     public static Game gameMock = mock(Game.class);
     public static Game.GameRunner gameRunnerMock = mock(Game.GameRunner.class);
@@ -54,12 +47,6 @@ public class TestBase {
     public static Block blockMock = mock(Block.class);
     
     static MockedStatic<Bukkit> bukkitMock = mockStatic(Bukkit.class);
-    static ItemStack ItemStackMock = mock(ItemStack.class);
-    
-    @Mock(extraInterfaces = { Damageable.class })
-    static ItemMeta ItemMetaMock = mock(ItemMeta.class);
-    static MockedConstruction<ItemStack> ItemStackMockContructor;
-    static Damageable DamageableMock = mock(Damageable.class);
 
     @BeforeAll
     public static void setupMocks() {
@@ -111,27 +98,12 @@ public class TestBase {
             }
         };
 
-        
-        Mockito.doNothing().when(DamageableMock).setDamage(0);
-        Mockito.doNothing().when(ItemMetaMock).setUnbreakable(true);
-        when(ItemMetaMock.addEnchant(Enchantment.LURE, 1, true)).thenReturn(true);
-        Mockito.doNothing().when(ItemMetaMock).addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        Mockito.doNothing().when(ItemMetaMock).setDisplayName("");
-        
-        ItemStackMockContructor = mockConstruction(ItemStack.class, (mock, context) -> {
-            when(mock.getItemMeta()).thenReturn(ItemMetaMock);
-        });
-
         bukkitMock.when(() -> Bukkit.getWorld(worldMock.getName())).thenReturn(worldMock);
     }
 
     @AfterEach
     public void assertAll() {
         softly.assertAll();
-    }
-    @AfterAll
-    public static void CloseAutoClosable() {
-        ItemStackMockContructor.close();
     }
 }
 

@@ -25,7 +25,7 @@ Language: en_US
 # Please do note that some text messages have to be in Json.
 # If you don't know how to write in Json, here's a tutorial: https://minecraft.fandom.com/wiki/Raw_JSON_text_format.
 
-# The message to display on the Actionbar (accepts only Json).
+# The message to display on the Actionbar while playing the game (the player his current score will be displayed at the end of the message) (accepts only Json).
 Actionbar Message: '[{"text":""},{"text":"[","Bold":true,"color":"#000000"},{"text":"W","bold":true,"color":"#ffd700"},{"text":"h","bold":true,"color":"#ffce00"},{"text":"a","bold":true,"color":"#ffc600"},{"text":"c","bold":true,"color":"#ffbe00"},{"text":"k","bold":true,"color":"#ffb600"},{"text":"a","bold":true,"color":"#ffae00"},{"text":"M","bold":true,"color":"#ffa600"},{"text":"o","bold":true,"color":"#ff9e00"},{"text":"l","bold":true,"color":"#ff9600"},{"text":"e","bold":true,"color":"#ff8e00"},{"text":"] ","Bold":true,"color":"#000000"},{"text":"Your score is:","bold":true,"color":"#55ffff"}]'
 
 # Item for the hammer (Only the Material name, ALL CAPS and without "Minecraft_"):

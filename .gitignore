@@ -116,4 +116,6 @@ pom.xml
 
 plugins/
 test/*
+output/
 !test/*.yml
+!test/resourceMerges/

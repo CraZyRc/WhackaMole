@@ -1,10 +1,5 @@
 package whackamole.whackamole.Utils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,9 +9,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import whackamole.whackamole.Config;
 import whackamole.whackamole.Game;
+import whackamole.whackamole.ResourceManager;
 
 public enum Translator {
-        MAIN_OLDVERSION                                     ("Main.oldVersion")
+        TRANSLATOR                                          ("Translator")
+    ,   MAIN_OLDVERSION                                     ("Main.oldVersion")
     ,   MAIN_CONFIGLOADFAIL                                 ("Main.configLoadFail")
     ,   UPDATEFAIL                                          ("Update.updateFail", String.class)
     ,   LOGGER_WARNING                                      ("Logger.Warning", String.class)
@@ -144,6 +141,7 @@ public enum Translator {
     public String key;
     public String value = "";
     public String formattedValue;
+
     private Translator(String key) {
         this.key = key;
         this.requiredTypes = new Object[0];
@@ -158,14 +156,12 @@ public enum Translator {
 
 
     private void LookupTranslation() {
-        File langFile = new File(Config.AppConfig.storageFolder + "/locales", Config.AppConfig.Language + ".properties");
-        Properties props = new Properties();
-        try {
-            FileInputStream getProps = new FileInputStream(langFile);
-            props.load(getProps);
-            this.value = props.getProperty(this.key);
-            getProps.close();
-        } catch(Exception e) {}
+        this.value = ResourceManager.getProperty(this.key);
+
+        if (this.value.isEmpty()) {
+            Logger.error(this.key + " has no value, cannot initialize");
+        }
+
     }
 
     public static String Color(String message) {
@@ -267,33 +263,7 @@ public enum Translator {
         else return " '" + String.join("', '", out) + "' ";
     }
 
-    private static void loadFiles() {
-        List<String> languages = Arrays.asList("en_US", "de_DE", "nl_NL", "fr_FR", "es_ES", "ru_RU", "tr_TR", "zh_TW");
-        File langFolder = new File(Config.AppConfig.storageFolder + "/locales");
-
-        // * Folder creation
-        if (!langFolder.exists()) {
-            langFolder.mkdirs();
-            Logger.info("Langfolder created");
-        }
-
-        // * Files creation
-        try {
-            for (String language : languages) {
-                File f = new File(langFolder + "/" + language + ".properties");
-                if (!f.exists()) {
-                    InputStream load = Bukkit.getPluginManager().getPlugin("WhackaMole").getResource(f.getName());
-                    Files.copy(load, f.toPath());
-                }
-            }
-        } catch (IOException e) {
-            Logger.error(e.getMessage());
-        }
-
-    }
-
     public static void onLoad() {
-        loadFiles();
         for (Translator item : values()) {
             item.LookupTranslation();
         }

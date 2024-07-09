@@ -24,6 +24,7 @@ public final class Main extends JavaPlugin {
         valid_config = Config.onLoad(this);
         if (! valid_config) return;
 
+        ResourceManager.onLoad();
         Translator.onLoad();
         SQLite.onLoad();
 
@@ -51,10 +52,10 @@ public final class Main extends JavaPlugin {
             return;
         }
         this.manager.onLoad(this);
+        CommandAPI.onEnable();
+
         new Commands(this);
 
-        CommandAPI.onEnable();
-        
         this.getServer().getPluginManager().registerEvents(this.manager, this);
         
         new Updater(this, 106405);

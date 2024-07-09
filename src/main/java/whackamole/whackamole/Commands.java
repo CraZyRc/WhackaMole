@@ -1,13 +1,12 @@
 package whackamole.whackamole;
 
-import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.IStringTooltip;
-import dev.jorel.commandapi.StringTooltip;
+import dev.jorel.commandapi.*;
 import dev.jorel.commandapi.arguments.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import org.bukkit.block.BlockFace;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import whackamole.whackamole.Utils.Econ;
 import whackamole.whackamole.Utils.Logger;
@@ -21,25 +20,25 @@ public class Commands {
 
     private final Hashtable<UUID, Long> buyTicket = new Hashtable<>();
     private final Hashtable<UUID, Long> removeGame = new Hashtable<>();
-    String gameNameTip      = String.valueOf(Translator.COMMANDS_TIPS_NAME);
-    String DirectionTip     = String.valueOf(Translator.COMMANDS_TIPS_DIRECTION);
-    String jackpotTip       = String.valueOf(Translator.COMMANDS_TIPS_JACKPOT);
-    String jackpotSpawnTip  = String.valueOf(Translator.COMMANDS_TIPS_SPAWNCHANCE);
-    String maxMissedTip     = String.valueOf(Translator.COMMANDS_TIPS_MAXMISSED);
-    String hitpointsTip     = String.valueOf(Translator.COMMANDS_TIPS_HITPOINTS);
-    String intervalTip      = String.valueOf(Translator.COMMANDS_TIPS_INTERVAL);
-    String spawnChanceTip   = String.valueOf(Translator.COMMANDS_TIPS_SPAWNCHANCE);
-    String moleSpeedTip     = String.valueOf(Translator.COMMANDS_TIPS_MOLESPEED);
-    String diffScaleTip     = String.valueOf(Translator.COMMANDS_TIPS_DIFFICULTYSCALE);
-    String diffIncreaseTip  = String.valueOf(Translator.COMMANDS_TIPS_DIFFICULTYINCREASE);
-    String cooldownTip      = String.valueOf(Translator.COMMANDS_TIPS_COOLDOWN);
-    String musicTip      = String.valueOf(Translator.COMMANDS_TIPS_MUSIC);
-    String moleHeadTip      = String.valueOf(Translator.COMMANDS_TIPS_MOLEHEAD);
-    String highscoreTip     = String.valueOf(Translator.COMMANDS_TIPS_HIGHSCORE);
-    String teleportTip     = String.valueOf(Translator.COMMANDS_TIPS_TELEPORT);
-    String streakTip     = String.valueOf(Translator.COMMANDS_TIPS_STREAK);
-    String toggleScoreboardTip    = String.valueOf(Translator.COMMANDS_TIPS_TOGGLESCOREBOARD);
-    private Settings settingType = Settings.NULL;
+    String gameNameTip              = String.valueOf(Translator.COMMANDS_TIPS_NAME);
+    String DirectionTip             = String.valueOf(Translator.COMMANDS_TIPS_DIRECTION);
+    String jackpotTip               = String.valueOf(Translator.COMMANDS_TIPS_JACKPOT);
+    String jackpotSpawnTip          = String.valueOf(Translator.COMMANDS_TIPS_SPAWNCHANCE);
+    String maxMissedTip             = String.valueOf(Translator.COMMANDS_TIPS_MAXMISSED);
+    String hitpointsTip             = String.valueOf(Translator.COMMANDS_TIPS_HITPOINTS);
+    String intervalTip              = String.valueOf(Translator.COMMANDS_TIPS_INTERVAL);
+    String spawnChanceTip           = String.valueOf(Translator.COMMANDS_TIPS_SPAWNCHANCE);
+    String moleSpeedTip             = String.valueOf(Translator.COMMANDS_TIPS_MOLESPEED);
+    String diffScaleTip             = String.valueOf(Translator.COMMANDS_TIPS_DIFFICULTYSCALE);
+    String diffIncreaseTip          = String.valueOf(Translator.COMMANDS_TIPS_DIFFICULTYINCREASE);
+    String cooldownTip              = String.valueOf(Translator.COMMANDS_TIPS_COOLDOWN);
+    String musicTip                 = String.valueOf(Translator.COMMANDS_TIPS_MUSIC);
+    String moleHeadTip              = String.valueOf(Translator.COMMANDS_TIPS_MOLEHEAD);
+    String highscoreTip             = String.valueOf(Translator.COMMANDS_TIPS_HIGHSCORE);
+    String teleportTip              = String.valueOf(Translator.COMMANDS_TIPS_TELEPORT);
+    String streakTip                = String.valueOf(Translator.COMMANDS_TIPS_STREAK);
+    String toggleScoreboardTip      = String.valueOf(Translator.COMMANDS_TIPS_TOGGLESCOREBOARD);
+    private Settings settingType    = Settings.NULL;
     enum Settings {
         NULL,
         DIRECTION(Translator.COMMANDS_SETTINGS_DIRECTION),
@@ -71,8 +70,8 @@ public class Commands {
     }
 
     public Commands(Main main) {
-        new CommandAPICommand("WhackaMole")
-                .withAliases("WAM", "Whack")
+        new CommandAPICommand("whackamole")
+                .withAliases("wam")
                 .withSubcommand(new CommandAPICommand(String.valueOf(Translator.COMMANDS_CREATE))
                         .withPermission(Config.Permissions.PERM_CREATE)
                         .withArguments(new StringArgument("Game name")
@@ -289,20 +288,7 @@ public class Commands {
                 .withSubcommand(new CommandAPICommand(String.valueOf(Translator.COMMANDS_RELOAD))
                         .withPermission(Config.Permissions.PERM_RELOAD)
                         .executes((sender, args) ->{
-                            this.manager.unloadGames();
-                            Translator.onReload();
-                            Config.onLoad(main);
-                            Logger.onLoad(main);
-                            if (!Econ.onEnable()) {
-                                main.getServer().getPluginManager().disablePlugin(main);
-                                return 0;
-                            }
-                            this.manager.GameLoading(null);
-
-                            sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_RELOAD_SUCCESS);
-                            Logger.success("Done! V" + main.getDescription().getVersion());
-                            return 0;
-
+                            onReload(main, sender);
                         })
                 )
                 .withSubcommand(new CommandAPICommand(String.valueOf(Translator.COMMANDS_TOP))
@@ -585,6 +571,24 @@ public class Commands {
             this.removeGame.put(player, System.currentTimeMillis() + 10000);
             return false;
         }
+    }
+
+    private void onReload(Main main, CommandSender sender) {
+        this.manager.unloadGames();
+        Config.onLoad(main);
+        ResourceManager.onReload();
+        Translator.onReload();
+        Logger.onLoad(main);
+        if (!Econ.onEnable()) {
+            main.getServer().getPluginManager().disablePlugin(main);
+        }
+        this.manager.GameLoading(null);
+        CommandAPI.unregister("whackamole", true);
+        CommandAPI.unregister("wam", true);
+        new Commands(main);
+
+        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_RELOAD_SUCCESS);
+        Logger.success("Done! V" + main.getDescription().getVersion());
     }
 
 }

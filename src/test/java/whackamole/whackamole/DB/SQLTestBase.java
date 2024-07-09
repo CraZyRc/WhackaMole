@@ -5,7 +5,7 @@ import java.io.File;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 
-import whackamole.whackamole.TestBase;
+import whackamole.whackamole.helpers.TestBase;
 
 public class SQLTestBase extends TestBase {
     
