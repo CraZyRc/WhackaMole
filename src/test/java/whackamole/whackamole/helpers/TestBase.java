@@ -26,7 +26,6 @@ import whackamole.whackamole.Utils.YMLFile;
 
 import whackamole.whackamole.Game;
 import whackamole.whackamole.Grid;
-import whackamole.whackamole.YMLFile;
 
 
 @ExtendWith(MockitoExtension.class)

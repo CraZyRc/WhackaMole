@@ -1,9 +1,10 @@
-package whackamole.whackamole.Rewards.Types;
+package whackamole.whackamole.RS.Types;
 
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import whackamole.whackamole.Utils.Logger;
-import whackamole.whackamole.Utils.YMLFile;
+
+import java.util.LinkedHashMap;
 
 public class SoundType implements RewardType {
     private Sound sound;
@@ -11,10 +12,11 @@ public class SoundType implements RewardType {
     private float pitch;
 
     @Override
-    public void Load(YMLFile file, String Reward) {
-        this.sound = file.getSound(Reward + ".Settings.Sound");
-        this.volume = file.getFloat(Reward + ".Settings.Volume");
-        this.pitch = file.getFloat(Reward + ".Settings.Pitch");
+    public RewardType Load(LinkedHashMap Settings) {
+        this.sound = Sound.valueOf((String) Settings.get("Sound"));
+        this.volume = Float.valueOf((String) Settings.get("Volume"));
+        this.pitch = Float.valueOf((String) Settings.get("Pitch"));
+        return this;
     }
 
     @Override

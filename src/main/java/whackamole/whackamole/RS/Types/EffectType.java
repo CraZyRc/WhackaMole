@@ -1,10 +1,11 @@
-package whackamole.whackamole.Rewards.Types;
+package whackamole.whackamole.RS.Types;
 
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import whackamole.whackamole.Utils.Logger;
-import whackamole.whackamole.Utils.YMLFile;
+
+import java.util.LinkedHashMap;
 
 public class EffectType implements RewardType {
     private PotionEffectType effect;
@@ -12,10 +13,11 @@ public class EffectType implements RewardType {
     private int amplifier;
 
     @Override
-    public void Load(YMLFile file, String Reward) {
-        this.effect = PotionEffectType.getByName((file.getString(Reward + ".Settings.Effect")));
-        this.duration = file.getInt(Reward + ".Settings.Duration");
-        this.amplifier = file.getInt(Reward + ".Settings.Amplifier");
+    public RewardType Load(LinkedHashMap Settings) {
+        this.effect = PotionEffectType.getByName((String) Settings.get("Effect"));
+        this.duration = (int) Settings.get("Duration");
+        this.amplifier = (int) Settings.get("Amplifier");
+        return this;
     }
 
     @Override

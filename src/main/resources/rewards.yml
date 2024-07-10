@@ -36,6 +36,26 @@ Rewards:
           Message: '["",{"text":"! JACKPOT ! ","bold":true,"color":"gold"},{"text":"well played !"}]'
       - Type: Sound
         Settings:
-          Sound: EXPLOSION
+          Sound: ENTITY_GENERIC_EXPLOD # A list of sounds can be found on: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
           Volume: 1.0F
           Pitch: 1.0F
+
+  Jackpot:
+    Threshold: 150
+    Animation: CROWN, AQUA
+    Games:
+      - WAM
+      - Spawn2
+    RewardTypes:
+      - Type: Currency
+        Settings:
+          Quantity: 1500
+      - Type: Effect
+        Settings:
+          Effect: GLOWING
+          Duration: 30
+          Amplifier: 1
+      - Type: Message
+        Settings:
+          messageType: String
+          Message: "&6&b!!!! JACKPOT !!!!"

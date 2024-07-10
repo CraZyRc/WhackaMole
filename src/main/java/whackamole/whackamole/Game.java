@@ -26,7 +26,7 @@ import whackamole.whackamole.Mole.MoleType;
 import whackamole.whackamole.Utils.Econ;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
-import whackamole.whackamole.Rewards.RewardsManager;
+import whackamole.whackamole.RS.RewardsManager;
 
 public class Game {
     public static final BlockFace[] Directions = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST,
@@ -394,8 +394,7 @@ public class Game {
             Game.this.grid.removeEntities();
             Game.this.actionbarParse(this.player.getUniqueId(), "");
             this.removePlayerAxe(this.player);
-            RewardsManager.sendScoreToPlayer(this.player, this.score);
-            this.econ.depositPlayer(this.player, this.score);
+            RewardsManager.executeRewards(this.player, Game.this);
             this.removeStreakHolo();
 
             if (this.score > 0) {
@@ -625,7 +624,7 @@ public class Game {
         this.Save();
     }
 
-    public void setPointsPerKill(int pointsPerKill) {
+    public void setPointsPerKill(double pointsPerKill) {
         this.settings.scorePoints = pointsPerKill;
         this.Save();
     }

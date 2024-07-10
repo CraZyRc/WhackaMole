@@ -163,14 +163,12 @@ public class ResourceManager {
      */
     private static void loadResource() {
         File langFile = new File(Config.AppConfig.storageFolder + "/locales", Config.AppConfig.Language + ".properties");
-//        if (! langFile.exists() && ! languageLoadFailed) {
             loadFiles(supportedLanguages);
 
             if (languageLoadFailed) {
                 // * Failed to create user language files.
                 return;
             }
-//        }
         try (var Istream = new FileInputStream(langFile)) {
             var properties = new Properties();
             properties.load(new InputStreamReader(Istream, StandardCharsets.UTF_8));

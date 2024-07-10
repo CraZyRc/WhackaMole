@@ -1,4 +1,4 @@
-package whackamole.whackamole.Rewards.Types;
+package whackamole.whackamole.RS.Types;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -6,7 +6,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import whackamole.whackamole.Utils.Logger;
-import whackamole.whackamole.Utils.YMLFile;
+
+import java.util.LinkedHashMap;
 
 public class ItemType implements RewardType {
     private Material material;
@@ -14,10 +15,11 @@ public class ItemType implements RewardType {
     private String nbt;
 
     @Override
-    public void Load(YMLFile file, String Reward) {
-        this.material = Material.matchMaterial(file.getString(Reward + ".Settings.Material"));
-        this.amount = file.getInt(Reward + ".Settings.Amount");
-        this.nbt = file.getString(Reward + ".Settings.NBT");
+    public RewardType Load(LinkedHashMap Settings) {
+        this.material = Material.matchMaterial((String) Settings.get("Material"));
+        this.amount = (int) Settings.get("Amount");
+        this.nbt = (String) Settings.get("NBT");
+        return this;
     }
 
     @Override

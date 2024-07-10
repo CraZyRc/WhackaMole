@@ -1,11 +1,13 @@
-package whackamole.whackamole.Rewards.Types;
+package whackamole.whackamole.RS.Types;
 
 import org.bukkit.entity.Player;
 import whackamole.whackamole.Utils.YMLFile;
 
+import java.util.LinkedHashMap;
+
 public interface RewardType {
 
-    void Load(YMLFile file, String Reward);
+    RewardType Load(LinkedHashMap Settings);
     boolean Check();
     void Execute(Player player);
 }

@@ -1,4 +1,4 @@
-package whackamole.whackamole.Rewards;
+package whackamole.whackamole.RS;
 
 import org.bukkit.plugin.Plugin;
 import whackamole.whackamole.Config;
@@ -6,11 +6,8 @@ import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
 import whackamole.whackamole.Utils.YMLFile;
 
-public class File {
-
-
-
-    public void loadFiles(Plugin main) {
+public class RewardFile {
+    public static void loadFiles(Plugin main) {
         YMLFile rewardsFile;
         try {
             rewardsFile = new YMLFile(Config.AppConfig.storageFolder + "/rewards.yml");

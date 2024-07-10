@@ -70,16 +70,16 @@ public class GameRow extends Row {
      * The amount of moles allowed to be missed in a game
      */
     public int missCount = 3;
-    
-    /**
-     * The amount of point given for each mole hit
-     */
-    public int scorePoints = 1;
-    
+
     /**
      * The Amount of moles to be hit before a difficulty increase is aplied
      */
     public int difficultyScore = 1;
+
+    /**
+     * The amount of point given for each mole hit
+     */
+    public double scorePoints = 1.0;
 
     /**
      * The amount in seconds between each mole spawn attempt

@@ -227,7 +227,7 @@ public class Commands {
                                     player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MAXMISSED_SUCCESS.Format(args.get(2).toString()));
                                 }
                                 case SCOREPOINTS -> {
-                                    game.setPointsPerKill (Integer.parseInt((String) args.get(2)));
+                                    game.setPointsPerKill (Double.parseDouble((String) args.get(2)));
                                     player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SCOREPOINTS_SUCCESS.Format(args.get(2).toString()));
                                 }
                                 case SPAWNTIMER -> {

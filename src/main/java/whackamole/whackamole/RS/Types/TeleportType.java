@@ -1,11 +1,12 @@
-package whackamole.whackamole.Rewards.Types;
+package whackamole.whackamole.RS.Types;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import whackamole.whackamole.Utils.Logger;
-import whackamole.whackamole.Utils.YMLFile;
+
+import java.util.LinkedHashMap;
 
 public class TeleportType implements RewardType {
     private Location loc;
@@ -15,11 +16,12 @@ public class TeleportType implements RewardType {
     private double Z;
 
     @Override
-    public void Load(YMLFile file, String Reward) {
-        this.world = file.getWorld(Reward + ".Settings.World");
-        this.X = file.getDouble(Reward + ".Settings.X");
-        this.Y = file.getDouble(Reward + ".Settings.Y");
-        this.Z = file.getDouble(Reward + ".Settings.Z");
+    public RewardType Load(LinkedHashMap Settings) {
+        this.world = Bukkit.getWorld((String) Settings.get("World"));
+        this.X = (int) Settings.get("X");
+        this.Y = (int) Settings.get("Y");
+        this.Z = (int) Settings.get("Z");
+        return this;
     }
 
     @Override

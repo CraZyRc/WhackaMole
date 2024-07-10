@@ -1,18 +1,20 @@
-package whackamole.whackamole.Rewards.Types;
+package whackamole.whackamole.RS.Types;
 
 import org.bukkit.entity.Player;
-import whackamole.whackamole.Rewards.RewardsManager;
+import whackamole.whackamole.RS.RewardsManager;
 import whackamole.whackamole.Utils.Econ;
 import whackamole.whackamole.Utils.Logger;
-import whackamole.whackamole.Utils.YMLFile;
+
+import java.util.LinkedHashMap;
 
 public class CurrencyType implements RewardType {
     private int quantity;
     private Econ econ = new Econ();
 
     @Override
-    public void Load(YMLFile file, String Reward) {
-        this.quantity = file.getInt(Reward + ".Settings.Quantity");
+    public RewardType Load(LinkedHashMap Settings) {
+        this.quantity = (int) Settings.get("Quantity");
+        return this;
     }
 
     @Override

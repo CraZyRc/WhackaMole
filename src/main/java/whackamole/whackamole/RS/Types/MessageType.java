@@ -1,4 +1,4 @@
-package whackamole.whackamole.Rewards.Types;
+package whackamole.whackamole.RS.Types;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -8,21 +8,23 @@ import org.bukkit.entity.Player;
 import whackamole.whackamole.Config;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
-import whackamole.whackamole.Utils.YMLFile;
+
+import java.util.LinkedHashMap;
 
 public class MessageType implements RewardType {
     private String message;
     private String messageType;
 
     @Override
-    public void Load(YMLFile file, String Reward) {
-        this.messageType = file.getString(Reward + ".Settings.messageType");
-        this.message = file.getString(Reward + ".Settings.message");
+    public RewardType Load(LinkedHashMap Settings) {
+        this.messageType = (String) Settings.get("messageType");
+        this.message = (String) Settings.get("Message");
+        return this;
     }
 
     @Override
     public boolean Check() {
-        if (!messageType.equals("String") || !messageType.equals("Json")) {
+        if (!messageType.equals("String") && !messageType.equals("Json")) {
             Logger.error("Invalid MessageType set in the RewardsFile, this can only be Json or String"); // TODO: add Translator message
             return false;
         } else if (this.message.isEmpty()) {
