@@ -213,7 +213,7 @@ public final class GamesManager implements Listener {
                     gameRunner.RemovePlayerFromGame(e.getPlayer(), e.getFrom(), Objects.requireNonNull(e.getTo()));
                 }
                 break;
-            } else if (gameRunner != null && gameRunner.player == player) {
+            } else if (gameRunner != null && gameRunner.player == player && game.Running) {
                 game.Stop();
                 break;
             }

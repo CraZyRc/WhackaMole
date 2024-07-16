@@ -388,6 +388,7 @@ public class Game {
         }
 
         private void Stop() {
+            Game.this.Running = false;
             if (settings.Music != null) {
                 this.player.stopSound(settings.Music);
             }
@@ -531,6 +532,7 @@ public class Game {
     }
 
     private Settings settings = new Settings();
+    public boolean Running = false;
     public CooldownList cooldown = new CooldownList();
     private Scoreboard scoreboard = new Scoreboard();
     private GameRunner game;
@@ -566,6 +568,7 @@ public class Game {
     }
 
     public void Start(Player player) {
+        this.Running = true;
         if (this.game != null) return;
         this.game = new GameRunner();
         if (!this.game.Start(player)) {
