@@ -8,9 +8,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import whackamole.whackamole.RS.RewardsManager;
 import whackamole.whackamole.Utils.Econ;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
+import whackamole.whackamole.Utils.YMLFile;
 
 import java.util.*;
 
@@ -574,18 +576,27 @@ public class Commands {
     }
 
     private void onReload(Main main, CommandSender sender) {
+        boolean langChange = Config.languageLoad(main);
+        boolean valid_config;
         this.manager.unloadGames();
-        Config.onLoad(main);
         ResourceManager.onReload();
         Translator.onReload();
+
+        valid_config = Config.configLoad(main);
+        if (! valid_config) return;
+
         Logger.onLoad(main);
         if (!Econ.onEnable()) {
             main.getServer().getPluginManager().disablePlugin(main);
         }
+        RewardsManager.onReload(new YMLFile(Config.AppConfig.storageFolder + "/rewards.yml"));
         this.manager.GameLoading(null);
-        CommandAPI.unregister("whackamole", true);
-        CommandAPI.unregister("wam", true);
-        new Commands(main);
+        if (langChange) {
+            Logger.info("The following error is not a bug, please don't report this"); // TODO: add Translator message
+            CommandAPI.unregister("wam");
+            CommandAPI.unregister("whackamole");
+            new Commands(main);
+        }
 
         sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_RELOAD_SUCCESS);
         Logger.success("Done! V" + main.getDescription().getVersion());

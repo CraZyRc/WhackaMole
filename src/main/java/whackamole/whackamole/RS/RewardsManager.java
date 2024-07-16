@@ -48,4 +48,12 @@ public class RewardsManager {
             Rewards.add(new Reward(rewardsFile, key));
         }
     }
+
+    public static void onReload(YMLFile rewardsFile) {
+        Rewards.clear();
+
+        for (String key : rewardsFile.FileConfig.getConfigurationSection("Rewards").getValues(false).keySet()) {
+            Rewards.add(new Reward(rewardsFile, key));
+        }
+    }
 }

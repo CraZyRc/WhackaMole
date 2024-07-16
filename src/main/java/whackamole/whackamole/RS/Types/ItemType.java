@@ -35,18 +35,14 @@ public class ItemType implements RewardType {
 
     @Override
     public void Execute(Player player) {
-        if (this.Check()) {
-            ItemStack Item = new ItemStack(this.material, this.amount);
-            if (!this.nbt.isEmpty()) {
-                String nbtTags = this.nbt.replace("[","").replace("]","");
-                Item = Bukkit.getUnsafe().modifyItemStack(Item, this.material.getKey().getKey() + "[" + nbtTags + "]"); //[enchantments={levels:{looting:1}},unbreakable={},damage=31]
-            }
-
-            PlayerInventory inv = player.getInventory();
-
-            if (inv.firstEmpty() != -1) {
-                inv.setItem(inv.firstEmpty(), Item);
-            }
+        ItemStack Item = new ItemStack(this.material, this.amount);
+        if (!this.nbt.isEmpty()) {
+            String nbtTags = this.nbt.replace("[","").replace("]","");
+            Item = Bukkit.getUnsafe().modifyItemStack(Item, this.material.getKey().getKey() + "[" + nbtTags + "]"); //[enchantments={levels:{looting:1}},unbreakable={},damage=31]
+        }
+        PlayerInventory inv = player.getInventory();
+        if (inv.firstEmpty() != -1) {
+            inv.setItem(inv.firstEmpty(), Item);
         }
     }
 }

@@ -27,10 +27,7 @@ public class CurrencyType implements RewardType {
 
     @Override
     public void Execute(Player player) {
-        if (this.Check()) {
-            this.econ.depositPlayer(player, this.quantity);
-            RewardsManager.sendScoreToPlayer(player, this.quantity);
-
-        }
+        this.econ.depositPlayer(player, this.quantity);
+        RewardsManager.sendScoreToPlayer(player, this.quantity);
     }
 }

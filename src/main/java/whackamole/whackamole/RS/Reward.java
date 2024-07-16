@@ -13,32 +13,35 @@ public class Reward {
     public String Name;
     public String Animation;
     public List<String> Games;
-    public List<LinkedHashMap> Types;
-    public static List<RewardType> rewardTypes = new ArrayList<>();
+    private List<LinkedHashMap> Types;
+    private final List<RewardType> rewardTypes;
 
     public Reward(YMLFile rewardsFile, String key) {
-        Name = key;
-        Threshold = rewardsFile.getDouble("Rewards." + key + ".Threshold");
-        Animation = rewardsFile.getString("Rewards." + key + ".Animation");
-        Games = (List<String>) rewardsFile.getList("Rewards." + key + ".Games");
-        Types = (List<LinkedHashMap>) rewardsFile.getList("Rewards." + key + ".RewardTypes");
+        this.Name = key;
+        this.Threshold = rewardsFile.getDouble("Rewards." + key + ".Threshold");
+        this.Animation = rewardsFile.getString("Rewards." + key + ".Animation");
+        this.Games = (List<String>) rewardsFile.getList("Rewards." + key + ".Games");
+        this.Types = (List<LinkedHashMap>) rewardsFile.getList("Rewards." + key + ".RewardTypes");
+        this.rewardTypes = new ArrayList<>();
 
         for (LinkedHashMap type : Types) {
-            if (type.get("Type").equals("Item")) {
-                rewardTypes.add(new ItemType().Load((LinkedHashMap) type.get("Settings")));
-            } else if (type.get("Type").equals("Currency")) {
-                rewardTypes.add(new CurrencyType().Load((LinkedHashMap) type.get("Settings")));
-            } else if (type.get("Type").equals("Effect")) {
-                rewardTypes.add(new EffectType().Load((LinkedHashMap) type.get("Settings")));
-            } else if (type.get("Type").equals("Message")) {
-                rewardTypes.add(new MessageType().Load((LinkedHashMap) type.get("Settings")));
-            } else if (type.get("Type").equals("Sound")) {
-                rewardTypes.add(new SoundType().Load((LinkedHashMap) type.get("Settings")));
-            } else if (type.get("Type").equals("Teleport")) {
-                rewardTypes.add(new TeleportType().Load((LinkedHashMap) type.get("Settings")));
+            RewardType rewardType = null;
+            switch (type.get("Type").toString()) {
+                case "Default" -> {
+                    Logger.error("Unknown RewardType in: " + type.get("Type")); // TODO: add Translator message
+                    continue;
+                }
+                case "Item"     ->  rewardType = new ItemType().Load((LinkedHashMap) type.get("Settings"));
+                case "Currency" ->  rewardType = new CurrencyType().Load((LinkedHashMap) type.get("Settings"));
+                case "Effect"   ->  rewardType = new EffectType().Load((LinkedHashMap) type.get("Settings"));
+                case "Message"  ->  rewardType = new MessageType().Load((LinkedHashMap) type.get("Settings"));
+                case "Sound"    ->  rewardType = new SoundType().Load((LinkedHashMap) type.get("Settings"));
+                case "Teleport" ->  rewardType = new TeleportType().Load((LinkedHashMap) type.get("Settings"));
+            }
+            if (rewardType.Check()) {
+                rewardTypes.add(rewardType);
             }
         }
-
     }
 
     public void Payout(Player player) {

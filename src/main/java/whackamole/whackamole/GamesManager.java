@@ -3,6 +3,8 @@ package whackamole.whackamole;
 import java.util.*;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -17,6 +19,10 @@ import org.bukkit.event.player.*;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.tags.CustomItemTagContainer;
+import org.bukkit.inventory.meta.tags.ItemTagType;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
@@ -251,8 +257,12 @@ public final class GamesManager implements Listener {
     @EventHandler
     public void ticketUse(PlayerInteractEvent e) {
         Player player = e.getPlayer();
+        ItemStack Ticket = player.getInventory().getItemInMainHand();
+        NamespacedKey key = new NamespacedKey(Bukkit.getPluginManager().getPlugin("WhackaMole"), "Reset-Ticket");
+        ItemMeta ticketMeta = Ticket.getItemMeta();
+        CustomItemTagContainer tagContainer =ticketMeta.getCustomTagContainer();
 
-        if (!player.getInventory().getItemInMainHand().isSimilar(Config.Game.TICKET))
+        if (!tagContainer.hasCustomTag(key, ItemTagType.DOUBLE))
             return;
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;

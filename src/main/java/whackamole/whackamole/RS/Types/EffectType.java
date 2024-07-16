@@ -38,9 +38,7 @@ public class EffectType implements RewardType {
 
     @Override
     public void Execute(Player player) {
-        if (this.Check()) {
-            PotionEffect Effect = new PotionEffect(this.effect, this.duration, this.amplifier);
-            player.addPotionEffect(Effect);
-        }
+        PotionEffect Effect = new PotionEffect(this.effect, this.duration, this.amplifier);
+        player.addPotionEffect(Effect);
     }
 }

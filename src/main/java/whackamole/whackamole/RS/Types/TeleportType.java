@@ -21,7 +21,9 @@ public class TeleportType implements RewardType {
         this.X = (int) Settings.get("X");
         this.Y = (int) Settings.get("Y");
         this.Z = (int) Settings.get("Z");
-        return this;
+        if (this.Check()) {
+            return this;
+        } else return null;
     }
 
     @Override
@@ -56,8 +58,6 @@ public class TeleportType implements RewardType {
 
     @Override
     public void Execute(Player player) {
-        if (this.Check()) {
-            player.teleport(this.loc);
-        }
+        player.teleport(this.loc);
     }
 }

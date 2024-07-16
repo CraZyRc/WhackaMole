@@ -5,15 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.inventory.meta.tags.ItemTagType;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
 import whackamole.whackamole.Utils.Updater;
@@ -65,7 +63,7 @@ public class Config {
 
         public static ItemStack PLAYER_AXE, TICKET;
 
-        private static boolean LoadConfig(YMLFile configFile) {
+        private static boolean LoadConfig(YMLFile configFile, Main main) {
             ACTIONTEXT              = configFile.getString("Actionbar Message");
             HAMMER_ITEM             = configFile.getString("Hammer Item");
             HAMMER_CUSTOMMODELDATA  = configFile.getInt("Hammer customModelData");
@@ -105,6 +103,7 @@ public class Config {
 
             TICKET = new ItemStack(Material.MAP);
             ItemMeta ticketInfo = TICKET.getItemMeta();
+            ticketInfo.getCustomTagContainer().setCustomTag(new NamespacedKey(main, "Reset-Ticket"), ItemTagType.DOUBLE, 10.00);
             ticketInfo.addEnchant(Enchantment.LURE, 1, true);
             ticketInfo.setDisplayName(Translator.CONFIG_TICKET_NAME.toString());
             ticketInfo.setLore(
@@ -137,10 +136,7 @@ public class Config {
         }
     }
 
-    private Config() {
-    }
-
-    public static boolean onLoad(Plugin Main) {
+    public static boolean onLoad(Main main) {
         try {
             ConfigFile = new YMLFile(AppConfig.storageFolder, AppConfig.configFileName);
         } catch (Exception e) {
@@ -149,7 +145,7 @@ public class Config {
         }
 
         if (ConfigFile.created) {
-            Main.saveResource("config.yml", true);
+            main.saveResource("config.yml", true);
             Logger.info(Translator.YML_CREATEFILE.Format(ConfigFile));
             try {
                 ConfigFile = new YMLFile(AppConfig.storageFolder, AppConfig.configFileName);
@@ -158,17 +154,44 @@ public class Config {
                 return false;
             }
         }
-        return LoadConfig(ConfigFile);
+        return LoadConfig(ConfigFile, main);
     }
 
-    protected static boolean LoadConfig(YMLFile ConfigFile) {
+    public static boolean languageLoad(Main main) {
+        Locale oldLang = AppConfig.Language;
+        try {
+            ConfigFile = new YMLFile(AppConfig.storageFolder, AppConfig.configFileName);
+        } catch (Exception e) {
+            Logger.error(e.getMessage());
+            return false;
+        }
+
+        if (ConfigFile.created) {
+            main.saveResource("config.yml", true);
+            Logger.info(Translator.YML_CREATEFILE.Format(ConfigFile));
+            try {
+                ConfigFile = new YMLFile(AppConfig.storageFolder, AppConfig.configFileName);
+            } catch (Exception e) {
+                Logger.error(e.getMessage());
+                return false;
+            }
+        }
+        AppConfig.LoadConfig(ConfigFile);
+        return !oldLang.equals(AppConfig.Language);
+    }
+
+    public static boolean configLoad(Main main) {
+        return LoadConfig(ConfigFile, main);
+    }
+
+    protected static boolean LoadConfig(YMLFile ConfigFile, Main main) {
         if (Updater.versionCompare(ConfigFile.getString("Config Version"), AppConfig.configVersion)) {
             Logger.warning(Translator.CONFIG_OLDVERSION.Format(ConfigFile.getString("Config Version")));
         }
 
         if(!AppConfig.LoadConfig(ConfigFile)
         || !Currency.LoadConfig(ConfigFile)
-        || !Game.LoadConfig(ConfigFile)
+        || !Game.LoadConfig(ConfigFile, main)
         || !Permissions.LoadConfig(ConfigFile)) {
             return false;
         }

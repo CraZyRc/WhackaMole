@@ -35,14 +35,12 @@ public class MessageType implements RewardType {
 
     @Override
     public void Execute(Player player) {
-        if (this.Check()) {
-            if (this.messageType.equals("String")) {
-                player.sendMessage(Config.AppConfig.PREFIX + Translator.Color(this.message));
-            } else if (this.messageType.equals("Json")) {
-                BaseComponent[] list = ComponentSerializer.parse(this.message);
-                BaseComponent[] sendList = new ComponentBuilder(Config.AppConfig.PREFIX).append(list).create();
-                player.spigot().sendMessage(ChatMessageType.CHAT, sendList);
-            }
+        if (this.messageType.equals("String")) {
+            player.sendMessage(Config.AppConfig.PREFIX + Translator.Color(this.message));
+        } else if (this.messageType.equals("Json")) {
+            BaseComponent[] list = ComponentSerializer.parse(this.message);
+            BaseComponent[] sendList = new ComponentBuilder(Config.AppConfig.PREFIX).append(list).create();
+            player.spigot().sendMessage(ChatMessageType.CHAT, sendList);
         }
 
     }

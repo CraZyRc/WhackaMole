@@ -35,8 +35,6 @@ public class SoundType implements RewardType {
 
     @Override
     public void Execute(Player player) {
-        if (this.Check()) {
-            player.playSound(player,this.sound , this.volume, this.pitch);
-        }
+        player.playSound(player,this.sound , this.volume, this.pitch);
     }
 }
