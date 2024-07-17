@@ -1,9 +1,13 @@
 package whackamole.whackamole.RS.Types;
 
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import whackamole.whackamole.Main;
 import whackamole.whackamole.Utils.Logger;
+import whackamole.whackamole.Utils.Translator;
 
 import java.util.LinkedHashMap;
 
@@ -23,13 +27,13 @@ public class EffectType implements RewardType {
     @Override
     public boolean Check() {
         if (this.effect == null) {
-            Logger.error("Invalid Effect set in the RewardsFile"); // TODO: add Translator message
+            Logger.error(Translator.REWARDS_TYPE_INVALIDSTRING.Format("Effect"));
             return false;
         } else if (this.duration <= 0) {
-            Logger.error("Invalid Duration set in the RewardsFile, Duration has to be bigger than 0"); // TODO: add Translator message
+            Logger.error(Translator.REWARDS_TYPE_INVALIDINT.Format("Effect","Effect"));
             return false;
         } else if (this.amplifier <= 0) {
-            Logger.error("Invalid Amplifier set in the RewardsFile, Amplifier has to be bigger than 0"); // TODO: add Translator message
+            Logger.error(Translator.REWARDS_TYPE_INVALIDINT.Format("Amplifier","Amplifier"));
             return false;
         } else {
             return true;
@@ -41,4 +45,10 @@ public class EffectType implements RewardType {
         PotionEffect Effect = new PotionEffect(this.effect, this.duration, this.amplifier);
         player.addPotionEffect(Effect);
     }
+
+    @Override
+    public void displayType(Main main, Location loc) {}
+
+    @Override
+    public void Remove(Player player) {}
 }

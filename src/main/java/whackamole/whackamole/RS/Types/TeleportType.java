@@ -1,14 +1,23 @@
 package whackamole.whackamole.RS.Types;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
+import org.bukkit.*;
+import org.bukkit.entity.*;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.util.Transformation;
+import org.joml.AxisAngle4f;
+import org.joml.Vector3f;
+import whackamole.whackamole.Main;
 import whackamole.whackamole.Utils.Logger;
+import whackamole.whackamole.Utils.Misc;
+import whackamole.whackamole.Utils.Translator;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class TeleportType implements RewardType {
+    private List<Entity> entities = new ArrayList<>();
     private Location loc;
     private World world;
     private double X;
@@ -21,9 +30,7 @@ public class TeleportType implements RewardType {
         this.X = (int) Settings.get("X");
         this.Y = (int) Settings.get("Y");
         this.Z = (int) Settings.get("Z");
-        if (this.Check()) {
-            return this;
-        } else return null;
+        return this;
     }
 
     @Override
@@ -31,21 +38,21 @@ public class TeleportType implements RewardType {
         this.loc = new Location(world, X, Y, Z);
 
         if (world == null) {
-            Logger.error("Invalid World set in the RewardsFile");
+            Logger.error(Translator.REWARDS_TYPE_INVALIDSTRING.Format("World"));
             return false;
         }
 
         try {
             Location feet = this.loc.clone();
             if (!feet.getBlock().getType().isTransparent() && !feet.add(0, 1, 0).getBlock().getType().isTransparent()) {
-                Logger.error("Cannot send tp from rewards file, tp location isn't safe"); // TODO: add Translator message
+                Logger.error(Translator.REWARDS_TYPE_UNSAFETPLOCATION);
                 return false; // block not transparent (will suffocate)
             }
 
             Location head = feet.add(0, 1, 0);
 
             if (!head.getBlock().getType().isTransparent()) {
-                Logger.error("Cannot send tp from rewards file, tp location isn't safe"); // TODO: add Translator message
+                Logger.error(Translator.REWARDS_TYPE_UNSAFETPLOCATION);
                 return false; // block not transparent (will suffocate)
             }
             Location ground = feet.subtract(0, 2, 0);
@@ -59,5 +66,61 @@ public class TeleportType implements RewardType {
     @Override
     public void Execute(Player player) {
         player.teleport(this.loc);
+    }
+
+    @Override
+    public void displayType(Main main, Location loc) {
+        NamespacedKey namespacedKey = new NamespacedKey(main, "TeleportDisplay");
+
+        World world = loc.getWorld();
+
+
+        final ItemDisplay display = (ItemDisplay) world.spawnEntity(loc, EntityType.ITEM_DISPLAY);
+        display.setRotation(loc.getYaw(), 0);
+        display.setItemStack(Misc.getSkull("f41f1ef439f91069a43678d227ad458d663ec04363bce9c7c019c5679e8cf004"));
+        display.setTransformation(new Transformation(new Vector3f(0f, 0f, 0f), new AxisAngle4f(0f, 0f, 0f, 1f), new Vector3f(0f, 0f, 0f), new AxisAngle4f(0f, 0f, 0f, 1f))); // Translation - leftrot - scale - rightrot
+        display.setBillboard(Display.Billboard.FIXED);
+        display.setCustomName(Misc.Color("&bTeleport"));
+        display.setCustomNameVisible(true);
+        display.setPersistent(true);
+        display.getPersistentDataContainer().set(namespacedKey, PersistentDataType.INTEGER, 1);
+
+        final Interaction interaction = (Interaction) world.spawnEntity(loc.subtract(0, 0.48, 0), EntityType.INTERACTION);
+        interaction.setInteractionWidth(0.5F);
+        interaction.setInteractionHeight(0.5F);
+        interaction.setResponsive(true);
+        interaction.getPersistentDataContainer().set(namespacedKey, PersistentDataType.INTEGER, 1);
+
+
+        BukkitScheduler schedular = Bukkit.getScheduler();
+        schedular.runTaskLater(main, () -> {
+            this.transformDisplay(display);
+        }, 10L);
+
+        entities.add(display);
+        entities.add(interaction);
+
+    }
+
+    @Override
+    public void Remove(Player player) {
+        Location loc = null;
+        for (Entity e : entities) {
+            loc = e.getLocation();
+            e.remove();
+        }
+        player.getWorld().spawnParticle(Particle.COMPOSTER , loc, 2);
+        player.getWorld().playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+    }
+
+    private void transformDisplay(ItemDisplay display) {
+        Transformation transformation = display.getTransformation();
+        display.setInterpolationDelay(0);
+        display.setInterpolationDuration(15);
+        transformation.getTranslation().set(0f, 0f, 0f);
+        transformation.getLeftRotation().set(0f, 1f, 0f, 0f);
+        transformation.getScale().set(0.9f, 0.9f, 0.9f);
+        transformation.getRightRotation().set(0f,1f,0f,0f);
+        display.setTransformation(transformation);
     }
 }

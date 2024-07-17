@@ -4,9 +4,13 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.chat.ComponentSerializer;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import whackamole.whackamole.Config;
+import whackamole.whackamole.Main;
 import whackamole.whackamole.Utils.Logger;
+import whackamole.whackamole.Utils.Misc;
 import whackamole.whackamole.Utils.Translator;
 
 import java.util.LinkedHashMap;
@@ -25,10 +29,10 @@ public class MessageType implements RewardType {
     @Override
     public boolean Check() {
         if (!messageType.equals("String") && !messageType.equals("Json")) {
-            Logger.error("Invalid MessageType set in the RewardsFile, this can only be Json or String"); // TODO: add Translator message
+            Logger.error(Translator.REWARDS_TYPE_INVALIDMESSAGETYPE);
             return false;
         } else if (this.message.isEmpty()) {
-            Logger.error("No Message has been set in the RewardsFile"); // TODO: add Translator message
+            Logger.error(Translator.REWARDS_TYPE_NOMESSAGESET);
             return false;
         } else return true;
     }
@@ -36,7 +40,7 @@ public class MessageType implements RewardType {
     @Override
     public void Execute(Player player) {
         if (this.messageType.equals("String")) {
-            player.sendMessage(Config.AppConfig.PREFIX + Translator.Color(this.message));
+            player.sendMessage(Config.AppConfig.PREFIX + Misc.Color(this.message));
         } else if (this.messageType.equals("Json")) {
             BaseComponent[] list = ComponentSerializer.parse(this.message);
             BaseComponent[] sendList = new ComponentBuilder(Config.AppConfig.PREFIX).append(list).create();
@@ -44,4 +48,10 @@ public class MessageType implements RewardType {
         }
 
     }
+
+    @Override
+    public void displayType(Main main, Location loc) {}
+
+    @Override
+    public void Remove(Player player) {}
 }

@@ -8,6 +8,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import whackamole.whackamole.GS.Game;
+import whackamole.whackamole.GS.GamesManager;
 import whackamole.whackamole.RS.RewardsManager;
 import whackamole.whackamole.Utils.Econ;
 import whackamole.whackamole.Utils.Logger;
@@ -229,7 +231,7 @@ public class Commands {
                                     player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MAXMISSED_SUCCESS.Format(args.get(2).toString()));
                                 }
                                 case SCOREPOINTS -> {
-                                    game.setPointsPerKill (Double.parseDouble((String) args.get(2)));
+                                    game.setPointsPerKill (Integer.parseInt((String) args.get(2)));
                                     player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SCOREPOINTS_SUCCESS.Format(args.get(2).toString()));
                                 }
                                 case SPAWNTIMER -> {

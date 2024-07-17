@@ -24,7 +24,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import whackamole.whackamole.Utils.YMLFile;
 
-import whackamole.whackamole.Game;
+import whackamole.whackamole.GS.*;
 import whackamole.whackamole.Grid;
 
 
@@ -34,8 +34,8 @@ public class TestBase {
     
     public static Grid gridMock = mock(Grid.class);
     public static Game gameMock = mock(Game.class);
-    public static Game.GameRunner gameRunnerMock = mock(Game.GameRunner.class);
-    public static Game.Settings gameSettingsMock = mock(Game.Settings.class);
+    public static GameRunner gameRunnerMock = mock(GameRunner.class);
+    public static Settings gameSettingsMock = mock(Settings.class);
 
     public static File fileMock = mock(File.class);
     public static YMLFile YMLfileMock = mock(YMLFile.class);

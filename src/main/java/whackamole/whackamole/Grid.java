@@ -11,6 +11,8 @@ import org.bukkit.util.Vector;
 
 import whackamole.whackamole.DB.SQLite;
 import whackamole.whackamole.DB.GridDB;
+import whackamole.whackamole.GS.Game;
+import whackamole.whackamole.GS.Settings;
 import whackamole.whackamole.Mole.*;
 import whackamole.whackamole.Utils.Translator;
 
@@ -35,7 +37,7 @@ public class Grid {
 
     public List<Block> grid;
     public World world;
-    private Game.Settings settings;
+    private Settings settings;
 
     public Grid() {
     }
@@ -45,7 +47,7 @@ public class Grid {
         this.grid = grid;
     }
 
-    public Grid(Game.Settings game) {
+    public Grid(Settings game) {
         this.grid = new ArrayList<>();
         this.world = game.world;
         this.settings = game;
@@ -54,6 +56,8 @@ public class Grid {
             grid.add(game.world.getBlockAt(block.X, block.Y, block.Z));
         }
     }
+
+
     public static Grid searchGrid(World world, Player player) throws InvalidGridException {
         Block startBlock = world.getBlockAt(player.getLocation().subtract(0, 0.5, 0));
         var grid = findGrid(world, startBlock);
@@ -222,7 +226,7 @@ public class Grid {
         }
         return new Grid(world, grid);
     }
-    public Grid setSettings(Game.Settings settings) {
+    public Grid setSettings(Settings settings) {
         this.settings = settings;
         this.settings.scoreLocation = this.grid.get(1).getLocation().add(0, 2, 0);
         this.Save();

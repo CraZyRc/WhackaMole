@@ -79,7 +79,7 @@ public class GameRow extends Row {
     /**
      * The amount of point given for each mole hit
      */
-    public double scorePoints = 1.0;
+    public int scorePoints = 1;
 
     /**
      * The amount in seconds between each mole spawn attempt

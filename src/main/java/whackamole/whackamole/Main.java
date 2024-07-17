@@ -5,6 +5,7 @@ import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import whackamole.whackamole.DB.SQLite;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import whackamole.whackamole.GS.GamesManager;
 import whackamole.whackamole.RS.RewardFile;
 import whackamole.whackamole.RS.RewardsManager;
 import whackamole.whackamole.Utils.*;

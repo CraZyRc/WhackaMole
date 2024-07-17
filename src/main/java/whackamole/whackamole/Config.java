@@ -11,11 +11,8 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.tags.ItemTagType;
-import whackamole.whackamole.Utils.Logger;
-import whackamole.whackamole.Utils.Translator;
-import whackamole.whackamole.Utils.Updater;
-import whackamole.whackamole.Utils.YMLFile;
+import org.bukkit.persistence.PersistentDataType;
+import whackamole.whackamole.Utils.*;
 
 public class Config {
     private static YMLFile ConfigFile;
@@ -51,7 +48,7 @@ public class Config {
     }
 
     public static class Game {
-        public static String ACTIONTEXT, HAMMERNAME = "Hammer", HAMMER_ITEM;
+        public static String HAMMER_ITEM;
         public static List<?> ENABLED_WOLRDS;
 
         public static int FIELD_MAX_SIZE, HAMMER_CUSTOMMODELDATA, HAMMER_ITEMDAMAGE;
@@ -64,11 +61,9 @@ public class Config {
         public static ItemStack PLAYER_AXE, TICKET;
 
         private static boolean LoadConfig(YMLFile configFile, Main main) {
-            ACTIONTEXT              = configFile.getString("Actionbar Message");
             HAMMER_ITEM             = configFile.getString("Hammer Item");
             HAMMER_CUSTOMMODELDATA  = configFile.getInt("Hammer customModelData");
             HAMMER_ITEMDAMAGE       = configFile.getInt("Hammer itemDamage");
-            HAMMERNAME              = Translator.Color(configFile.getString("Hammer Name"));
 
             FIELD_MAX_SIZE          = configFile.getInt("Max playfield");
             FiELD_MARGIN_X          = configFile.getDouble("Field extension.width");
@@ -94,7 +89,7 @@ public class Config {
                 axeMeta.addItemFlags(
                         ItemFlag.HIDE_ENCHANTS,
                         ItemFlag.HIDE_UNBREAKABLE);
-                axeMeta.setDisplayName(HAMMERNAME);
+                axeMeta.setDisplayName(Misc.Color(Translator.CONFIG_HAMMER_NAME.toString()));
                 PLAYER_AXE.setItemMeta(axeMeta);
             } else {
                 Logger.error(Translator.CONFIG_INVALIDHAMMERITEM);
@@ -103,7 +98,7 @@ public class Config {
 
             TICKET = new ItemStack(Material.MAP);
             ItemMeta ticketInfo = TICKET.getItemMeta();
-            ticketInfo.getCustomTagContainer().setCustomTag(new NamespacedKey(main, "Reset-Ticket"), ItemTagType.DOUBLE, 10.00);
+            ticketInfo.getPersistentDataContainer().set(new NamespacedKey(main, "Reset-Ticket"), PersistentDataType.DOUBLE, 10.00);
             ticketInfo.addEnchant(Enchantment.LURE, 1, true);
             ticketInfo.setDisplayName(Translator.CONFIG_TICKET_NAME.toString());
             ticketInfo.setLore(

@@ -1,9 +1,8 @@
-package whackamole.whackamole;
+package whackamole.whackamole.GS;
 
 import java.util.*;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -19,16 +18,14 @@ import org.bukkit.event.player.*;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.tags.CustomItemTagContainer;
-import org.bukkit.inventory.meta.tags.ItemTagType;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
+import whackamole.whackamole.Config;
 import whackamole.whackamole.DB.GameRow;
 import whackamole.whackamole.DB.SQLite;
-import whackamole.whackamole.Game.GameRunner;
+import whackamole.whackamole.Grid;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
 
@@ -118,7 +115,7 @@ public final class GamesManager implements Listener {
             game.moleUpdater();
         }
 
-        if (GamesManager.this.runnableTickCounter >= 20) {
+        if (GamesManager.this.runnableTickCounter >= 40) {
             GamesManager.this.runnableTickCounter = 0;
             for (Game game : GamesManager.this.games) {
                 game.updateActionBar();
@@ -255,15 +252,24 @@ public final class GamesManager implements Listener {
     }
 
     @EventHandler
+    public void RewardInteraction(PlayerInteractEntityEvent e) {
+        Player player = e.getPlayer();
+        for (Game game : this.games) {
+            var gameRunner = game.getRunning().orElse(null);
+            if (e.getRightClicked().getType().equals(EntityType.INTERACTION) && gameRunner.player.equals(player)) {
+                player.sendMessage("Well done! it works!!");
+            }
+
+        }
+    }
+
+    @EventHandler
     public void ticketUse(PlayerInteractEvent e) {
         Player player = e.getPlayer();
-        ItemStack Ticket = player.getInventory().getItemInMainHand();
-        NamespacedKey key = new NamespacedKey(Bukkit.getPluginManager().getPlugin("WhackaMole"), "Reset-Ticket");
-        ItemMeta ticketMeta = Ticket.getItemMeta();
-        CustomItemTagContainer tagContainer =ticketMeta.getCustomTagContainer();
-
-        if (!tagContainer.hasCustomTag(key, ItemTagType.DOUBLE))
-            return;
+        if (player.getInventory().getItemInMainHand().hasItemMeta()) {
+            if (!player.getInventory().getItemInMainHand().getItemMeta().getPersistentDataContainer().has(new NamespacedKey(Bukkit.getPluginManager().getPlugin("WhackaMole"), "Reset-Ticket"), PersistentDataType.DOUBLE))
+                return;
+        } else return;
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
 

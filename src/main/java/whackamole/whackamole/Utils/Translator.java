@@ -2,13 +2,10 @@ package whackamole.whackamole.Utils;
 
 import java.util.*;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import whackamole.whackamole.Config;
-import whackamole.whackamole.Game;
+import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.ResourceManager;
 
 public enum Translator {
@@ -29,6 +26,7 @@ public enum Translator {
     ,   CONFIG_TICKET_LORE1                                 ("Config.Ticket.Lore1")
     ,   CONFIG_TICKET_LORE2                                 ("Config.Ticket.Lore2")
     ,   CONFIG_TICKET_LORE3                                 ("Config.Ticket.Lore3")
+    ,   CONFIG_HAMMER_NAME                                  ("Config.Hammer.Name")
     ,   MANAGER_WORLDNOTENABLED                             ("Manager.worldNotEnabled", String.class, String.class)
     ,   MANAGER_LOADINGGAMES                                ("Manager.loadingGames")
     ,   MANAGER_NOGAMESFOUND                                ("Manager.noGamesFound")
@@ -50,11 +48,20 @@ public enum Translator {
     ,   GAME_INVALIDCOOLDOWN                                ("Game.invalidCooldown")
     ,   GAME_ACTIONBAR_ERROR                                ("Game.Actionbar.Error")
     ,   GAME_ACTIONBAR_FULLINVENTORY                        ("Game.Actionbar.fullInventory")
+    ,   GAME_ACTIONBAR_CURRENTSCORE                         ("Game.Actionbar.currentScore")
     ,   GAME_ACTIONBAR_RESTART                              ("Game.Actionbar.Restart")
     ,   GAME_ACTIONBAR_MOLEGAMEOVER                         ("Game.Actionbar.moleGameOver", Game.class)
     ,   GAME_ACTIONBAR_GAMEOVER                             ("Game.Actionbar.gameOver")
     ,   GAME_MOLEMISSED                                     ("Game.moleMissed", Game.class)
     ,   GAME_LOADSUCCESS                                    ("Game.loadSuccess", Game.class)
+    ,   GAME_HOLO_HITSTREAK                                 ("Game.Holo.hitStreak")
+    ,   GAME_HOLO_HIGHSCORES                                ("Game.Holo.highScores")
+    ,   GAME_HOLO_SCORE1                                    ("Game.Holo.Score1", String.class)
+    ,   GAME_HOLO_SCORE2                                    ("Game.Holo.Score2")
+    ,   GAME_HOLO_STREAK1                                   ("Game.Holo.Streak1", String.class)
+    ,   GAME_HOLO_STREAK2                                   ("Game.Holo.Streak2")
+    ,   GAME_HOLO_MOLESHIT1                                 ("Game.Holo.molesHit1", String.class)
+    ,   GAME_HOLO_MOLESHIT2                                 ("Game.Holo.molesHit2")
     ,   COMMANDS_TIPS_NAME                                  ("Commands.Tips.Name")
     ,   COMMANDS_TIPS_DIRECTION                             ("Commands.Tips.Direction")
     ,   COMMANDS_TIPS_JACKPOT                               ("Commands.Tips.Jackpot")
@@ -136,7 +143,13 @@ public enum Translator {
     ,   COMMANDS_ARGUMENTS_INVALIDSETTING                   ("Commands.Arguments.invalidSetting")
     ,   ECON_INVALIDECONOMY                                 ("Econ.invalidEconomy")
     ,   ECON_INVALIDVAULT                                   ("Econ.invalidVault")
-    ,   ECON_INVALIDOBJECTIVE                               ("Econ.invalidObjective");
+    ,   ECON_INVALIDOBJECTIVE                               ("Econ.invalidObjective")
+    ,   REWARDS_TYPE_INVALIDINT                             ("Rewards.Type.invalidInt", String.class)
+    ,   REWARDS_TYPE_INVALIDSTRING                          ("Rewards.Type.invalidString", String.class)
+    ,   REWARDS_TYPE_INVALIDMESSAGETYPE                     ("Rewards.Type.invalidMessageType")
+    ,   REWARDS_TYPE_NOMESSAGESET                           ("Rewards.Type.noMessageSet")
+    ,   REWARDS_TYPE_UNSAFETPLOCATION                       ("Rewards.Type.unSafeTpLocation")
+    ,   REWARDS_INVALIDREWARDTYPE                           ("Rewards.invalidRewardType", String.class);
 
     public String key;
     public String value = "";
@@ -162,25 +175,6 @@ public enum Translator {
             Logger.error(this.key + " has no value, cannot initialize");
         }
 
-    }
-
-    public static String Color(String message) {
-        Pattern pattern = Pattern.compile("#[a-fA-f0-9]{6}");
-        Matcher matcher = pattern.matcher(message);
-        while (matcher.find()) {
-            String hexCode = message.substring(matcher.start(), matcher.end());
-            String replaceSharp = hexCode.replace('#', 'x');
-
-            char[] ch = replaceSharp.toCharArray();
-            StringBuilder builder = new StringBuilder();
-            for (char c : ch) {
-                builder.append("&").append(c);
-            }
-
-            message = message.replace(hexCode, builder.toString());
-            matcher = pattern.matcher(message);
-        }
-        return ChatColor.translateAlternateColorCodes('&', message);
     }
 
     public String Format() {
@@ -211,7 +205,7 @@ public enum Translator {
         for(String item : stringReplacements) {
             type.Format(item);
         }
-        return Color(type.formattedValue);
+        return Misc.Color(type.formattedValue);
     }
 
 
@@ -246,7 +240,7 @@ public enum Translator {
         .replace("{commandBuy}",       "/wam " + COMMANDS_BUY);
     }
     public String toString() {
-        return Color(this.value);
+        return Misc.Color(this.value);
     }
 
 

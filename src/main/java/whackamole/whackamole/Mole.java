@@ -1,19 +1,14 @@
 package whackamole.whackamole;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.profile.PlayerProfile;
-import org.bukkit.profile.PlayerTextures;
+import whackamole.whackamole.GS.Game;
+import whackamole.whackamole.GS.Settings;
+import whackamole.whackamole.Utils.Misc;
 
 public class Mole {
     public MoleType type;
@@ -42,7 +37,7 @@ public class Mole {
     private double maxY;
     private double moveSpeed;
 
-    public Mole(MoleType type, ArmorStand e, double moveSpeed, Game.Settings settings) {
+    public Mole(MoleType type, ArmorStand e, double moveSpeed, Settings settings) {
         this.moveSpeed = moveSpeed;
         this.maxY = e.getLocation().getY() + 1;
         this.minY = e.getLocation().getY();
@@ -54,7 +49,7 @@ public class Mole {
                 e.addScoreboardTag("Mole_new");
                 e.setGravity(false);
                 e.setInvisible(true);
-                e.getEquipment().setHelmet(getSkull(settings.moleHead));
+                e.getEquipment().setHelmet(Misc.getSkull(settings.moleHead));
                 e.addEquipmentLock(EquipmentSlot.HEAD, ArmorStand.LockType.REMOVING_OR_CHANGING);
 
                 yield e;
@@ -63,7 +58,7 @@ public class Mole {
                 e.addScoreboardTag("Mole_new");
                 e.setGravity(false);
                 e.setInvisible(true);
-                e.getEquipment().setHelmet(getSkull(settings.jackpotHead));
+                e.getEquipment().setHelmet(Misc.getSkull(settings.jackpotHead));
                 e.addEquipmentLock(EquipmentSlot.HEAD, ArmorStand.LockType.REMOVING_OR_CHANGING);
 
                 yield e;
@@ -120,30 +115,6 @@ public class Mole {
             this.mole.remove();
         } catch (Exception e) {
         }
-    }
-
-    public static ItemStack getSkull(String url) {
-        ItemStack moleHead = new ItemStack(Material.PLAYER_HEAD);
-        if (url.isEmpty())
-            return moleHead;
-        SkullMeta moleMeta = (SkullMeta) moleHead.getItemMeta();
-        PlayerProfile profile = Bukkit.createPlayerProfile(Mole.randomUUID);
-        PlayerTextures textures = profile.getTextures();
-
-        URL urlObject;
-        try {
-            urlObject = new URL("http://textures.minecraft.net/texture/" + url);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Invalid URL", e);
-        }
-        textures.setSkin(urlObject);
-        profile.setTextures(textures);
-        moleMeta.setOwnerProfile(profile);
-
-        moleHead.setItemMeta(moleMeta);
-
-        return moleHead;
-
     }
 
 }
