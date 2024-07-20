@@ -26,6 +26,7 @@ import whackamole.whackamole.Config;
 import whackamole.whackamole.DB.GameRow;
 import whackamole.whackamole.DB.SQLite;
 import whackamole.whackamole.Grid;
+import whackamole.whackamole.RS.RewardsManager;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
 
@@ -115,7 +116,7 @@ public final class GamesManager implements Listener {
             game.moleUpdater();
         }
 
-        if (GamesManager.this.runnableTickCounter >= 40) {
+        if (GamesManager.this.runnableTickCounter >= 20) {
             GamesManager.this.runnableTickCounter = 0;
             for (Game game : GamesManager.this.games) {
                 game.updateActionBar();
@@ -169,14 +170,21 @@ public final class GamesManager implements Listener {
         for (Game game : games) {
             var gameRunner = game.getRunning().orElse(null);
             if (game.onGrid(player)) {
-                if (gameRunner == null) continue;
+                if (!game.hasActionbar.contains(player)) {
+                    game.updateActionBar();
+                    game.hasActionbar.add(player);
+                }
+                if (game.State != Game.gameState.RUNNING) continue;
                 if (gameRunner.player != player) {
                     gameRunner.RemovePlayerFromGame(e.getPlayer(), e.getFrom(), Objects.requireNonNull(e.getTo()));
                 }
                 break;
-            } else if (gameRunner != null && gameRunner.player == player) {
-                game.Stop();
-                break;
+            } else {
+                if (game.hasActionbar.contains(player)) game.hasActionbar.remove(player);
+                if (gameRunner != null && gameRunner.player == player && game.State == Game.gameState.RUNNING) {
+                    game.Stop();
+                    break;
+                }
             }
         }
     }
@@ -210,7 +218,7 @@ public final class GamesManager implements Listener {
                     gameRunner.RemovePlayerFromGame(e.getPlayer(), e.getFrom(), Objects.requireNonNull(e.getTo()));
                 }
                 break;
-            } else if (gameRunner != null && gameRunner.player == player && game.Running) {
+            } else if (gameRunner != null && gameRunner.player == player && game.State == Game.gameState.RUNNING) {
                 game.Stop();
                 break;
             }
@@ -257,9 +265,8 @@ public final class GamesManager implements Listener {
         for (Game game : this.games) {
             var gameRunner = game.getRunning().orElse(null);
             if (e.getRightClicked().getType().equals(EntityType.INTERACTION) && gameRunner.player.equals(player)) {
-                player.sendMessage("Well done! it works!!");
+                RewardsManager.interactEvent(player, game);
             }
-
         }
     }
 

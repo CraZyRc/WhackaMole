@@ -11,7 +11,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 import whackamole.whackamole.Config;
 import whackamole.whackamole.Mole;
-import whackamole.whackamole.RS.RewardsManager;
 import whackamole.whackamole.Utils.Econ;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Misc;
@@ -78,19 +77,16 @@ public class GameRunner {
                 Logger.error(e.getMessage());
             }
         }
-        this.game.updateActionBar();
         return true;
     }
 
     public void Stop() {
-        this.game.Running = false;
         if (this.game.settings.Music != null) {
             this.player.stopSound(this.game.settings.Music);
         }
+
         this.game.grid.removeEntities();
-        this.game.actionbarParse(this.player.getUniqueId(), "");
         this.removePlayerAxe(this.player);
-        RewardsManager.executeRewards(this.player, this.game);
         this.removeStreakHolo();
 
         if (this.score > 0) {
@@ -99,10 +95,11 @@ public class GameRunner {
             this.game.scoreboard.add(this.player, this.score, this.molesHit, this.highestStreak);
             this.game.cooldown.add(this.player);
         }
+        this.game.setState(Game.gameState.REWARDING);
+
         if (this.game.settings.toggleScoreboard) {
             this.game.scoreboard.updateTopHolo();
         }
-        this.player = null;
     }
 
     public Player getPlayer() {

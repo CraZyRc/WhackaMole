@@ -15,29 +15,37 @@ public class EffectType implements RewardType {
     private PotionEffectType effect;
     private int duration;
     private int amplifier;
+    public int rewardChance = 0;
 
     @Override
     public RewardType Load(LinkedHashMap Settings) {
         this.effect = PotionEffectType.getByName((String) Settings.get("Effect"));
         this.duration = (int) Settings.get("Duration");
         this.amplifier = (int) Settings.get("Amplifier");
+        this.rewardChance = (int) Settings.get("RewardChance");
         return this;
     }
 
     @Override
     public boolean Check() {
         if (this.effect == null) {
-            Logger.error(Translator.REWARDS_TYPE_INVALIDSTRING.Format("Effect"));
+            Logger.error(Translator.REWARDS_TYPE_INVALID_STRING.Format("Effect"));
             return false;
         } else if (this.duration <= 0) {
-            Logger.error(Translator.REWARDS_TYPE_INVALIDINT.Format("Effect","Effect"));
+            Logger.error(Translator.REWARDS_TYPE_INVALID_INT.Format("Effect","Effect"));
             return false;
         } else if (this.amplifier <= 0) {
-            Logger.error(Translator.REWARDS_TYPE_INVALIDINT.Format("Amplifier","Amplifier"));
+            Logger.error(Translator.REWARDS_TYPE_INVALID_INT.Format("Amplifier","Amplifier"));
             return false;
-        } else {
-            return true;
-        }
+        } else if (this.rewardChance > 100 || this.rewardChance <= 0) {
+            Logger.error(Translator.REWARDS_TYPE_INVALID_REWARDCHANCE);
+            return false;
+        } else return true;
+    }
+
+    @Override
+    public int getRewardChance() {
+        return this.rewardChance;
     }
 
     @Override
@@ -51,4 +59,6 @@ public class EffectType implements RewardType {
 
     @Override
     public void Remove(Player player) {}
+
+
 }

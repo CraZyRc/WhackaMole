@@ -22,6 +22,7 @@ public class ItemType implements RewardType {
     private List<Entity> entities = new ArrayList<>();
     private Material material;
     private int amount;
+    public int rewardChance = 0;
     private String nbt;
 
     @Override
@@ -29,19 +30,28 @@ public class ItemType implements RewardType {
         this.material = Material.matchMaterial((String) Settings.get("Material"));
         this.amount = (int) Settings.get("Amount");
         this.nbt = (String) Settings.get("NBT");
+        this.rewardChance = (int) Settings.get("RewardChance");
         return this;
     }
 
     @Override
     public boolean Check() {
         if (material == null) {
-            Logger.error(Translator.REWARDS_TYPE_INVALIDSTRING.Format("Material"));
+            Logger.error(Translator.REWARDS_TYPE_INVALID_STRING.Format("Material"));
             return false;
         } else if (this.amount <= 0) {
-            Logger.error(Translator.REWARDS_TYPE_INVALIDINT.Format("Amount", "Amount"));
+            Logger.error(Translator.REWARDS_TYPE_INVALID_INT.Format("Amount", "Amount"));
+            return false;
+        } else if (this.rewardChance > 100 || this.rewardChance <= 0) {
+            Logger.error(Translator.REWARDS_TYPE_INVALID_REWARDCHANCE);
             return false;
         } else return true;
     }
+    @Override
+    public int getRewardChance() {
+        return this.rewardChance;
+    }
+
 
     @Override
     public void Execute(Player player) {

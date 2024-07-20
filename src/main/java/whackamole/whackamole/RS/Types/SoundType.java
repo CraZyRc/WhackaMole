@@ -2,7 +2,6 @@ package whackamole.whackamole.RS.Types;
 
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import whackamole.whackamole.Main;
 import whackamole.whackamole.Utils.Logger;
@@ -14,27 +13,37 @@ public class SoundType implements RewardType {
     private Sound sound;
     private float volume;
     private float pitch;
+    public int rewardChance = 0;
 
     @Override
     public RewardType Load(LinkedHashMap Settings) {
         this.sound = Sound.valueOf((String) Settings.get("Sound"));
         this.volume = Float.valueOf((String) Settings.get("Volume"));
         this.pitch = Float.valueOf((String) Settings.get("Pitch"));
+        this.rewardChance = (int) Settings.get("RewardChance");
         return this;
     }
 
     @Override
     public boolean Check() {
         if (this.sound == null) {
-            Logger.error(Translator.REWARDS_TYPE_INVALIDSTRING.Format("Sound"));
+            Logger.error(Translator.REWARDS_TYPE_INVALID_STRING.Format("Sound"));
             return false;
         } else if (this.volume <= 0) {
-            Logger.error(Translator.REWARDS_TYPE_INVALIDINT.Format("Volume", "Volume"));
+            Logger.error(Translator.REWARDS_TYPE_INVALID_INT.Format("Volume", "Volume"));
             return false;
         } else if (this.pitch <= 0) {
-            Logger.error(Translator.REWARDS_TYPE_INVALIDINT.Format("Pitch", "Pitch"));
+            Logger.error(Translator.REWARDS_TYPE_INVALID_INT.Format("Pitch", "Pitch"));
+            return false;
+        } else if (this.rewardChance > 100 || this.rewardChance <= 0) {
+            Logger.error(Translator.REWARDS_TYPE_INVALID_REWARDCHANCE);
             return false;
         } else return true;
+    }
+
+    @Override
+    public int getRewardChance() {
+        return this.rewardChance;
     }
 
     @Override

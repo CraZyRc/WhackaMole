@@ -12,6 +12,8 @@ public interface RewardType {
 
     RewardType Load(LinkedHashMap Settings);
     boolean Check();
+    int getRewardChance();
+
     void Execute(Player player);
     void displayType(Main main, Location loc);
     void Remove(Player player);

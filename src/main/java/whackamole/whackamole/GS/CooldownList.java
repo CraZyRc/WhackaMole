@@ -106,8 +106,6 @@ public class CooldownList {
         UUID playerUUID = player.getUniqueId();
         if (this.getTime(playerUUID) < System.currentTimeMillis())
             this.remove(playerUUID);
-        else
-            this.game.actionbarParse(player.getUniqueId(), Translator.GAME_ACTIONBAR_GAMEOVER, this.game.cooldown.getText(player.getUniqueId()));
     }
 
 }

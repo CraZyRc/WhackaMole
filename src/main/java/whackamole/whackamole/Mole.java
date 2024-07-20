@@ -12,7 +12,6 @@ import whackamole.whackamole.Utils.Misc;
 
 public class Mole {
     public MoleType type;
-    private static final UUID randomUUID = UUID.randomUUID();
 
     public enum MoleType {
         Null,

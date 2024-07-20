@@ -23,6 +23,7 @@ public class TeleportType implements RewardType {
     private double X;
     private double Y;
     private double Z;
+    public int rewardChance = 0;
 
     @Override
     public RewardType Load(LinkedHashMap Settings) {
@@ -30,6 +31,7 @@ public class TeleportType implements RewardType {
         this.X = (int) Settings.get("X");
         this.Y = (int) Settings.get("Y");
         this.Z = (int) Settings.get("Z");
+        this.rewardChance = (int) Settings.get("RewardChance");
         return this;
     }
 
@@ -38,29 +40,33 @@ public class TeleportType implements RewardType {
         this.loc = new Location(world, X, Y, Z);
 
         if (world == null) {
-            Logger.error(Translator.REWARDS_TYPE_INVALIDSTRING.Format("World"));
+            Logger.error(Translator.REWARDS_TYPE_INVALID_STRING.Format("World"));
+            return false;
+        } else if (this.rewardChance > 100 || this.rewardChance <= 0) {
+            Logger.error(Translator.REWARDS_TYPE_INVALID_REWARDCHANCE);
             return false;
         }
 
-        try {
-            Location feet = this.loc.clone();
-            if (!feet.getBlock().getType().isTransparent() && !feet.add(0, 1, 0).getBlock().getType().isTransparent()) {
-                Logger.error(Translator.REWARDS_TYPE_UNSAFETPLOCATION);
-                return false; // block not transparent (will suffocate)
-            }
 
-            Location head = feet.add(0, 1, 0);
-
-            if (!head.getBlock().getType().isTransparent()) {
-                Logger.error(Translator.REWARDS_TYPE_UNSAFETPLOCATION);
-                return false; // block not transparent (will suffocate)
-            }
-            Location ground = feet.subtract(0, 2, 0);
-            return ground.getBlock().getType().isTransparent(); // returns if the ground is solid or not.
-        } catch (Exception er) {
-            Logger.error(er.getMessage());
+        Location feet = this.loc.clone();
+        if (!feet.getBlock().getType().isTransparent() && !feet.add(0, 1, 0).getBlock().getType().isTransparent()) {
+            Logger.error(Translator.REWARDS_TYPE_UNSAFETPLOCATION);
+            return false; // block not transparent (will suffocate)
         }
-        return false;
+
+        Location head = feet.add(0, 1, 0);
+
+        if (!head.getBlock().getType().isTransparent()) {
+            Logger.error(Translator.REWARDS_TYPE_UNSAFETPLOCATION);
+            return false; // block not transparent (will suffocate)
+        }
+        Location ground = feet.subtract(0, 2, 0);
+        return ground.getBlock().getType().isTransparent(); // returns if the ground is solid or not.
+    }
+
+    @Override
+    public int getRewardChance() {
+        return this.rewardChance;
     }
 
     @Override

@@ -17,26 +17,31 @@ import whackamole.whackamole.Grid;
 import whackamole.whackamole.Mole;
 import whackamole.whackamole.Mole.MoleState;
 import whackamole.whackamole.Mole.MoleType;
+import whackamole.whackamole.RS.RewardsManager;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Misc;
 import whackamole.whackamole.Utils.Translator;
 
+
 public class Game {
     public static final BlockFace[] Directions = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST,
             BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST };
+    public enum gameState {READY, RUNNING, STOPPING, REWARDING, DISABLED}
 
-    public boolean Running = false;
+    public gameState State;
     public Settings settings = new Settings(this);
     public CooldownList cooldown = new CooldownList(this);
     public Scoreboard scoreboard = new Scoreboard(this);
     public GameRunner game;
     public Grid grid;
 
+    public List<Player> hasActionbar = new ArrayList<>();
     private Random random = new Random();
     private List<UUID> currentyOnGird = new ArrayList<>();
 
 
     public Game(GameRow result) {
+        this.setState(gameState.READY);
         this.settings.onLoad(result);
 
         this.cooldown.onLoad();
@@ -47,11 +52,24 @@ public class Game {
 
 
     public Game(String name, Grid grid, Player player) {
+        this.setState(gameState.READY);
+
         this.settings.scoreLocation = player.getLocation().add(0,1,0);
         this.settings.Setup(formatName(name), player);
 
         this.grid = grid.setSettings(settings);
         this.scoreboard.createTopHolo();
+    }
+
+    public void setState(gameState state) {
+        this.State = state;
+        switch (state) {
+            case READY -> this.game = new GameRunner(this);
+            case RUNNING -> {}
+            case STOPPING -> this.game.Stop();
+            case REWARDING -> RewardsManager.executeRewards(game.player, this);
+            case DISABLED -> Logger.error("fix this code");
+        }
 
     }
 
@@ -62,23 +80,22 @@ public class Game {
     }
 
     public void Start(Player player) {
-        this.Running = true;
-        if (this.game != null) return;
-        this.game = new GameRunner(this);
-        if (!this.game.Start(player)) {
-            this.game = null;
+        if (this.State == gameState.READY) {
+            this.game.player = player;
+            if (this.game.Start(player)) this.setState(gameState.RUNNING);
         }
     }
 
     public void Stop() {
         if (this.game != null) {
-            this.game.Stop();
-            this.game = null;
+            this.setState(gameState.STOPPING);
         }
     }
 
     public void Unload() {
-        this.Stop();
+        if (this.State == gameState.RUNNING) {
+            this.Stop();
+        }
     }
 
     public void Save() {
@@ -251,7 +268,7 @@ public class Game {
         boolean playerOnGrid = (player.getWorld() == settings.world && this.grid.onGrid(loc));
 
         // * Player walks on the grid
-        if (playerOnGrid && !currentyOnGird.contains(player.getUniqueId())) {
+        if (playerOnGrid && !currentyOnGird.contains(player.getUniqueId()) && this.State == gameState.READY) {
             this.Start(player);
             currentyOnGird.add(player.getUniqueId());
             this.cooldown.walkOnGridHook(player);
@@ -309,15 +326,22 @@ public class Game {
     }
 
     public void updateActionBar() {
-        Game.this.getRunning().ifPresent((game) -> {
-            this.actionbarParse(game.player.getUniqueId(), Misc.Color(Translator.GAME_ACTIONBAR_CURRENTSCORE + "&a&l ") + this.game.score);
+        if (this.State == gameState.RUNNING) {
+            Game.this.getRunning().ifPresent((game) -> {
+                this.actionbarParse(game.player.getUniqueId(), Misc.Color(Translator.GAME_ACTIONBAR_CURRENTSCORE + "&a&l ") + this.game.score);
 //            game.player.sendMessage(Translator.GAME_ACTIONBAR_CURRENTSCORE.toString());
-        });
+            });
+        }
         for (UUID player : this.currentyOnGird) {
-            if (this.cooldown.contains(player))
+            if (this.cooldown.contains(player) && this.State != gameState.REWARDING) {
                 this.actionbarParse(player, Translator.GAME_ACTIONBAR_GAMEOVER, this.cooldown.getText(player));
-            else if (Bukkit.getPlayer(player).getInventory().firstEmpty() != -1 && Game.this.getRunning().isEmpty())
+            }
+            else if (Bukkit.getPlayer(player).getInventory().firstEmpty() != -1 && Game.this.State != gameState.RUNNING && this.State != gameState.REWARDING) {
                 this.actionbarParse(player, Translator.GAME_ACTIONBAR_RESTART.Format());
+            }
+            else if (Bukkit.getPlayer(player).getInventory().firstEmpty() != -1 && Game.this.State == gameState.REWARDING){
+                this.actionbarParse(player, Translator.GAME_ACTIONBAR_REWARDING.Format());
+            }
         }
     }
 
@@ -349,25 +373,28 @@ public class Game {
     }
 
     public void moleUpdater() {
-        int missed = this.grid.entityUpdate();
-        this.getRunning().ifPresent((game) -> {
-            if (missed > 0) {
-                game.missed += missed;
-                if (game.Streak > game.highestStreak) { game.highestStreak = game.Streak; }
-                game.Streak = 0;
-                game.player.playSound(game.player.getLocation(), Config.Game.MISSSOUND, 1, 1);
-                game.player.sendMessage(Config.AppConfig.PREFIX + Translator.GAME_MOLEMISSED.Format(this));
-                if (game.missed >= this.settings.missCount) {
-                    this.Stop();
+        if (this.State == gameState.RUNNING) {
+            int missed = this.grid.entityUpdate();
+            this.getRunning().ifPresent((game) -> {
+                if (missed > 0) {
+                    game.missed += missed;
+                    if (game.Streak > game.highestStreak) { game.highestStreak = game.Streak; }
+                    game.Streak = 0;
+                    game.player.playSound(game.player.getLocation(), Config.Game.MISSSOUND, 1, 1);
+                    game.player.sendMessage(Config.AppConfig.PREFIX + Translator.GAME_MOLEMISSED.Format(this));
+                    if (game.missed >= this.settings.missCount) {
+                        this.Stop();
+                    }
                 }
-            }
-        });
+            });
+
+        }
     }
 
     private int Tick = 0;
 
     public void run() {
-        if (this.game != null) {
+        if (this.State == gameState.RUNNING) {
             double gameInterval = this.game.interval * 20;
             Tick++;
             if (Tick >= gameInterval) {

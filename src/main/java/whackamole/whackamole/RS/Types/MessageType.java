@@ -5,7 +5,6 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import whackamole.whackamole.Config;
 import whackamole.whackamole.Main;
@@ -18,23 +17,33 @@ import java.util.LinkedHashMap;
 public class MessageType implements RewardType {
     private String message;
     private String messageType;
+    public int rewardChance = 0;
 
     @Override
     public RewardType Load(LinkedHashMap Settings) {
         this.messageType = (String) Settings.get("messageType");
         this.message = (String) Settings.get("Message");
+        this.rewardChance = (int) Settings.get("RewardChance");
         return this;
     }
 
     @Override
     public boolean Check() {
         if (!messageType.equals("String") && !messageType.equals("Json")) {
-            Logger.error(Translator.REWARDS_TYPE_INVALIDMESSAGETYPE);
+            Logger.error(Translator.REWARDS_TYPE_INVALID_MESSAGETYPE);
             return false;
         } else if (this.message.isEmpty()) {
             Logger.error(Translator.REWARDS_TYPE_NOMESSAGESET);
             return false;
+        } else if (this.rewardChance > 100 || this.rewardChance <= 0) {
+            Logger.error(Translator.REWARDS_TYPE_INVALID_REWARDCHANCE);
+            return false;
         } else return true;
+    }
+
+    @Override
+    public int getRewardChance() {
+        return this.rewardChance;
     }
 
     @Override

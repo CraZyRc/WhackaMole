@@ -1,9 +1,11 @@
 package whackamole.whackamole.RS;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import whackamole.whackamole.Config;
 import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.Utils.Econ;
+import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
 import whackamole.whackamole.Utils.YMLFile;
 
@@ -24,6 +26,7 @@ public class RewardsManager {
     }
 
     public static void executeRewards(Player player, Game game) {
+        game.updateActionBar();
         boolean Payout = false;
         Econ econ = new Econ();
         double score = game.getRunning().get().score;
@@ -32,13 +35,22 @@ public class RewardsManager {
             if (reward.Games.contains(game.getName())) {
                 if (score >= reward.Threshold) {
                     Payout = true;
-                    reward.Payout(player);
+                    reward.Payout(player, game);
                 }
             }
         }
         if (!Payout) {
             econ.depositPlayer(player, score);
             RewardsManager.sendScoreToPlayer(player, score);
+            game.setState(Game.gameState.READY);
+        }
+    }
+
+    public static void interactEvent(Player player, Game game) {
+        for (Reward reward : Rewards) {
+            if (reward.Games.contains(game.getName())) {
+                reward.checkEntity(player, game);
+            }
         }
     }
 

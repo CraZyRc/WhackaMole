@@ -3,10 +3,12 @@ package whackamole.whackamole.RS;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
+import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.Main;
 import whackamole.whackamole.RS.Types.*;
 import whackamole.whackamole.RS.Types.CurrencyType;
@@ -19,9 +21,10 @@ import java.util.*;
 
 public class Reward {
     private final Main main = Main.getPlugin(Main.class);
-    BukkitScheduler schedular = Bukkit.getScheduler();
-    private int task;
+    BukkitTask task = null;
 
+    private int i;
+    private Player p;
     private Location loc;
 
 
@@ -31,8 +34,9 @@ public class Reward {
     public List<String> Games;
     private List<LinkedHashMap> Types;
     private List<Entity> entities = new ArrayList<>();
-    private final List<RewardType> staticTypes;
-    private final List<RewardType> interactiveTypes;
+    private final List<RewardType> staticTypes = new ArrayList<>();
+    private final List<RewardType> interactiveTypes = new ArrayList<>();
+    private List<RewardType> interactiveRewards = new ArrayList<>();
 
     public Reward(YMLFile rewardsFile, String key) {
         this.Name = key;
@@ -40,8 +44,6 @@ public class Reward {
         this.Animation = rewardsFile.getString("Rewards." + key + ".Animation");
         this.Games = (List<String>) rewardsFile.getList("Rewards." + key + ".Games");
         this.Types = (List<LinkedHashMap>) rewardsFile.getList("Rewards." + key + ".RewardTypes");
-        this.staticTypes = new ArrayList<>();
-        this.interactiveTypes = new ArrayList<>();
 
         for (LinkedHashMap typeMap : Types) {
             RewardType rewardType;
@@ -67,39 +69,62 @@ public class Reward {
         }
     }
 
-    public void Payout(Player player) {
+    public void Payout(Player player, Game game) {
+        int random = new Random().nextInt(100);
+        this.i = 0;
+        this.p = player;
         this.loc = player.getEyeLocation().add(player.getEyeLocation().getDirection().setY(0).normalize());
+
         for (var reward : this.staticTypes) {
-            reward.Execute(player);
+            if (reward.getRewardChance() <= random) reward.Execute(player);
         }
-        this.interactivePayout(player, 0);
+
+        if (!this.interactiveTypes.isEmpty()) {
+            for (var v :this.interactiveTypes) {
+                if (v.getRewardChance() <= random) this.interactiveRewards.add(v);
+            }
+            if (!this.interactiveRewards.isEmpty()) this.interactivePayout(game);
+            else game.setState(Game.gameState.READY);
+        } else game.setState(Game.gameState.READY);
 
     }
 
-    private void interactivePayout(Player player, int i) {
+    private void interactivePayout(Game game) {
+        RewardType reward = this.interactiveRewards.get(i);
 
-        entities.add(this.displayCount( i+1, this.interactiveTypes.size()));
-        var reward = this.interactiveTypes.get(i);
+        entities.add(this.displayCount( this.i+1, this.interactiveRewards.size()));
         reward.displayType(this.main, this.loc.clone());
 
-        task = this.schedular.runTaskLater(main, () -> {
-            this.interactiveStop(player, i);
-        }, 20L * 5L).getTaskId();
+        this.task =  new BukkitRunnable() {
+            @Override
+            public void run() {
+                interactiveStop(game);
+            }
+        }.runTaskLater(main, 20L * 5L /*<-- 5 sec delay */);
     }
 
-    public void interactiveStop(Player player, int i) {
-        if (this.schedular.isCurrentlyRunning(task)) {
-            this.schedular.cancelTask(task);
+    public void interactiveStop(Game game) {
+        if (!this.task.isCancelled()) {
+            this.task.cancel();
         }
-        var reward = this.interactiveTypes.get(i);
-        reward.Execute(player);
-        reward.Remove(player);
+        var reward = this.interactiveRewards.get(i);
+        reward.Execute(p);
+        reward.Remove(p);
         for (Entity e : entities) {
             e.remove();
         }
-        int I = i + 1;
-        if (I < this.interactiveTypes.size()) {
-            this.interactivePayout(player, I);
+        this.i++;
+        if (this.i < this.interactiveRewards.size()) {
+            this.interactivePayout(game);
+        } else {
+            this.interactiveRewards = new ArrayList<>();
+            game.setState(Game.gameState.READY);
+        }
+    }
+
+    public void checkEntity(Player player, Game game) {
+        if (player.equals(p)) {
+            this.interactiveStop(game);
         }
     }
 

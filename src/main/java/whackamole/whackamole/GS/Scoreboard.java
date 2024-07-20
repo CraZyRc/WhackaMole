@@ -150,11 +150,11 @@ public class Scoreboard {
         var molesHitSTR = getTop(1, 2);
 
         this.highScore.setCustomName(Translator.GAME_HOLO_HIGHSCORES.Format());
-        if (ScoreSTR.length > 0) this.Score.setCustomName(Translator.GAME_HOLO_SCORE1.Format(ScoreSTR[0].player.getName(), ScoreSTR[0].Score));
+        if (ScoreSTR.length > 0) this.Score.setCustomName(Translator.GAME_HOLO_SCORE1.Format(ScoreSTR[0].player.getName(), String.valueOf(ScoreSTR[0].Score)));
         else this.Score.setCustomName(Translator.GAME_HOLO_SCORE2.Format());
-        if (StreakSTR.length > 0) this.Streak.setCustomName(Translator.GAME_HOLO_STREAK1.Format(StreakSTR[0].player.getName(), StreakSTR[0].scoreStreak));
+        if (StreakSTR.length > 0) this.Streak.setCustomName(Translator.GAME_HOLO_STREAK1.Format(StreakSTR[0].player.getName(), String.valueOf(StreakSTR[0].scoreStreak)));
         else this.Streak.setCustomName(Translator.GAME_HOLO_STREAK2.Format());
-        if (molesHitSTR.length > 0) this.molesHit.setCustomName(Translator.GAME_HOLO_MOLESHIT1.Format(molesHitSTR[0].player.getName(), molesHitSTR[0].molesHit));
+        if (molesHitSTR.length > 0) this.molesHit.setCustomName(Translator.GAME_HOLO_MOLESHIT1.Format(molesHitSTR[0].player.getName(), String.valueOf(molesHitSTR[0].molesHit)));
         else this.molesHit.setCustomName(Translator.GAME_HOLO_MOLESHIT2.Format());
 
     }
@@ -162,9 +162,9 @@ public class Scoreboard {
         var Score = getTop(1, 0);
         var Streak = getTop(1, 1);
         var molesHit = getTop(1, 2);
-        if (Score.length > 0) this.Score.setCustomName(Translator.GAME_HOLO_SCORE1.Format(Score[0].player.getName(), Score[0].Score));
-        if (Streak.length > 0) this.Streak.setCustomName(Translator.GAME_HOLO_STREAK1.Format(Streak[0].player.getName(), Streak[0].scoreStreak));
-        if (molesHit.length > 0) this.molesHit.setCustomName(Translator.GAME_HOLO_MOLESHIT1.Format(molesHit[0].player.getName(), molesHit[0].molesHit));
+        if (Score.length > 0) this.Score.setCustomName(Translator.GAME_HOLO_SCORE1.Format(Score[0].player.getName(), String.valueOf(Score[0].Score)));
+        if (Streak.length > 0) this.Streak.setCustomName(Translator.GAME_HOLO_STREAK1.Format(Streak[0].player.getName(), String.valueOf(Streak[0].scoreStreak)));
+        if (molesHit.length > 0) this.molesHit.setCustomName(Translator.GAME_HOLO_MOLESHIT1.Format(molesHit[0].player.getName(), String.valueOf(molesHit[0].molesHit)));
     }
 
     public void tpTopHolo(Location loc) {
