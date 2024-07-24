@@ -29,7 +29,7 @@ public class RewardsManager {
         game.updateActionBar();
         boolean Payout = false;
         Econ econ = new Econ();
-        double score = game.getRunning().get().score;
+        int score = game.getRunning().get().score;
 
         for (Reward reward : Rewards) {
             if (reward.Games.contains(game.getName())) {

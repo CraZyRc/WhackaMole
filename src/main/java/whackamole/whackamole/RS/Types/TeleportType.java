@@ -60,8 +60,15 @@ public class TeleportType implements RewardType {
             Logger.error(Translator.REWARDS_TYPE_UNSAFETPLOCATION);
             return false; // block not transparent (will suffocate)
         }
+
         Location ground = feet.subtract(0, 2, 0);
-        return ground.getBlock().getType().isTransparent(); // returns if the ground is solid or not.
+
+        if (!ground.getBlock().getType().isTransparent()) {
+            Logger.error(Translator.REWARDS_TYPE_UNSAFETPLOCATION);
+            return false; // returns the ground is not solid.
+        }
+
+        return true;
     }
 
     @Override

@@ -6,6 +6,7 @@ import whackamole.whackamole.DB.SQLite;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import whackamole.whackamole.GS.GamesManager;
+import whackamole.whackamole.RS.AnimationFile;
 import whackamole.whackamole.RS.RewardFile;
 import whackamole.whackamole.RS.RewardsManager;
 import whackamole.whackamole.Utils.*;
@@ -27,7 +28,8 @@ public final class Main extends JavaPlugin {
         ResourceManager.onLoad();
         Translator.onLoad();
         SQLite.onLoad();
-        RewardFile.loadFiles(this);
+        RewardFile.loadFile(this);
+        AnimationFile.loadFiles(this);
 
 
         /* Delete in next update */

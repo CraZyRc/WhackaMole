@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.GS.GamesManager;
+import whackamole.whackamole.RS.Animation;
 import whackamole.whackamole.RS.RewardsManager;
 import whackamole.whackamole.Utils.Econ;
 import whackamole.whackamole.Utils.Logger;
@@ -583,6 +584,7 @@ public class Commands {
         this.manager.unloadGames();
         ResourceManager.onReload();
         Translator.onReload();
+        Animation.onReload();
 
         valid_config = Config.configLoad(main);
         if (! valid_config) return;

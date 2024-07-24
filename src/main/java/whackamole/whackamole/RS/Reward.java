@@ -23,6 +23,7 @@ public class Reward {
     private final Main main = Main.getPlugin(Main.class);
     BukkitTask task = null;
 
+    private int counter = 0;
     private int i;
     private Player p;
     private Location loc;
@@ -31,6 +32,7 @@ public class Reward {
     public double Threshold;
     public String Name;
     public String Animation;
+    private Animation anim;
     public List<String> Games;
     private List<LinkedHashMap> Types;
     private List<Entity> entities = new ArrayList<>();
@@ -67,21 +69,42 @@ public class Reward {
                 } else this.staticTypes.add(rewardType);
             }
         }
+
+        if (!this.Animation.isEmpty()) {
+            this.anim = new Animation(this.Animation);
+        }
     }
 
     public void Payout(Player player, Game game) {
-        int random = new Random().nextInt(100);
+        int random;
         this.i = 0;
         this.p = player;
         this.loc = player.getEyeLocation().add(player.getEyeLocation().getDirection().setY(0).normalize());
 
+        if (this.anim != null) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (counter <= 40) {
+                        anim.spawnAnimation(loc);
+                        counter++;
+                    } else {
+                        counter = 0;
+                        this.cancel();
+                    }
+                }
+            }.runTaskTimerAsynchronously(main, 0L, 1L);
+        }
+
         for (var reward : this.staticTypes) {
-            if (reward.getRewardChance() <= random) reward.Execute(player);
+            random = new Random().nextInt(100);
+            if (reward.getRewardChance() >= random) reward.Execute(player);
         }
 
         if (!this.interactiveTypes.isEmpty()) {
             for (var v :this.interactiveTypes) {
-                if (v.getRewardChance() <= random) this.interactiveRewards.add(v);
+                random = new Random().nextInt(100);
+                if (v.getRewardChance() >= random) this.interactiveRewards.add(v);
             }
             if (!this.interactiveRewards.isEmpty()) this.interactivePayout(game);
             else game.setState(Game.gameState.READY);

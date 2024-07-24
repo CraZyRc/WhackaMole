@@ -7,7 +7,7 @@ import whackamole.whackamole.Utils.Translator;
 import whackamole.whackamole.Utils.YMLFile;
 
 public class RewardFile {
-    public static void loadFiles(Plugin main) {
+    public static void loadFile(Plugin main) {
         YMLFile rewardsFile;
         try {
             rewardsFile = new YMLFile(Config.AppConfig.storageFolder + "/rewards.yml");
