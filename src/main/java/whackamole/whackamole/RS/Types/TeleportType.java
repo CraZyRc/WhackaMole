@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class TeleportType implements RewardType {
+public class TeleportType implements IRewardType {
     private List<Entity> entities = new ArrayList<>();
     private Location loc;
     private World world;
@@ -26,7 +26,7 @@ public class TeleportType implements RewardType {
     public int rewardChance = 0;
 
     @Override
-    public RewardType Load(LinkedHashMap Settings) {
+    public IRewardType Load(LinkedHashMap<String, ?> Settings) {
         this.world = Bukkit.getWorld((String) Settings.get("World"));
         this.X = (int) Settings.get("X");
         this.Y = (int) Settings.get("Y");

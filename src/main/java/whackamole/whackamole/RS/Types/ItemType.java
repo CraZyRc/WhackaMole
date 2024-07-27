@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class ItemType implements RewardType {
+public class ItemType implements IRewardType {
     private List<Entity> entities = new ArrayList<>();
     private Material material;
     private int amount;
@@ -26,7 +26,7 @@ public class ItemType implements RewardType {
     private String nbt;
 
     @Override
-    public RewardType Load(LinkedHashMap Settings) {
+    public IRewardType Load(LinkedHashMap<String, ?> Settings) {
         this.material = Material.matchMaterial((String) Settings.get("Material"));
         this.amount = (int) Settings.get("Amount");
         this.nbt = (String) Settings.get("NBT");

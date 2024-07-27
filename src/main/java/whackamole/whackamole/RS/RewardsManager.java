@@ -1,11 +1,9 @@
 package whackamole.whackamole.RS;
 
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import whackamole.whackamole.Config;
 import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.Utils.Econ;
-import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
 import whackamole.whackamole.Utils.YMLFile;
 

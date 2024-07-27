@@ -9,14 +9,14 @@ import whackamole.whackamole.Utils.Translator;
 
 import java.util.LinkedHashMap;
 
-public class SoundType implements RewardType {
+public class SoundType implements IRewardType {
     private Sound sound;
     private float volume;
     private float pitch;
     public int rewardChance = 0;
 
     @Override
-    public RewardType Load(LinkedHashMap Settings) {
+    public IRewardType Load(LinkedHashMap<String, ?> Settings) {
         this.sound = Sound.valueOf((String) Settings.get("Sound"));
         this.volume = Float.valueOf((String) Settings.get("Volume"));
         this.pitch = Float.valueOf((String) Settings.get("Pitch"));

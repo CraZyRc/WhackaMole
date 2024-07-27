@@ -65,8 +65,9 @@ public class YMLFile {
 
     public float getFloat(String path) { return Float.parseFloat((String) this.FileConfig.get(path)); }
 
-    public List<?> getList(String path) {
-        return this.FileConfig.getList(path);
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getList(String path) {
+        return (List<T>) this.FileConfig.getList(path);
     }
 
     public List<?> getList(String path, List<?> def) {

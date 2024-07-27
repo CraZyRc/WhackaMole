@@ -14,13 +14,13 @@ import whackamole.whackamole.Utils.Translator;
 
 import java.util.LinkedHashMap;
 
-public class MessageType implements RewardType {
+public class MessageType implements IRewardType {
     private String message;
     private String messageType;
     public int rewardChance = 0;
 
     @Override
-    public RewardType Load(LinkedHashMap Settings) {
+    public IRewardType Load(LinkedHashMap<String, ?> Settings) {
         this.messageType = (String) Settings.get("messageType");
         this.message = (String) Settings.get("Message");
         this.rewardChance = (int) Settings.get("RewardChance");

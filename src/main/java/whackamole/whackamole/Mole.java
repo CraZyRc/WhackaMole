@@ -1,12 +1,10 @@
 package whackamole.whackamole;
 
 import java.util.EnumSet;
-import java.util.UUID;
 
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.EquipmentSlot;
-import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.GS.Settings;
 import whackamole.whackamole.Utils.Misc;
 

@@ -1,7 +1,6 @@
 package whackamole.whackamole.RS.Types;
 
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -11,14 +10,14 @@ import whackamole.whackamole.Utils.Translator;
 
 import java.util.LinkedHashMap;
 
-public class EffectType implements RewardType {
+public class EffectType implements IRewardType {
     private PotionEffectType effect;
     private int duration;
     private int amplifier;
     public int rewardChance = 0;
 
     @Override
-    public RewardType Load(LinkedHashMap Settings) {
+    public IRewardType Load(LinkedHashMap<String, ?> Settings) {
         this.effect = PotionEffectType.getByName((String) Settings.get("Effect"));
         this.duration = (int) Settings.get("Duration");
         this.amplifier = (int) Settings.get("Amplifier");

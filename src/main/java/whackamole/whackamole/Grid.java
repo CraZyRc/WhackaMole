@@ -11,7 +11,6 @@ import org.bukkit.util.Vector;
 
 import whackamole.whackamole.DB.SQLite;
 import whackamole.whackamole.DB.GridDB;
-import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.GS.Settings;
 import whackamole.whackamole.Mole.*;
 import whackamole.whackamole.Utils.Translator;

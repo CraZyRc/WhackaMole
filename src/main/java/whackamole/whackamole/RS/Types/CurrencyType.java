@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class CurrencyType implements RewardType {
+public class CurrencyType implements IRewardType {
     private List<Entity> entities = new ArrayList<>();
     private int quantity;
     public int rewardChance = 0;
@@ -26,7 +26,7 @@ public class CurrencyType implements RewardType {
 
 
     @Override
-    public RewardType Load(LinkedHashMap Settings) {
+    public IRewardType Load(LinkedHashMap<String, ?> Settings) {
         this.quantity = (int) Settings.get("Quantity");
         this.rewardChance = (int) Settings.get("RewardChance");
         return this;

@@ -34,33 +34,35 @@ public class Reward {
     public String Animation;
     private Animation anim;
     public List<String> Games;
-    private List<LinkedHashMap> Types;
+    private List<LinkedHashMap<String, ?>> Types;
     private List<Entity> entities = new ArrayList<>();
-    private final List<RewardType> staticTypes = new ArrayList<>();
-    private final List<RewardType> interactiveTypes = new ArrayList<>();
-    private List<RewardType> interactiveRewards = new ArrayList<>();
+    private final List<IRewardType> staticTypes = new ArrayList<>();
+    private final List<IRewardType> interactiveTypes = new ArrayList<>();
+    private List<IRewardType> interactiveRewards = new ArrayList<>();
 
+    @SuppressWarnings("unchecked")
     public Reward(YMLFile rewardsFile, String key) {
         this.Name = key;
         this.Threshold = rewardsFile.getDouble("Rewards." + key + ".Threshold");
         this.Animation = rewardsFile.getString("Rewards." + key + ".Animation");
-        this.Games = (List<String>) rewardsFile.getList("Rewards." + key + ".Games");
-        this.Types = (List<LinkedHashMap>) rewardsFile.getList("Rewards." + key + ".RewardTypes");
+        this.Games = rewardsFile.getList("Rewards." + key + ".Games");
+        this.Types = rewardsFile.getList("Rewards." + key + ".RewardTypes");
 
-        for (LinkedHashMap typeMap : Types) {
-            RewardType rewardType;
+        for (var typeMap : Types) {
+            IRewardType rewardType;
             String type = typeMap.get("Type").toString();
+            LinkedHashMap<String, ?> settings = (LinkedHashMap<String, ?>) typeMap.get("Settings");
             switch (type) {
+                case "Item"     ->  rewardType = new ItemType().Load(settings);
+                case "Currency" ->  rewardType = new CurrencyType().Load(settings);
+                case "Effect"   ->  rewardType = new EffectType().Load(settings);
+                case "Message"  ->  rewardType = new MessageType().Load(settings);
+                case "Sound"    ->  rewardType = new SoundType().Load(settings);
+                case "Teleport" ->  rewardType = new TeleportType().Load(settings);
                 default -> {
                     Logger.error(Translator.REWARDS_INVALIDREWARDTYPE.Format(typeMap.get("Type")));
                     continue;
                 }
-                case "Item"     ->  rewardType = new ItemType().Load((LinkedHashMap) typeMap.get("Settings"));
-                case "Currency" ->  rewardType = new CurrencyType().Load((LinkedHashMap) typeMap.get("Settings"));
-                case "Effect"   ->  rewardType = new EffectType().Load((LinkedHashMap) typeMap.get("Settings"));
-                case "Message"  ->  rewardType = new MessageType().Load((LinkedHashMap) typeMap.get("Settings"));
-                case "Sound"    ->  rewardType = new SoundType().Load((LinkedHashMap) typeMap.get("Settings"));
-                case "Teleport" ->  rewardType = new TeleportType().Load((LinkedHashMap) typeMap.get("Settings"));
             }
 
             if (rewardType != null && rewardType.Check()) {
@@ -113,7 +115,7 @@ public class Reward {
     }
 
     private void interactivePayout(Game game) {
-        RewardType reward = this.interactiveRewards.get(i);
+        IRewardType reward = this.interactiveRewards.get(i);
 
         entities.add(this.displayCount( this.i+1, this.interactiveRewards.size()));
         reward.displayType(this.main, this.loc.clone());

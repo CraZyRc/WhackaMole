@@ -1,16 +1,14 @@
 package whackamole.whackamole.RS.Types;
 
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import whackamole.whackamole.Main;
-import whackamole.whackamole.Utils.YMLFile;
 
 import java.util.LinkedHashMap;
 
-public interface RewardType {
+public interface IRewardType {
 
-    RewardType Load(LinkedHashMap Settings);
+    IRewardType Load(LinkedHashMap<String, ?> Settings);
     boolean Check();
     int getRewardChance();
 
