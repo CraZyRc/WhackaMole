@@ -11,10 +11,7 @@ import org.joml.Vector3f;
 import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.Main;
 import whackamole.whackamole.RS.Types.*;
-import whackamole.whackamole.RS.Types.CurrencyType;
-import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Misc;
-import whackamole.whackamole.Utils.Translator;
 import whackamole.whackamole.Utils.YMLFile;
 
 import java.util.*;
@@ -49,22 +46,10 @@ public class Reward {
         this.Types = rewardsFile.getList("Rewards." + key + ".RewardTypes");
 
         for (var typeMap : Types) {
-            IRewardType rewardType;
             String type = typeMap.get("Type").toString();
             LinkedHashMap<String, ?> settings = (LinkedHashMap<String, ?>) typeMap.get("Settings");
-            switch (type) {
-                case "Item"     ->  rewardType = new ItemType().Load(settings);
-                case "Currency" ->  rewardType = new CurrencyType().Load(settings);
-                case "Effect"   ->  rewardType = new EffectType().Load(settings);
-                case "Message"  ->  rewardType = new MessageType().Load(settings);
-                case "Sound"    ->  rewardType = new SoundType().Load(settings);
-                case "Teleport" ->  rewardType = new TeleportType().Load(settings);
-                default -> {
-                    Logger.error(Translator.REWARDS_INVALIDREWARDTYPE.Format(typeMap.get("Type")));
-                    continue;
-                }
-            }
-
+            IRewardType rewardType = IRewardType.Factory(type, settings);
+            
             if (rewardType != null && rewardType.Check()) {
                 if (type.equals("Item") || type.equals("Currency") || type.equals("Teleport")) {
                     this.interactiveTypes.add(rewardType);
