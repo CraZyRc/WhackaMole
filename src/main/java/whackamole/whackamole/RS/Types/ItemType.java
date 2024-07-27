@@ -24,14 +24,23 @@ public class ItemType implements IRewardType {
     private int amount;
     public int rewardChance = 0;
     private String nbt;
+    public int threshold;
 
-    @Override
-    public IRewardType Load(LinkedHashMap<String, ?> Settings) {
-        this.material = Material.matchMaterial((String) Settings.get("Material"));
-        this.amount = (int) Settings.get("Amount");
-        this.nbt = (String) Settings.get("NBT");
-        this.rewardChance = (int) Settings.get("RewardChance");
-        return this;
+    private ItemType(int threshold, String materialName, int amount, String nbt, int rewardChance)
+    {
+        this.threshold = threshold;
+        this.material = Material.matchMaterial(materialName);
+        this.amount = amount;
+        this.nbt = nbt;
+        this.rewardChance = rewardChance;
+    }
+
+    public static IRewardType Load(int threshold, LinkedHashMap<String, ?> Settings) {
+        var materialName = (String) Settings.get("Material");
+        var amount = (int) Settings.get("Amount");
+        var nbt = (String) Settings.get("NBT");
+        var rewardChance = (int) Settings.get("RewardChance");
+        return new ItemType(threshold, materialName, amount, nbt, rewardChance);
     }
 
     @Override

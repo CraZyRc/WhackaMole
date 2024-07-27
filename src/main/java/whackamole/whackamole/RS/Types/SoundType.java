@@ -14,14 +14,23 @@ public class SoundType implements IRewardType {
     private float volume;
     private float pitch;
     public int rewardChance = 0;
+    public int threshold;
 
-    @Override
-    public IRewardType Load(LinkedHashMap<String, ?> Settings) {
-        this.sound = Sound.valueOf((String) Settings.get("Sound"));
-        this.volume = Float.valueOf((String) Settings.get("Volume"));
-        this.pitch = Float.valueOf((String) Settings.get("Pitch"));
-        this.rewardChance = (int) Settings.get("RewardChance");
-        return this;
+    private SoundType(int threshold, String soundName, float volume, float pitch, int rewardChance)
+    {
+        this.threshold = threshold;
+        this.sound = Sound.valueOf(soundName);
+        this.volume = volume;
+        this.pitch = pitch;
+    }
+
+    public static IRewardType Load(int threshold, LinkedHashMap<String, ?> Settings) {
+        var soundName = (String) Settings.get("Sound");
+        var volume = Float.valueOf((String) Settings.get("Volume"));
+        var pitch = Float.valueOf((String) Settings.get("Pitch"));
+        var rewardChance = (int) Settings.get("RewardChance");
+        
+        return new SoundType(threshold, soundName, volume, pitch, rewardChance);
     }
 
     @Override

@@ -21,15 +21,22 @@ import java.util.List;
 public class CurrencyType implements IRewardType {
     private List<Entity> entities = new ArrayList<>();
     private int quantity;
-    public int rewardChance = 0;
+    public int rewardChance;
+    public int threshold;
     private Econ econ = new Econ();
 
+    private CurrencyType(int threshold, int quantity, int rewardChance)
+    {
+        this.threshold = threshold;
+        this.quantity = quantity;
+        this.rewardChance = rewardChance;
+    }
 
-    @Override
-    public IRewardType Load(LinkedHashMap<String, ?> Settings) {
-        this.quantity = (int) Settings.get("Quantity");
-        this.rewardChance = (int) Settings.get("RewardChance");
-        return this;
+    public static IRewardType Load(int threshold, LinkedHashMap<String, ?> Settings) {
+        var quantity = (int) Settings.get("Quantity");
+        var rewardChance = (int) Settings.get("RewardChance");
+        
+        return new CurrencyType(threshold, quantity, rewardChance);
     }
 
     @Override

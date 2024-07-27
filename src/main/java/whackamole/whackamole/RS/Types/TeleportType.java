@@ -24,15 +24,26 @@ public class TeleportType implements IRewardType {
     private double Y;
     private double Z;
     public int rewardChance = 0;
+    public int threshold;
 
-    @Override
-    public IRewardType Load(LinkedHashMap<String, ?> Settings) {
-        this.world = Bukkit.getWorld((String) Settings.get("World"));
-        this.X = (int) Settings.get("X");
-        this.Y = (int) Settings.get("Y");
-        this.Z = (int) Settings.get("Z");
-        this.rewardChance = (int) Settings.get("RewardChance");
-        return this;
+    private TeleportType(int threshold, String worldName, int X, int Y, int Z, int rewardChance)
+    {
+        this.threshold = threshold;
+        this.world = Bukkit.getWorld(worldName);
+        this.X = X;
+        this.Y = Y;
+        this.Z = Z;
+        this.rewardChance = rewardChance;
+    }
+
+    public static IRewardType Load( int threshold, LinkedHashMap<String, ?> Settings) {
+        var worldName =(String) Settings.get("World");
+        var X = (int) Settings.get("X");
+        var Y = (int) Settings.get("Y");
+        var Z = (int) Settings.get("Z");
+        var rewardChance = (int) Settings.get("RewardChance");
+
+        return new TeleportType(threshold, worldName, X, Y, Z, rewardChance);
     }
 
     @Override

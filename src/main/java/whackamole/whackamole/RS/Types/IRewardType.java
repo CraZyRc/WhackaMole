@@ -11,8 +11,12 @@ import whackamole.whackamole.Utils.Translator;
 import java.util.LinkedHashMap;
 
 public interface IRewardType {
+    
+    static IRewardType Load(int threshold, LinkedHashMap<String, ?> Settings) 
+    {
+        return null;
+    }
 
-    IRewardType Load(LinkedHashMap<String, ?> Settings);
     boolean Check();
     int getRewardChance();
 
@@ -21,15 +25,15 @@ public interface IRewardType {
     void Remove(Player player);
 
     @Nullable
-    static IRewardType Factory(String name, LinkedHashMap<String, ?> settings)
+    static IRewardType Factory(String name, int threshold, LinkedHashMap<String, ?> settings)
     {
         return switch (name) {
-            case "Item"     ->  { yield new ItemType().Load(settings); }
-            case "Currency" ->  { yield new CurrencyType().Load(settings); }
-            case "Effect"   ->  { yield new EffectType().Load(settings); }
-            case "Message"  ->  { yield new MessageType().Load(settings); }
-            case "Sound"    ->  { yield new SoundType().Load(settings); }
-            case "Teleport" ->  { yield new TeleportType().Load(settings); }
+            case "Item"     ->  { yield ItemType.Load(threshold, settings); }
+            case "Currency" ->  { yield CurrencyType.Load(threshold, settings); }
+            case "Effect"   ->  { yield EffectType.Load(threshold, settings); }
+            case "Message"  ->  { yield MessageType.Load(threshold, settings); }
+            case "Sound"    ->  { yield SoundType.Load(threshold, settings); }
+            case "Teleport" ->  { yield TeleportType.Load(threshold, settings); }
             default -> {
                 Logger.error(Translator.REWARDS_INVALIDREWARDTYPE.Format(name));
                 yield null;

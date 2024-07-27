@@ -10,7 +10,7 @@ import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.Main;
-import whackamole.whackamole.RS.Types.*;
+import whackamole.whackamole.RS.Types.IRewardType;
 import whackamole.whackamole.Utils.Misc;
 import whackamole.whackamole.Utils.YMLFile;
 
@@ -48,7 +48,7 @@ public class Reward {
         for (var typeMap : Types) {
             String type = typeMap.get("Type").toString();
             LinkedHashMap<String, ?> settings = (LinkedHashMap<String, ?>) typeMap.get("Settings");
-            IRewardType rewardType = IRewardType.Factory(type, settings);
+            IRewardType rewardType = IRewardType.Factory(type, (int) this.Threshold, settings);
             
             if (rewardType != null && rewardType.Check()) {
                 if (type.equals("Item") || type.equals("Currency") || type.equals("Teleport")) {

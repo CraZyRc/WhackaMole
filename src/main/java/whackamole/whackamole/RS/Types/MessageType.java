@@ -18,13 +18,21 @@ public class MessageType implements IRewardType {
     private String message;
     private String messageType;
     public int rewardChance = 0;
+    public int threshold;
 
-    @Override
-    public IRewardType Load(LinkedHashMap<String, ?> Settings) {
-        this.messageType = (String) Settings.get("messageType");
-        this.message = (String) Settings.get("Message");
-        this.rewardChance = (int) Settings.get("RewardChance");
-        return this;
+    private MessageType(int threshold, String messageType, String message, int rewardChance)
+    {
+        this.threshold = threshold;
+        this.messageType = messageType;
+        this.message = message;
+    }
+
+    public static IRewardType Load(int threshold, LinkedHashMap<String, ?> Settings) {
+        var messageType = (String) Settings.get("messageType");
+        var message = (String) Settings.get("Message");
+        var rewardChance = (int) Settings.get("RewardChance");
+        
+        return new MessageType(threshold, messageType, message, rewardChance);
     }
 
     @Override

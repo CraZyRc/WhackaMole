@@ -15,14 +15,25 @@ public class EffectType implements IRewardType {
     private int duration;
     private int amplifier;
     public int rewardChance = 0;
+    public int threshold;
 
-    @Override
-    public IRewardType Load(LinkedHashMap<String, ?> Settings) {
-        this.effect = PotionEffectType.getByName((String) Settings.get("Effect"));
-        this.duration = (int) Settings.get("Duration");
-        this.amplifier = (int) Settings.get("Amplifier");
-        this.rewardChance = (int) Settings.get("RewardChance");
-        return this;
+    @SuppressWarnings("deprecation")
+    private EffectType(int threshold, String effectName, int duration, int amplifier, int rewardChance)
+    {
+        this.threshold      = threshold;
+        this.effect         = PotionEffectType.getByName(effectName);
+        this.duration       = duration;
+        this.amplifier      = amplifier;
+        this.rewardChance   = rewardChance;
+    }
+
+    public static IRewardType Load(int threshold, LinkedHashMap<String, ?> Settings) {
+        var effectName = (String) Settings.get("Effect");
+        var duration = (int) Settings.get("Duration");
+        var amplifier = (int) Settings.get("Amplifier");
+        var rewardChance = (int) Settings.get("RewardChance");
+
+        return new EffectType(threshold, effectName, duration, amplifier, rewardChance);
     }
 
     @Override
