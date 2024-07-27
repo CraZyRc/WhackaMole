@@ -3,16 +3,21 @@ package whackamole.whackamole.RS;
 import org.bukkit.entity.Player;
 import whackamole.whackamole.Config;
 import whackamole.whackamole.GS.Game;
+import whackamole.whackamole.RS.Types.IRewardType;
 import whackamole.whackamole.Utils.Econ;
 import whackamole.whackamole.Utils.Translator;
 import whackamole.whackamole.Utils.YMLFile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class RewardsManager {
 
     public static List<Reward> Rewards = new ArrayList<>();
+    private static YMLFile rewardFile = new YMLFile(Config.AppConfig.storageFolder + "/rewards.yml");
+    private static HashMap<String, GameRewards> gameRewards;
 
 
     public static void sendScoreToPlayer(Player player, double score) {
@@ -53,16 +58,73 @@ public class RewardsManager {
     }
 
     public static void onLoad(YMLFile rewardsFile) {
+        loadRewards();
+        
         for (String key : rewardsFile.FileConfig.getConfigurationSection("Rewards").getValues(false).keySet()) {
             Rewards.add(new Reward(rewardsFile, key));
         }
     }
 
     public static void onReload(YMLFile rewardsFile) {
+        gameRewards.clear();
+        loadRewards();
+
         Rewards.clear();
 
         for (String key : rewardsFile.FileConfig.getConfigurationSection("Rewards").getValues(false).keySet()) {
             Rewards.add(new Reward(rewardsFile, key));
+        }
+    }
+
+
+    @SuppressWarnings("unchecked")
+    static void loadRewards()
+    {
+        LinkedHashMap<String, ?> data = rewardFile.get("Rewards");
+        for(var key : data.keySet()) {
+            var rewardData = (LinkedHashMap<String, ?>) data.get(key); 
+            var threshold = (int) rewardData.get("threshold"); 
+            var games = (List<String>) rewardData.get("Games");
+            var animationName = (String) rewardData.get("Animation");
+
+            if (! animationName.isEmpty()) {
+                var animation = new Animation(animationName);
+                addAnimationToGames(games, animation);
+            }
+
+            var rewardsData = (List<LinkedHashMap<String, ?>>) rewardData.get("RewardTypes"); 
+            loadRewardTypes(rewardsData, games, threshold);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    static void loadRewardTypes(List<LinkedHashMap<String, ?>> data, List<String> games, int threshold)
+    {
+        for (var rewardMap : data) {
+            var type = (String) rewardMap.get("Type");
+            var settings = (LinkedHashMap<String, ?>) rewardMap.get("Settings");
+            var reward = IRewardType.Factory(type, threshold, settings);
+            if (reward != null && reward.Check()) addRewardToGames(games, reward);;
+        }
+    }
+
+    private static void addRewardToGames(List<String> gameNames, IRewardType reward)
+    {
+        for(var gameName : gameNames) {
+            if (! gameRewards.containsKey(gameName)) {
+                gameRewards.put(gameName, new GameRewards(gameName));
+            }
+            gameRewards.get(gameName).addReward(reward);
+        }
+    }
+    
+    private static void addAnimationToGames(List<String> gameNames, Animation animation)
+    {
+        for(var gameName : gameNames) {
+            if (! gameRewards.containsKey(gameName)) {
+                gameRewards.put(gameName, new GameRewards(gameName));
+            }
+            gameRewards.get(gameName).addAnimation(animation);
         }
     }
 }

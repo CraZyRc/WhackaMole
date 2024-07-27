@@ -3,7 +3,7 @@ package whackamole.whackamole.Utils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -69,9 +69,20 @@ public class YMLFile {
     public <T> List<T> getList(String path) {
         return (List<T>) this.FileConfig.getList(path);
     }
-
-    public List<?> getList(String path, List<?> def) {
-        return this.FileConfig.getList(path, def);
+    
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getList(String path, List<?> def) {
+        return (List<T>) this.FileConfig.getList(path, def);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public <T> Map<String, T> getMap(String path) {
+        return (Map<String, T>) this.FileConfig.getConfigurationSection(path).getValues(false);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public <T> T get(String path) {
+        return (T) this.FileConfig.get(path);
     }
 
     public Sound getSound(String path) { return Sound.valueOf(this.FileConfig.getString(path)); }
