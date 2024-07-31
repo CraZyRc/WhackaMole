@@ -18,20 +18,21 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class ItemType implements IRewardType {
+public class ItemType implements IRewardInteractType {
     private List<Entity> entities = new ArrayList<>();
-    private Material material;
-    private int amount;
-    public int rewardChance = 0;
-    private String nbt;
-    public int threshold;
+    private Entity Interactable;
+    private Material Material;
+    private int Amount;
+    private int rewardChance;
+    private String NBT;
+    private int Threshold;
 
     private ItemType(int threshold, String materialName, int amount, String nbt, int rewardChance)
     {
-        this.threshold = threshold;
-        this.material = Material.matchMaterial(materialName);
-        this.amount = amount;
-        this.nbt = nbt;
+        this.Threshold = threshold;
+        this.Material = Material.matchMaterial(materialName);
+        this.Amount = amount;
+        this.NBT = nbt;
         this.rewardChance = rewardChance;
     }
 
@@ -45,10 +46,10 @@ public class ItemType implements IRewardType {
 
     @Override
     public boolean Check() {
-        if (material == null) {
+        if (Material == null) {
             Logger.error(Translator.REWARDS_TYPE_INVALID_STRING.Format("Material"));
             return false;
-        } else if (this.amount <= 0) {
+        } else if (this.Amount <= 0) {
             Logger.error(Translator.REWARDS_TYPE_INVALID_INT.Format("Amount", "Amount"));
             return false;
         } else if (this.rewardChance > 100 || this.rewardChance <= 0) {
@@ -61,13 +62,19 @@ public class ItemType implements IRewardType {
         return this.rewardChance;
     }
 
+    @Override
+    public int getThreshold() { return this.Threshold; }
+
+    @Override
+    public int getTimer() { return 5; }
+
 
     @Override
     public void Execute(Player player) {
-        ItemStack Item = new ItemStack(this.material, this.amount);
-        if (!this.nbt.isEmpty()) {
-            String nbtTags = this.nbt.replace("[","").replace("]","");
-            Item = Bukkit.getUnsafe().modifyItemStack(Item, this.material.getKey().getKey() + "[" + nbtTags + "]"); //[enchantments={levels:{looting:1}},unbreakable={},damage=31]
+        ItemStack Item = new ItemStack(this.Material, this.Amount);
+        if (!this.NBT.isEmpty()) {
+            String nbtTags = this.NBT.replace("[","").replace("]","");
+            Item = Bukkit.getUnsafe().modifyItemStack(Item, this.Material.getKey().getKey() + "[" + nbtTags + "]"); //[enchantments={levels:{looting:1}},unbreakable={},damage=31]
         }
         PlayerInventory inv = player.getInventory();
         if (inv.firstEmpty() != -1) {
@@ -92,6 +99,7 @@ public class ItemType implements IRewardType {
         display.getPersistentDataContainer().set(namespacedKey, PersistentDataType.INTEGER, 1);
 
         final Interaction interaction = (Interaction) world.spawnEntity(loc.subtract(0, 0.48, 0), EntityType.INTERACTION);
+        this.Interactable = interaction;
         interaction.setInteractionWidth(0.5F);
         interaction.setInteractionHeight(0.5F);
         interaction.setResponsive(true);
@@ -117,6 +125,13 @@ public class ItemType implements IRewardType {
         }
         player.getWorld().spawnParticle(Particle.COMPOSTER , loc, 2);
         player.getWorld().playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+    }
+
+    @Override
+    public Entity getInteractable() {
+        if (this.Interactable != null) {
+            return this.Interactable;
+        } else return null;
     }
 
     private void transformDisplay(ItemDisplay display) {

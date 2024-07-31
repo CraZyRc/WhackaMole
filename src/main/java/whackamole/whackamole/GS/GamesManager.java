@@ -115,6 +115,7 @@ public final class GamesManager implements Listener {
             game.run();
             game.moleUpdater();
         }
+        RewardsManager.Tick();
 
         if (GamesManager.this.runnableTickCounter >= 20) {
             GamesManager.this.runnableTickCounter = 0;
@@ -265,7 +266,7 @@ public final class GamesManager implements Listener {
         for (Game game : this.games) {
             var gameRunner = game.getRunning().orElse(null);
             if (e.getRightClicked().getType().equals(EntityType.INTERACTION) && gameRunner.player.equals(player)) {
-                RewardsManager.interactEvent(player, game);
+                RewardsManager.onInteractEvent(player, e.getRightClicked());
             }
         }
     }

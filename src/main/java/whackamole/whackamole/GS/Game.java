@@ -67,7 +67,7 @@ public class Game {
             case READY -> this.game = new GameRunner(this);
             case RUNNING -> {}
             case STOPPING -> this.game.Stop();
-            case REWARDING -> RewardsManager.executeRewards(game.player, this);
+            case REWARDING -> RewardsManager.executeRewards(this);
             case DISABLED -> Logger.error("fix this code");
         }
 

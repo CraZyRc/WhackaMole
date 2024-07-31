@@ -55,8 +55,8 @@ public final class Main extends JavaPlugin {
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        RewardsManager.onLoad(new YMLFile(Config.AppConfig.storageFolder + "/rewards.yml"));
         this.manager.onLoad(this);
+        RewardsManager.onLoad();
         CommandAPI.onEnable();
 
         new Commands(this);

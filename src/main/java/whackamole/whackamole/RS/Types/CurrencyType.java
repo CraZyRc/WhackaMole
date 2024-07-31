@@ -18,16 +18,17 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class CurrencyType implements IRewardType {
+public class CurrencyType implements IRewardInteractType {
     private List<Entity> entities = new ArrayList<>();
+    private Entity Interactable;
     private int quantity;
-    public int rewardChance;
-    public int threshold;
+    private int rewardChance;
+    private int Threshold;
     private Econ econ = new Econ();
 
     private CurrencyType(int threshold, int quantity, int rewardChance)
     {
-        this.threshold = threshold;
+        this.Threshold = threshold;
         this.quantity = quantity;
         this.rewardChance = rewardChance;
     }
@@ -51,9 +52,13 @@ public class CurrencyType implements IRewardType {
     }
 
     @Override
-    public int getRewardChance() {
-        return this.rewardChance;
-    }
+    public int getRewardChance() { return this.rewardChance; }
+
+    @Override
+    public int getThreshold() { return this.Threshold; }
+
+    @Override
+    public int getTimer() { return 5; }
 
     @Override
     public void Execute(Player player) {
@@ -79,6 +84,7 @@ public class CurrencyType implements IRewardType {
         display.getPersistentDataContainer().set(namespacedKey, PersistentDataType.INTEGER, 1);
 
         final Interaction interaction = (Interaction) world.spawnEntity(loc.subtract(0, 0.48, 0), EntityType.INTERACTION);
+        this.Interactable = interaction;
         interaction.setInteractionWidth(0.5F);
         interaction.setInteractionHeight(0.5F);
         interaction.setResponsive(true);
@@ -103,6 +109,13 @@ public class CurrencyType implements IRewardType {
         }
         player.getWorld().spawnParticle(Particle.COMPOSTER , loc, 2);
         player.getWorld().playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+    }
+
+    @Override
+    public Entity getInteractable() {
+        if (this.Interactable != null) {
+            return this.Interactable;
+        } else return null;
     }
 
     private void transformDisplay(ItemDisplay display) {

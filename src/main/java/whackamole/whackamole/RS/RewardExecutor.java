@@ -1,0 +1,238 @@
+package whackamole.whackamole.RS;
+
+import java.util.*;
+
+import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
+import org.bukkit.World;
+import org.bukkit.entity.*;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.util.Transformation;
+import org.joml.AxisAngle4f;
+import org.joml.Vector3f;
+import whackamole.whackamole.GS.Game;
+import whackamole.whackamole.GS.Game.gameState;
+import whackamole.whackamole.Main;
+import whackamole.whackamole.RS.Types.IRewardInteractType;
+import whackamole.whackamole.RS.Types.IRewardType;
+import whackamole.whackamole.Utils.Econ;
+import whackamole.whackamole.Utils.Misc;
+
+public class RewardExecutor {
+    private final Main main = Main.getPlugin(Main.class);
+
+    public enum State {
+        /** Ready to Start */
+        Ready,
+        /** Running through the rewards */
+        Running,
+        /** On interactive reward. Waiting for interact event or till the timer runs out */
+        Waiting,
+        /** All rewards have been executed */
+        Completed,
+        /** All post checks are done. Object can be deleted */
+        ForRemoval
+    }
+
+    private State state;
+    private List<IRewardType> rewardTypes;
+    private Queue<IRewardType> rewards = new LinkedList<>();
+    private Optional<IRewardType> current;
+    private Player player;
+    private Entity entity;
+    private Game game;
+    private Object _lock = new Object();
+    private Location loc;
+    private int timer = 0;
+    private int i = 0;
+    private int rewardSize;
+
+    protected RewardExecutor(List<IRewardType> rewards) {
+        this.rewardTypes = new ArrayList<>(rewards);
+        this.state = State.Ready;
+    }
+
+    /**
+     * Set the game which this Executor is running for
+     * @param game
+     * @return {@link RewardExecutor}
+     */
+    protected RewardExecutor setGame(Game game) {
+        this.game = game;
+        int random;
+
+        for (var reward : this.rewardTypes) {
+            random = new Random().nextInt(100);
+            if (this.game.getRunning().get().score >= reward.getThreshold() && random <= reward.getRewardChance()) {
+                this.rewards.add(reward);
+            }
+        }
+        this.rewardSize = this.rewards.size();
+        return this;
+    }
+
+    /**
+     * Set the player this executor is running for
+     * @param player
+     * @return {@link RewardExecutor}
+     */
+    protected RewardExecutor setPlayer(Player player) {
+        this.player = player;
+        return this;
+    }
+
+    /**
+     * Get the current state this executor is in
+     * @return {@link State}
+     */
+    protected State getState() {
+        return this.state;
+    }
+
+    /**
+     * Sets the State to Running and runs the first Tick
+     */
+    public void Start() {
+        Econ econ = new Econ();
+        if (this.Has()) {
+            this.state = State.Running;
+            this.loc = player.getEyeLocation().add(player.getEyeLocation().getDirection().setY(0).normalize());
+            this.Tick();
+        } else {
+            this.game.getRunning().ifPresent((gameRunner) -> {
+                econ.depositPlayer(this.player, gameRunner.score);
+                RewardsManager.sendScoreToPlayer(player, gameRunner.score);
+            });
+        }
+
+    }
+
+    /**
+     * Runs all the rewards in order.
+     *
+     * This method must be run every game tick to ensure
+     * correct behaviour around the interactive reward types
+     *
+     */
+    public void Tick() {
+        switch (this.state) {
+            case Running:
+                if (this.Has()) {
+                    this.Next();
+                    this.startExecution();
+                }
+                break;
+            case Waiting:
+                if (this.stepTimer()) this.stopExecution();
+                break;
+            case Completed:
+                this.game.setState(gameState.READY);
+                this.state = State.ForRemoval;
+                break;
+            default:
+                break;
+        }
+    }
+
+    boolean Has() {
+        if (this.rewards.isEmpty()) {
+            this.state = State.Completed;
+            return false;
+        } else return true;
+    }
+
+    void setTimer(int seconds) {
+        // * Set the timer to 5 seconds of ticks (20 ticks in a second)
+        this.timer = 5 * 20;
+    }
+    boolean stepTimer() {
+        this.timer -= 1;
+        if (this.timer < 1) {
+            this.timer = 0;
+            return true;
+        }
+        return false;
+    }
+
+    void Next() {
+        var next = this.rewards.poll();
+        if (next == null) {
+            this.i = 0;
+            this.entity.remove();
+            this.state = State.Completed;
+        }
+        this.i++;
+        this.current = Optional.ofNullable(next);
+    }
+
+    void startExecution() {
+        this.current.ifPresent((reward) -> {
+            if (!(reward instanceof IRewardInteractType)) {
+                reward.Execute(this.player);
+            } else {
+                this.setTimer(((IRewardInteractType) reward).getTimer());
+                this.state = State.Waiting;
+                this.entity = this.displayCount(this.i, this.rewardSize);
+                ((IRewardInteractType) reward).displayType(this.main, this.loc.clone());
+            }
+        });
+    }
+
+    void stopExecution() {
+        synchronized (_lock) {
+            if (this.state != State.Waiting) return;
+            this.current.ifPresent((reward) -> {
+                reward.Execute(this.player);
+
+                this.state = State.Running;
+
+                if (reward instanceof IRewardInteractType interact) {
+                    this.entity.remove();
+                    interact.Remove(this.player);
+                }
+            });
+        }
+    }
+
+    /**
+     * Checks whether the player interacted entity
+     * is the same entity we are waiting on.
+     *
+     * If the same enity is encounterd then stop
+     * the execution of the current reward we are
+     * waiting on.
+     *
+     * @param entity
+     * The interacted entity from {@link PlayerInteractEntityEvent}
+     */
+    public void onInteractEvent(Entity entity) {
+        if (this.state != State.Waiting) return;
+
+        this.current.ifPresent((reward) -> {
+            if (reward instanceof IRewardInteractType interact) {
+                if (interact.getInteractable().equals(entity)) {
+                    this.stopExecution();
+                }
+            }
+        });
+    }
+
+    private TextDisplay displayCount(int count, int size) {
+        NamespacedKey namespacedKey = new NamespacedKey(this.main, "CountDisplay");
+
+        Location spawnLoc = loc.clone().add(0, 0.25, 0);
+        World World = loc.getWorld();
+
+        final TextDisplay display = (TextDisplay) World.spawnEntity(spawnLoc, EntityType.TEXT_DISPLAY);
+        display.setRotation(spawnLoc.getYaw(), 0);
+        display.setTransformation(new Transformation(new Vector3f(0f, 0f, 0f), new AxisAngle4f(0f, 0f, 0f, 1f), new Vector3f(0f, 0f, 0f), new AxisAngle4f(0f, 0f, 0f, 1f))); // Translation - leftrot - scale - rightrot
+        display.setBillboard(Display.Billboard.FIXED);
+        display.setCustomName(Misc.Color(count + "/" + size));
+        display.setCustomNameVisible(true);
+        display.setPersistent(true);
+        display.getPersistentDataContainer().set(namespacedKey, PersistentDataType.INTEGER, 1);
+        return display;
+    }
+}

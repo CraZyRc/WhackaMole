@@ -1,27 +1,26 @@
 package whackamole.whackamole.RS.Types;
 
-import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import whackamole.whackamole.Main;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
 
 import java.util.LinkedHashMap;
 
 public class SoundType implements IRewardType {
-    private Sound sound;
-    private float volume;
-    private float pitch;
-    public int rewardChance = 0;
-    public int threshold;
+    private Sound Sound;
+    private float Volume;
+    private float Pitch;
+    private int rewardChance;
+    private int Threshold;
 
     private SoundType(int threshold, String soundName, float volume, float pitch, int rewardChance)
     {
-        this.threshold = threshold;
-        this.sound = Sound.valueOf(soundName);
-        this.volume = volume;
-        this.pitch = pitch;
+        this.Threshold = threshold;
+        this.Sound = Sound.valueOf(soundName);
+        this.Volume = volume;
+        this.Pitch = pitch;
+        this.rewardChance = rewardChance;
     }
 
     public static IRewardType Load(int threshold, LinkedHashMap<String, ?> Settings) {
@@ -35,13 +34,13 @@ public class SoundType implements IRewardType {
 
     @Override
     public boolean Check() {
-        if (this.sound == null) {
+        if (this.Sound == null) {
             Logger.error(Translator.REWARDS_TYPE_INVALID_STRING.Format("Sound"));
             return false;
-        } else if (this.volume <= 0) {
+        } else if (this.Volume <= 0) {
             Logger.error(Translator.REWARDS_TYPE_INVALID_INT.Format("Volume", "Volume"));
             return false;
-        } else if (this.pitch <= 0) {
+        } else if (this.Pitch <= 0) {
             Logger.error(Translator.REWARDS_TYPE_INVALID_INT.Format("Pitch", "Pitch"));
             return false;
         } else if (this.rewardChance > 100 || this.rewardChance <= 0) {
@@ -56,13 +55,11 @@ public class SoundType implements IRewardType {
     }
 
     @Override
+    public int getThreshold() { return this.Threshold; }
+
+    @Override
     public void Execute(Player player) {
-        player.playSound(player,this.sound , this.volume, this.pitch);
+        player.playSound(player,this.Sound, this.Volume, this.Pitch);
     }
 
-    @Override
-    public void displayType(Main main, Location loc) {}
-
-    @Override
-    public void Remove(Player player) {}
 }

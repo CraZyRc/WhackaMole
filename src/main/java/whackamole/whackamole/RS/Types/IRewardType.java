@@ -19,21 +19,21 @@ public interface IRewardType {
 
     boolean Check();
     int getRewardChance();
+    int getThreshold();
 
     void Execute(Player player);
-    void displayType(Main main, Location loc);
-    void Remove(Player player);
 
     @Nullable
     static IRewardType Factory(String name, int threshold, LinkedHashMap<String, ?> settings)
     {
         return switch (name) {
-            case "Item"     ->  { yield ItemType.Load(threshold, settings); }
-            case "Currency" ->  { yield CurrencyType.Load(threshold, settings); }
-            case "Effect"   ->  { yield EffectType.Load(threshold, settings); }
-            case "Message"  ->  { yield MessageType.Load(threshold, settings); }
-            case "Sound"    ->  { yield SoundType.Load(threshold, settings); }
-            case "Teleport" ->  { yield TeleportType.Load(threshold, settings); }
+            case "Item"         ->  { yield ItemType.Load(threshold, settings); }
+            case "Currency"     ->  { yield CurrencyType.Load(threshold, settings); }
+            case "Effect"       ->  { yield EffectType.Load(threshold, settings); }
+            case "Message"      ->  { yield MessageType.Load(threshold, settings); }
+            case "Sound"        ->  { yield SoundType.Load(threshold, settings); }
+            case "Teleport"     ->  { yield TeleportType.Load(threshold, settings); }
+            case "Animation"    ->  { yield AnimationType.Load(threshold, settings); }
             default -> {
                 Logger.error(Translator.REWARDS_INVALIDREWARDTYPE.Format(name));
                 yield null;

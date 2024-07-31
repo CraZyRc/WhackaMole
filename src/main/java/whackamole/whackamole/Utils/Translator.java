@@ -135,6 +135,7 @@ public enum Translator {
     ,   COMMANDS_SETTINGS_TOGGLESCOREBOARD                  ("Commands.Settings.toggleScoreboard")
     ,   COMMANDS_SETTINGS_TOGGLESCOREBOARD_SUCCESS          ("Commands.Settings.toggleScoreboard.Success", String.class)
     ,   COMMANDS_RELOAD                                     ("Commands.Reload")
+    ,   COMMANDS_RELOAD_KNOWNBUG                            ("Commands.Reload.knownBug")
     ,   COMMANDS_RELOAD_SUCCESS                             ("Commands.Reload.Success")
     ,   COMMANDS_POSITIONS                                  ("Commands.Positions")
     ,   COMMANDS_POSITIONS_TELEPORT_ONGRID                  ("Commands.Positions.Teleport.onGrid")
@@ -149,6 +150,7 @@ public enum Translator {
     ,   REWARDS_TYPE_INVALID_STRING                         ("Rewards.Type.Invalid.String", String.class)
     ,   REWARDS_TYPE_INVALID_MESSAGETYPE                    ("Rewards.Type.Invalid.messageType")
     ,   REWARDS_TYPE_INVALID_REWARDCHANCE                   ("Rewards.Type.Invalid.rewardChance")
+    ,   REWARDS_TYPE_INVALID_ANIMATIONFILE                  ("Rewards.Type.Invalid.animationFile", String.class)
     ,   REWARDS_TYPE_NOMESSAGESET                           ("Rewards.Type.noMessageSet")
     ,   REWARDS_TYPE_UNSAFETPLOCATION                       ("Rewards.Type.unSafeTpLocation")
     ,   REWARDS_INVALIDREWARDTYPE                           ("Rewards.invalidRewardType", String.class);

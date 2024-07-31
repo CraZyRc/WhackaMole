@@ -16,7 +16,7 @@ public class AnimationCommand {
     public Float Speed;
     public int Count;
 
-    AnimationCommand(String commandString, String Animation) {
+    public AnimationCommand(String commandString, String Animation) {
         try {
             String[] Array      =       commandString.split(" ");
             this.colorRed       =       Float.valueOf(Array[0]);

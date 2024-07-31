@@ -12,18 +12,18 @@ import java.util.LinkedHashMap;
 
 public class EffectType implements IRewardType {
     private PotionEffectType effect;
-    private int duration;
-    private int amplifier;
-    public int rewardChance = 0;
-    public int threshold;
+    private int Duration;
+    private int Amplifier;
+    public int rewardChance;
+    public int Threshold;
 
     @SuppressWarnings("deprecation")
     private EffectType(int threshold, String effectName, int duration, int amplifier, int rewardChance)
     {
-        this.threshold      = threshold;
+        this.Threshold      = threshold;
         this.effect         = PotionEffectType.getByName(effectName);
-        this.duration       = duration;
-        this.amplifier      = amplifier;
+        this.Duration       = duration;
+        this.Amplifier      = amplifier;
         this.rewardChance   = rewardChance;
     }
 
@@ -41,10 +41,10 @@ public class EffectType implements IRewardType {
         if (this.effect == null) {
             Logger.error(Translator.REWARDS_TYPE_INVALID_STRING.Format("Effect"));
             return false;
-        } else if (this.duration <= 0) {
+        } else if (this.Duration <= 0) {
             Logger.error(Translator.REWARDS_TYPE_INVALID_INT.Format("Effect","Effect"));
             return false;
-        } else if (this.amplifier <= 0) {
+        } else if (this.Amplifier <= 0) {
             Logger.error(Translator.REWARDS_TYPE_INVALID_INT.Format("Amplifier","Amplifier"));
             return false;
         } else if (this.rewardChance > 100 || this.rewardChance <= 0) {
@@ -59,16 +59,13 @@ public class EffectType implements IRewardType {
     }
 
     @Override
+    public int getThreshold() { return this.Threshold; }
+
+    @Override
     public void Execute(Player player) {
-        PotionEffect Effect = new PotionEffect(this.effect, this.duration, this.amplifier);
+        PotionEffect Effect = new PotionEffect(this.effect, this.Duration, this.Amplifier);
         player.addPotionEffect(Effect);
     }
-
-    @Override
-    public void displayType(Main main, Location loc) {}
-
-    @Override
-    public void Remove(Player player) {}
 
 
 }

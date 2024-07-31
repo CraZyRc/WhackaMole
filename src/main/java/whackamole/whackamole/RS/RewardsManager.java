@@ -1,5 +1,6 @@
 package whackamole.whackamole.RS;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import whackamole.whackamole.Config;
 import whackamole.whackamole.GS.Game;
@@ -8,16 +9,13 @@ import whackamole.whackamole.Utils.Econ;
 import whackamole.whackamole.Utils.Translator;
 import whackamole.whackamole.Utils.YMLFile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 public class RewardsManager {
 
-    public static List<Reward> Rewards = new ArrayList<>();
     private static YMLFile rewardFile = new YMLFile(Config.AppConfig.storageFolder + "/rewards.yml");
-    private static HashMap<String, GameRewards> gameRewards;
+    private static HashMap<String, GameRewards> gameRewards = new HashMap<>();
+    private static Map<Player, RewardExecutor> executors = new HashMap<>();
 
 
     public static void sendScoreToPlayer(Player player, double score) {
@@ -28,69 +26,65 @@ public class RewardsManager {
         player.sendMessage(Config.AppConfig.PREFIX + message);
     }
 
-    public static void executeRewards(Player player, Game game) {
-        game.updateActionBar();
-        boolean Payout = false;
+    public static void executeRewards(Game game) {
         Econ econ = new Econ();
-        int score = game.getRunning().get().score;
-
-        for (Reward reward : Rewards) {
-            if (reward.Games.contains(game.getName())) {
-                if (score >= reward.Threshold) {
-                    Payout = true;
-                    reward.Payout(player, game);
+        var rewards = gameRewards.get(game.getName());
+        if (rewards != null) {
+            game.getRunning().ifPresent((gameRunner) -> {
+                if (executors.containsKey(gameRunner.getPlayer())) {
+                    return;
                 }
-            }
-        }
-        if (!Payout) {
-            econ.depositPlayer(player, score);
-            RewardsManager.sendScoreToPlayer(player, score);
+                var executor = rewards.getExecutor();
+                executors.put(gameRunner.getPlayer(), executor.setGame(game).setPlayer(gameRunner.getPlayer()));
+                executor.Start();
+            });
+        } else {
+            econ.depositPlayer(game.getRunning().get().player, game.getRunning().get().score);
+            RewardsManager.sendScoreToPlayer(game.getRunning().get().player, game.getRunning().get().score);
             game.setState(Game.gameState.READY);
         }
     }
 
-    public static void interactEvent(Player player, Game game) {
-        for (Reward reward : Rewards) {
-            if (reward.Games.contains(game.getName())) {
-                reward.checkEntity(player, game);
+    public static void Tick() {
+        var values = executors.values();
+        for (var executor : values) {
+            executor.Tick();
+            if (executor.getState() == RewardExecutor.State.ForRemoval) {
+                values.remove(executor);
             }
         }
     }
 
-    public static void onLoad(YMLFile rewardsFile) {
-        loadRewards();
-        
-        for (String key : rewardsFile.FileConfig.getConfigurationSection("Rewards").getValues(false).keySet()) {
-            Rewards.add(new Reward(rewardsFile, key));
+
+    public static void onInteractEvent(Player player, Entity entity) {
+        if (executors.containsKey(player)) {
+            executors.get(player).onInteractEvent(entity);
         }
     }
 
-    public static void onReload(YMLFile rewardsFile) {
-        gameRewards.clear();
+
+    public static void onLoad() {
         loadRewards();
+    }
 
-        Rewards.clear();
+    public static void onReload() {
+        gameRewards.clear(); // TODO: this doesn't remove old data
 
-        for (String key : rewardsFile.FileConfig.getConfigurationSection("Rewards").getValues(false).keySet()) {
-            Rewards.add(new Reward(rewardsFile, key));
-        }
+        loadRewards(); // TODO: this doesn't load new data...
+
+        //TODO: this function doesn't change the changes from the rewardsFile
     }
 
 
     @SuppressWarnings("unchecked")
     static void loadRewards()
     {
-        LinkedHashMap<String, ?> data = rewardFile.get("Rewards");
+        var data = (LinkedHashMap<String, ?>) rewardFile.getMap("Rewards");
         for(var key : data.keySet()) {
-            var rewardData = (LinkedHashMap<String, ?>) data.get(key); 
-            var threshold = (int) rewardData.get("threshold"); 
+            var rewardData = (LinkedHashMap<String, ?>) rewardFile.getMap("Rewards." + key);
+            var threshold = (int) rewardData.get("Threshold");
             var games = (List<String>) rewardData.get("Games");
-            var animationName = (String) rewardData.get("Animation");
 
-            if (! animationName.isEmpty()) {
-                var animation = new Animation(animationName);
-                addAnimationToGames(games, animation);
-            }
 
             var rewardsData = (List<LinkedHashMap<String, ?>>) rewardData.get("RewardTypes"); 
             loadRewardTypes(rewardsData, games, threshold);
@@ -108,23 +102,14 @@ public class RewardsManager {
         }
     }
 
-    private static void addRewardToGames(List<String> gameNames, IRewardType reward)
-    {
-        for(var gameName : gameNames) {
+    private static void addRewardToGames(List<String> gameNames, IRewardType reward) {
+        for (String gameName : gameNames) {
+
             if (! gameRewards.containsKey(gameName)) {
                 gameRewards.put(gameName, new GameRewards(gameName));
             }
             gameRewards.get(gameName).addReward(reward);
         }
     }
-    
-    private static void addAnimationToGames(List<String> gameNames, Animation animation)
-    {
-        for(var gameName : gameNames) {
-            if (! gameRewards.containsKey(gameName)) {
-                gameRewards.put(gameName, new GameRewards(gameName));
-            }
-            gameRewards.get(gameName).addAnimation(animation);
-        }
-    }
+
 }

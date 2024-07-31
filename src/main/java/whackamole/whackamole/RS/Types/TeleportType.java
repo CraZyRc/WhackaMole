@@ -16,20 +16,21 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class TeleportType implements IRewardType {
+public class TeleportType implements IRewardInteractType {
     private List<Entity> entities = new ArrayList<>();
-    private Location loc;
-    private World world;
+    private Entity Interactable;
+    private Location Loc;
+    private World World;
     private double X;
     private double Y;
     private double Z;
-    public int rewardChance = 0;
-    public int threshold;
+    private int rewardChance;
+    private int Threshold;
 
     private TeleportType(int threshold, String worldName, int X, int Y, int Z, int rewardChance)
     {
-        this.threshold = threshold;
-        this.world = Bukkit.getWorld(worldName);
+        this.Threshold = threshold;
+        this.World = Bukkit.getWorld(worldName);
         this.X = X;
         this.Y = Y;
         this.Z = Z;
@@ -48,9 +49,9 @@ public class TeleportType implements IRewardType {
 
     @Override
     public boolean Check() {
-        this.loc = new Location(world, X, Y, Z);
+        this.Loc = new Location(World, X, Y, Z);
 
-        if (world == null) {
+        if (World == null) {
             Logger.error(Translator.REWARDS_TYPE_INVALID_STRING.Format("World"));
             return false;
         } else if (this.rewardChance > 100 || this.rewardChance <= 0) {
@@ -59,7 +60,7 @@ public class TeleportType implements IRewardType {
         }
 
 
-        Location feet = this.loc.clone();
+        Location feet = this.Loc.clone();
         if (!feet.getBlock().getType().isTransparent() && !feet.add(0, 1, 0).getBlock().getType().isTransparent()) {
             Logger.error(Translator.REWARDS_TYPE_UNSAFETPLOCATION);
             return false; // block not transparent (will suffocate)
@@ -88,8 +89,14 @@ public class TeleportType implements IRewardType {
     }
 
     @Override
+    public int getThreshold() { return this.Threshold; }
+
+    @Override
+    public int getTimer() { return 5; }
+
+    @Override
     public void Execute(Player player) {
-        player.teleport(this.loc);
+        player.teleport(this.Loc);
     }
 
     @Override
@@ -110,6 +117,7 @@ public class TeleportType implements IRewardType {
         display.getPersistentDataContainer().set(namespacedKey, PersistentDataType.INTEGER, 1);
 
         final Interaction interaction = (Interaction) world.spawnEntity(loc.subtract(0, 0.48, 0), EntityType.INTERACTION);
+        this.Interactable = interaction;
         interaction.setInteractionWidth(0.5F);
         interaction.setInteractionHeight(0.5F);
         interaction.setResponsive(true);
@@ -135,6 +143,13 @@ public class TeleportType implements IRewardType {
         }
         player.getWorld().spawnParticle(Particle.COMPOSTER , loc, 2);
         player.getWorld().playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+    }
+
+    @Override
+    public Entity getInteractable() {
+        if (this.Interactable != null) {
+            return this.Interactable;
+        } else return null;
     }
 
     private void transformDisplay(ItemDisplay display) {
