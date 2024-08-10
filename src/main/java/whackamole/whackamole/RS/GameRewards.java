@@ -16,9 +16,7 @@ public class GameRewards {
     }
 
     protected void addReward(IRewardType reward) {
-        if (reward.Check()) {
-            this.Rewards.add(reward);
-        }
+        this.Rewards.add(reward);
     }
 
     protected RewardExecutor getExecutor() {

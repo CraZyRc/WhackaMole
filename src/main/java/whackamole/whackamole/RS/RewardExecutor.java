@@ -17,7 +17,9 @@ import whackamole.whackamole.GS.Game.gameState;
 import whackamole.whackamole.Main;
 import whackamole.whackamole.RS.Types.IRewardInteractType;
 import whackamole.whackamole.RS.Types.IRewardType;
+import whackamole.whackamole.RS.Types.IRewardWaitableType;
 import whackamole.whackamole.Utils.Econ;
+
 import whackamole.whackamole.Utils.Misc;
 
 public class RewardExecutor {
@@ -47,7 +49,7 @@ public class RewardExecutor {
     private Location loc;
     private int timer = 0;
     private int i = 0;
-    private int rewardSize;
+    private int rewardSize = 0;
 
     protected RewardExecutor(List<IRewardType> rewards) {
         this.rewardTypes = new ArrayList<>(rewards);
@@ -69,7 +71,11 @@ public class RewardExecutor {
                 this.rewards.add(reward);
             }
         }
-        this.rewardSize = this.rewards.size();
+        for (var reward : this.rewards) {
+            if (reward instanceof IRewardInteractType) {
+                this.rewardSize++;
+            }
+        }
         return this;
     }
 
@@ -119,7 +125,7 @@ public class RewardExecutor {
     public void Tick() {
         switch (this.state) {
             case Running:
-                if (this.Has()) {
+                if (this.Has()) { //TODO: maybe remove redundant if(Has) statement
                     this.Next();
                     this.startExecution();
                 }
@@ -145,7 +151,7 @@ public class RewardExecutor {
 
     void setTimer(int seconds) {
         // * Set the timer to 5 seconds of ticks (20 ticks in a second)
-        this.timer = 5 * 20;
+        this.timer = seconds * 20;
     }
     boolean stepTimer() {
         this.timer -= 1;
@@ -162,20 +168,23 @@ public class RewardExecutor {
             this.i = 0;
             this.entity.remove();
             this.state = State.Completed;
+        } else if (next instanceof IRewardInteractType) {
+            this.i++;
         }
-        this.i++;
         this.current = Optional.ofNullable(next);
     }
 
     void startExecution() {
         this.current.ifPresent((reward) -> {
-            if (!(reward instanceof IRewardInteractType)) {
+            if (!(reward instanceof IRewardWaitableType)) {
                 reward.Execute(this.player);
             } else {
-                this.setTimer(((IRewardInteractType) reward).getTimer());
+                this.setTimer(((IRewardWaitableType) reward).getTimer());
                 this.state = State.Waiting;
-                this.entity = this.displayCount(this.i, this.rewardSize);
-                ((IRewardInteractType) reward).displayType(this.main, this.loc.clone());
+                ((IRewardWaitableType) reward).displayType(this.main, this.loc.clone());
+                if (reward instanceof IRewardInteractType) {
+                    this.entity = this.displayCount(this.i, this.rewardSize);
+                }
             }
         });
     }

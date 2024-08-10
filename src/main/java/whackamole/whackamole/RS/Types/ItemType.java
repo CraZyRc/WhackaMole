@@ -129,9 +129,7 @@ public class ItemType implements IRewardInteractType {
 
     @Override
     public Entity getInteractable() {
-        if (this.Interactable != null) {
-            return this.Interactable;
-        } else return null;
+        return this.Interactable;
     }
 
     private void transformDisplay(ItemDisplay display) {

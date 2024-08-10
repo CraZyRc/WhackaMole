@@ -68,11 +68,9 @@ public class RewardsManager {
     }
 
     public static void onReload() {
-        gameRewards.clear(); // TODO: this doesn't remove old data
-
-        loadRewards(); // TODO: this doesn't load new data...
-
-        //TODO: this function doesn't change the changes from the rewardsFile
+        gameRewards.clear();
+        rewardFile = new YMLFile(Config.AppConfig.storageFolder + "/rewards.yml");
+        loadRewards();
     }
 
 
@@ -98,7 +96,7 @@ public class RewardsManager {
             var type = (String) rewardMap.get("Type");
             var settings = (LinkedHashMap<String, ?>) rewardMap.get("Settings");
             var reward = IRewardType.Factory(type, threshold, settings);
-            if (reward != null && reward.Check()) addRewardToGames(games, reward);;
+            if (reward != null && reward.Check()) addRewardToGames(games, reward);
         }
     }
 

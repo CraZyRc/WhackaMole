@@ -153,7 +153,8 @@ public enum Translator {
     ,   REWARDS_TYPE_INVALID_ANIMATIONFILE                  ("Rewards.Type.Invalid.animationFile", String.class)
     ,   REWARDS_TYPE_NOMESSAGESET                           ("Rewards.Type.noMessageSet")
     ,   REWARDS_TYPE_UNSAFETPLOCATION                       ("Rewards.Type.unSafeTpLocation")
-    ,   REWARDS_INVALIDREWARDTYPE                           ("Rewards.invalidRewardType", String.class);
+    ,   REWARDS_INVALIDREWARDTYPE                           ("Rewards.invalidRewardType", String.class)
+    ,   ANIMATIONCOMMAND_INVALID_COMMAND                    ("AnimationCommand.Invalid.Command", String.class);
 
     public String key;
     public String value = "";
