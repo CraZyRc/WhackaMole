@@ -125,10 +125,8 @@ public class RewardExecutor {
     public void Tick() {
         switch (this.state) {
             case Running:
-                if (this.Has()) { //TODO: maybe remove redundant if(Has) statement
                     this.Next();
                     this.startExecution();
-                }
                 break;
             case Waiting:
                 if (this.stepTimer()) this.stopExecution();
