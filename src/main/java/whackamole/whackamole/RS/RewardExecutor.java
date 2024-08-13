@@ -12,6 +12,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
+import whackamole.whackamole.Config;
 import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.GS.Game.gameState;
 import whackamole.whackamole.Main;
@@ -20,6 +21,7 @@ import whackamole.whackamole.RS.Types.IRewardType;
 import whackamole.whackamole.RS.Types.IRewardWaitableType;
 import whackamole.whackamole.Utils.Econ;
 
+import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Misc;
 
 public class RewardExecutor {
@@ -104,7 +106,7 @@ public class RewardExecutor {
         Econ econ = new Econ();
         if (this.Has()) {
             this.state = State.Running;
-            this.loc = player.getEyeLocation().add(player.getEyeLocation().getDirection().setY(0).normalize());
+            this.loc = player.getEyeLocation().add(player.getEyeLocation().getDirection().multiply(2).setY(0));
             this.Tick();
         } else {
             this.game.getRunning().ifPresent((gameRunner) -> {
@@ -125,8 +127,10 @@ public class RewardExecutor {
     public void Tick() {
         switch (this.state) {
             case Running:
+                if (Has()) {
                     this.Next();
                     this.startExecution();
+                }
                 break;
             case Waiting:
                 if (this.stepTimer()) this.stopExecution();
@@ -174,11 +178,15 @@ public class RewardExecutor {
 
     void startExecution() {
         this.current.ifPresent((reward) -> {
+            if (Config.Game.PLAYERLOCK) {
+                this.loc = player.getEyeLocation().add(player.getEyeLocation().getDirection().multiply(2).setY(0));
+            }
             if (!(reward instanceof IRewardWaitableType)) {
                 reward.Execute(this.player);
             } else {
                 this.setTimer(((IRewardWaitableType) reward).getTimer());
                 this.state = State.Waiting;
+                Logger.info("Reward display " + reward);
                 ((IRewardWaitableType) reward).displayType(this.main, this.loc.clone());
                 if (reward instanceof IRewardInteractType) {
                     this.entity = this.displayCount(this.i, this.rewardSize);
@@ -201,6 +209,21 @@ public class RewardExecutor {
                 }
             });
         }
+    }
+
+    /**
+     * Checks if the player has teleported
+     * due to the Teleport Type
+     *
+     * If so,
+     * Sets the new location for the WaitableTypes
+     */
+
+    public void onTeleportEvent(Location loc) {
+        Logger.info("locChange");
+        Logger.info(this.loc + "");
+        this.loc = loc.clone().add(0, 2, 0).add(player.getEyeLocation().getDirection().multiply(2).setY(0)); // TODO: fix direction (this code gets executed before the teleport occurs, so the player its looking direction is the one from before the tp. Maybe add Looking direction to the Tp type?
+        Logger.info(this.loc + "");
     }
 
     /**

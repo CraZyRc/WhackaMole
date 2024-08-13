@@ -52,6 +52,8 @@ Ticket Price: 15
 
 # Here you will find the general options regarding game creation and playability.
 
+# Force player movement lock on player reward event
+Player lock: true
 
 # Item for the hammer (Only the Material name, ALL CAPS and without "Minecraft_"):
 Hammer Item: GOLDEN_AXE

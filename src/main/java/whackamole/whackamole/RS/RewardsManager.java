@@ -1,5 +1,6 @@
 package whackamole.whackamole.RS;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import whackamole.whackamole.Config;
@@ -55,6 +56,11 @@ public class RewardsManager {
         }
     }
 
+    public static void onTeleportEvent(Player player, Location loc) {
+        if (executors.containsKey(player)){
+            executors.get(player).onTeleportEvent(loc);
+        }
+    }
 
     public static void onInteractEvent(Player player, Entity entity) {
         if (executors.containsKey(player)) {

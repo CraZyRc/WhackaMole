@@ -3,6 +3,7 @@ package whackamole.whackamole.GS;
 import java.util.*;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -170,13 +171,18 @@ public final class GamesManager implements Listener {
         Player player = e.getPlayer();
         for (Game game : games) {
             var gameRunner = game.getRunning().orElse(null);
+            if (game.State == Game.gameState.REWARDING && player == gameRunner.getPlayer() && Config.Game.PLAYERLOCK) {
+                Location loc = e.getFrom();
+                loc.setPitch(0F);
+                e.getPlayer().teleport(loc);
+            }
             if (game.onGrid(player)) {
                 if (!game.hasActionbar.contains(player)) {
                     game.updateActionBar();
                     game.hasActionbar.add(player);
                 }
                 if (game.State != Game.gameState.RUNNING) continue;
-                if (gameRunner.player != player) {
+                if (gameRunner.getPlayer() != player) {
                     gameRunner.RemovePlayerFromGame(e.getPlayer(), e.getFrom(), Objects.requireNonNull(e.getTo()));
                 }
                 break;
@@ -213,6 +219,10 @@ public final class GamesManager implements Listener {
         Player player = e.getPlayer();
         for (Game game : games) {
             var gameRunner = game.getRunning().orElse(null);
+            if (game.State == Game.gameState.REWARDING && gameRunner.player == player) {
+                RewardsManager.onTeleportEvent(player, e.getTo());
+            }
+
             if (game.onGrid(player, e.getTo())) {
                 if (gameRunner == null) continue;
                 if (gameRunner.player != player) {

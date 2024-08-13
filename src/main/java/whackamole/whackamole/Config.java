@@ -49,6 +49,7 @@ public class Config {
 
     public static class Game {
         public static String HAMMER_ITEM;
+        public static Boolean PLAYERLOCK;
         public static List<?> ENABLED_WOLRDS;
 
         public static int FIELD_MAX_SIZE, HAMMER_CUSTOMMODELDATA, HAMMER_ITEMDAMAGE;
@@ -61,6 +62,7 @@ public class Config {
         public static ItemStack PLAYER_AXE, TICKET;
 
         private static boolean LoadConfig(YMLFile configFile, Main main) {
+            PLAYERLOCK              = configFile.getBoolean("Player lock");
             HAMMER_ITEM             = configFile.getString("Hammer Item");
             HAMMER_CUSTOMMODELDATA  = configFile.getInt("Hammer customModelData");
             HAMMER_ITEMDAMAGE       = configFile.getInt("Hammer itemDamage");

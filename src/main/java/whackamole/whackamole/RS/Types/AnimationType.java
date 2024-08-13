@@ -96,7 +96,7 @@ public class AnimationType implements IRewardWaitableType {
     @Override
     public void displayType(Main main, Location loc) {
         int duration = this.Duration * 20;
-        this.Loc = loc;  // player.getEyeLocation().add(player.getEyeLocation().getDirection().setY(0).normalize());
+        this.Loc = loc;
         new BukkitRunnable() {
             @Override
             public void run() {
