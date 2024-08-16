@@ -1,5 +1,6 @@
 package whackamole.whackamole.RS.Types;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.persistence.PersistentDataType;
@@ -17,6 +18,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class TeleportType implements IRewardInteractType {
+    private enum Directions {NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST}
+    private String Rotation;
     private List<Entity> entities = new ArrayList<>();
     private Entity Interactable;
     private Location Loc;
@@ -27,7 +30,7 @@ public class TeleportType implements IRewardInteractType {
     private int rewardChance;
     private int Threshold;
 
-    private TeleportType(int threshold, String worldName, double X, double Y, double Z, int rewardChance)
+    private TeleportType(int threshold, String worldName, String rotation, double X, double Y, double Z, int rewardChance)
     {
         this.Threshold = threshold;
         this.World = Bukkit.getWorld(worldName);
@@ -35,21 +38,27 @@ public class TeleportType implements IRewardInteractType {
         this.Y = Y;
         this.Z = Z;
         this.rewardChance = rewardChance;
+        this.Rotation = rotation;
     }
 
     public static IRewardType Load( int threshold, LinkedHashMap<String, ?> Settings) {
-        var worldName =(String) Settings.get("World");
+        var worldName = (String) Settings.get("World");
+        var Rotation = (String) Settings.get("Rotation");
         var X = (double) Settings.get("X");
         var Y = (double) Settings.get("Y");
         var Z = (double) Settings.get("Z");
         var rewardChance = (int) Settings.get("RewardChance");
 
-        return new TeleportType(threshold, worldName, X, Y, Z, rewardChance);
+        return new TeleportType(threshold, worldName, Rotation, X, Y, Z, rewardChance);
     }
 
     @Override
     public boolean Check() {
         this.Loc = new Location(World, X, Y, Z);
+        if (!this.setRotation()) {
+            Logger.error(Translator.REWARDS_TYPE_INVALID_STRING.Format("Rotation"));
+            return false;
+        }
 
         if (World == null) {
             Logger.error(Translator.REWARDS_TYPE_INVALID_STRING.Format("World"));
@@ -152,5 +161,24 @@ public class TeleportType implements IRewardInteractType {
         transformation.getScale().set(0.9f, 0.9f, 0.9f);
         transformation.getRightRotation().set(0f,1f,0f,0f);
         display.setTransformation(transformation);
+    }
+
+    private boolean setRotation() {
+        for (Directions d : Directions.values()) {
+            if (d.name().equals(this.Rotation)) {
+                switch(Directions.valueOf(this.Rotation)) {
+                    case NORTH          ->      this.Loc.setYaw(-180f);
+                    case NORTHEAST      ->      this.Loc.setYaw(-135f);
+                    case EAST           ->      this.Loc.setYaw(-90f);
+                    case SOUTHEAST      ->      this.Loc.setYaw(-45f);
+                    case SOUTH          ->      this.Loc.setYaw(0f);
+                    case SOUTHWEST      ->      this.Loc.setYaw(45f);
+                    case WEST           ->      this.Loc.setYaw(90f);
+                    case NORTHWEST      ->      this.Loc.setYaw(135f);
+                }
+                return true;
+            }
+        }
+        return false;
     }
 }

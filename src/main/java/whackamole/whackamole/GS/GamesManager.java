@@ -219,7 +219,7 @@ public final class GamesManager implements Listener {
         Player player = e.getPlayer();
         for (Game game : games) {
             var gameRunner = game.getRunning().orElse(null);
-            if (game.State == Game.gameState.REWARDING && gameRunner.player == player) {
+            if (game.State == Game.gameState.REWARDING && gameRunner.player == player && !Config.Game.PLAYERLOCK) {
                 RewardsManager.onTeleportEvent(player, e.getTo());
             }
 

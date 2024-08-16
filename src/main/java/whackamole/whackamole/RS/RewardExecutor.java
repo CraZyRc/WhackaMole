@@ -21,7 +21,6 @@ import whackamole.whackamole.RS.Types.IRewardType;
 import whackamole.whackamole.RS.Types.IRewardWaitableType;
 import whackamole.whackamole.Utils.Econ;
 
-import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Misc;
 
 public class RewardExecutor {
@@ -186,7 +185,6 @@ public class RewardExecutor {
             } else {
                 this.setTimer(((IRewardWaitableType) reward).getTimer());
                 this.state = State.Waiting;
-                Logger.info("Reward display " + reward);
                 ((IRewardWaitableType) reward).displayType(this.main, this.loc.clone());
                 if (reward instanceof IRewardInteractType) {
                     this.entity = this.displayCount(this.i, this.rewardSize);
@@ -220,10 +218,7 @@ public class RewardExecutor {
      */
 
     public void onTeleportEvent(Location loc) {
-        Logger.info("locChange");
-        Logger.info(this.loc + "");
-        this.loc = loc.clone().add(0, 2, 0).add(player.getEyeLocation().getDirection().multiply(2).setY(0)); // TODO: fix direction (this code gets executed before the teleport occurs, so the player its looking direction is the one from before the tp. Maybe add Looking direction to the Tp type?
-        Logger.info(this.loc + "");
+        this.loc = loc.clone().add(loc.getDirection().multiply(2).setY(1.65));
     }
 
     /**
