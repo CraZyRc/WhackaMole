@@ -78,7 +78,7 @@ public class TranslationTest extends TestBase {
                 var matcher = testPattern.matcher(result);
 
                 if (matcher.find()) {
-                    softly.fail("[%s : %s]: formatting Failed: %s", item.name(), item.key, matcher.group(1));
+                    softly.fail("[%s : %s]: formatting Failed: %s | raw: %s", item.name(), item.key, matcher.group(1), result);
                 }
             }
         }
