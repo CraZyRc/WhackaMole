@@ -3,7 +3,6 @@ package whackamole.whackamole.GS;
 import org.bukkit.entity.Player;
 import whackamole.whackamole.DB.CooldownDB;
 import whackamole.whackamole.DB.SQLite;
-import whackamole.whackamole.Utils.Translator;
 
 import java.util.HashMap;
 import java.util.UUID;

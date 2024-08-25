@@ -8,11 +8,9 @@ import whackamole.whackamole.RS.Types.IRewardType;
 
 public class GameRewards {
 
-    private String gameName;
     private List<IRewardType> Rewards = new ArrayList<>();
 
     GameRewards(String gameName) {
-        this.gameName = gameName;
     }
 
     protected void addReward(IRewardType reward) {

@@ -3,11 +3,11 @@ package whackamole.whackamole.RS.Types;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
-import whackamole.whackamole.Main;
 import whackamole.whackamole.RS.RewardsManager;
 import whackamole.whackamole.Utils.Econ;
 import whackamole.whackamole.Utils.Logger;
@@ -61,13 +61,20 @@ public class CurrencyType implements IRewardInteractType {
     public int getTimer() { return 5; }
 
     @Override
-    public void Execute(Player player) {
-        this.econ.depositPlayer(player, this.quantity);
-        RewardsManager.sendScoreToPlayer(player, this.quantity);
+    public void Execute(RewardExecutorContext ctx) {
+        this.displayType(ctx.plugin, ctx.location);
+    }
+    
+    @Override
+    public void TickExecute() {}
+    
+    @Override 
+    public void AfterExecute(RewardExecutorContext ctx) {
+        this.econ.depositPlayer(ctx.player, this.quantity);
+        RewardsManager.sendScoreToPlayer(ctx.player, this.quantity);
     }
 
-    @Override
-    public void displayType(Main main, Location loc) {
+    public void displayType(Plugin main, Location loc) {
         NamespacedKey namespacedKey = new NamespacedKey(main, "CurrencyDisplay");
 
         World world = loc.getWorld();

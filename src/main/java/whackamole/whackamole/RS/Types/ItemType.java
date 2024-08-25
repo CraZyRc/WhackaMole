@@ -5,11 +5,11 @@ import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
-import whackamole.whackamole.Main;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Misc;
 import whackamole.whackamole.Utils.Translator;
@@ -68,23 +68,29 @@ public class ItemType implements IRewardInteractType {
     @Override
     public int getTimer() { return 5; }
 
-
+    
+    @Override
+    public void Execute(RewardExecutorContext ctx) {
+        this.displayType(ctx.plugin, ctx.location);
+    }
+    @Override
+    public void TickExecute() {}
+    
     @SuppressWarnings("deprecation")
     @Override
-    public void Execute(Player player) {
+    public void AfterExecute(RewardExecutorContext ctx) {
         ItemStack Item = new ItemStack(this.Material, this.Amount);
         if (!this.NBT.isEmpty()) {
             String nbtTags = this.NBT.replace("[","").replace("]","");
             Item = Bukkit.getUnsafe().modifyItemStack(Item, this.Material.getKey().getKey() + "[" + nbtTags + "]"); //[enchantments={levels:{looting:1}},unbreakable={},damage=31]
         }
-        PlayerInventory inv = player.getInventory();
+        PlayerInventory inv = ctx.player.getInventory();
         if (inv.firstEmpty() != -1) {
             inv.setItem(inv.firstEmpty(), Item);
         }
     }
 
-    @Override
-    public void displayType(Main main, Location loc) {
+    public void displayType(Plugin main, Location loc) {
         NamespacedKey namespacedKey = new NamespacedKey(main, "ItemDisplay");
 
         World world = loc.getWorld();

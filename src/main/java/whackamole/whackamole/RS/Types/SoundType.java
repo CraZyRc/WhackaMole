@@ -1,7 +1,6 @@
 package whackamole.whackamole.RS.Types;
 
 import org.bukkit.Sound;
-import org.bukkit.entity.Player;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
 
@@ -58,8 +57,8 @@ public class SoundType implements IRewardType {
     public int getThreshold() { return this.Threshold; }
 
     @Override
-    public void Execute(Player player) {
-        player.playSound(player,this.Sound, this.Volume, this.Pitch);
+    public void Execute(RewardExecutorContext ctx) {
+        ctx.player.playSound(ctx.player, this.Sound, this.Volume, this.Pitch);
     }
 
 }

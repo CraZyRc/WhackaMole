@@ -19,6 +19,7 @@ import whackamole.whackamole.Main;
 import whackamole.whackamole.RS.Types.IRewardInteractType;
 import whackamole.whackamole.RS.Types.IRewardType;
 import whackamole.whackamole.RS.Types.IRewardWaitableType;
+import whackamole.whackamole.RS.Types.RewardExecutorContext;
 import whackamole.whackamole.Utils.Econ;
 
 import whackamole.whackamole.Utils.Misc;
@@ -50,10 +51,12 @@ public class RewardExecutor {
     private int timer = 0;
     private int interactableRewardCounter = 0;
     private int interactableRewardsCount = 0;
+    private RewardExecutorContext context = new RewardExecutorContext();
 
     protected RewardExecutor(List<IRewardType> rewards) {
         this.rewards = new LinkedList<>(rewards);
         this.state = State.Ready;
+        this.context.plugin = main;
     }
 
     /**
@@ -74,6 +77,7 @@ public class RewardExecutor {
      */
     protected RewardExecutor setPlayer(Player player) {
         this.player = player;
+        this.context.player = player;
         return this;
     }
 
@@ -113,6 +117,7 @@ public class RewardExecutor {
         if (this.Has()) {
             this.state = State.Running;
             this.loc = player.getEyeLocation().add(player.getEyeLocation().getDirection().multiply(2).setY(0));
+            this.context.location = this.loc;
             this.Tick();
         } else {
             this.game.getRunning().ifPresent((gameRunner) -> {
@@ -140,6 +145,7 @@ public class RewardExecutor {
                 break;
             case Waiting:
                 if (this.stepTimer()) this.stopExecution();
+                else this.TickExecute();
                 break;
             case Completed:
                 if (this.entity != null)
@@ -161,7 +167,6 @@ public class RewardExecutor {
     }
 
     void setTimer(int seconds) {
-        // * Set the timer to 5 seconds of ticks (20 ticks in a second)
         this.timer = seconds * 20;
     }
     boolean stepTimer() {
@@ -186,16 +191,24 @@ public class RewardExecutor {
             if (Config.Game.PLAYERLOCK) {
                 this.loc = player.getEyeLocation().add(player.getEyeLocation().getDirection().multiply(2).setY(0));
             }
-            if (!(reward instanceof IRewardWaitableType)) {
-                reward.Execute(this.player);
-            } else {
-                this.setTimer(((IRewardWaitableType) reward).getTimer());
+            if (reward instanceof IRewardType R) {
+                R.Execute(this.context);
+            }
+            if (reward instanceof IRewardWaitableType waitable) {
+                this.setTimer(waitable.getTimer());
                 this.state = State.Waiting;
-                ((IRewardWaitableType) reward).displayType(this.main, this.loc.clone());
-                if (reward instanceof IRewardInteractType) {
-                    this.interactableRewardCounter += 1;
-                    this.entity = this.displayCount(this.interactableRewardCounter, this.interactableRewardsCount);
-                }
+            }
+            if (reward instanceof IRewardInteractType) {
+                this.interactableRewardCounter += 1;
+                this.entity = this.displayCount(this.interactableRewardCounter, this.interactableRewardsCount);
+            }
+        });
+    }
+
+    void TickExecute() {
+        this.current.ifPresent((reward) -> {
+            if (reward instanceof IRewardWaitableType waitable) {
+                waitable.TickExecute();
             }
         });
     }
@@ -204,14 +217,14 @@ public class RewardExecutor {
         synchronized (_lock) {
             if (this.state != State.Waiting) return;
             this.current.ifPresent((reward) -> {
-                reward.Execute(this.player);
-
-                this.state = State.Running;
-
+                if (reward instanceof IRewardWaitableType waitable) {
+                    waitable.AfterExecute(this.context);
+                }
                 if (reward instanceof IRewardInteractType interact) {
                     this.entity.remove();
                     interact.Remove(this.player);
                 }
+                this.state = State.Running;
             });
         }
     }
@@ -226,6 +239,7 @@ public class RewardExecutor {
 
     public void onTeleportEvent(Location loc) {
         this.loc = loc.clone().add(loc.getDirection().multiply(2).setY(1.65));
+        context.location = this.loc;
     }
 
     /**

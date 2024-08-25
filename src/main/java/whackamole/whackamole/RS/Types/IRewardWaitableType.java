@@ -1,10 +1,15 @@
 package whackamole.whackamole.RS.Types;
 
-import org.bukkit.Location;
-import whackamole.whackamole.Main;
-
 public interface IRewardWaitableType extends IRewardType {
-
-    void displayType(Main main, Location loc);
     int getTimer();
+
+    /**
+     * Exection method which is called every tick for {@code getTimer()} duration
+     */
+    void TickExecute();
+
+    /**
+     * Execution method which is called after the time hes run out
+     */
+    void AfterExecute(RewardExecutorContext ctx);
 }

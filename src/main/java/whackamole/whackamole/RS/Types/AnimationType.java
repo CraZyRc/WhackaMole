@@ -4,11 +4,8 @@ package whackamole.whackamole.RS.Types;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import whackamole.whackamole.Config;
-import whackamole.whackamole.Main;
 import whackamole.whackamole.RS.AnimationCommand;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
@@ -19,12 +16,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class AnimationType implements IRewardWaitableType {
-    private Particle Particle = org.bukkit.Particle.DUST;
+    private Particle Particle = org.bukkit.Particle.REDSTONE;
     private List<AnimationCommand> Commands = new ArrayList<>();
     private YMLFile animationFile;
     private String Animation;
     private Location Loc;
-    private int Counter = 0;
     private int Duration;
     private int rewardChance;
     private int Threshold;
@@ -81,34 +77,23 @@ public class AnimationType implements IRewardWaitableType {
     public int getTimer() { return this.Duration; }
 
     @Override
-    public void Execute(Player player) { // TODO: fix rotation
-        var locationV = this.Loc.toVector();
+    public void Execute(RewardExecutorContext ctx) {
+        this.Loc = ctx.location;
+    }
+    
+    @Override
+    public void TickExecute() {
+        // var locationV = this.Loc.toVector();
         for (var CMD : this.Commands) {
-            var particleV = new Vector(CMD.Delta1, CMD.Delta2, CMD.Delta3);
-            var angle = particleV.angle(locationV);
-
-            particleV.rotateAroundY(angle);
-            Location loc = this.Loc.clone().add(particleV);
+            var particleV = new Vector(CMD.Delta3, CMD.Delta2, CMD.Delta1);
+            // var angle = particleV.angle(locationV);
+    
+            particleV.rotateAroundY(0.7853982);
+            Location loc = this.Loc.clone().add(particleV).setDirection(this.Loc.getDirection());
             this.Loc.getWorld().spawnParticle(this.Particle, loc, CMD.Count, CMD.offSetX, CMD.offSetY, CMD.offSetZ, CMD.Speed, new Particle.DustOptions(Color.fromRGB(Math.round(CMD.colorRed * 255.0F), Math.round(CMD.colorGreen * 255.0F), Math.round(CMD.colorBlue * 255.0F)), CMD.Scale));
         }
     }
 
     @Override
-    public void displayType(Main main, Location loc) {
-        int duration = this.Duration * 20;
-        this.Loc = loc;
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (Counter <= duration) {
-                    Counter++;
-                    Execute(null);
-                } else {
-                    Counter = 0;
-                    this.cancel();
-                }
-            }
-        }.runTaskTimerAsynchronously(main, 0L, 1L);
-
-    }
+    public void AfterExecute(RewardExecutorContext ctx) {}
 }

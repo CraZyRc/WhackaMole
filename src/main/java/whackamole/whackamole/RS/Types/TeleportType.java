@@ -3,11 +3,11 @@ package whackamole.whackamole.RS.Types;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
-import whackamole.whackamole.Main;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Misc;
 import whackamole.whackamole.Utils.Translator;
@@ -51,6 +51,7 @@ public class TeleportType implements IRewardInteractType {
         return new TeleportType(threshold, worldName, Rotation, X, Y, Z, rewardChance);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean Check() {
         this.Loc = new Location(World, X, Y, Z);
@@ -98,16 +99,22 @@ public class TeleportType implements IRewardInteractType {
     public int getTimer() { return 5; }
 
     @Override
-    public void Execute(Player player) {
-        player.teleport(this.Loc);
+    public void Execute(RewardExecutorContext ctx) {
+        this.displayType(ctx.plugin, ctx.location);
+    }
+    
+    @Override
+    public void TickExecute() {}
+    
+    @Override
+    public void AfterExecute(RewardExecutorContext ctx) {
+        ctx.player.teleport(this.Loc);
     }
 
-    @Override
-    public void displayType(Main main, Location loc) {
+    public void displayType(Plugin main, Location loc) {
         NamespacedKey namespacedKey = new NamespacedKey(main, "TeleportDisplay");
 
         World world = loc.getWorld();
-
 
         final ItemDisplay display = (ItemDisplay) world.spawnEntity(loc, EntityType.ITEM_DISPLAY);
         display.setRotation(loc.getYaw(), 0);

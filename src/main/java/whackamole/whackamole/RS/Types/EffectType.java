@@ -1,6 +1,5 @@
 package whackamole.whackamole.RS.Types;
 
-import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import whackamole.whackamole.Utils.Logger;
@@ -60,10 +59,8 @@ public class EffectType implements IRewardType {
     public int getThreshold() { return this.Threshold; }
 
     @Override
-    public void Execute(Player player) {
+    public void Execute(RewardExecutorContext ctx) {
         PotionEffect Effect = new PotionEffect(this.effect, this.Duration, this.Amplifier);
-        player.addPotionEffect(Effect);
+        ctx.player.addPotionEffect(Effect);
     }
-
-
 }

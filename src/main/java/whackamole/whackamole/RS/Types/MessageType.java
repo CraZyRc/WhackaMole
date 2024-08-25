@@ -4,7 +4,6 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.chat.ComponentSerializer;
-import org.bukkit.entity.Player;
 import whackamole.whackamole.Config;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Misc;
@@ -57,13 +56,13 @@ public class MessageType implements IRewardType {
     public int getThreshold() { return this.threshold; }
 
     @Override
-    public void Execute(Player player) {
+    public void Execute(RewardExecutorContext ctx) {
         if (this.messageType.equals("String")) {
-            player.sendMessage(Config.AppConfig.PREFIX + Misc.Color(this.Message));
+            ctx.player.sendMessage(Config.AppConfig.PREFIX + Misc.Color(this.Message));
         } else if (this.messageType.equals("Json")) {
             BaseComponent[] list = ComponentSerializer.parse(this.Message);
             BaseComponent[] sendList = new ComponentBuilder(Config.AppConfig.PREFIX).append(list).create();
-            player.spigot().sendMessage(ChatMessageType.CHAT, sendList);
+            ctx.player.spigot().sendMessage(ChatMessageType.CHAT, sendList);
         }
 
     }
