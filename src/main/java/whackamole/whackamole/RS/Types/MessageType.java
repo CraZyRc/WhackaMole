@@ -5,6 +5,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.chat.ComponentSerializer;
 import whackamole.whackamole.Config;
+import whackamole.whackamole.RS.RewardExecutorContext;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Misc;
 import whackamole.whackamole.Utils.Translator;

@@ -8,8 +8,10 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
+import whackamole.whackamole.RS.RewardExecutorContext;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Misc;
+import whackamole.whackamole.Utils.SafeBlocks;
 import whackamole.whackamole.Utils.Translator;
 
 import java.util.ArrayList;
@@ -28,6 +30,7 @@ public class TeleportType implements IRewardInteractType {
     private double Z;
     private int rewardChance;
     private int Threshold;
+    private boolean safeLoc = false;
 
     private TeleportType(int threshold, String worldName, String rotation, double X, double Y, double Z, int rewardChance)
     {
@@ -43,9 +46,9 @@ public class TeleportType implements IRewardInteractType {
     public static IRewardType Load( int threshold, LinkedHashMap<String, ?> Settings) {
         var worldName = (String) Settings.get("World");
         var Rotation = (String) Settings.get("Rotation");
-        var X = (int) Settings.get("X");
-        var Y = (int) Settings.get("Y");
-        var Z = (int) Settings.get("Z");
+        var X = (double) Settings.get("X");
+        var Y = (double) Settings.get("Y");
+        var Z = (double) Settings.get("Z");
         var rewardChance = (int) Settings.get("RewardChance");
 
         return new TeleportType(threshold, worldName, Rotation, X, Y, Z, rewardChance);
@@ -70,20 +73,25 @@ public class TeleportType implements IRewardInteractType {
 
 
         Location feet = this.Loc.clone();
-        // TODO: Transparent will only check if the block lets light pass through. Not if the player can stand there. I.E. Glass is transparent
-        // This should properly be changed to `isAir` but doors and trapdoors aren't allowed then...
-        if (!feet.getBlock().getType().isTransparent() && !feet.add(0, 1, 0).getBlock().getType().isTransparent()) {
-            Logger.error(Translator.REWARDS_TYPE_UNSAFETPLOCATION);
-            return false; // block not transparent (will suffocate)
+        Logger.info(feet.getBlock().getType() + "");
+        Logger.info(feet.clone().add(0,1,0).getBlock().getType() + "");
+
+        if (!SafeBlocks.getSafe(feet.getBlock().getType()) || !SafeBlocks.getSafe(feet.add(0, 1, 0).getBlock().getType())) {
+            Logger.error("1 " + Translator.REWARDS_TYPE_UNSAFETPLOCATION);
+            this.safeLoc = false;
+            return false; // playerblocks (playerfeet till playerhead) not transparent (will suffocate)
         }
 
         Location head = feet.add(0, 1, 0);
+        Logger.info(head.getBlock().getType() + "");
 
-        if (!head.getBlock().getType().isTransparent()) {
-            Logger.error(Translator.REWARDS_TYPE_UNSAFETPLOCATION);
-            return false; // block not transparent (will suffocate)
+        if (!SafeBlocks.getSafe(head.getBlock().getType())) {
+            Logger.error("2 " + Translator.REWARDS_TYPE_UNSAFETPLOCATION);
+            this.safeLoc = false;
+            return false; // block above player is not transparent (will suffocate)
         }
 
+        this.safeLoc = true;
         return true;
     }
 
@@ -100,7 +108,9 @@ public class TeleportType implements IRewardInteractType {
 
     @Override
     public void Execute(RewardExecutorContext ctx) {
-        this.displayType(ctx.plugin, ctx.location);
+        if (this.Check()) {
+            this.displayType(ctx.plugin, ctx.location.clone());
+        }
     }
     
     @Override
@@ -108,7 +118,7 @@ public class TeleportType implements IRewardInteractType {
     
     @Override
     public void AfterExecute(RewardExecutorContext ctx) {
-        ctx.player.teleport(this.Loc);
+        if (this.safeLoc) ctx.player.teleport(this.Loc);
     }
 
     public void displayType(Plugin main, Location loc) {
@@ -147,12 +157,14 @@ public class TeleportType implements IRewardInteractType {
     @Override
     public void Remove(Player player) {
         Location loc = null;
-        for (Entity e : entities) {
-            loc = e.getLocation();
-            e.remove();
+        if (this.safeLoc) {
+            for (Entity e : entities) {
+                loc = e.getLocation();
+                e.remove();
+            }
+            player.getWorld().spawnParticle(Particle.COMPOSTER , loc, 2);
+            player.getWorld().playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
         }
-        player.getWorld().spawnParticle(Particle.COMPOSTER , loc, 2);
-        player.getWorld().playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
     }
 
     @Override

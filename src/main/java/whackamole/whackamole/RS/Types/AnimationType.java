@@ -7,6 +7,7 @@ import org.bukkit.Particle;
 import org.bukkit.util.Vector;
 import whackamole.whackamole.Config;
 import whackamole.whackamole.RS.AnimationCommand;
+import whackamole.whackamole.RS.RewardExecutorContext;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
 import whackamole.whackamole.Utils.YMLFile;
@@ -16,7 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class AnimationType implements IRewardWaitableType {
-    private Particle Particle = org.bukkit.Particle.REDSTONE;
+    private Particle Particle = org.bukkit.Particle.DUST;
     private List<AnimationCommand> Commands = new ArrayList<>();
     private YMLFile animationFile;
     private String Animation;
@@ -78,7 +79,7 @@ public class AnimationType implements IRewardWaitableType {
 
     @Override
     public void Execute(RewardExecutorContext ctx) {
-        this.Loc = ctx.location;
+        this.Loc = ctx.location.clone();
     }
     
     @Override

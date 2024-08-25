@@ -1,4 +1,4 @@
-package whackamole.whackamole.RS.Types;
+package whackamole.whackamole.RS;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

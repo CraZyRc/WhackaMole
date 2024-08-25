@@ -1,5 +1,7 @@
 package whackamole.whackamole.RS.Types;
 
+import whackamole.whackamole.RS.RewardExecutorContext;
+
 public interface IRewardWaitableType extends IRewardType {
     int getTimer();
 

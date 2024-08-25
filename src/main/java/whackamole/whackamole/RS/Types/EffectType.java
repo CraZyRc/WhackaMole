@@ -2,6 +2,7 @@ package whackamole.whackamole.RS.Types;
 
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import whackamole.whackamole.RS.RewardExecutorContext;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
 

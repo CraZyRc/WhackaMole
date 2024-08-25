@@ -10,6 +10,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
+import whackamole.whackamole.RS.RewardExecutorContext;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Misc;
 import whackamole.whackamole.Utils.Translator;
@@ -71,7 +72,7 @@ public class ItemType implements IRewardInteractType {
     
     @Override
     public void Execute(RewardExecutorContext ctx) {
-        this.displayType(ctx.plugin, ctx.location);
+        this.displayType(ctx.plugin, ctx.location.clone());
     }
     @Override
     public void TickExecute() {}
