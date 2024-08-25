@@ -1,10 +1,8 @@
 package whackamole.whackamole.RS.Types;
 
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
-import whackamole.whackamole.Main;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
 

@@ -30,7 +30,7 @@ public class ItemType implements IRewardInteractType {
     private ItemType(int threshold, String materialName, int amount, String nbt, int rewardChance)
     {
         this.Threshold = threshold;
-        this.Material = Material.matchMaterial(materialName);
+        this.Material = org.bukkit.Material.matchMaterial(materialName);
         this.Amount = amount;
         this.NBT = nbt;
         this.rewardChance = rewardChance;
@@ -69,6 +69,7 @@ public class ItemType implements IRewardInteractType {
     public int getTimer() { return 5; }
 
 
+    @SuppressWarnings("deprecation")
     @Override
     public void Execute(Player player) {
         ItemStack Item = new ItemStack(this.Material, this.Amount);

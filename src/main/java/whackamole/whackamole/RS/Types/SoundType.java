@@ -17,7 +17,7 @@ public class SoundType implements IRewardType {
     private SoundType(int threshold, String soundName, float volume, float pitch, int rewardChance)
     {
         this.Threshold = threshold;
-        this.Sound = Sound.valueOf(soundName);
+        this.Sound = org.bukkit.Sound.valueOf(soundName);
         this.Volume = volume;
         this.Pitch = pitch;
         this.rewardChance = rewardChance;

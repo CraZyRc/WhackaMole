@@ -1,6 +1,5 @@
 package whackamole.whackamole.RS.Types;
 
-import org.apache.commons.lang3.EnumUtils;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.persistence.PersistentDataType;
@@ -70,6 +69,8 @@ public class TeleportType implements IRewardInteractType {
 
 
         Location feet = this.Loc.clone();
+        // TODO: Transparent will only check if the block lets light pass through. Not if the player can stand there. I.E. Glass is transparent
+        // This should properly be changed to `isAir` but doors and trapdoors aren't allowed then...
         if (!feet.getBlock().getType().isTransparent() && !feet.add(0, 1, 0).getBlock().getType().isTransparent()) {
             Logger.error(Translator.REWARDS_TYPE_UNSAFETPLOCATION);
             return false; // block not transparent (will suffocate)
