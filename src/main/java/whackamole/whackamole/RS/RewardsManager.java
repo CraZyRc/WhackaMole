@@ -35,8 +35,8 @@ public class RewardsManager {
                 if (executors.containsKey(gameRunner.getPlayer())) {
                     return;
                 }
-                var executor = rewards.getExecutor();
-                executors.put(gameRunner.getPlayer(), executor.setGame(game).setPlayer(gameRunner.getPlayer()));
+                var executor = rewards.getExecutor().setGame(game).setPlayer(gameRunner.getPlayer());
+                executors.put(gameRunner.getPlayer(), executor);
                 executor.Start();
             });
         } else {

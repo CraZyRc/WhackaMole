@@ -43,9 +43,9 @@ public class TeleportType implements IRewardInteractType {
     public static IRewardType Load( int threshold, LinkedHashMap<String, ?> Settings) {
         var worldName = (String) Settings.get("World");
         var Rotation = (String) Settings.get("Rotation");
-        var X = (double) Settings.get("X");
-        var Y = (double) Settings.get("Y");
-        var Z = (double) Settings.get("Z");
+        var X = (int) Settings.get("X");
+        var Y = (int) Settings.get("Y");
+        var Z = (int) Settings.get("Z");
         var rewardChance = (int) Settings.get("RewardChance");
 
         return new TeleportType(threshold, worldName, Rotation, X, Y, Z, rewardChance);

@@ -86,6 +86,9 @@ public class RewardExecutor {
     }
 
     void FilterGameRewards() {
+        if (this.rewards.isEmpty())
+            return;
+        
         var iter = this.rewards.iterator();
         var filterd_list = new LinkedList<IRewardType>();
         while (iter.hasNext()) {
