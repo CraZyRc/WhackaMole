@@ -212,7 +212,7 @@ public class GameRunner {
             this.streakScoreHolo.setCustomName(Misc.Color("#00ff00&l" + this.Streak));
         int red   = Math.min(255, Math.max(0, 255 - (this.Streak - 40) * 12));
         int green = Math.min(255, Math.max(0, (this.Streak - 40) * 12));
-        settings.world.spawnParticle(Particle.REDSTONE, particleLocation, 1, new Particle.DustOptions(Color.fromRGB(red, green, 0), 2));
+        settings.world.spawnParticle(Particle.DUST , particleLocation, 1, new Particle.DustOptions(Color.fromRGB(red, green, 0), 2));
 
 
     }

@@ -19,7 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class AnimationType implements IRewardWaitableType {
-    private Particle Particle = org.bukkit.Particle.REDSTONE;
+    private Particle Particle = org.bukkit.Particle.DUST;
     private List<AnimationCommand> Commands = new ArrayList<>();
     private YMLFile animationFile;
     private String Animation;
@@ -86,10 +86,10 @@ public class AnimationType implements IRewardWaitableType {
         for (var CMD : this.Commands) {
             var particleV = new Vector(CMD.Delta1, CMD.Delta2, CMD.Delta3);
             var angle = particleV.angle(locationV);
-            Logger.info("Partical: %f %f %f %f".formatted(CMD.Delta1, CMD.Delta2, CMD.Delta3, angle));
+
             particleV.rotateAroundY(angle);
             Location loc = this.Loc.clone().add(particleV);
-            this.Loc.getWorld().spawnParticle(this.Particle, loc, CMD.Count, 0, 0, 0, CMD.Speed, new Particle.DustOptions(Color.fromRGB(Math.round(CMD.colorRed * 255.0F), Math.round(CMD.colorGreen * 255.0F), Math.round(CMD.colorBlue * 255.0F)), CMD.Scale));
+            this.Loc.getWorld().spawnParticle(this.Particle, loc, CMD.Count, CMD.offSetX, CMD.offSetY, CMD.offSetZ, CMD.Speed, new Particle.DustOptions(Color.fromRGB(Math.round(CMD.colorRed * 255.0F), Math.round(CMD.colorGreen * 255.0F), Math.round(CMD.colorBlue * 255.0F)), CMD.Scale));
         }
     }
 
