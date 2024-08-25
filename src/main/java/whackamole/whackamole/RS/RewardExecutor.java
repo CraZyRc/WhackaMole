@@ -40,8 +40,7 @@ public class RewardExecutor {
     }
 
     private State state;
-    private List<IRewardType> rewardTypes;
-    private Queue<IRewardType> rewards = new LinkedList<>();
+    private Queue<IRewardType> rewards;
     private Optional<IRewardType> current;
     private Player player;
     private Entity entity;
@@ -49,11 +48,11 @@ public class RewardExecutor {
     private Object _lock = new Object();
     private Location loc;
     private int timer = 0;
-    private int i = 0;
-    private int rewardSize = 0;
+    private int interactableRewardCounter = 0;
+    private int interactableRewardsCount = 0;
 
     protected RewardExecutor(List<IRewardType> rewards) {
-        this.rewardTypes = new ArrayList<>(rewards);
+        this.rewards = new LinkedList<>(rewards);
         this.state = State.Ready;
     }
 
@@ -64,19 +63,7 @@ public class RewardExecutor {
      */
     protected RewardExecutor setGame(Game game) {
         this.game = game;
-        int random;
-
-        for (var reward : this.rewardTypes) {
-            random = new Random().nextInt(100);
-            if (this.game.getRunning().get().score >= reward.getThreshold() && random <= reward.getRewardChance()) {
-                this.rewards.add(reward);
-            }
-        }
-        for (var reward : this.rewards) {
-            if (reward instanceof IRewardInteractType) {
-                this.rewardSize++;
-            }
-        }
+        this.FilterGameRewards();
         return this;
     }
 
@@ -96,6 +83,23 @@ public class RewardExecutor {
      */
     protected State getState() {
         return this.state;
+    }
+
+    void FilterGameRewards() {
+        var iter = this.rewards.iterator();
+        var filterd_list = new LinkedList<IRewardType>();
+        while (iter.hasNext()) {
+            int random = new Random().nextInt(100);
+            var reward = iter.next();
+            if (this.game.getRunning().get().score < reward.getThreshold() && random <= reward.getRewardChance()) {
+                filterd_list.add(reward);
+                
+                if (reward instanceof IRewardInteractType) {
+                    this.interactableRewardsCount += 1;
+                }
+            }
+        }
+        this.rewards = filterd_list;
     }
 
     /**
@@ -135,6 +139,9 @@ public class RewardExecutor {
                 if (this.stepTimer()) this.stopExecution();
                 break;
             case Completed:
+                if (this.entity != null)
+                    this.entity.remove();
+                
                 this.game.setState(gameState.READY);
                 this.state = State.ForRemoval;
                 break;
@@ -165,13 +172,9 @@ public class RewardExecutor {
 
     void Next() {
         var next = this.rewards.poll();
-        if (next == null) {
-            this.i = 0;
-            this.entity.remove();
+        if (next == null) 
             this.state = State.Completed;
-        } else if (next instanceof IRewardInteractType) {
-            this.i++;
-        }
+        
         this.current = Optional.ofNullable(next);
     }
 
@@ -187,7 +190,8 @@ public class RewardExecutor {
                 this.state = State.Waiting;
                 ((IRewardWaitableType) reward).displayType(this.main, this.loc.clone());
                 if (reward instanceof IRewardInteractType) {
-                    this.entity = this.displayCount(this.i, this.rewardSize);
+                    this.interactableRewardCounter += 1;
+                    this.entity = this.displayCount(this.interactableRewardCounter, this.interactableRewardsCount);
                 }
             }
         });
