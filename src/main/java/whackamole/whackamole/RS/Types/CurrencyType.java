@@ -8,6 +8,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
+import whackamole.whackamole.RS.RewardExecutorContext;
 import whackamole.whackamole.RS.RewardsManager;
 import whackamole.whackamole.Utils.Econ;
 import whackamole.whackamole.Utils.Logger;
@@ -62,7 +63,7 @@ public class CurrencyType implements IRewardInteractType {
 
     @Override
     public void Execute(RewardExecutorContext ctx) {
-        this.displayType(ctx.plugin, ctx.location);
+        this.displayType(ctx.plugin, ctx.location.clone());
     }
     
     @Override

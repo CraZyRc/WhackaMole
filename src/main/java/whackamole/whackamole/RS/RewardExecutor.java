@@ -19,7 +19,6 @@ import whackamole.whackamole.Main;
 import whackamole.whackamole.RS.Types.IRewardInteractType;
 import whackamole.whackamole.RS.Types.IRewardType;
 import whackamole.whackamole.RS.Types.IRewardWaitableType;
-import whackamole.whackamole.RS.Types.RewardExecutorContext;
 import whackamole.whackamole.Utils.Econ;
 
 import whackamole.whackamole.Utils.Misc;
@@ -98,7 +97,7 @@ public class RewardExecutor {
         while (iter.hasNext()) {
             int random = new Random().nextInt(100);
             var reward = iter.next();
-            if (this.game.getRunning().get().score < reward.getThreshold() && random <= reward.getRewardChance()) {
+            if (this.game.getRunning().get().score >= reward.getThreshold() && random <= reward.getRewardChance()) {
                 filterd_list.add(reward);
                 
                 if (reward instanceof IRewardInteractType) {
@@ -191,9 +190,9 @@ public class RewardExecutor {
             if (Config.Game.PLAYERLOCK) {
                 this.loc = player.getEyeLocation().add(player.getEyeLocation().getDirection().multiply(2).setY(0));
             }
-            if (reward instanceof IRewardType R) {
-                R.Execute(this.context);
-            }
+
+            reward.Execute(this.context);
+
             if (reward instanceof IRewardWaitableType waitable) {
                 this.setTimer(waitable.getTimer());
                 this.state = State.Waiting;

@@ -1,6 +1,7 @@
 package whackamole.whackamole.RS.Types;
 
 import org.jetbrains.annotations.Nullable;
+import whackamole.whackamole.RS.RewardExecutorContext;
 import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
 

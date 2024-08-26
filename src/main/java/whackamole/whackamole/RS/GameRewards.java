@@ -10,7 +10,7 @@ public class GameRewards {
 
     private List<IRewardType> Rewards = new ArrayList<>();
 
-    GameRewards(String gameName) {
+    GameRewards() {
     }
 
     protected void addReward(IRewardType reward) {

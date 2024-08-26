@@ -110,7 +110,7 @@ public class RewardsManager {
         for (String gameName : gameNames) {
 
             if (! gameRewards.containsKey(gameName)) {
-                gameRewards.put(gameName, new GameRewards(gameName));
+                gameRewards.put(gameName, new GameRewards());
             }
             gameRewards.get(gameName).addReward(reward);
         }
