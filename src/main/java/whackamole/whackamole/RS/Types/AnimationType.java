@@ -83,13 +83,12 @@ public class AnimationType implements IRewardWaitableType {
     
     @Override
     public void TickExecute() {
-        // var locationV = this.Loc.toVector();
+        var angle = Math.toRadians(Location.normalizeYaw(360F - (this.Loc.getYaw()) + 180f));
         for (var CMD : this.Commands) {
-            var particleV = new Vector(CMD.Delta3, CMD.Delta2, CMD.Delta1);
-            // var angle = particleV.angle(locationV);
+            var particleV = new Vector(CMD.Delta1, CMD.Delta2, CMD.Delta3);
     
-            particleV.rotateAroundY(0.7853982);
-            Location loc = this.Loc.clone().add(particleV).setDirection(this.Loc.getDirection());
+            particleV.rotateAroundY(angle);
+            Location loc = this.Loc.clone().add(particleV);
             this.Loc.getWorld().spawnParticle(this.Particle, loc, CMD.Count, CMD.offSetX, CMD.offSetY, CMD.offSetZ, CMD.Speed, new Particle.DustOptions(Color.fromRGB(Math.round(CMD.colorRed * 255.0F), Math.round(CMD.colorGreen * 255.0F), Math.round(CMD.colorBlue * 255.0F)), CMD.Scale));
         }
     }
