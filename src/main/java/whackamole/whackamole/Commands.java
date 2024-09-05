@@ -200,6 +200,27 @@ public class Commands {
 
                         })
                 )
+                .withSubcommand(new CommandAPICommand("holo")
+                        .withSubcommand(new CommandAPICommand("create") // TODO: add argument tips
+                                .withArguments(gameNameArgument("Game"))
+                                .withArguments(new IntegerArgument("holoID"))
+                                .withArguments(new StringArgument("Type"))
+                                .withArguments(new IntegerArgument("number of topscores"))
+                                .executesPlayer((player, args) -> {
+                                    Game game = (Game) args.get(0);
+                                    game.holoCreate((int) args.get(1), (String) args.get(2), player.getLocation() , (int) args.get(3));
+                                })
+
+                        )
+                        .withSubcommand(new CommandAPICommand("remove") // TODO: add easy holoID autofill && add check if player is sure to delete the holo
+                                .withArguments(gameNameArgument("Game"))
+                                .withArguments(new IntegerArgument("holoID"))
+                                .executes((player, args) -> {
+                                    Game game = (Game) args.get(0);
+                                    game.holoDelete((int) args.get(1));
+                                })
+                        )
+                )
                 .withSubcommand(new CommandAPICommand(String.valueOf(Translator.COMMANDS_SETTINGS))
                         .withPermission(Config.Permissions.PERM_SETTINGS)
                         .withArguments(gameNameArgument("Game"))

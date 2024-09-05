@@ -238,7 +238,7 @@ public class RewardExecutor {
 
     public void onTeleportEvent(Location loc) {
         this.loc = loc.clone().add(loc.getDirection().multiply(2).setY(1.65));
-        context.location = this.loc;
+        this.context.location = this.loc;
     }
 
     /**

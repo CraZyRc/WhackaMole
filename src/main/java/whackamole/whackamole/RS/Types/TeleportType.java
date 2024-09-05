@@ -54,7 +54,7 @@ public class TeleportType implements IRewardInteractType {
         return new TeleportType(threshold, worldName, Rotation, X, Y, Z, rewardChance);
     }
 
-    @SuppressWarnings("deprecation")
+
     @Override
     public boolean Check() {
         this.Loc = new Location(World, X, Y, Z);
@@ -73,22 +73,11 @@ public class TeleportType implements IRewardInteractType {
 
 
         Location feet = this.Loc.clone();
-        Logger.info(feet.getBlock().getType() + "");
-        Logger.info(feet.clone().add(0,1,0).getBlock().getType() + "");
 
-        if (!SafeBlocks.getSafe(feet.getBlock().getType()) || !SafeBlocks.getSafe(feet.add(0, 1, 0).getBlock().getType())) {
-            Logger.error("1 " + Translator.REWARDS_TYPE_UNSAFETPLOCATION);
+        if (SafeBlocks.getUnsafe(feet.getBlock().getType()) || SafeBlocks.getUnsafe(feet.add(0, 1, 0).getBlock().getType())) {
+            Logger.error(Translator.REWARDS_TYPE_UNSAFETPLOCATION);
             this.safeLoc = false;
             return false; // playerblocks (playerfeet till playerhead) not transparent (will suffocate)
-        }
-
-        Location head = feet.add(0, 1, 0);
-        Logger.info(head.getBlock().getType() + "");
-
-        if (!SafeBlocks.getSafe(head.getBlock().getType())) {
-            Logger.error("2 " + Translator.REWARDS_TYPE_UNSAFETPLOCATION);
-            this.safeLoc = false;
-            return false; // block above player is not transparent (will suffocate)
         }
 
         this.safeLoc = true;
@@ -118,7 +107,10 @@ public class TeleportType implements IRewardInteractType {
     
     @Override
     public void AfterExecute(RewardExecutorContext ctx) {
-        if (this.safeLoc) ctx.player.teleport(this.Loc);
+        if (this.safeLoc) {
+            ctx.player.teleport(this.Loc);
+            ctx.location = this.Loc;
+        }
     }
 
     public void displayType(Plugin main, Location loc) {

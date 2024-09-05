@@ -25,6 +25,7 @@ public class SQLite {
     public static void onLoad() {
         var dbFile = new File(Config.AppConfig.storageFolder + "/Storage.db");
         if(!dbFile.exists()) {
+            getHologramDB().Create();
             getGameDB().Create();
             getGridDB().Create();
             getCooldownDB().Create();
@@ -111,5 +112,6 @@ public class SQLite {
     public static CooldownDB getCooldownDB() {      return new CooldownDB(getInstance()); }
     public static GridDB getGridDB() {              return new GridDB(getInstance()); }
     public static GameDB getGameDB() {              return new GameDB(getInstance()); }
+    public static HologramDB getHologramDB() {      return new HologramDB(getInstance()); }
 
 }

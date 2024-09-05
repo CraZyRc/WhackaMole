@@ -35,6 +35,7 @@ public class Game {
     public GameRunner game;
     public Grid grid;
 
+    public List<Hologram> holos = new ArrayList<>();
     public List<Player> hasActionbar = new ArrayList<>();
     private Random random = new Random();
     private List<UUID> currentyOnGird = new ArrayList<>();
@@ -389,6 +390,22 @@ public class Game {
             });
 
         }
+    }
+
+    public void holoCreate(int holoID, String type, Location loc, int topCount) { // TODO: add check if holoID already exists
+        Hologram holo = new Hologram(this, holoID);
+        this.holos.add(holo);
+        holo.Create(holoID, type, loc, topCount);
+    }
+
+    public void holoDelete(int holoID) { // TODO: add 10s holo highlight after first call
+        for (var h : this.holos) {
+            if (h.holoID == holoID) {
+                h.Delete();
+                return;
+            }
+        }
+
     }
 
     private int Tick = 0;
