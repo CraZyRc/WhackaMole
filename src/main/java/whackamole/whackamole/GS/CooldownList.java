@@ -10,7 +10,7 @@ import java.util.UUID;
 public class CooldownList {
     private final Game game;
     public HashMap<UUID, Long> cooldown = new HashMap<>();
-    public CooldownDB db = SQLite.getCooldownDB();
+    public CooldownDB db = SQLite.Cooldown;
 
     public CooldownList(Game game) {
         this.game = game;
