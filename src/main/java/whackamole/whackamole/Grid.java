@@ -16,7 +16,7 @@ import whackamole.whackamole.Mole.*;
 import whackamole.whackamole.Utils.Translator;
 
 public class Grid {
-    private static final GridDB SQL = SQLite.getGridDB();
+    private static final GridDB SQL = SQLite.Grid;
     private static List<Vector> neighborList = new ArrayList<>() {
         {
             add(new Vector(1, 0, -1)); // * topleft
