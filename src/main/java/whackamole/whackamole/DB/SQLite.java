@@ -114,7 +114,6 @@ public class SQLite {
         }
     }
 
-    public static GameDB getGameDB() {              return new GameDB(getInstance()); }
     public static HologramDB getHologramDB() {      return new HologramDB(getInstance()); }
 
 }

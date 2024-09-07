@@ -59,8 +59,8 @@ public final class GamesManager implements Listener {
 
     public boolean GameLoading(@Nullable World world) {
         List<GameRow> DBGameList;
-        if(world == null) { DBGameList = SQLite.getGameDB().Select(); }
-        else {              DBGameList = SQLite.getGameDB().Select(world); }
+        if(world == null) { DBGameList = SQLite.Game.Select(); }
+        else {              DBGameList = SQLite.Game.Select(world); }
         
         for(var game : DBGameList) {
             if(!Config.Game.ENABLED_WOLRDS.isEmpty() && ! Config.Game.ENABLED_WOLRDS.contains(game.worldName)) {

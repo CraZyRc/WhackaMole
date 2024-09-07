@@ -11,7 +11,7 @@ import whackamole.whackamole.DB.SQLite;
 import static whackamole.whackamole.GS.Game.Directions;
 
 public class Settings extends GameRow {
-    public GameDB gameDB = SQLite.getGameDB();
+    public GameDB gameDB = SQLite.Game;
     private Game game;
 
     public World world;
