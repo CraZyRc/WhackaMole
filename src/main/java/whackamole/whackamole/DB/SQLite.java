@@ -37,7 +37,6 @@ public class SQLite {
             SQLite.Cooldown.Create();
             SQLite.Scoreboard.Create();
         }
-
     }
 
     public String getUrl() {

@@ -38,7 +38,8 @@ public abstract class Table<T extends Row> implements TableModel<T> {
                 break;
             }
         }
-
+        TableSchemaValidator.ValidateSchema(this);
+        
         assert this.ColumnsValidation() : "Columns are not fully valid";
     }
 
@@ -46,6 +47,10 @@ public abstract class Table<T extends Row> implements TableModel<T> {
     // * Interface
     public String GetName() {
         return this.TableName;
+    }
+
+    protected Column<?>[] getColumns() {
+        return this.ColumnNames;
     }
 
     public void Create() {
