@@ -42,6 +42,7 @@ public class TestBase {
     
     public static Player playerMock = mock(Player.class);
     public static World worldMock = mock(World.class);
+    public static Location locationMock = mock(Location.class);
     public static BlockFace blockFaceMock = mock(BlockFace.class);
     public static Block blockMock = mock(Block.class);
     
@@ -57,6 +58,13 @@ public class TestBase {
         gameSettingsMock.missCount = 3;
         gameSettingsMock.world = worldMock;
         when(worldMock.getName()).thenReturn("Test World");
+
+        when(locationMock.getWorld()).thenReturn(worldMock);
+        when(locationMock.getX()).thenReturn(1d);
+        when(locationMock.getY()).thenReturn(1d);
+        when(locationMock.getZ()).thenReturn(1d);
+        when(locationMock.getYaw()).thenReturn(1f);
+        when(locationMock.getPitch()).thenReturn(1f);
 
         gameSettingsMock.spawnRotation = blockFaceMock;
         when(blockFaceMock.name()).thenReturn("WEST");

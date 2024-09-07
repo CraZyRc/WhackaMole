@@ -15,6 +15,7 @@ public class SQLTestBase extends TestBase {
     final static GridDB gridDB = SQLite.Grid;
     final static CooldownDB cooldownDB = SQLite.Cooldown;
     final static ScoreboardDB scoreboardDB = SQLite.Scoreboard;
+    final static HologramDB hologramDB = SQLite.Hologram;
 
     @BeforeAll
     public static void setupSQL() {
@@ -27,10 +28,11 @@ public class SQLTestBase extends TestBase {
         gridDB.Create();
         cooldownDB.Create();
         scoreboardDB.Create();
+        hologramDB.Create();
     }
 
     @AfterAll
     public static void CleanupSQL() {
-        // DBfile.delete();
+        DBfile.delete();
     }
 }
