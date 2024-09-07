@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Hologram extends HologramRow {
-    public HologramDB db = SQLite.getHologramDB();
+    public HologramDB db = SQLite.Hologram;
     public List<HologramRow> holograms = new ArrayList<>();
     private List<ArmorStand> armorstandList = new ArrayList<>();
     private Game game;

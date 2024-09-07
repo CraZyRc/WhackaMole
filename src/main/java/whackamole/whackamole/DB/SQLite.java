@@ -113,7 +113,4 @@ public class SQLite {
             return null;
         }
     }
-
-    public static HologramDB getHologramDB() {      return new HologramDB(getInstance()); }
-
 }
