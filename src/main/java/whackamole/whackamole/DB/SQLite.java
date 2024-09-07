@@ -114,7 +114,6 @@ public class SQLite {
         }
     }
 
-    public static ScoreboardDB getScoreboardDB() {  return new ScoreboardDB(getInstance()); }
     public static CooldownDB getCooldownDB() {      return new CooldownDB(getInstance()); }
     public static GridDB getGridDB() {              return new GridDB(getInstance()); }
     public static GameDB getGameDB() {              return new GameDB(getInstance()); }

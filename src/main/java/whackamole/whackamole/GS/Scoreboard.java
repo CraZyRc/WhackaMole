@@ -37,7 +37,7 @@ public class Scoreboard {
     }
 
     public List<Score> scores = new ArrayList<>();
-    public ScoreboardDB db = SQLite.getScoreboardDB();
+    public ScoreboardDB db = SQLite.Scoreboard;
 
     public void add(Player player, int score, int molesHit, int scoreStreak) {
         var scoreItem = new Score();
