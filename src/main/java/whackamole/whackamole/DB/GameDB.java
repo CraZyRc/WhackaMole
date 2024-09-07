@@ -10,7 +10,7 @@ import whackamole.whackamole.DB.Model.Column;
 import whackamole.whackamole.DB.Model.Table;
 
 public class GameDB extends Table<GameRow> {
-    public GameDB(SQLite sql) {
+    protected GameDB(SQLite sql) {
         super(sql, "Game", new Column<?>[] {
                 new Column<>("ID",                  Integer.class).IsPrimaryKey(true).IsUnique(true).AllowNull(false).HasAutoIncrement(true),
                 new Column<>("Name",                String.class).AllowNull(false),

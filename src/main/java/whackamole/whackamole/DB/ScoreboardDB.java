@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class ScoreboardDB extends Table<ScoreboardRow> {
-    public ScoreboardDB(SQLite sql) {
+    protected ScoreboardDB(SQLite sql) {
         super(sql, "Scoreboard", new Column<?>[] {
             new Column<>("ID", Integer.class).AllowNull(false).IsPrimaryKey(true).HasAutoIncrement(true),
             new Column<>("playerID", UUID.class).AllowNull(false),

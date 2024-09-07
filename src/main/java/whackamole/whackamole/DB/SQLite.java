@@ -12,6 +12,12 @@ import org.jetbrains.annotations.Nullable;
 public class SQLite {
     private static String url = "jdbc:sqlite:" + Config.AppConfig.storageFolder+ "/Storage.db";
     
+    public static final CooldownDB Cooldown      = new CooldownDB(getInstance());
+    public static final GameDB Game              = new GameDB(getInstance());
+    public static final GridDB Grid              = new GridDB(getInstance());
+    public static final HologramDB Hologram      = new HologramDB(getInstance());
+    public static final ScoreboardDB Scoreboard  = new ScoreboardDB(getInstance());
+
     private SQLite() {}
 
     private static SQLite Instance;
@@ -25,11 +31,11 @@ public class SQLite {
     public static void onLoad() {
         var dbFile = new File(Config.AppConfig.storageFolder + "/Storage.db");
         if(!dbFile.exists()) {
-            getHologramDB().Create();
-            getGameDB().Create();
-            getGridDB().Create();
-            getCooldownDB().Create();
-            getScoreboardDB().Create();
+            SQLite.Hologram.Create();
+            SQLite.Game.Create();
+            SQLite.Grid.Create();
+            SQLite.Cooldown.Create();
+            SQLite.Scoreboard.Create();
         }
 
     }
