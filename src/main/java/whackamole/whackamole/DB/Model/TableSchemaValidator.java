@@ -1,13 +1,15 @@
 package whackamole.whackamole.DB.Model;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import whackamole.whackamole.DB.SQLite;
 
 public class TableSchemaValidator {
-    static protected void ValidateSchema(Table<?> table)
+    static protected void ValidateSchema(SQLite sql, Table<?> table)
     {
-        var sql = SQLite.getInstance();
         if (! DBHasTable(sql, table.GetName())) {
             table.Create();
         } else {
@@ -19,33 +21,20 @@ public class TableSchemaValidator {
     {
         var DBColumns = getDBColumns(sql, table.GetName());
         try {
+            var cols = Arrays.stream(table.getColumns()).collect(Collectors.toCollection(ArrayList::new));
             while (DBColumns.next()) {
                 var name = DBColumns.getString("name");
                 var col = getTableColumn(table, name);
                 if (col == null) {
-                    // * Add column to DB
+                    // * Remove column from DB
+                    sql.executeUpdate("ALTER TABLE %s DROP column %s".formatted(table.GetName(), name));
                     return;
                 }
-                var type = DBColumns.getString("type");
-                var isNotNull = DBColumns.getInt("notnull") == 1;
-                // var defaultValue = DBColumns.getString("dflt_value");
-                var isPrimaryKey = DBColumns.getInt("pk") == 1;
-
-                if (! col.getType().equals(type)) {
-                    // * Update DB Type
-                }
-
-                // AllowNull is reversed from isNotNull
-                if ( col.AllowNull() == isNotNull) {
-                    // * Update DB NotNull
-                }
-
-                // if ( col.Default())
-                // * Default validation on hold. Type conversion needs to be considered
-
-                if ( col.IsPrimaryKey() != isPrimaryKey) {
-                    // * Update DB PrimaryKey
-                }
+                cols.removeIf((column) -> column.GetName().equals(name));
+            }
+            for(var col : cols) {
+                // * Add missing columns
+                sql.executeUpdate("ALTER TABLE %s ADD %s".formatted(table.GetName(), col.GetCreateString()));
             }
         } catch (Exception e) {}
     }
@@ -54,15 +43,13 @@ public class TableSchemaValidator {
     {
         var data = sql.executeQuery("select count(name) from sqlite_schema where name = ?", tableName);
         try {
-            if (data.first()) {
-                return true;
-            }
+            return data.getInt("count(name)") == 1;
         } catch (Exception _e) {}
         return false;
     }
 
     static private ResultSet getDBColumns(SQLite sql, String tableName) {
-        var data = sql.executeQuery("pragma table_info(?)", tableName);
+        var data = sql.executeQuery("select * from pragma_table_info(?)", tableName);
         return data;
     }
 

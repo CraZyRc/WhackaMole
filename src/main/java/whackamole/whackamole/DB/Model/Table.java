@@ -38,7 +38,7 @@ public abstract class Table<T extends Row> implements TableModel<T> {
                 break;
             }
         }
-        TableSchemaValidator.ValidateSchema(this);
+        TableSchemaValidator.ValidateSchema(SQL, this);
         
         assert this.ColumnsValidation() : "Columns are not fully valid";
     }
@@ -87,17 +87,6 @@ public abstract class Table<T extends Row> implements TableModel<T> {
         if (query.isEmpty())
             return;
         SQL.executeUpdate(query, whereValues);
-    }
-    public void Alter(String tableName, String columName, String columDefinition)  {
-        var query = this.getAlterQuery(columName, columDefinition);
-        try {
-            if (query.isEmpty() || this.ColumExists(tableName, columName)) {
-                return;
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        SQL.executeUpdate(query);
     }
 
     public void Delete(T row) {
@@ -198,18 +187,7 @@ public abstract class Table<T extends Row> implements TableModel<T> {
             return "";
         return "UPDATE %s SET %s WHERE %s".formatted(this.GetName(), updateString, WhereString);
     }
-
-    /**
-     * Adds new Colum to Table
-     *
-     * @return The Alter Query
-     */
-    private String getAlterQuery(String columName, String columDefinition) {
-        // * ALTER TABLE {TableName} ADD {ColumName} {ColumDefinition}
-
-        return "ALTER TABLE %s ADD %s %s".formatted(this.GetName(), columName, columDefinition);
-    }
-
+    
     /**
      * Returns the Delete query
      * 
@@ -435,15 +413,7 @@ public abstract class Table<T extends Row> implements TableModel<T> {
             assert false : e.getMessage();
         }
     }
-
-    private boolean ColumExists(String tableName, String columName) throws SQLException {
-        var query = SQL.executeQuery("PRAGMA table_info(%s)".formatted(tableName));
-        while (query.next()) {
-            if (query.getString("name").equals(columName)) return true;
-        }
-        return false;
-    }
-
+    
     /**
      * Only ran when assetion is enabled
      * U can enable assertion by adding VM argument -ea
