@@ -136,12 +136,14 @@ public class Commands {
                         .withPermission(Config.Permissions.PERM_REMOVE)
                         .withArguments(gameNameArgument("Game"))
                         .executesPlayer((player, args) -> {
+                            Game game = (Game) args.get("Game");
                             if (this.removeConfirmation(player.getUniqueId())) {
-                                Game game = (Game) args.get("Game");
+                                game.highlightGameStop();
                                 this.manager.deleteGame(game);
                                 player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_REMOVE_SUCCESS);
                             } else {
                                 player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_REMOVE_CONFIRM.Format());
+                                game.highlightGameStart();
                             }
                         })
                 )

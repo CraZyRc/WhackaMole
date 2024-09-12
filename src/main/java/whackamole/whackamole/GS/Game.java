@@ -4,6 +4,8 @@ import java.util.*;
 
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -26,6 +28,7 @@ import whackamole.whackamole.Utils.Translator;
 public class Game {
     public static final BlockFace[] Directions = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST,
             BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST };
+
     public enum gameState {READY, RUNNING, STOPPING, REWARDING, DISABLED}
 
     public gameState State;
@@ -36,6 +39,7 @@ public class Game {
     public Grid grid;
 
     public List<Hologram> holos = new ArrayList<>();
+    private List<ArmorStand> gridHighlight = new ArrayList<>();
     public List<Player> hasActionbar = new ArrayList<>();
     private Random random = new Random();
     private List<UUID> currentyOnGird = new ArrayList<>();
@@ -292,6 +296,39 @@ public class Game {
         }
         
         return this.grid.onGrid(loc);
+    }
+
+    public void highlightGameStart() {
+        for (var b : grid.grid) {
+            ArmorStand a = (ArmorStand) b.getWorld().spawnEntity(b.getLocation().clone().add(0.5,1,0.5), EntityType.ARMOR_STAND);
+//            a.setVisible(false);
+            this.gridHighlight.add(a);
+        }
+
+        for (int i = 0;i <= 200; i++) { // TODO: Fix this, change into a delayed runnable?
+            if (!this.gridHighlight.isEmpty()) {
+                if (i % 5 == 0) {
+                    for (var a : this.gridHighlight) {
+                        a.setGlowing(true); // TODO: fix the glowing
+                        a.isGlowing();
+                    }
+                } else {
+                    for (var a : this.gridHighlight) {
+                        a.setGlowing(false);
+                    }
+                }
+
+                if (i == 200) {
+                    this.highlightGameStop();
+                }
+            }
+        }
+    }
+
+    public void highlightGameStop() {
+        for (var a : this.gridHighlight) {
+            a.remove();
+        }
     }
 
     public void useTicket(PlayerInteractEvent e) {
