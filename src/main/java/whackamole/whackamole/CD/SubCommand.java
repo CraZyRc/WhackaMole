@@ -62,29 +62,33 @@ public abstract class SubCommand {
     @Nullable
     protected PlayerCommandExecutor ExecutesPlayer() { return null; };
 
-    public CommandAPICommand Register() {
-        var command = new CommandAPICommand(this.GetName());
-        var aliases = this.Aliases();
-        var permission = this.Permission();
-        var arguments = this.Arguments();
+    private CommandAPICommand GetCommand() {
+        var command         = new CommandAPICommand(this.GetName());
+        var aliases         = this.Aliases();
+        var permission      = this.Permission();
+        var arguments       = this.Arguments();
         
-        var executes = this.Executes();
-        var executesPlayer = this.ExecutesPlayer();
+        var executes        = this.Executes();
+        var executesPlayer  = this.ExecutesPlayer();
         
-        var subCommands = this.SubCommands();
+        var subCommands     = this.SubCommands();
         
         if (aliases.length > 0)      command.setAliases(aliases);
         if (arguments.length > 0)    command.setArguments(Arrays.asList(arguments));
         if (permission != null)      command.withPermission(permission);
-
+    
         if (executes != null)            command.executes(executes);
         else if (executesPlayer != null) command.executesPlayer(executesPlayer);
-
+    
         for (SubCommand subCommand : subCommands) {
-            command.withSubcommand(subCommand.Register());
+            command.withSubcommand(subCommand.GetCommand());
         }
-        command.register();
+        return command;
+    }
 
+    public CommandAPICommand Register() {
+        var command = GetCommand();
+        command.register();
         return command;
     }
 
