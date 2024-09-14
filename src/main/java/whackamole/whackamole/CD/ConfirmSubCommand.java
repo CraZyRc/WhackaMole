@@ -2,51 +2,49 @@ package whackamole.whackamole.CD;
 
 import java.util.Hashtable;
 
-import dev.jorel.commandapi.executors.CommandExecutor;
-import dev.jorel.commandapi.executors.PlayerCommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public abstract class ConfirmSubCommand extends SubCommand {
     static final Hashtable<String, Long> confirmationTable = new Hashtable<>();
-
 
     /**
      * In miliseconds how long the player has to confirm
      * @return miliseconds
      */
-    protected long ConfirmationTime() { return 10000L; }
+    protected abstract long ConfirmationTime();
 
     /**
-     * Marks this command as a confirmation command.
-     * When the user firsts calls
-     * @return String
+     * Check whether the player has confirmed the action
+     * @param player
+     * @return boolean
      */
-    protected abstract String ConfirmationMessage();
-
-    /**
-     * Executes command when player has confirmed the action
-     */
-    protected abstract PlayerCommandExecutor ExecutesConfirmed();
+    protected boolean HasCommandBeenConfirmed(Player player) {
+        return HasCommandBeenConfirmed(player.getUniqueId().toString());
+    }
     
     /**
-     * Not allowed to be used in a ConfirmSubCommand.
-     * Use {@link ConfirmSubCommand#ExecutesConfirmed()} instead
+     * Check whether the player has confirmed the action
+     * @param sender
+     * @return boolean
      */
-    final protected CommandExecutor Executes() { return null; }
+    protected boolean HasCommandBeenConfirmed(CommandSender sender) {
+        return HasCommandBeenConfirmed(sender.getName());
+    }
 
     /**
-     * Not allowed to be used in a ConfirmSubCommand.
-     * Use {@link ConfirmSubCommand#ExecutesConfirmed()} instead
+     * check whether the player has confirmed the action
+     * @param key
+     * @return
      */
-    final protected PlayerCommandExecutor ExecutesPlayer() {
-        return (sender, args) -> {
-            var key = this.getClass().getName() + sender.getUniqueId();
-            if (confirmationTable.containsKey(key) && confirmationTable.get(key) > System.currentTimeMillis()) {
-                confirmationTable.remove(key);
-                this.ExecutesConfirmed().run(sender, args);
-            } else {
-                confirmationTable.put(key, System.currentTimeMillis() + this.ConfirmationTime());
-                sender.sendMessage(this.ConfirmationMessage());
-            }
-        };
+    protected boolean HasCommandBeenConfirmed(String key) {
+        key = this.GetName() + key;
+        if (confirmationTable.containsKey(key) && confirmationTable.get(key) > System.currentTimeMillis()) {
+            confirmationTable.remove(key);
+            return true;
+        } else {
+            confirmationTable.put(key, System.currentTimeMillis() + this.ConfirmationTime());
+            return false;
+        }
     }
 }

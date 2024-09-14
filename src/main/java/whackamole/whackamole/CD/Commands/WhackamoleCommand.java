@@ -16,7 +16,11 @@ public class WhackamoleCommand extends SubCommand {
     
     protected SubCommand[] SubCommands() {
         return new SubCommand[] {
-            new GameCreateCommand()
+            new GameCreateCommand(),
+            new GameStartCommand(),
+            new GameStopCommand(),
+            new GameRemoveCommand(),
+            new TicketBuyCommand(),
         };
     }
 }

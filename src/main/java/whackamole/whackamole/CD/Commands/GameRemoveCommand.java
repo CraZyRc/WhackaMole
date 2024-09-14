@@ -28,16 +28,21 @@ public class GameRemoveCommand extends ConfirmSubCommand {
     }
 
     @Override
-    protected String ConfirmationMessage() {
-        return Config.AppConfig.PREFIX + Translator.COMMANDS_REMOVE_CONFIRM.Format();
+    protected long ConfirmationTime() {
+        return 10*1000L;
     }
 
     @Override
-    protected PlayerCommandExecutor ExecutesConfirmed() {
+    protected PlayerCommandExecutor ExecutesPlayer() {
         return (sender, args) -> {
+            if (!HasCommandBeenConfirmed(sender)) {
+                sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_REMOVE_CONFIRM.Format());
+                return;
+            }
+            
             var game = args.<Game>getUnchecked("Game");
             if (game == null) return;
-
+            
             if (game.isRunning()) {
                 game.Stop();
                 sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_STOP_SUCCESS, game.getName());
