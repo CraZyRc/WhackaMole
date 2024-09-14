@@ -19,6 +19,7 @@ public class GameHologramCommand extends SubCommand {
     protected SubCommand[] SubCommands() {
         return new SubCommand[] {
             new GameHologramCreateCommand(),
+            new GameHologramDeleteCommand(),
         };
     }
 
