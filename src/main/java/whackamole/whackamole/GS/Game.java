@@ -121,6 +121,10 @@ public class Game {
         return Optional.ofNullable(this.game);
     }
 
+    public boolean isRunning() {
+        return this.game != null;
+    }
+
     public Settings getSettings() {
         return this.settings;
     }
