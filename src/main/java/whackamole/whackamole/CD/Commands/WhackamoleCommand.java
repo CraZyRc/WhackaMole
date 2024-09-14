@@ -21,6 +21,7 @@ public class WhackamoleCommand extends SubCommand {
             new GameStopCommand(),
             new GameRemoveCommand(),
             new TicketBuyCommand(),
+            new GameSettingsDisplayCommand(),
         };
     }
 }

@@ -39,17 +39,17 @@ public class GameCreateCommand extends SubCommand {
 
     @Override
     protected PlayerCommandExecutor ExecutesPlayer() {
-        return (player, args) -> {
-            if (!IsWorldValid(player.getWorld())) {
-                player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_CREATE_EROR_WORLDNOTENABLED);
+        return (sender, args) -> {
+            if (!IsWorldValid(sender.getWorld())) {
+                sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_CREATE_EROR_WORLDNOTENABLED);
                 return;
             }
             var gameName = args.<String>getUnchecked("Game name");
             try {
-                Manager.addGame(gameName, Grid.searchGrid(player.getWorld(), player), player);
-                player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_CREATE_SUCCESS.Format());
+                Manager.addGame(gameName, Grid.searchGrid(sender.getWorld(), sender), sender);
+                sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_CREATE_SUCCESS.Format());
             } catch (Exception e) {
-                player.sendMessage(Config.AppConfig.PREFIX + e.getMessage());
+                sender.sendMessage(Config.AppConfig.PREFIX + e.getMessage());
             }
         };
     }
