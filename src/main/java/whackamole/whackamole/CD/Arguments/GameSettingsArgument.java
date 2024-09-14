@@ -83,6 +83,6 @@ public class GameSettingsArgument extends Arguments {
                 default:
                     throw InputError(Translator.COMMANDS_ARGUMENTS_INVALIDSETTING);
             }
-        });
+        }); // TODO: Add suggestions
     }
 }

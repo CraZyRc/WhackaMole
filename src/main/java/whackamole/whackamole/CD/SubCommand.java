@@ -94,5 +94,8 @@ public abstract class SubCommand {
 
     public void UnRegister() {
         CommandAPI.unregister(this.GetName());
+        for (var alias : this.Aliases()) {
+            CommandAPI.unregister(alias);
+        }
     }
 }

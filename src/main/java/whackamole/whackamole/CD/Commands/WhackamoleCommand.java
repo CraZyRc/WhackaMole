@@ -24,6 +24,7 @@ public class WhackamoleCommand extends SubCommand {
             new GameSettingsDisplayCommand(),
             new GameSettingSetCommand(),
             new GameHologramCommand(),
+            new PluginReloadCommand(),
         };
     }
 }
