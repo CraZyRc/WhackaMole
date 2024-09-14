@@ -1,4 +1,4 @@
-package whackamole.whackamole.CD;
+package whackamole.whackamole.CD.Arguments;
 
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
@@ -28,7 +28,7 @@ public class Arguments {
     }
 
 
-    private static CustomArgumentException InputError(Translator message) {
+    protected static CustomArgumentException InputError(Translator message) {
         String arg = new CustomArgument.MessageBuilder().appendArgInput().toString();
         return CustomArgument.CustomArgumentException.fromString(message.Format(arg));
     }

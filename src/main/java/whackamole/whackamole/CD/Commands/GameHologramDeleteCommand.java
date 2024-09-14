@@ -4,8 +4,8 @@ import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.executors.PlayerCommandExecutor;
 import whackamole.whackamole.Config;
-import whackamole.whackamole.CD.Arguments;
 import whackamole.whackamole.CD.ConfirmSubCommand;
+import whackamole.whackamole.CD.Arguments.Arguments;
 import whackamole.whackamole.GS.Game;
 
 public class GameHologramDeleteCommand extends ConfirmSubCommand {

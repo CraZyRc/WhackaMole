@@ -4,8 +4,8 @@ import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.executors.PlayerCommandExecutor;
-import whackamole.whackamole.CD.Arguments;
 import whackamole.whackamole.CD.SubCommand;
+import whackamole.whackamole.CD.Arguments.Arguments;
 import whackamole.whackamole.GS.Game;
 
 public class GameHologramCreateCommand extends SubCommand {

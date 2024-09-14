@@ -3,8 +3,8 @@ package whackamole.whackamole.CD.Commands;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.executors.PlayerCommandExecutor;
 import whackamole.whackamole.Config;
-import whackamole.whackamole.CD.Arguments;
 import whackamole.whackamole.CD.ConfirmSubCommand;
+import whackamole.whackamole.CD.Arguments.Arguments;
 import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.Utils.Translator;
 
