@@ -13,9 +13,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import whackamole.whackamole.Config;
 import whackamole.whackamole.DB.*;
 import whackamole.whackamole.Grid;
+import whackamole.whackamole.Main;
 import whackamole.whackamole.Mole;
 import whackamole.whackamole.Mole.MoleState;
 import whackamole.whackamole.Mole.MoleType;
@@ -43,6 +46,8 @@ public class Game {
     public List<Player> hasActionbar = new ArrayList<>();
     private Random random = new Random();
     private List<UUID> currentyOnGird = new ArrayList<>();
+    private int count;
+    private BukkitTask task;
 
 
     public Game(GameRow result) {
@@ -304,34 +309,41 @@ public class Game {
 
     public void highlightGameStart() {
         for (var b : grid.grid) {
-            ArmorStand a = (ArmorStand) b.getWorld().spawnEntity(b.getLocation().clone().add(0.5,1,0.5), EntityType.ARMOR_STAND);
-//            a.setVisible(false);
+            ArmorStand a = (ArmorStand) b.getWorld().spawnEntity(b.getLocation().clone().add(0.5,0,0.5).subtract(0, 0.75, 0), EntityType.ARMOR_STAND);
+            a.setMarker(true);
+            a.setInvisible(true);
+            a.setGravity(false);
+            a.getEquipment().setHelmet(Misc.getSkull("181852943e36c8a3f1e3d0e4912549cbc205d947394adbe65f4d81d611be2c87"));
+            a.setGlowing(true);
             this.gridHighlight.add(a);
         }
 
-        for (int i = 0;i <= 200; i++) { // TODO: Fix this, change into a delayed runnable?
-            if (!this.gridHighlight.isEmpty()) {
-                if (i % 5 == 0) {
-                    for (var a : this.gridHighlight) {
-                        a.setGlowing(true); // TODO: fix the glowing
-                        a.isGlowing();
-                    }
-                } else {
-                    for (var a : this.gridHighlight) {
-                        a.setGlowing(false);
-                    }
+        // Timer that removes selector holograms after 10 seconds
+        this.count = 0;
+        this.task = new BukkitRunnable() {
+            @Override
+            public void run() {
+                count = count <= 10 ? count + 1 : -1;
+
+                // Pulses the glowing effect
+                for (var a : gridHighlight) {
+                    a.setGlowing(count % 2 != 0);
                 }
 
-                if (i == 200) {
-                    this.highlightGameStop();
+                // Removes the selector holograms after 10 seconds
+                if (count >= 10 || count == -1) {
+                    highlightGameStop();
+                    task.cancel();
                 }
             }
-        }
+        }.runTaskTimer(Main.getPlugin(Main.class), 0, 20);
     }
 
     public void highlightGameStop() {
-        for (var a : this.gridHighlight) {
-            a.remove();
+        if (!this.gridHighlight.isEmpty()) {
+            for (var a : this.gridHighlight) {
+                a.remove();
+            }
         }
     }
 
@@ -433,7 +445,13 @@ public class Game {
         }
     }
 
-    public void holoCreate(int holoID, String type, Location loc, int topCount) { // TODO: add check if holoID already exists
+    public void holoCreate(int holoID, String type, Location loc, int topCount) {
+        for ( var h : this.holos) {
+            if (h.holoID == holoID) {
+                Logger.error("Topscore hologram with ID: " + holoID + " already exists!"); // TODO: add translation
+                return;
+            }
+        }
         Hologram holo = new Hologram(this, holoID);
         this.holos.add(holo);
         holo.Create(holoID, type, loc, topCount);

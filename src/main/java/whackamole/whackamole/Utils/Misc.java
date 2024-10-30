@@ -26,7 +26,7 @@ public class Misc {
 
         URL urlObject;
         try {
-            urlObject = new URL("http://textures.minecraft.net/texture/" + url);
+            urlObject = new URL("http://textures.minecraft.net/texture/" + url); // url = 'Minecraft URL'
         } catch (MalformedURLException e) {
             throw new RuntimeException("Invalid URL", e);
         }

@@ -6,56 +6,69 @@
 Rewards:
   Example:
     Threshold: 30 # amount of points to reach for this reward
-    Animation: Spiral, RED / Butterfly, BLUE / CROWN, GOLD / DragonWings, GREEN / RITUAL, AQUA # display aniamtion when receiving the reward
     Games: # on what games is this reward achievable
       - Wam
       - WhackaMole
     RewardTypes:
+      - Type: Animation
+        Settings:
+          RewardChance: 100
+          Animation: Dragon_wings # See the example Animations in the animationfile
+          Duration: 2 # in seconds
       - Type: Item # type of reward, possible reward types: Item, Effect, Teleport, Currency, Message, Sound.
         Settings:
+          RewardChance: 100
           Material: DIAMOND_AXE
           Amount: 1
           NBT: "[enchantments={levels:{looting:1}},unbreakable={},damage=31]"
       - Type: Effect
         Settings:
+          RewardChance: 100
           Effect: GLOWING
           Duration: 15 # in ticks
           Amplifier: 1
       - Type: Teleport
         Settings:
+          RewardChance: 100
           World: world
-          X: 0
-          Y: 60
-          Z: 0
+          Rotation: NORTH
+          X: 0.0
+          Y: 60.0
+          Z: 0.0
       - Type: Currency
         Settings:
+          RewardChance: 100
           Quantity: 60
       - Type: Message
         Settings:
+          RewardChance: 100
           messageType: Json # Json or String
           Message: '["",{"text":"! JACKPOT ! ","bold":true,"color":"gold"},{"text":"well played !"}]'
       - Type: Sound
         Settings:
-          Sound: ENTITY_GENERIC_EXPLOD # A list of sounds can be found on: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
+          RewardChance: 100
+          Sound: ENTITY_GENERIC_EXPLODE # A list of sounds can be found on: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
           Volume: 1.0F
           Pitch: 1.0F
 
   Jackpot:
     Threshold: 150
-    Animation: CROWN, AQUA
     Games:
       - WAM
       - Spawn2
     RewardTypes:
       - Type: Currency
         Settings:
+          RewardChance: 100
           Quantity: 1500
       - Type: Effect
         Settings:
+          RewardChance: 100
           Effect: GLOWING
           Duration: 30
           Amplifier: 1
       - Type: Message
         Settings:
+          RewardChance: 100
           messageType: String
           Message: "&6&b!!!! JACKPOT !!!!"

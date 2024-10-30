@@ -97,6 +97,9 @@ public final class GamesManager implements Listener {
     }
 
     public void deleteGame(Game game) {
+        for (var h : game.holos) {
+            h.Delete();
+        }
         game.Delete();
         this.games.remove(game);
     }
