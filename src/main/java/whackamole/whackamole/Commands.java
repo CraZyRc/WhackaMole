@@ -2,6 +2,7 @@ package whackamole.whackamole;
 
 import dev.jorel.commandapi.*;
 import dev.jorel.commandapi.arguments.*;
+import it.unimi.dsi.fastutil.shorts.Short2ObjectAVLTreeMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -9,12 +10,15 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import whackamole.whackamole.GS.Game;
+import whackamole.whackamole.GS.Hologram;
 import whackamole.whackamole.GS.GamesManager;
 import whackamole.whackamole.RS.RewardsManager;
 import whackamole.whackamole.Utils.Econ;
 import whackamole.whackamole.Utils.Logger;
+import whackamole.whackamole.Utils.Misc;
 import whackamole.whackamole.Utils.Translator;
 
+import javax.sound.sampled.Line;
 import java.util.*;
 
 public class Commands {
@@ -143,7 +147,7 @@ public class Commands {
                                 player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_REMOVE_SUCCESS);
                             } else {
                                 player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_REMOVE_CONFIRM.Format());
-                                game.highlightGameStart();
+                                game.highlightGameStart(player);
                             }
                         })
                 )
@@ -206,20 +210,38 @@ public class Commands {
                         .withSubcommand(new CommandAPICommand("create") // TODO: add argument tips
                                 .withArguments(gameNameArgument("Game"))
                                 .withArguments(new IntegerArgument("holoID"))
-                                .withArguments(new StringArgument("Type"))
-                                .withArguments(new IntegerArgument("number of topscores"))
+                                .withArguments(new StringArgument("Type").replaceSuggestions(ArgumentSuggestions.strings(
+                                                    "Score"
+                                        ,           "Streak"
+                                        ,           "molesHit"
+                                        )))
+                                .withArguments(new IntegerArgument("number of topscores").replaceSuggestions(ArgumentSuggestions.strings(
+                                                    "3"
+                                        ,           "5"
+                                        ,           "10"
+                                )))
                                 .executesPlayer((player, args) -> {
                                     Game game = (Game) args.get(0);
-                                    game.holoCreate((int) args.get(1), (String) args.get(2), player.getLocation() , (int) args.get(3));
+                                    if (game.holoCreate((int) args.get(1), (String) args.get(2), player.getLocation() , (int) args.get(3))) {
+                                        player.sendMessage(Config.AppConfig.PREFIX + "Successfully created the hologram");
+                                    } else {
+                                        player.sendMessage(Config.AppConfig.PREFIX + Misc.Color("Hologram with ID: &b" + args.get(1) + "&f already exists!")); // TODO: add translation
+                                    }
                                 })
 
                         )
-                        .withSubcommand(new CommandAPICommand("remove") // TODO: add easy holoID autofill && add check if player is sure to delete the holo
-                                .withArguments(gameNameArgument("Game"))
-                                .withArguments(new IntegerArgument("holoID"))
+                        .withSubcommand(new CommandAPICommand("remove")
+                                .withArguments(holoIDArgument())
                                 .executes((player, args) -> {
                                     Game game = (Game) args.get(0);
                                     game.holoDelete((int) args.get(1));
+                                })
+                        )
+                        .withSubcommand(new CommandAPICommand("select")
+                                .withArguments(holoIDArgument())
+                                .executes((player, args) -> {
+                                    Game game = (Game) args.get(0);
+                                    game.holoSelect((int) args.get(1));
                                 })
                         )
                 )
@@ -341,6 +363,7 @@ public class Commands {
                                 .map(Game::getName)
                                 .toList().toArray(new String[0])));
     }
+
     private List<Argument<?>> settingsArgument() {
         List<Argument<?>> arguments = new ArrayList<>();
         arguments.add(new CustomArgument<>(new TextArgument("Settings"), Info -> {
@@ -577,6 +600,21 @@ public class Commands {
                 StringTooltip.ofString("teleport", this.teleportTip),
                 StringTooltip.ofString("streak", this.streakTip)
         })));
+        return arguments;
+    }
+
+    private List<Argument<?>> holoIDArgument() {
+        List<Argument<?>> arguments = new ArrayList<>();
+        arguments.add(gameNameArgument("Game"));
+        arguments.add(new IntegerArgument("holoID").replaceSuggestions(ArgumentSuggestions.strings(Info -> {
+            Game game = (Game) Info.previousArgs().get(0);
+            List<String> IDS = new ArrayList<>();
+            for (var v : game.holos) {
+                IDS.add(String.valueOf(v.holoID));
+            }
+            return IDS.toArray(new String[0]);
+        })));
+
         return arguments;
     }
 

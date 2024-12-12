@@ -25,7 +25,7 @@ public class HologramDBTest extends SQLTestBase {
     public void HologramDeleteSuccessfull() {
         hologramDB.Delete(row.holoID);
 
-        var rowList = hologramDB.Select(row.holoID);
+        var rowList = hologramDB.Select(row.gameID, row.holoID);
         softly.then(rowList).as("Row not correctly deleted").isEmpty();
     }
 

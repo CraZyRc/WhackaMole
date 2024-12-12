@@ -46,8 +46,10 @@ public class Game {
     public List<Player> hasActionbar = new ArrayList<>();
     private Random random = new Random();
     private List<UUID> currentyOnGird = new ArrayList<>();
-    private int count;
-    private BukkitTask task;
+    private int count1;
+    private BukkitTask task1;
+    private int count2;
+    private BukkitTask task2;
 
 
     public Game(GameRow result) {
@@ -57,6 +59,7 @@ public class Game {
         this.cooldown.onLoad();
         this.scoreboard.onLoad();
         this.grid = new Grid(settings);
+        this.holos = this.holoLoad();
         Logger.success(Translator.GAME_LOADSUCCESS.Format(this.getName()));
     }
 
@@ -78,7 +81,7 @@ public class Game {
             case RUNNING -> {}
             case STOPPING -> this.game.Stop();
             case REWARDING -> RewardsManager.executeRewards(this);
-            case DISABLED -> Logger.error("fix this code");
+            case DISABLED -> Logger.error("fix this code"); // TODO: FIX ?
         }
 
     }
@@ -307,7 +310,7 @@ public class Game {
         return this.grid.onGrid(loc);
     }
 
-    public void highlightGameStart() {
+    public void highlightGameStart(Player player) {
         for (var b : grid.grid) {
             ArmorStand a = (ArmorStand) b.getWorld().spawnEntity(b.getLocation().clone().add(0.5,0,0.5).subtract(0, 0.75, 0), EntityType.ARMOR_STAND);
             a.setMarker(true);
@@ -318,25 +321,27 @@ public class Game {
             this.gridHighlight.add(a);
         }
 
+        player.sendMessage(Config.AppConfig.PREFIX + "Game Grid is located at: " + grid.grid.get(0).getX() + ", " + grid.grid.get(0).getY() + ", " + grid.grid.get(0).getZ() + ", in World: " + grid.grid.get(0).getWorld()); // TODO: add translated message
+
         // Timer that removes selector holograms after 10 seconds
-        this.count = 0;
-        this.task = new BukkitRunnable() {
+        this.count1 = 0;
+        this.task1 = new BukkitRunnable() {
             @Override
             public void run() {
-                count = count <= 10 ? count + 1 : -1;
+                count1 = count1 <= 10 ? count1 + 1 : -1; // How many times they pulse
 
                 // Pulses the glowing effect
                 for (var a : gridHighlight) {
-                    a.setGlowing(count % 2 != 0);
+                    a.setGlowing(count1 % 2 != 0);
                 }
 
                 // Removes the selector holograms after 10 seconds
-                if (count >= 10 || count == -1) {
+                if (count1 >= 10 || count1 == -1) {
                     highlightGameStop();
-                    task.cancel();
+                    task1.cancel();
                 }
             }
-        }.runTaskTimer(Main.getPlugin(Main.class), 0, 20);
+        }.runTaskTimer(Main.getPlugin(Main.class), 0, 10); // how quick they pulse
     }
 
     public void highlightGameStop() {
@@ -445,26 +450,63 @@ public class Game {
         }
     }
 
-    public void holoCreate(int holoID, String type, Location loc, int topCount) {
+    public boolean holoCreate(int holoID, String type, Location loc, int topCount) {
         for ( var h : this.holos) {
             if (h.holoID == holoID) {
-                Logger.error("Topscore hologram with ID: " + holoID + " already exists!"); // TODO: add translation
-                return;
+                return false;
             }
         }
         Hologram holo = new Hologram(this, holoID);
         this.holos.add(holo);
         holo.Create(holoID, type, loc, topCount);
+        return true;
     }
 
-    public void holoDelete(int holoID) { // TODO: add 10s holo highlight after first call
+    public List<Hologram> holoLoad() {
+        List<HologramRow> Holograms = SQLite.Hologram.Select(this.getID());
+        List<Hologram> holos = new ArrayList<>();
+        for ( var h : Holograms) {
+            holos.add(new Hologram(h, this));
+        }
+        return holos;
+
+    }
+
+    public void holoSelect(int holoID) {
+        this.count2 = 0;
+        this.task2 = new BukkitRunnable() {
+            @Override
+            public void run() {
+                count2 = count2 <= 10 ? count2 + 1 : -1;
+
+                for (var h : holos) {
+                    if (h.holoID == holoID) {
+                        h.glowHolos(count2);
+                    }
+                }
+
+                // Removes the selector holograms after 10 seconds
+                if (count2 >= 10 || count2 == -1) {
+                    task2.cancel();
+                }
+            }
+        }.runTaskTimer(Main.getPlugin(Main.class), 0, 10);
+    }
+
+    public void holoDelete(int holoID) {
         for (var h : this.holos) {
             if (h.holoID == holoID) {
                 h.Delete();
+                this.holos.remove(h);
                 return;
             }
         }
+    }
 
+    public void holoUpdate() {
+        for (var h : this.holos) {
+            h.updateHolos();
+        }
     }
 
     private int Tick = 0;

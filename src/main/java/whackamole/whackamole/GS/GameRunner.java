@@ -94,6 +94,7 @@ public class GameRunner {
             this.Streak = 0;
             this.game.scoreboard.add(this.player, this.score, this.molesHit, this.highestStreak);
             this.game.cooldown.add(this.player);
+            this.game.holoUpdate();
         }
         this.game.setState(Game.gameState.REWARDING);
 

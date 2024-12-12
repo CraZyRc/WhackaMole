@@ -4,20 +4,23 @@ import org.bukkit.Location;
 import whackamole.whackamole.DB.Model.Column;
 import whackamole.whackamole.DB.Model.Table;
 
+import java.sql.ResultSet;
 import java.util.List;
 
 public class HologramDB extends Table<HologramRow> {
     protected HologramDB(SQLite sql) {
         super(sql, "Hologram", new Column<?>[] {
-            new Column<>("holoID",        Integer.class).IsPrimaryKey(true).AllowNull(false),
-            new Column<>("gameID",        Integer.class).AllowNull(false),
-            new Column<>("Type",          String.class).AllowNull(false),
-            new Column<>("Location",      Location.class).AllowNull(false),
-            new Column<>("topCount",      Integer.class).Default(3)
+                new Column<>("gameID",          Integer.class).AllowNull(false),
+                new Column<>("holoID",          Integer.class).AllowNull(false),
+                new Column<>("Type",            String.class).AllowNull(false),
+                new Column<>("Location",        Location.class).AllowNull(false),
+                new Column<>("topCount",        Integer.class).Default(3)
         }, HologramRow.class);
     }
 
-    public List<HologramRow> Select(int holoID) { return this.Select("holoID = ?", holoID);}
+    public List<HologramRow> Select(int gameID, int holoID) { return this.Select("gameID = ? AND holoID = ?", gameID, holoID);}
+
+    public List<HologramRow> Select(int gameID) { return this.Select("gameID = ?", gameID);}
 
     public HologramRow Insert(int gameID, int holoID, String type, Location loc, int topCount) {
         var row = new HologramRow();
@@ -34,6 +37,10 @@ public class HologramDB extends Table<HologramRow> {
         var row = new HologramRow();
         row.holoID = holoID;
         this.Delete(row);
+    }
+
+    public void Delete(HologramRow row) {
+        this.Delete("gameID = ? AND holoID = ?", row.gameID, row.holoID);
     }
 }
 
