@@ -2,6 +2,7 @@ package whackamole.whackamole;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
+import whackamole.whackamole.CD.Commands.WhackaMoleCMD;
 import whackamole.whackamole.DB.SQLite;
 
 import org.bukkit.plugin.java.JavaPlugin;
@@ -59,7 +60,7 @@ public final class Main extends JavaPlugin {
         RewardsManager.onLoad();
         CommandAPI.onEnable();
 
-        new Commands(this);
+        new WhackaMoleCMD().Register();
 
         this.getServer().getPluginManager().registerEvents(this.manager, this);
         

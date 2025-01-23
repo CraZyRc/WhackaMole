@@ -20,9 +20,10 @@ public class Hologram extends HologramRow {
     private Game game;
     public int holoID;
 
-    public Hologram(Game game, int holoID) {
+    public Hologram(Game game, int holoID, Location loc) {
         this.game = game;
         this.holoID = holoID;
+        this.Location = loc;
     }
 
     public Hologram(HologramRow row, Game game) {

@@ -114,12 +114,17 @@ Play:
   Play: "Play"
 
 Commands:
-  Buy: "Buy"
-  Settings: "Settings"
-  Reload: "Reload"
+  Game: "Game"
   Create: "create"
   Remove: "Remove"
-  Positions: "Positions"
-  Top: "Top"
   Start: "Start"
   Stop: "Stop"
+  Top: "Top"
+  Settings: "Settings"
+  Get: "Get"
+  Set: "Set"
+  Holo: "Holo"
+  Positions: "Positions"
+  Buy: "Buy"
+  Reload: "Reload"
+

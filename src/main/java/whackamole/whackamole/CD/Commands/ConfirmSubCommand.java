@@ -1,4 +1,4 @@
-package whackamole.whackamole.CD;
+package whackamole.whackamole.CD.Commands;
 
 import java.util.Hashtable;
 

@@ -321,7 +321,7 @@ public class Game {
             this.gridHighlight.add(a);
         }
 
-        player.sendMessage(Config.AppConfig.PREFIX + "Game Grid is located at: " + grid.grid.get(0).getX() + ", " + grid.grid.get(0).getY() + ", " + grid.grid.get(0).getZ() + ", in World: " + grid.grid.get(0).getWorld()); // TODO: add translated message
+        player.sendMessage(Config.AppConfig.PREFIX + Translator.GAME_HIGHLIGHTGAMESTART.Format(String.valueOf(grid.grid.get(0).getX()), String.valueOf(grid.grid.get(0).getY()), String.valueOf(grid.grid.get(0).getZ()), String.valueOf(grid.grid.get(0).getWorld())));
 
         // Timer that removes selector holograms after 10 seconds
         this.count1 = 0;
@@ -456,7 +456,7 @@ public class Game {
                 return false;
             }
         }
-        Hologram holo = new Hologram(this, holoID);
+        Hologram holo = new Hologram(this, holoID, loc);
         this.holos.add(holo);
         holo.Create(holoID, type, loc, topCount);
         return true;
@@ -472,18 +472,24 @@ public class Game {
 
     }
 
-    public void holoSelect(int holoID) {
+    public boolean holoSelect(int holoID, Player player) {
         this.count2 = 0;
+        boolean value = false;
+        Hologram H = null;
+        for (var h : holos) {
+            if (h.holoID == holoID) {
+                H = h;
+                value = true;
+                player.sendMessage(Config.AppConfig.PREFIX + Translator.Format(Translator.GAME_HOLOSELECT, String.format("%.2f", h.Location.getX()), String.format("%.2f", h.Location.getY()), String.format("%.2f", h.Location.getZ()), String.valueOf(h.Location.getWorld())));
+            }
+        }
+        Hologram finalH = H;
         this.task2 = new BukkitRunnable() {
             @Override
             public void run() {
                 count2 = count2 <= 10 ? count2 + 1 : -1;
 
-                for (var h : holos) {
-                    if (h.holoID == holoID) {
-                        h.glowHolos(count2);
-                    }
-                }
+                if (finalH != null) finalH.glowHolos(count2); else task2.cancel();
 
                 // Removes the selector holograms after 10 seconds
                 if (count2 >= 10 || count2 == -1) {
@@ -491,16 +497,20 @@ public class Game {
                 }
             }
         }.runTaskTimer(Main.getPlugin(Main.class), 0, 10);
+
+        return value;
     }
 
-    public void holoDelete(int holoID) {
+    public boolean holoDelete(int holoID) {
         for (var h : this.holos) {
             if (h.holoID == holoID) {
                 h.Delete();
                 this.holos.remove(h);
-                return;
+                return true;
             }
         }
+
+        return false;
     }
 
     public void holoUpdate() {

@@ -1,4 +1,4 @@
-package whackamole.whackamole.CD;
+package whackamole.whackamole.CD.Commands;
 
 
 import java.util.Arrays;
@@ -34,33 +34,33 @@ public abstract class SubCommand {
      * Get the Arguments for this Command
      * @return Arguments[]
      */
-    protected Argument<?>[] Arguments() { return new Argument[] {}; };
+    protected Argument<?>[] Arguments() { return new Argument[] {}; }
 
     /**
      * Get the aliases for this command
      * @return String[]
      */
-    protected String[] Aliases() { return new String[] {}; };
+    protected String[] Aliases() { return new String[] {}; }
 
     /**
      * Add subcommand to this command
      * @return SubCommand[]
      */
-    protected SubCommand[] SubCommands() { return new SubCommand[] {}; };
+    protected SubCommand[] SubCommands() { return new SubCommand[] {}; }
 
     /**
      * Method to run when this command is reached
      * @return CommandExecuter | null
      */
     @Nullable
-    protected CommandExecutor Executes() { return null; };
+    protected CommandExecutor Executes() { return null; }
 
     /**
      * Method to run when this command is reached
      * @return PlayerCommandExecutor | null
      */
     @Nullable
-    protected PlayerCommandExecutor ExecutesPlayer() { return null; };
+    protected PlayerCommandExecutor ExecutesPlayer() { return null; }
 
     private CommandAPICommand GetCommand() {
         var command         = new CommandAPICommand(this.GetName());

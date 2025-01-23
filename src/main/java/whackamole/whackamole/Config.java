@@ -115,20 +115,25 @@ public class Config {
     }
 
     public static class Permissions {
-        public static String PERM_TICKET_USE, PERM_BUY, PERM_RELOAD, PERM_CREATE, PERM_REMOVE, PERM_SETTINGS, PERM_PLAY, PERM_POSITIONS, PERM_TOP, PERM_START, PERM_STOP;
+        public static String PERM_TICKET_USE, PERM_GAME, PERM_BUY, PERM_RELOAD, PERM_CREATE, PERM_REMOVE, PERM_SETTINGS, PERM_GET, PERM_SET, PERM_HOLO, PERM_PLAY, PERM_POSITIONS, PERM_TOP, PERM_START, PERM_STOP;
 
         private static boolean LoadConfig(YMLFile configFile) {
             PERM_TICKET_USE     = "WAM." + configFile.getString("Play.Use Reset Ticket");
             PERM_PLAY           = "WAM." + configFile.getString("Play.Play");
-            PERM_BUY            = "WAM." + configFile.getString("Commands.Buy");
-            PERM_SETTINGS       = "WAM." + configFile.getString("Commands.Settings");
-            PERM_RELOAD         = "WAM." + configFile.getString("Commands.Reload");
+
+            PERM_GAME           = "WAM." + configFile.getString("Commands.Game");
             PERM_CREATE         = "WAM." + configFile.getString("Commands.Create");
             PERM_REMOVE         = "WAM." + configFile.getString("Commands.Remove");
-            PERM_POSITIONS      = "WAM." + configFile.getString("Commands.Positions");
-            PERM_TOP            = "WAM." + configFile.getString("Commands.Top");
             PERM_START          = "WAM." + configFile.getString("Commands.Start");
             PERM_STOP           = "WAM." + configFile.getString("Commands.Stop");
+            PERM_TOP            = "WAM." + configFile.getString("Commands.Top");
+            PERM_SETTINGS       = "WAM." + configFile.getString("Commands.Settings");
+            PERM_GET            = "WAM." + configFile.getString("Commands.Get");
+            PERM_SET            = "WAM." + configFile.getString("Commands.Set");
+            PERM_HOLO           = "WAM." + configFile.getString("Commands.Holo");
+            PERM_POSITIONS      = "WAM." + configFile.getString("Commands.Positions");
+            PERM_BUY            = "WAM." + configFile.getString("Commands.Buy");
+            PERM_RELOAD         = "WAM." + configFile.getString("Commands.Reload");
             return true;
         }
     }

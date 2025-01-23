@@ -1,13 +1,15 @@
 package whackamole.whackamole.CD.Arguments;
 
-import dev.jorel.commandapi.arguments.Argument;
-import dev.jorel.commandapi.arguments.ArgumentSuggestions;
-import dev.jorel.commandapi.arguments.CustomArgument;
+import dev.jorel.commandapi.IStringTooltip;
+import dev.jorel.commandapi.StringTooltip;
+import dev.jorel.commandapi.arguments.*;
 import dev.jorel.commandapi.arguments.CustomArgument.CustomArgumentException;
-import dev.jorel.commandapi.arguments.StringArgument;
 import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.GS.GamesManager;
 import whackamole.whackamole.Utils.Translator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Arguments {
     private final static GamesManager Manager = GamesManager.getInstance();
@@ -25,6 +27,21 @@ public class Arguments {
             }
             throw InputError(Translator.COMMANDS_ARGUMENTS_UNKNOWNGAMENAME);
         }).replaceSuggestions(ArgumentSuggestions.strings(Manager.games.stream().map(Game::getName).toList()));
+    }
+
+    /**
+     * Custom Argument for retrieving Holo ID.
+     * @return Argument<Integer>
+     */
+    public static Argument<Integer> holoIDArgument() {
+        return new IntegerArgument("holoID").replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(Info -> {
+            Game game = (Game) Info.previousArgs().get(0);
+            List<IStringTooltip> IDS = new ArrayList<>();
+            for (var v : game.holos) {
+                IDS.add(StringTooltip.ofString(String.valueOf(v.holoID), Translator.COMMANDS_TIPS_HOLOID.Format()));
+            }
+            return IDS.toArray(new IStringTooltip[0]);
+        }));
     }
 
 
