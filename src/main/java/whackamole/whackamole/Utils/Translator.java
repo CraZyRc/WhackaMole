@@ -1,12 +1,13 @@
 package whackamole.whackamole.Utils;
 
-import java.util.*;
-import java.util.regex.Matcher;
-
 import org.bukkit.entity.Player;
 import whackamole.whackamole.Config;
 import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.ResourceManager;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
 
 public enum Translator {
         TRANSLATOR                                          ("Translator")
@@ -55,7 +56,7 @@ public enum Translator {
     ,   GAME_ACTIONBAR_MOLEGAMEOVER                         ("Game.Actionbar.moleGameOver", Game.class)
     ,   GAME_ACTIONBAR_GAMEOVER                             ("Game.Actionbar.gameOver")
     ,   GAME_MOLEMISSED                                     ("Game.moleMissed", Game.class)
-    ,   GAME_HOLOSELECT                                     ("Game.holoSelect", String.class, String.class, String.class, String.class)
+    ,   GAME_HOLO_SELECT                                    ("Game.Holo.Select", String.class, String.class, String.class, String.class)
     ,   GAME_LOADSUCCESS                                    ("Game.loadSuccess", Game.class)
     ,   GAME_HOLO_HITSTREAK                                 ("Game.Holo.hitStreak")
     ,   GAME_HOLO_HIGHSCORES                                ("Game.Holo.highScores")
@@ -120,6 +121,8 @@ public enum Translator {
     ,   COMMANDS_HOLO_REMOVE                                ("Commands.Holo.Remove")
     ,   COMMANDS_HOLO_REMOVE_SUCCESS                        ("Commands.Holo.Remove.Success")
     ,   COMMANDS_HOLO_REMOVE_ERROR                          ("Commands.Holo.Remove.Error")
+    ,   COMMANDS_HOLO_TOGGLEID                              ("Commands.Holo.toggleID")
+    ,   COMMANDS_HOLO_TOGGLEID_SUCCESS                      ("Commands.Holo.toggleID.Success")
     ,   COMMANDS_HOLO_SELECT                                ("Commands.Holo.Select")
     ,   COMMANDS_HOLO_SELECT_ERROR                          ("Commands.Holo.Select.Error")
     ,   COMMANDS_SETTINGS                                   ("Commands.Settings")
@@ -181,121 +184,130 @@ public enum Translator {
     ,   REWARDS_INVALIDREWARDTYPE                           ("Rewards.invalidRewardType", String.class)
     ,   ANIMATIONCOMMAND_INVALID_COMMAND                    ("AnimationCommand.Invalid.Command", String.class);
 
-    public String key;
-    public String value = "";
-    public String formattedValue;
+  public String key;
+  public String value = "";
+  public String formattedValue;
 
-    private Translator(String key) {
-        this.key = key;
-        this.requiredTypes = new Object[0];
-        LookupTranslation();
-    }
-    
-    public Object[] requiredTypes;
-    private Translator(String key, Object... requiredTypes) {
-        this(key);
-        this.requiredTypes = requiredTypes;
-    }
+  private Translator(String key) {
+    this.key = key;
+    this.requiredTypes = new Object[0];
+    LookupTranslation();
+  }
 
+  public Object[] requiredTypes;
 
-    private void LookupTranslation() {
-        this.value = ResourceManager.getProperty(this.key);
-
-        if (this.value.isEmpty()) {
-            Logger.error(this.key + " has no value, cannot initialize");
-        }
-
-    }
-
-    public String Format() {
-        return Format(this, new Object[0]);
-    }
-    public String Format(Object... replacements) {
-        return Translator.Format(this, replacements); 
-    }
-    public static String Format(Translator type) {
-        return Format(type, new Object[0]);
-    }
-    public static String Format(Translator type, Object... replacements) {
-        assert typesToString(type.requiredTypes).equals(typesToString(replacements)) 
-            : "Translator format failed for " + type.key + ": " + typesToString(type.requiredTypes) + " | "+ typesToString(replacements); 
+  private Translator(String key, Object... requiredTypes) {
+    this(key);
+    this.requiredTypes = requiredTypes;
+  }
 
 
-        type.formattedValue = type.value;
-        // * Config formatting
-        type.configFormat();
+  private void LookupTranslation() {
+    this.value = ResourceManager.getProperty(this.key);
 
-        List<String> stringReplacements = new ArrayList<String>();
-        for(Object replacement : replacements) {
-            if(replacement instanceof Game)     type.Format((Game) replacement);
-            if(replacement instanceof YMLFile)  type.Format((YMLFile) replacement);
-            if(replacement instanceof Player)   type.Format((Player) replacement);
-            if(replacement instanceof String)   stringReplacements.add((String) replacement);
-        }
-        for(String item : stringReplacements) {
-            type.Format(item);
-        }
-        return Misc.Color(type.formattedValue);
+    if (this.value.isEmpty()) {
+      Logger.error(this.key + " has no value, cannot initialize");
     }
 
+  }
 
-    private void Format(Game game) {
-        game.getRunning().ifPresent((runner) -> {
-            this.formattedValue = this.formattedValue.replace("{Score}", String.valueOf(runner.score));
-            this.formattedValue = this.formattedValue.replace("{missedMoles}", String.valueOf(runner.missed));
-        });
-        this.formattedValue = this.formattedValue.replace("{gameName}", String.valueOf(game.getName()));
-        this.formattedValue = this.formattedValue.replace("{maxMissed}", String.valueOf(game.getSettings().missCount));
-        this.formattedValue = this.formattedValue.replace("{World}", String.valueOf(game.getSettings().world));
-    }
-    private void Format(Player player) {
-        this.formattedValue = this.formattedValue.replace("{Player}", player.getName());
-    }
-    private void Format(YMLFile file) {
-        this.formattedValue = this.formattedValue.replace("{File}", file.file.getName());
-    }
-    private void Format(String item) {
-        this.formattedValue = this.formattedValue.replaceFirst("\\{.*?\\}", Matcher.quoteReplacement(item));
-    }   
-    private void configFormat() {
-        this.formattedValue = this.formattedValue
-        .replace("{configVersion}",     Config.AppConfig.configVersion)
-        .replace("{Symbol}",            Config.Currency.SYMBOL)
-        .replace("{ticketPrice}",       String.valueOf(Config.Currency.TICKETPRICE))
-        .replace("{currencyPlur}",      Config.Currency.CURRENCY_PLUR)
-        .replace("{currencySing}",      Config.Currency.CURRENCY_SING)
-        .replace("{commandSettings}",  "/wam " + COMMANDS_SETTINGS)
-        .replace("{commandRemove}",    "/wam " + COMMANDS_REMOVE)
-        .replace("{commandReload}",    "/wam " + COMMANDS_RELOAD)
-        .replace("{commandBuy}",       "/wam " + COMMANDS_BUY);
-    }
-    public String toString() {
-        return Misc.Color(this.value);
-    }
+  public String Format() {
+    return Format(this, new Object[0]);
+  }
+
+  public String Format(Object... replacements) {
+    return Translator.Format(this, replacements);
+  }
+
+  public static String Format(Translator type) {
+    return Format(type, new Object[0]);
+  }
+
+  public static String Format(Translator type, Object... replacements) {
+    assert typesToString(type.requiredTypes).equals(typesToString(replacements))
+            : "Translator format failed for " + type.key + ": " + typesToString(type.requiredTypes) + " | " + typesToString(replacements);
 
 
-    private static String typesToString(Object[] types) {
-        List<String> out = new ArrayList<String>();
-        for(Object i : types) {
-            String name = "";
-            if(i == null) name = "null";
-            else if(i instanceof Class) name = ((Class<?>) i).getName();
-            else name = i.getClass().getName();
-            out.add(name.substring(name.lastIndexOf('.') + 1));
-        }
-        if(types.length == 0) return "";
-        else return " '" + String.join("', '", out) + "' ";
-    }
+    type.formattedValue = type.value;
+    // * Config formatting
+    type.configFormat();
 
-    public static void onLoad() {
-        for (Translator item : values()) {
-            item.LookupTranslation();
-        }
+    List<String> stringReplacements = new ArrayList<String>();
+    for (Object replacement : replacements) {
+      if (replacement instanceof Game) type.Format((Game) replacement);
+      if (replacement instanceof YMLFile) type.Format((YMLFile) replacement);
+      if (replacement instanceof Player) type.Format((Player) replacement);
+      if (replacement instanceof String) stringReplacements.add((String) replacement);
     }
+    for (String item : stringReplacements) {
+      type.Format(item);
+    }
+    return Misc.Color(type.formattedValue);
+  }
 
-    public static void onReload() {
-        for (Translator item : values()) {
-            item.LookupTranslation();
-        }
+
+  private void Format(Game game) {
+    game.getRunning().ifPresent((runner) -> {
+      this.formattedValue = this.formattedValue.replace("{Score}", String.valueOf(runner.score));
+      this.formattedValue = this.formattedValue.replace("{missedMoles}", String.valueOf(runner.missed));
+    });
+    this.formattedValue = this.formattedValue.replace("{gameName}", String.valueOf(game.getName()));
+    this.formattedValue = this.formattedValue.replace("{maxMissed}", String.valueOf(game.getSettings().missCount));
+    this.formattedValue = this.formattedValue.replace("{World}", String.valueOf(game.getSettings().world));
+  }
+
+  private void Format(Player player) {
+    this.formattedValue = this.formattedValue.replace("{Player}", player.getName());
+  }
+
+  private void Format(YMLFile file) {
+    this.formattedValue = this.formattedValue.replace("{File}", file.file.getName());
+  }
+
+  private void Format(String item) {
+    this.formattedValue = this.formattedValue.replaceFirst("\\{.*?\\}", Matcher.quoteReplacement(item));
+  }
+
+  private void configFormat() {
+    this.formattedValue = this.formattedValue
+            .replace("{configVersion}", Config.AppConfig.configVersion)
+            .replace("{Symbol}", Config.Currency.SYMBOL)
+            .replace("{ticketPrice}", String.valueOf(Config.Currency.TICKETPRICE))
+            .replace("{currencyPlur}", Config.Currency.CURRENCY_PLUR)
+            .replace("{currencySing}", Config.Currency.CURRENCY_SING)
+            .replace("{commandSettings}", "/wam " + COMMANDS_SETTINGS)
+            .replace("{commandRemove}", "/wam " + COMMANDS_REMOVE)
+            .replace("{commandReload}", "/wam " + COMMANDS_RELOAD)
+            .replace("{commandBuy}", "/wam " + COMMANDS_BUY);
+  }
+
+  public String toString() {
+    return Misc.Color(this.value);
+  }
+
+
+  private static String typesToString(Object[] types) {
+    List<String> out = new ArrayList<String>();
+    for (Object i : types) {
+      String name = "";
+      if (i == null) name = "null";
+      else if (i instanceof Class) name = ((Class<?>) i).getName();
+      else name = i.getClass().getName();
+      out.add(name.substring(name.lastIndexOf('.') + 1));
     }
+    if (types.length == 0) return "";
+    else return " '" + String.join("', '", out) + "' ";
+  }
+
+  public static void onLoad() {
+    for (Translator item : values()) {
+      item.LookupTranslation();
+    }
+  }
+
+  public static void onReload() {
+    for (Translator item : values()) {
+      item.LookupTranslation();
+    }
+  }
 }

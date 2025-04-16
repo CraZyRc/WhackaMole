@@ -22,7 +22,7 @@ public class TicketBuyCMD extends ConfirmSubCommand {
 
   @Override
   protected long ConfirmationTime() {
-    return 10*1000L;
+    return 10 * 1000L;
   }
 
   @Override
@@ -34,7 +34,7 @@ public class TicketBuyCMD extends ConfirmSubCommand {
         return;
       }
 
-      if (! TicketBuyCMD.econ.has(sender, Config.Currency.TICKETPRICE)) {
+      if (!TicketBuyCMD.econ.has(sender, Config.Currency.TICKETPRICE)) {
         sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_BUY_LOWECONOMY);
         return;
       }

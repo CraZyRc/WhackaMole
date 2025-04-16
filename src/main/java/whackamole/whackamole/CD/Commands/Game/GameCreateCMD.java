@@ -26,7 +26,7 @@ public class GameCreateCMD extends SubCommand {
 
   @Override
   protected Argument<?>[] Arguments() {
-    return new Argument[] {
+    return new Argument[]{
             this.gameName()
     };
   }
@@ -49,7 +49,7 @@ public class GameCreateCMD extends SubCommand {
   }
 
   private Argument<String> gameName() {
-    return new StringArgument("Game name").replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(suggestInfo -> new IStringTooltip[] {
+    return new StringArgument("Game name").replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(suggestInfo -> new IStringTooltip[]{
             StringTooltip.ofString("Whackamole", Translator.COMMANDS_TIPS_NAME.toString()),
             StringTooltip.ofString("MOLESTER", Translator.COMMANDS_TIPS_NAME.toString()),
             StringTooltip.ofString("Something...Something", Translator.COMMANDS_TIPS_NAME.toString()),

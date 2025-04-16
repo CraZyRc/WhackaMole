@@ -22,14 +22,14 @@ public class GameRemoveCMD extends ConfirmSubCommand {
 
   @Override
   protected Argument<?>[] Arguments() {
-    return new Argument[] {
+    return new Argument[]{
             Arguments.Games()
     };
   }
 
   @Override
   protected long ConfirmationTime() {
-    return 10*1000L;
+    return 10 * 1000L;
   }
 
   @Override
