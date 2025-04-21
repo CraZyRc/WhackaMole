@@ -48,12 +48,13 @@ public class Hologram extends HologramRow {
      * This is to keep the list ordered and not random
      */
     Location loc;
-    if (this.showID) { // TODO: fix the loading of the armorstands with correct ID display
+    if (this.showID) {
       loc = row.Location.clone().add(0, 0.5, 0);
     } else {
       loc = row.Location.clone().add(0, 0.25, 0);
     }
-    for (int i = -2; i < row.topCount; i++) {
+
+    for (int i = (showID ? -3 : -2); i < row.topCount; i++) {
       List<Entity> entities = (List<Entity>) loc.getWorld().getNearbyEntities(loc.subtract(0, 0.25, 0), 0.1, 0.1, 0.1);
       if (!entities.isEmpty()) {
         ArmorStand a = (ArmorStand) entities.get(0);
@@ -228,7 +229,7 @@ public class Hologram extends HologramRow {
   public void toggleHoloID() {
     ArmorStand H = null;
     for (var h : this.armorstandList) {
-      if (showID) {
+      if (this.showID) {
         if (h.getScoreboardTags().contains("Top:1")) {
           ArmorStand armorstandID = (ArmorStand) h.getLocation().getWorld().spawnEntity(h.getLocation().add(0, 0.25, 0), EntityType.ARMOR_STAND);
           armorstandID = this.addArmorStandSettings(armorstandID, "showID");
@@ -237,9 +238,12 @@ public class Hologram extends HologramRow {
 
         }
       } else {
-        if (h.getScoreboardTags().contains("showID")) h.remove();
+        if (h.getScoreboardTags().contains("showID")) {
+          h.remove();
+        }
       }
     }
+
     if (H != null) this.armorstandList.add(H);
   }
 
@@ -258,6 +262,12 @@ public class Hologram extends HologramRow {
 
         n++;
       }
+    }
+  }
+
+  public void Update() {
+    for (var row : holograms) {
+      this.db.update(row);
     }
   }
 

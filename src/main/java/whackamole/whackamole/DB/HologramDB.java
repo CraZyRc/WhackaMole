@@ -9,7 +9,7 @@ import java.util.List;
 public class HologramDB extends Table<HologramRow> {
   protected HologramDB(SQLite sql) {
     super(sql, "Hologram", new Column<?>[]{
-            new Column<>("gameID", Integer.class).AllowNull(false),
+            new Column<>("gameID", Integer.class).IsPrimaryKey(true).AllowNull(false),
             new Column<>("holoID", Integer.class).AllowNull(false),
             new Column<>("Type", String.class).AllowNull(false),
             new Column<>("Location", Location.class).AllowNull(false),
@@ -36,6 +36,10 @@ public class HologramDB extends Table<HologramRow> {
     row.showID = showID;
 
     return this.Insert(row);
+  }
+
+  public void update(HologramRow row) {
+    this.Update(row);
   }
 
   public void Delete(int holoID) {

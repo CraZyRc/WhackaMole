@@ -519,6 +519,7 @@ public class Game {
       value = true;
       H.showID = !H.showID;
       H.toggleHoloID();
+      H.Update();
     }
 
     return value;
