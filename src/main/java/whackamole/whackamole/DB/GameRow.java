@@ -9,7 +9,12 @@ public class GameRow extends Row {
      * The game name
      */
     public String Name;
-    
+
+    /**
+     * If the gameName is displayed
+     */
+    public boolean displayName;
+
     /**
      * The name of the world the game is in
      */

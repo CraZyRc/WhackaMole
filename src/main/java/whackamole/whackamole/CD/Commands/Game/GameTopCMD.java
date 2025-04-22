@@ -6,14 +6,19 @@ import dev.jorel.commandapi.arguments.CustomArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.executors.PlayerCommandExecutor;
 import org.bukkit.ChatColor;
+import org.jetbrains.annotations.Nullable;
 import whackamole.whackamole.CD.Arguments.Arguments;
 import whackamole.whackamole.CD.Commands.SubCommand;
+import whackamole.whackamole.Config;
 import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.Utils.Translator;
 
 public class GameTopCMD extends SubCommand {
   @Override
   protected String GetName() { return Translator.COMMANDS_TOP.Format(); }
+
+  @Override
+  protected @Nullable String Permission() { return Config.Permissions.PERM_TOP; }
 
   @Override
   protected Argument<?>[] Arguments() {

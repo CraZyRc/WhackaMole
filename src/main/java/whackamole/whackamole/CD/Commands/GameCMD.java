@@ -20,6 +20,7 @@ public class GameCMD extends SubCommand {
             new GameRemoveCMD(),
             new GameStartCMD(),
             new GameStopCMD(),
+            new GameToggleCMD(),
             new GameTopCMD()
     };
   }

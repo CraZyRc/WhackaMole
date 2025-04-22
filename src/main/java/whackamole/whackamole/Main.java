@@ -49,9 +49,6 @@ public final class Main extends JavaPlugin {
 
   @Override
   public void onEnable() {
-    Logger.info("Test");
-
-
     if (!valid_config) {
       Logger.error(Translator.MAIN_CONFIGLOADFAIL);
       this.getServer().getPluginManager().disablePlugin(this);

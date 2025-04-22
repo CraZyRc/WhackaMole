@@ -14,6 +14,7 @@ public class GameDB extends Table<GameRow> {
         super(sql, "Game", new Column<?>[] {
                 new Column<>("ID",                  Integer.class).IsPrimaryKey(true).IsUnique(true).AllowNull(false).HasAutoIncrement(true),
                 new Column<>("Name",                String.class).AllowNull(false),
+                new Column<>("displayName",         Boolean.class).Default(false),
                 new Column<>("worldName",           String.class),
                 new Column<>("teleportLocation",    Location.class),
                 new Column<>("scoreLocation",       Location.class),

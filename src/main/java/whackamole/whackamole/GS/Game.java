@@ -5,6 +5,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -118,10 +119,15 @@ public class Game {
   }
 
   public void Delete() {
+    for (var h : this.holos) {
+        h.Delete();
+        this.holos.remove(h);
+    }
     this.grid.Delete();
     this.cooldown.Delete();
     this.scoreboard.Delete();
     this.settings.Delete();
+
   }
 
   public int getID() {
@@ -146,6 +152,11 @@ public class Game {
 
   public Scoreboard getScoreboard() {
     return this.scoreboard;
+  }
+
+  public void setDisplayName(boolean displayName) {
+    this.settings.displayName = displayName;
+    this.Save();
   }
 
   public void setJackpotSpawn(int jackpotSpawn) {
@@ -541,6 +552,31 @@ public class Game {
     for (var h : this.holos) {
       h.updateHolos();
     }
+  }
+
+  public boolean toggleDisplay() {
+    Location loc = this.settings.scoreLocation.clone().add(0,2,0);
+    boolean value = false;
+
+    this.setDisplayName(!this.settings.displayName);
+
+    if (this.settings.displayName) {
+      value = true;
+      ArmorStand armorstandName = (ArmorStand) loc.getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
+      armorstandName = Misc.addArmorStandSettings(armorstandName, "displayName");
+      armorstandName.setCustomName(Misc.Color("&6&l[-> &e&l" + this.settings.Name + "&6&l <-]"));
+    } else {
+      List<Entity> A = (List<Entity>) loc.getWorld().getNearbyEntities(loc, 0.1, 0.1, 0.1);
+      if (!A.isEmpty()) {
+        value = true;
+        ArmorStand a = (ArmorStand) A.get(0);
+        if (a.getScoreboardTags().contains("displayName")) {
+          a.remove();
+        }
+      }
+    }
+
+    return value;
   }
 
   private int Tick = 0;

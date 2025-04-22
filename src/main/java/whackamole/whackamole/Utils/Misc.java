@@ -3,6 +3,7 @@ package whackamole.whackamole.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerProfile;
@@ -56,5 +57,16 @@ public class Misc {
             matcher = pattern.matcher(message);
         }
         return ChatColor.translateAlternateColorCodes('&', message);
+    }
+
+    public static ArmorStand addArmorStandSettings(ArmorStand armorStand, String type) {
+        armorStand.setVisible(true);
+        armorStand.setCustomNameVisible(true);
+        armorStand.setGravity(false);
+        armorStand.setInvisible(true);
+        armorStand.setMarker(true);
+        armorStand.isInvulnerable();
+        armorStand.addScoreboardTag(type);
+        return armorStand;
     }
 }

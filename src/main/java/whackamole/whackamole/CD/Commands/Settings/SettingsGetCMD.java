@@ -26,25 +26,28 @@ public class SettingsGetCMD extends SubCommand {
     return ((sender, args) -> {
       Game game = (Game) args.get(0);
       var settings = game.getSettings();
+      ChatColor w = ChatColor.WHITE;
+      ChatColor a = ChatColor.AQUA;
       String line = ChatColor.YELLOW + "\n| ";
       String outputString = ChatColor.YELLOW + "\n[>------------------------------------<]\n" +
               "|" + ChatColor.WHITE + " Game: " + ChatColor.AQUA + game.getName() +
               line +
-              line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_DIRECTION            + ": " + ChatColor.AQUA + settings.spawnRotation +
-              line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_JACKPOT              + ": " + ChatColor.AQUA + settings.hasJackpot +
-              line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE   + ": " + ChatColor.AQUA + settings.jackpotSpawnChance +
-              line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_MAXMISSED            + ": " + ChatColor.AQUA + settings.missCount +
-              line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_SCOREPOINTS          + ": " + ChatColor.AQUA + settings.scorePoints +
-              line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_SPAWNRATE            + ": " + ChatColor.AQUA + settings.spawnTimer +
-              line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_SPAWNCHANCE          + ": " + ChatColor.AQUA + settings.spawnChance +
-              line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_MOLESPEED            + ": " + ChatColor.AQUA + settings.moleSpeed +
-              line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE      + ": " + ChatColor.AQUA + settings.difficultyScale +
-              line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE   + ": " + ChatColor.AQUA + settings.difficultyScore +
-              line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_MOLEHEAD             + ": " + ChatColor.AQUA + settings.moleHead +
-              line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_JACKPOTHEAD          + ": " + ChatColor.AQUA + settings.jackpotHead +
-              line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_COOLDOWN             + ": " + ChatColor.AQUA + settings.getCooldown() +
-              line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_MUSIC                + ": " + ChatColor.AQUA + settings.Music +
-              line + ChatColor.WHITE + Translator.COMMANDS_SETTINGS_TOGGLESCOREBOARD     + ": " + ChatColor.AQUA + settings.toggleScoreboard +
+              line + w + Translator.COMMANDS_SETTINGS_DIRECTION            + ": " + a + settings.spawnRotation +
+              line + w + Translator.COMMANDS_SETTINGS_JACKPOT              + ": " + a + settings.hasJackpot +
+              line + w + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE   + ": " + a + settings.jackpotSpawnChance +
+              line + w + Translator.COMMANDS_SETTINGS_MAXMISSED            + ": " + a + settings.missCount +
+              line + w + Translator.COMMANDS_SETTINGS_SCOREPOINTS          + ": " + a + settings.scorePoints +
+              line + w + Translator.COMMANDS_SETTINGS_SPAWNRATE            + ": " + a + settings.spawnTimer +
+              line + w + Translator.COMMANDS_SETTINGS_SPAWNCHANCE          + ": " + a + settings.spawnChance +
+              line + w + Translator.COMMANDS_SETTINGS_MOLESPEED            + ": " + a + settings.moleSpeed +
+              line + w + Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE      + ": " + a + settings.difficultyScale +
+              line + w + Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE   + ": " + a + settings.difficultyScore +
+              line + w + Translator.COMMANDS_SETTINGS_MOLEHEAD             + ": " + a + settings.moleHead +
+              line + w + Translator.COMMANDS_SETTINGS_JACKPOTHEAD          + ": " + a + settings.jackpotHead +
+              line + w + Translator.COMMANDS_SETTINGS_COOLDOWN             + ": " + a + settings.getCooldown() +
+              line + w + Translator.COMMANDS_SETTINGS_MUSIC                + ": " + a + settings.Music +
+              line + w + Translator.COMMANDS_SETTINGS_TOGGLESCOREBOARD     + ": " + a + settings.toggleScoreboard +
+              line + w + Translator.COMMANDS_TOGGLE                        + ": " + a + settings.displayName +
               ChatColor.YELLOW + "\n| \n[>------------------------------------<]";
       sender.sendMessage(outputString);
     });

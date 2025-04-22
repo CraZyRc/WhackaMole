@@ -90,13 +90,13 @@ public class Hologram extends HologramRow {
   private void summonHolos(HologramRow hologram) {
     // Adding top hologram
     ArmorStand armorstandMain = (ArmorStand) hologram.Location.getWorld().spawnEntity(hologram.Location, EntityType.ARMOR_STAND);
-    armorstandMain = this.addArmorStandSettings(armorstandMain, "Top:1");
+    armorstandMain = Misc.addArmorStandSettings(armorstandMain, "Top:1");
     armorstandMain = this.nameHolos(armorstandMain, ChatColor.YELLOW, ChatColor.GOLD);
     this.armorstandList.add(armorstandMain);
 
     // Adding second line hologram
     ArmorStand armorstandType = (ArmorStand) hologram.Location.getWorld().spawnEntity(hologram.Location.subtract(0, 0.25, 0), EntityType.ARMOR_STAND);
-    armorstandType = this.addArmorStandSettings(armorstandType, hologram.Type);
+    armorstandType = Misc.addArmorStandSettings(armorstandType, hologram.Type);
     armorstandType.addScoreboardTag("Top:2");
     armorstandType = this.nameHolos(armorstandType, hologram.Type, ChatColor.YELLOW, ChatColor.GOLD);
 
@@ -104,7 +104,7 @@ public class Hologram extends HologramRow {
     // Adding ranks hologram
     for (int i = 0; i < hologram.topCount; i++) {
       ArmorStand a = (ArmorStand) hologram.Location.getWorld().spawnEntity(hologram.Location.subtract(0, 0.25, 0), EntityType.ARMOR_STAND);
-      a = this.addArmorStandSettings(a, hologram.Type);
+      a = Misc.addArmorStandSettings(a, hologram.Type);
       a.addScoreboardTag("Bottom");
       a = this.nameHolos(a, i, hologram.Type, ChatColor.DARK_AQUA, ChatColor.WHITE, ChatColor.AQUA, ChatColor.YELLOW);
 
@@ -232,7 +232,7 @@ public class Hologram extends HologramRow {
       if (this.showID) {
         if (h.getScoreboardTags().contains("Top:1")) {
           ArmorStand armorstandID = (ArmorStand) h.getLocation().getWorld().spawnEntity(h.getLocation().add(0, 0.25, 0), EntityType.ARMOR_STAND);
-          armorstandID = this.addArmorStandSettings(armorstandID, "showID");
+          armorstandID = Misc.addArmorStandSettings(armorstandID, "showID");
           armorstandID.setCustomName(Misc.Color("&b&l[-> &3&l" + this.holoID + "&b&l <-]"));
           H = armorstandID;
 
@@ -281,14 +281,5 @@ public class Hologram extends HologramRow {
     return this.holoID;
   }
 
-  private ArmorStand addArmorStandSettings(ArmorStand armorStand, String type) {
-    armorStand.setVisible(true);
-    armorStand.setCustomNameVisible(true);
-    armorStand.setGravity(false);
-    armorStand.setInvisible(true);
-    armorStand.setMarker(true);
-    armorStand.isInvulnerable();
-    armorStand.addScoreboardTag(type);
-    return armorStand;
-  }
+
 }

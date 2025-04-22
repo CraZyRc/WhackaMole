@@ -166,6 +166,8 @@ public enum Translator {
     ,   COMMANDS_POSITIONS_TELEPORT_ONGRID                  ("Commands.Positions.Teleport.onGrid")
     ,   COMMANDS_POSITIONS_SUCCESS                          ("Commands.Positions.Success", String.class)
     ,   COMMANDS_TOP                                        ("Commands.Top")
+    ,   COMMANDS_TOGGLE                                     ("Commands.Toggle")
+    ,   COMMANDS_TOGGLE_SUCCESS                             ("Commands.Toggle.Success")
     ,   COMMANDS_ARGUMENTS_UNKNOWNGAMENAME                  ("Commands.Arguments.unknownGameName", String.class)
     ,   COMMANDS_ARGUMENTS_INVALIDSETTING                   ("Commands.Arguments.invalidSetting")
     ,   ECON_INVALIDECONOMY                                 ("Econ.invalidEconomy")
