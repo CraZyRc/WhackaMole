@@ -168,7 +168,7 @@ public enum Translator {
     ,   COMMANDS_TOP                                        ("Commands.Top")
     ,   COMMANDS_TOGGLE                                     ("Commands.Toggle")
     ,   COMMANDS_TOGGLE_SUCCESS                             ("Commands.Toggle.Success")
-    ,   COMMANDS_ARGUMENTS_UNKNOWNGAMENAME                  ("Commands.Arguments.unknownGameName", String.class)
+    ,   COMMANDS_ARGUMENTS_UNKNOWNGAMENAME                  ("Commands.Arguments.unknownGameName", Game.class)
     ,   COMMANDS_ARGUMENTS_INVALIDSETTING                   ("Commands.Arguments.invalidSetting")
     ,   ECON_INVALIDECONOMY                                 ("Econ.invalidEconomy")
     ,   ECON_INVALIDVAULT                                   ("Econ.invalidVault")

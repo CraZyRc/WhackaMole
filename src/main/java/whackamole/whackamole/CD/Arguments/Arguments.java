@@ -25,7 +25,7 @@ public class Arguments {
                 if (game.getName().equals(info.input())) 
                     return game;
             }
-            throw InputError(Translator.COMMANDS_ARGUMENTS_UNKNOWNGAMENAME);
+            throw InputError(Translator.COMMANDS_ARGUMENTS_UNKNOWNGAMENAME.Format(info.input()));
         }).replaceSuggestions(ArgumentSuggestions.strings(Manager.games.stream().map(Game::getName).toList()));
     }
 
@@ -45,8 +45,8 @@ public class Arguments {
     }
 
 
-    protected static CustomArgumentException InputError(Translator message) {
+    protected static CustomArgumentException InputError(String message) {
         String arg = new CustomArgument.MessageBuilder().appendArgInput().toString();
-        return CustomArgument.CustomArgumentException.fromString(message.Format(arg));
+        return CustomArgument.CustomArgumentException.fromString(message);
     }
 }
