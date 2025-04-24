@@ -92,8 +92,8 @@ Blocklist:
 Max playfield: 25
 
 # To what range does the game extend horizontally and vertically?
-# NOTE: set the height to '2.0' to make it so the player doesn't exit the game by jumping.
-# NOTE: if you keep the width under '1.0' the player will exit the field when the player steps off the field, to add a little margin, make sure this is higher than '1.0'.
+# NOTE: Set the height to '2.0' to make it so the player doesn't exit the game by jumping.
+# NOTE: If you keep the width under '1.0' the player will exit the field when the player steps off the field, to add a little margin, make sure this is higher than '1.0'.
 Field extension:
   width: 1.4
   height: 2.5
@@ -107,24 +107,33 @@ Field extension:
 
 # These are permission node names you can change so it won't interfere with permission nodes from other plugins that may use similar permission node names.
 # NOTE: When using these permission nodes, make sure to add "wam." in front of every permission node
-# NOTE: for example, if the Play permission node is called "Play", then the permission to use is "Wam.Play"
+# NOTE: For example, if the Play permission node is called "Play", then the permission to use is "Wam.Play"
+# NOTE: Permission nodes inherit from the parent group. For example: the permission for Holo Create would be: "WAM.Settings.Holo.holoCreate"
 
 Play:
   Use Reset Ticket: "Use"
   Play: "Play"
 
 Commands:
-  Game: "Game"
-  Create: "create"
-  Remove: "Remove"
-  Start: "Start"
-  Stop: "Stop"
-  Top: "Top"
-  Settings: "Settings"
-  Get: "Get"
-  Set: "Set"
-  Holo: "Holo"
-  Positions: "Positions"
   Buy: "Buy"
   Reload: "Reload"
+  Game Perm: "Game"
+  Game:
+    Create: "Create"
+    Remove: "Remove"
+    Start: "Start"
+    Stop: "Stop"
+    Toggle: "Toggle"
+    Top: "Top"
+  Settings Perm: "Settings"
+  Settings:
+    Get: "Get"
+    Set: "Set"
+    Positions: "Positions"
+    Holo Perm: "Holo"
+    Holo:
+      Holo Create: "holoCreate"
+      Holo Remove: "holoRemove"
+      Holo Select: "holoSelect"
+      Holo Toggle: "holoToggle"
 

@@ -18,6 +18,11 @@ public class HoloCreateCMD extends SubCommand {
   protected String GetName() { return Translator.COMMANDS_HOLO_CREATE.Format(); }
 
   @Override
+  protected @Nullable String Permission() {
+    return Config.Permissions.PERM_SETTINGS_HOLO_CREATE;
+  }
+
+  @Override
   protected Argument<?>[] Arguments() {
     return new Argument[] {
             Arguments.Games(),

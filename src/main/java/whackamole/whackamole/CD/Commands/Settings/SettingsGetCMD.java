@@ -6,6 +6,7 @@ import org.bukkit.ChatColor;
 import org.jetbrains.annotations.Nullable;
 import whackamole.whackamole.CD.Arguments.Arguments;
 import whackamole.whackamole.CD.Commands.SubCommand;
+import whackamole.whackamole.Config;
 import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.Utils.Translator;
 
@@ -13,6 +14,11 @@ public class SettingsGetCMD extends SubCommand {
 
   @Override
   protected String GetName() { return Translator.COMMANDS_SETTINGS_GET.Format(); }
+
+  @Override
+  protected String Permission() {
+    return Config.Permissions.PERM_SETTINGS_GET;
+  }
 
   @Override
   protected Argument<?>[] Arguments() {
@@ -28,9 +34,10 @@ public class SettingsGetCMD extends SubCommand {
       var settings = game.getSettings();
       ChatColor w = ChatColor.WHITE;
       ChatColor a = ChatColor.AQUA;
-      String line = ChatColor.YELLOW + "\n| ";
-      String outputString = ChatColor.YELLOW + "\n[>------------------------------------<]\n" +
-              "|" + ChatColor.WHITE + " Game: " + ChatColor.AQUA + game.getName() +
+      ChatColor y = ChatColor.YELLOW;
+      String line = y + "\n| ";
+      String outputString = y + "\n[>------------------------------------<]\n" +
+              "|" + w + " Game: " + a + game.getName() +
               line +
               line + w + Translator.COMMANDS_SETTINGS_DIRECTION            + ": " + a + settings.spawnRotation +
               line + w + Translator.COMMANDS_SETTINGS_JACKPOT              + ": " + a + settings.hasJackpot +
@@ -47,8 +54,7 @@ public class SettingsGetCMD extends SubCommand {
               line + w + Translator.COMMANDS_SETTINGS_COOLDOWN             + ": " + a + settings.getCooldown() +
               line + w + Translator.COMMANDS_SETTINGS_MUSIC                + ": " + a + settings.Music +
               line + w + Translator.COMMANDS_SETTINGS_TOGGLESCOREBOARD     + ": " + a + settings.toggleScoreboard +
-              line + w + Translator.COMMANDS_TOGGLE                        + ": " + a + settings.displayName +
-              ChatColor.YELLOW + "\n| \n[>------------------------------------<]";
+              y + "\n| \n[>------------------------------------<]";
       sender.sendMessage(outputString);
     });
   }

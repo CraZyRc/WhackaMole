@@ -13,6 +13,10 @@ public class GameToggleCMD extends SubCommand {
   protected String GetName() { return Translator.COMMANDS_TOGGLE.Format(); }
 
   @Override
+  protected String Permission() { return Config.Permissions.PERM_GAME_TOGGLE; }
+
+
+  @Override
   protected Argument<?>[] Arguments() {
     return new Argument[]{
             Arguments.Games()

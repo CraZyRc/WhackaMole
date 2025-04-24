@@ -5,6 +5,7 @@ import dev.jorel.commandapi.executors.PlayerCommandExecutor;
 import org.jetbrains.annotations.Nullable;
 import whackamole.whackamole.CD.Arguments.Arguments;
 import whackamole.whackamole.CD.Commands.SubCommand;
+import whackamole.whackamole.Config;
 import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.Utils.Translator;
 
@@ -12,6 +13,11 @@ public class HoloToggleCMD extends SubCommand {
   @Override
   protected String GetName() {
     return Translator.COMMANDS_HOLO_TOGGLEID.Format();
+  }
+
+  @Override
+  protected @Nullable String Permission() {
+    return Config.Permissions.PERM_SETTINGS_HOLO_TOGGLE;
   }
 
   @Override

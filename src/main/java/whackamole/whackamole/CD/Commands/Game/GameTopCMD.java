@@ -18,7 +18,7 @@ public class GameTopCMD extends SubCommand {
   protected String GetName() { return Translator.COMMANDS_TOP.Format(); }
 
   @Override
-  protected @Nullable String Permission() { return Config.Permissions.PERM_TOP; }
+  protected @Nullable String Permission() { return Config.Permissions.PERM_GAME_TOP; }
 
   @Override
   protected Argument<?>[] Arguments() {

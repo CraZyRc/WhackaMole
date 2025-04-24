@@ -1,11 +1,16 @@
 package whackamole.whackamole.CD.Commands;
 
 
+import whackamole.whackamole.Config;
+
 public class WhackaMoleCMD extends SubCommand {
 
   protected String GetName() {
     return "whackamole";
   }
+
+  @Override
+  protected String Permission() { return "WAM"; }
 
   protected String[] Aliases() {
     return new String[] {

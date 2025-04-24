@@ -115,25 +115,33 @@ public class Config {
     }
 
     public static class Permissions {
-        public static String PERM_TICKET_USE, PERM_GAME, PERM_BUY, PERM_RELOAD, PERM_CREATE, PERM_REMOVE, PERM_SETTINGS, PERM_GET, PERM_SET, PERM_HOLO, PERM_PLAY, PERM_POSITIONS, PERM_TOP, PERM_START, PERM_STOP;
+        public static String PERM_TICKET_USE, PERM_PLAY, PERM_BUY, PERM_RELOAD, PERM_GAME, PERM_GAME_CREATE, PERM_GAME_REMOVE, PERM_GAME_START, PERM_GAME_STOP, PERM_GAME_TOGGLE, PERM_GAME_TOP, PERM_SETTINGS, PERM_SETTINGS_GET, PERM_SETTINGS_SET, PERM_SETTINGS_POSITIONS, PERM_SETTINGS_HOLO, PERM_SETTINGS_HOLO_CREATE, PERM_SETTINGS_HOLO_REMOVE, PERM_SETTINGS_HOLO_SELECT, PERM_SETTINGS_HOLO_TOGGLE;
 
         private static boolean LoadConfig(YMLFile configFile) {
-            PERM_TICKET_USE     = "WAM." + configFile.getString("Play.Use Reset Ticket");
-            PERM_PLAY           = "WAM." + configFile.getString("Play.Play");
+            PERM_TICKET_USE                 = "WAM." + configFile.getString("Play.Use Reset Ticket");
+            PERM_PLAY                       = "WAM." + configFile.getString("Play.Play");
 
-            PERM_GAME           = "WAM." + configFile.getString("Commands.Game");
-            PERM_CREATE         = "WAM." + configFile.getString("Commands.Create");
-            PERM_REMOVE         = "WAM." + configFile.getString("Commands.Remove");
-            PERM_START          = "WAM." + configFile.getString("Commands.Start");
-            PERM_STOP           = "WAM." + configFile.getString("Commands.Stop");
-            PERM_TOP            = "WAM." + configFile.getString("Commands.Top");
-            PERM_SETTINGS       = "WAM." + configFile.getString("Commands.Settings");
-            PERM_GET            = "WAM." + configFile.getString("Commands.Get");
-            PERM_SET            = "WAM." + configFile.getString("Commands.Set");
-            PERM_HOLO           = "WAM." + configFile.getString("Commands.Holo");
-            PERM_POSITIONS      = "WAM." + configFile.getString("Commands.Positions");
-            PERM_BUY            = "WAM." + configFile.getString("Commands.Buy");
-            PERM_RELOAD         = "WAM." + configFile.getString("Commands.Reload");
+            PERM_BUY                        = "WAM." + configFile.getString("Commands.Buy");
+            PERM_RELOAD                     = "WAM." + configFile.getString("Commands.Reload");
+
+            PERM_GAME                       = "WAM." + configFile.getString("Commands.Game Perm");
+            PERM_GAME_CREATE                = PERM_GAME + "." + configFile.getString("Commands.Game.Create");
+            PERM_GAME_REMOVE                = PERM_GAME + "." + configFile.getString("Commands.Game.Remove");
+            PERM_GAME_START                 = PERM_GAME + "." + configFile.getString("Commands.Game.Start");
+            PERM_GAME_STOP                  = PERM_GAME + "." + configFile.getString("Commands.Game.Stop");
+            PERM_GAME_TOGGLE                = PERM_GAME + "." + configFile.getString("Commands.Game.Toggle");
+            PERM_GAME_TOP                   = PERM_GAME + "." + configFile.getString("Commands.Game.Top");
+
+            PERM_SETTINGS                   = "WAM." + configFile.getString("Commands.Settings Perm");
+            PERM_SETTINGS_GET               = PERM_SETTINGS + "." + configFile.getString("Commands.Settings.Get");
+            PERM_SETTINGS_SET               = PERM_SETTINGS + "." + configFile.getString("Commands.Settings.Set");
+            PERM_SETTINGS_POSITIONS         = PERM_SETTINGS + "." + configFile.getString("Commands.Settings.Positions");
+
+            PERM_SETTINGS_HOLO              = PERM_SETTINGS + "." + configFile.getString("Commands.Settings.Holo Perm");
+            PERM_SETTINGS_HOLO_CREATE       = PERM_SETTINGS_HOLO + "." + configFile.getString("Commands.Settings.Holo.Holo Create");
+            PERM_SETTINGS_HOLO_REMOVE       = PERM_SETTINGS_HOLO + "." + configFile.getString("Commands.Settings.Holo.Holo Remove");
+            PERM_SETTINGS_HOLO_SELECT       = PERM_SETTINGS_HOLO + "." + configFile.getString("Commands.Settings.Holo.Holo Select");
+            PERM_SETTINGS_HOLO_TOGGLE       = PERM_SETTINGS_HOLO + "." + configFile.getString("Commands.Settings.Holo.Holo Toggle");
             return true;
         }
     }

@@ -17,7 +17,7 @@ public class HoloCMD extends SubCommand {
 
   @Override
   protected @Nullable String Permission() {
-    return Config.Permissions.PERM_HOLO;
+    return Config.Permissions.PERM_SETTINGS_HOLO;
   }
 
   @Override

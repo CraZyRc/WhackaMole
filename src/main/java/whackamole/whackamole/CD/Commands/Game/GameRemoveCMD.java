@@ -17,7 +17,7 @@ public class GameRemoveCMD extends ConfirmSubCommand {
 
   @Override
   protected String Permission() {
-    return Config.Permissions.PERM_REMOVE;
+    return Config.Permissions.PERM_GAME_REMOVE;
   }
 
   @Override

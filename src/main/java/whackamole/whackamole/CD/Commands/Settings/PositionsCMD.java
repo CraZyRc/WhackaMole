@@ -21,7 +21,7 @@ public class PositionsCMD extends SubCommand {
   protected String GetName() { return Translator.COMMANDS_POSITIONS.Format(); }
 
   @Override
-  protected @Nullable String Permission() { return Config.Permissions.PERM_POSITIONS; }
+  protected @Nullable String Permission() { return Config.Permissions.PERM_SETTINGS_POSITIONS; }
 
   @Override
   protected Argument<?>[] Arguments() {

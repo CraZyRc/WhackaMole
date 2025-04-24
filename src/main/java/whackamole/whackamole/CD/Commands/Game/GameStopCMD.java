@@ -17,7 +17,7 @@ public class GameStopCMD extends SubCommand {
 
   @Override
   protected String Permission() {
-    return Config.Permissions.PERM_STOP;
+    return Config.Permissions.PERM_GAME_STOP;
   }
 
   @Override

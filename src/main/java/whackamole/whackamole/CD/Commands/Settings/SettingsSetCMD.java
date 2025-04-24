@@ -52,6 +52,11 @@ public class SettingsSetCMD extends SubCommand {
   protected String GetName() { return Translator.COMMANDS_SETTINGS_SET.Format(); }
 
   @Override
+  protected String Permission() {
+    return Config.Permissions.PERM_SETTINGS_SET;
+  }
+
+  @Override
   protected Argument<?>[] Arguments() {
     return new Argument[] {
             Arguments.Games(),

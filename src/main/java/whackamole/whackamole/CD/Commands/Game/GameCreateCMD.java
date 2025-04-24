@@ -21,7 +21,7 @@ public class GameCreateCMD extends SubCommand {
 
   @Override
   protected String Permission() {
-    return Config.Permissions.PERM_CREATE;
+    return Config.Permissions.PERM_GAME_CREATE;
   }
 
   @Override
