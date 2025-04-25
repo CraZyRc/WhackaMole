@@ -17,7 +17,7 @@ public class SettingsGetCMD extends SubCommand {
 
   @Override
   protected String Permission() {
-    return Config.Permissions.PERM_SETTINGS_GET;
+    return "wam.settings.get";
   }
 
   @Override

@@ -19,7 +19,7 @@ public class GameStartCMD extends SubCommand {
 
   @Override
   protected String Permission() {
-    return Config.Permissions.PERM_GAME_START;
+    return "wam.game.start";
   }
 
   @Override

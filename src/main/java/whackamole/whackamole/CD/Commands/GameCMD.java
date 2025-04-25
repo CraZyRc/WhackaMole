@@ -12,7 +12,7 @@ public class GameCMD extends SubCommand {
   }
 
   @Override
-  protected @Nullable String Permission() { return Config.Permissions.PERM_GAME; }
+  protected @Nullable String Permission() { return "wam.game"; }
 
   protected SubCommand[] SubCommands() {
     return new SubCommand[] {

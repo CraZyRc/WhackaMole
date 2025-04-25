@@ -294,7 +294,7 @@ public final class GamesManager implements Listener {
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
 
-        if (!player.hasPermission(Config.Permissions.PERM_TICKET_USE)) {
+        if (!player.hasPermission("wam.resetticket")) {
             player.sendMessage(Config.AppConfig.PREFIX + Translator.MANAGER_TICKETUSE_NOPERMISSION);
             e.setCancelled(true);
             return;

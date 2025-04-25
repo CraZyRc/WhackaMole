@@ -16,7 +16,7 @@ public class HoloSelectCMD extends SubCommand {
 
   @Override
   protected @Nullable String Permission() {
-    return Config.Permissions.PERM_SETTINGS_HOLO_SELECT;
+    return "wam.settings.holo.select";
   }
 
   @Override
@@ -32,7 +32,7 @@ public class HoloSelectCMD extends SubCommand {
     return ((sender, args) -> {
       Game game = (Game) args.get(0);
       if (!game.holoSelect((int) args.get(1), sender)) {
-        sender.sendMessage(Translator.COMMANDS_HOLO_SELECT_ERROR.Format());
+        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_SELECT_ERROR.Format());
       }
     });
   }

@@ -7,3 +7,126 @@ authors: [ CraZy ]
 softdepend: [Vault, Multiverse-Core, My_Worlds]
 description: Whack a Mole plugin
 website: https://github.com/CraZyRc
+
+permissions:
+  wam.*:
+    description: Gives the user full access to the wam permissions
+    default: op
+    children:
+      wam.resetticket: true
+      wam.play: true
+      wam.buy: true
+      wam.reload: true
+      wam.game.*: true
+      wam.settings.*: true
+      wam.settings.holo.*: true
+      wam: true
+
+  wam.resetticket:
+    description: Allows the user to use reset tickets
+    default: true
+  wam.play:
+    description: Allows the user to play a game
+    default: true
+
+  wam.buy:
+    description: Allows the user to buy reset tickets
+    default: true
+    children: {wam: true}
+  wam.reload:
+    description: Allows the user to reload the plugin
+    default: op
+    children: {wam: true}
+
+  wam.game: {description: The default permission to access the /wam game command, default: op, children: {wam: true }}
+  wam.settings: {description: The default permission to access the /wam settings command, default: op, children: {wam: true }}
+  wam.settings.holo: {description: The default permission to access the /wam settings holo command, default: op, children: {wam.settings: true }}
+
+  wam.game.*:
+    description: Gives the user full access to the Game commands
+    default: op
+    children:
+      wam.game: true
+      wam.game.create: true
+      wam.game.remove: true
+      wam.game.start: true
+      wam.game.stop: true
+      wam.game.toggle: true
+      wam.game.top: true
+
+  wam.game.create:
+    description: Allows the user to create a game `/wam game create <gameName>`
+    default: op
+    children: {wam.game: true}
+  wam.game.remove:
+    description: Allows the user to remove a game `/wam game remove <gameName>`
+    default: op
+    children: {wam.game: true}
+  wam.game.start:
+    description: Allows the user to force start a game `/wam game start <gameName>`
+    default: op
+    children: {wam.game: true}
+  wam.game.stop:
+    description: Allows the user to force stop a game `/wam game stop <gameName>`
+    default: op
+    children: {wam.game: true}
+  wam.game.toggle:
+    description: Allows the user to toggle the name visibility of a game `/wam game toggle <gameName>`
+    default: op
+    children: {wam.game: true}
+  wam.game.top:
+    description: Allows the user to see the topscores of a game `/wam game top <gameName> <type>`
+    default: true
+    children: {wam.game: true}
+
+  wam.settings.*:
+    description: Gives the user full access to the Settings commands
+    default: op
+    children:
+      wam.settings.get: true
+      wam.settings.set: true
+      wam.settings.positions: true
+      wam.settings.holo.*: false
+      wam.settings: true
+
+  wam.settings.get:
+    description: Allows the user to get the settings of a game `/wam settings get <gameName> {setting}`
+    default: op
+    children: {wam.settings: true}
+  wam.settings.set:
+    description: Allows the user to set the settings of a game `/wam settings set <gameName> <setting> <value>`
+    default: op
+    children: {wam.settings: true}
+  wam.settings.positions:
+    description: Allows the user to set the position for different commands `/wam settings positions <gameName> <highscore/teleport/streak>`
+    default: op
+    children: {wam.settings: true}
+
+  wam.settings.holo.*:
+    description: Gives the user full access to the Holo commands
+    default: op
+    children:
+      wam.settings.holo.create: true
+      wam.settings.holo.remove: true
+      wam.settings.holo.select: true
+      wam.settings.holo.toggle: true
+      wam.settings.holo: true
+
+  wam.settings.holo.create:
+    description: Allows the user to create a hologram `/wam settings holo create <gameName> <holoID> <type> <amount of scoreboard rows>`
+    default: op
+    children: {wam.settings.holo: true}
+  wam.settings.holo.remove:
+    description: Allows the user to remove a hologram `/wam settings holo remove <gameName> <holoID>`
+    default: op
+    children: {wam.settings.holo: true}
+  wam.settings.holo.select:
+    description: Allows the user to select a hologram `/wam settings holo select <gameName> <holoID>`
+    default: op
+    children: {wam.settings.holo: true}
+  wam.settings.holo.toggle:
+    description: Allows the user to toggle the ID visibility of all its holograms `/wam settings holo toggle <gameName>`
+    default: op
+    children: {wam.settings.holo: true}
+
+

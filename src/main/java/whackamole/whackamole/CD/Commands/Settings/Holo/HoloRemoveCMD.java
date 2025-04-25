@@ -15,7 +15,7 @@ public class HoloRemoveCMD extends SubCommand {
 
   @Override
   protected @Nullable String Permission() {
-    return Config.Permissions.PERM_SETTINGS_HOLO_REMOVE;
+    return "wam.settings.holo.remove";
   }
 
   @Override
@@ -31,9 +31,9 @@ public class HoloRemoveCMD extends SubCommand {
     return ((sender, args) -> {
       Game game = (Game) args.get(0);
       if (game.holoDelete((int) args.get(1))) {
-        sender.sendMessage(String.valueOf(Translator.COMMANDS_HOLO_REMOVE_SUCCESS));
+        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_REMOVE_SUCCESS.Format());
       } else {
-        sender.sendMessage(String.valueOf(Translator.COMMANDS_HOLO_REMOVE_ERROR));
+        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_REMOVE_ERROR.Format());
       }
     });
   }

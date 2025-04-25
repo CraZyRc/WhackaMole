@@ -17,7 +17,7 @@ public class TicketBuyCMD extends ConfirmSubCommand {
 
   @Override
   protected String Permission() {
-    return Config.Permissions.PERM_BUY;
+    return "wam.buy";
   }
 
   @Override
@@ -35,24 +35,32 @@ public class TicketBuyCMD extends ConfirmSubCommand {
       }
 
       if (!TicketBuyCMD.econ.has(sender, Config.Currency.TICKETPRICE)) {
-        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_BUY_LOWECONOMY);
+        if (Config.Currency.TICKETPRICE < 1) {
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_BUY_LOWECONOMY_SING.Format());
+        } else {
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_BUY_LOWECONOMY_PLUR.Format());
+        }
         return;
       }
 
       if (!HasCommandBeenConfirmed(sender)) {
-        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_BUY_CONFIRMATION.Format());
+        if (Config.Currency.TICKETPRICE < 1) {
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_BUY_CONFIRMATION_SING.Format());
+        } else {
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_BUY_CONFIRMATION_PLUR.Format());
+        }
         return;
       }
 
       var inventory = sender.getInventory();
       if (inventory.firstEmpty() == -1) {
-        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_BUY_FULLINVENTORY);
+        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_BUY_FULLINVENTORY.Format());
         return;
       }
 
       inventory.addItem(Config.Game.TICKET);
       TicketBuyCMD.econ.withdrawPlayer(sender, Config.Currency.TICKETPRICE);
-      sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_BUY_SUCCESS);
+      sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_BUY_SUCCESS.Format());
     };
   }
 }

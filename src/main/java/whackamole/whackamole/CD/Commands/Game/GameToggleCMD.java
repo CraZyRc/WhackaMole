@@ -13,7 +13,7 @@ public class GameToggleCMD extends SubCommand {
   protected String GetName() { return Translator.COMMANDS_TOGGLE.Format(); }
 
   @Override
-  protected String Permission() { return Config.Permissions.PERM_GAME_TOGGLE; }
+  protected String Permission() { return "wam.game.toggle"; }
 
 
   @Override

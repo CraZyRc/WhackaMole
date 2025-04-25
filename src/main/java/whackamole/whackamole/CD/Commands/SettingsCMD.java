@@ -12,7 +12,7 @@ public class SettingsCMD extends SubCommand {
   }
 
   @Override
-  protected @Nullable String Permission() { return Config.Permissions.PERM_SETTINGS; }
+  protected @Nullable String Permission() { return "wam.settings"; }
 
   protected SubCommand[] SubCommands() {
     return new SubCommand[] {

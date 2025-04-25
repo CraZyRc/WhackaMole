@@ -53,7 +53,7 @@ public class SettingsSetCMD extends SubCommand {
 
   @Override
   protected String Permission() {
-    return Config.Permissions.PERM_SETTINGS_SET;
+    return "wam.settings.set";
   }
 
   @Override

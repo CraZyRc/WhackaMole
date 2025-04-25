@@ -19,7 +19,7 @@ public class PluginReloadCMD extends SubCommand {
 
   @Override
   protected String Permission() {
-    return Config.Permissions.PERM_RELOAD;
+    return "wam.reload";
   }
 
   @Override

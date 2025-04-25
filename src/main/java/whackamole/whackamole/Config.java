@@ -114,38 +114,6 @@ public class Config {
         }
     }
 
-    public static class Permissions {
-        public static String PERM_TICKET_USE, PERM_PLAY, PERM_BUY, PERM_RELOAD, PERM_GAME, PERM_GAME_CREATE, PERM_GAME_REMOVE, PERM_GAME_START, PERM_GAME_STOP, PERM_GAME_TOGGLE, PERM_GAME_TOP, PERM_SETTINGS, PERM_SETTINGS_GET, PERM_SETTINGS_SET, PERM_SETTINGS_POSITIONS, PERM_SETTINGS_HOLO, PERM_SETTINGS_HOLO_CREATE, PERM_SETTINGS_HOLO_REMOVE, PERM_SETTINGS_HOLO_SELECT, PERM_SETTINGS_HOLO_TOGGLE;
-
-        private static boolean LoadConfig(YMLFile configFile) {
-            PERM_TICKET_USE                 = "WAM." + configFile.getString("Play.Use Reset Ticket");
-            PERM_PLAY                       = "WAM." + configFile.getString("Play.Play");
-
-            PERM_BUY                        = "WAM." + configFile.getString("Commands.Buy");
-            PERM_RELOAD                     = "WAM." + configFile.getString("Commands.Reload");
-
-            PERM_GAME                       = "WAM." + configFile.getString("Commands.Game Perm");
-            PERM_GAME_CREATE                = PERM_GAME + "." + configFile.getString("Commands.Game.Create");
-            PERM_GAME_REMOVE                = PERM_GAME + "." + configFile.getString("Commands.Game.Remove");
-            PERM_GAME_START                 = PERM_GAME + "." + configFile.getString("Commands.Game.Start");
-            PERM_GAME_STOP                  = PERM_GAME + "." + configFile.getString("Commands.Game.Stop");
-            PERM_GAME_TOGGLE                = PERM_GAME + "." + configFile.getString("Commands.Game.Toggle");
-            PERM_GAME_TOP                   = PERM_GAME + "." + configFile.getString("Commands.Game.Top");
-
-            PERM_SETTINGS                   = "WAM." + configFile.getString("Commands.Settings Perm");
-            PERM_SETTINGS_GET               = PERM_SETTINGS + "." + configFile.getString("Commands.Settings.Get");
-            PERM_SETTINGS_SET               = PERM_SETTINGS + "." + configFile.getString("Commands.Settings.Set");
-            PERM_SETTINGS_POSITIONS         = PERM_SETTINGS + "." + configFile.getString("Commands.Settings.Positions");
-
-            PERM_SETTINGS_HOLO              = PERM_SETTINGS + "." + configFile.getString("Commands.Settings.Holo Perm");
-            PERM_SETTINGS_HOLO_CREATE       = PERM_SETTINGS_HOLO + "." + configFile.getString("Commands.Settings.Holo.Holo Create");
-            PERM_SETTINGS_HOLO_REMOVE       = PERM_SETTINGS_HOLO + "." + configFile.getString("Commands.Settings.Holo.Holo Remove");
-            PERM_SETTINGS_HOLO_SELECT       = PERM_SETTINGS_HOLO + "." + configFile.getString("Commands.Settings.Holo.Holo Select");
-            PERM_SETTINGS_HOLO_TOGGLE       = PERM_SETTINGS_HOLO + "." + configFile.getString("Commands.Settings.Holo.Holo Toggle");
-            return true;
-        }
-    }
-
     public static boolean onLoad(Main main) {
         try {
             ConfigFile = new YMLFile(AppConfig.storageFolder, AppConfig.configFileName);
@@ -201,8 +169,7 @@ public class Config {
 
         if(!AppConfig.LoadConfig(ConfigFile)
         || !Currency.LoadConfig(ConfigFile)
-        || !Game.LoadConfig(ConfigFile, main)
-        || !Permissions.LoadConfig(ConfigFile)) {
+        || !Game.LoadConfig(ConfigFile, main)) {
             return false;
         }
 

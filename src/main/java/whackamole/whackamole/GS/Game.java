@@ -412,7 +412,9 @@ public class Game {
       });
     }
     for (UUID player : this.currentyOnGird) {
-      if (this.cooldown.contains(player) && this.State != gameState.REWARDING) {
+      if (!Bukkit.getPlayer(player).hasPermission("wam.play")) {
+        return;
+      } else if (this.cooldown.contains(player) && this.State != gameState.REWARDING) {
         this.actionbarParse(player, Translator.GAME_ACTIONBAR_GAMEOVER, this.cooldown.getText(player));
       } else if (Bukkit.getPlayer(player).getInventory().firstEmpty() != -1 && Game.this.State != gameState.RUNNING && this.State != gameState.REWARDING) {
         this.actionbarParse(player, Translator.GAME_ACTIONBAR_RESTART.Format());

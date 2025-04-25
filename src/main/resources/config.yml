@@ -105,35 +105,36 @@ Field extension:
 # <------------------------------------------------------> #
 ############################################################
 
-# These are permission node names you can change so it won't interfere with permission nodes from other plugins that may use similar permission node names.
-# NOTE: When using these permission nodes, make sure to add "wam." in front of every permission node
-# NOTE: For example, if the Play permission node is called "Play", then the permission to use is "Wam.Play"
+# These are the permissions used for the plugin.
+# This section of the config file is purely Information, this part is not to be edited.
 # NOTE: Permission nodes inherit from the parent group. For example: the permission for Holo Create would be: "WAM.Settings.Holo.holoCreate"
+General:
+  wam.*: All the permissions
 
-Play:
-  Use Reset Ticket: "Use"
-  Play: "Play"
+Game Mechanics:
+  wam.resetticket: Allows the user to use reset tickets
+  wam.play: Allows the user to play a game
 
 Commands:
-  Buy: "Buy"
-  Reload: "Reload"
-  Game Perm: "Game"
-  Game:
-    Create: "Create"
-    Remove: "Remove"
-    Start: "Start"
-    Stop: "Stop"
-    Toggle: "Toggle"
-    Top: "Top"
-  Settings Perm: "Settings"
-  Settings:
-    Get: "Get"
-    Set: "Set"
-    Positions: "Positions"
-    Holo Perm: "Holo"
-    Holo:
-      Holo Create: "holoCreate"
-      Holo Remove: "holoRemove"
-      Holo Select: "holoSelect"
-      Holo Toggle: "holoToggle"
+  wam.buy: Allows the user to buy reset tickets
+  wam.reload: Allows the user to reload the plugin
+
+  wam.game.*: Gives the user full access to the Game commands
+  wam.game.create: Allows the user to create a game `/wam game create <gameName>`
+  wam.game.remove: Allows the user to remove a game `/wam game remove <gameName>`
+  wam.game.start: Allows the user to force start a game `/wam game start <gameName>`
+  wam.game.stop: Allows the user to force stop a game `/wam game stop <gameName>`
+  wam.game.toggle: Allows the user to toggle the name visibility of a game `/wam game toggle <gameName>`
+  wam.game.top: Allows the user to see the topscores of a game `/wam game top <gameName> <type>`
+
+  wam.settings.*: Gives the user full access to the Settings commands (except for the Holo commands)
+  wam.settings.get: Allows the user to get the settings of a game `/wam settings get <gameName> {setting}`
+  wam.settings.set: Allows the user to set the settings of a game `/wam settings set <gameName> <setting> <value>`
+  wam.settings.positions: Allows the user to set the position for different commands `/wam settings positions <gameName> <highscore/teleport/streak>`
+
+  wam.settings.holo.*: Gives the user full access to the Holo commands
+  wam.settings.holo.create: Allows the user to create a hologram `/wam settings holo create <gameName> <holoID> <type> <amount of scoreboard rows>`
+  wam.settings.holo.remove: Allows the user to remove a hologram `/wam settings holo remove <gameName> <holoID>`
+  wam.settings.holo.select: Allows the user to select a hologram `/wam settings holo select <gameName> <holoID>`
+  wam.settings.holo.toggle: Allows the user to toggle the ID visibility of all its holograms `/wam settings holo toggle <gameName>`
 

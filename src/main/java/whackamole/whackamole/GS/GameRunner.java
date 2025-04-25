@@ -38,7 +38,7 @@ public class GameRunner {
     public boolean Start(Player player) {
 
         if (this.game.cooldown.contains(player)
-                || !player.hasPermission(Config.Permissions.PERM_PLAY)
+                || !player.hasPermission("wam.play")
                 || Config.Game.PLAYER_AXE == null
         ) {
             return false;

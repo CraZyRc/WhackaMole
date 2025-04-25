@@ -19,7 +19,7 @@ public class HoloCreateCMD extends SubCommand {
 
   @Override
   protected @Nullable String Permission() {
-    return Config.Permissions.PERM_SETTINGS_HOLO_CREATE;
+    return "wam.settings.holo.create";
   }
 
   @Override
@@ -49,9 +49,9 @@ public class HoloCreateCMD extends SubCommand {
     return (sender, args) -> {
       Game game = (Game) args.get(0);
       if (game.holoCreate((int) args.get(1), (String) args.get(2), sender.getLocation() , (int) args.get(3))) {
-        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_CREATE_SUCCESS);
+        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_CREATE_SUCCESS.Format());
       } else {
-        sender.sendMessage(Config.AppConfig.PREFIX + Translator.Format(Translator.COMMANDS_HOLO_CREATE_ERROR, String.valueOf(args.get(1))));
+        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_CREATE_ERROR.Format(String.valueOf(args.get(1))));
       }
     };
   }

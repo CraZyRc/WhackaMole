@@ -10,7 +10,7 @@ public class WhackaMoleCMD extends SubCommand {
   }
 
   @Override
-  protected String Permission() { return "WAM"; }
+  protected String Permission() { return "wam"; }
 
   protected String[] Aliases() {
     return new String[] {
