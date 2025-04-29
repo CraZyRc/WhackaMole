@@ -35,7 +35,7 @@ public class GameStopCMD extends SubCommand {
 
       if (game.isRunning()) {
         game.Stop();
-        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_STOP_SUCCESS, game.getName());
+        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_STOP_SUCCESS.Format(game));
       }
       else {
         sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_STOP_ERROR_NOACTIVEGAME);

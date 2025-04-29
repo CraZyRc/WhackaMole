@@ -4,7 +4,7 @@
 # <------------------------------------------------------> #
 ############################################################
 
-Config Version: 1.9
+Config Version: 2.0
 
 # Welcome to the config file, here you can adjust the general settings of the plugin.
 # the lines must be in YAML format, so it doesn't accept tabs, only spaces.
@@ -18,7 +18,7 @@ Language: en_US
 
 ############################################################
 # ^------------------------------------------------------^ #
-# |                  The economic side                    | #
+# |                  The Economic Side                    | #
 # <------------------------------------------------------> #
 ############################################################
 
@@ -26,6 +26,7 @@ Language: en_US
 # If so then you can make it so the minigame adds the points to your economy balance.
 # If your server does not use an economy plugin but uses a scoreboard, then this is also possible.
 # Please select whether you'd like to be paid by "VAULT" or a "SCOREBOARD".
+# If you need a tutorial for a pure vanilla Scoreboard system, please visit: https://github.com/CraZyRc/WhackaMole/wiki/V3-Install-Setup-of-the-plugin
 Economy: SCOREBOARD
 
 # What is the Scoreboard objective name that runs as your economy?
@@ -46,14 +47,14 @@ Ticket Price: 15
 
 ############################################################
 # ^------------------------------------------------------^ #
-# |                     Game options                     | #
+# |                     Game Options                     | #
 # <------------------------------------------------------> #
 ############################################################
 
 # Here you will find the general options regarding game creation and playability.
 
-# Force player movement lock on player reward event
-Player lock: true
+# Force player movement lock on player reward event, meaning they cannot move upon receiving their game rewards.
+Player Lock: true
 
 # Item for the hammer (Only the Material name, ALL CAPS and without "Minecraft_"):
 Hammer Item: GOLDEN_AXE
@@ -69,7 +70,7 @@ Hammer customModelData: ''
 Hammer itemDamage: ''
 
 # The list of worlds Whackamole should interact with. If this list is empty then all worlds are enabled (This is case-sensitive).
-Enabled worlds:
+Enabled Worlds:
 #  - Test
 
 # For sounds, please refer to the Sound enum to see the Java equivalent of the minecraft sound: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html.
@@ -80,6 +81,7 @@ HitSound: BLOCK_NOTE_BLOCK_BIT
 MissedSound: BLOCK_NOTE_BLOCK_BASS
 
 # The list of blocks the game can spawn on (generally what the surface blocks will be of the game, the visible layer of the game).
+# This has to correspond to the MC blockname (to see the blockname, press F3 + H  and hover over the item, it's the part that comes after "minecraft:")
 Blocklist:
   - SMOKER
   - RESPAWN_ANCHOR
@@ -87,21 +89,23 @@ Blocklist:
   - DISPENSER
   - DROPPER
   - END_PORTAL_FRAME
+  - BUDDING_AMETHYST
+  - VAULT
 
 # Maximum size of a created field.
-Max playfield: 25
+Max Playfield: 25
 
 # To what range does the game extend horizontally and vertically?
 # NOTE: Set the height to '2.0' to make it so the player doesn't exit the game by jumping.
 # NOTE: If you keep the width under '1.0' the player will exit the field when the player steps off the field, to add a little margin, make sure this is higher than '1.0'.
-Field extension:
-  width: 1.4
-  height: 2.5
+Field Extension:
+  Width: 1.4
+  Height: 2.5
 
 
 ############################################################
 # ^------------------------------------------------------^ #
-# |                  Permission nodes                    | #
+# |                  Permission Nodes                    | #
 # <------------------------------------------------------> #
 ############################################################
 

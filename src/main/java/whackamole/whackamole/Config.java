@@ -20,7 +20,7 @@ public class Config {
 
     public static class AppConfig {
         public static Locale Language = new Locale("en", "US");
-        public final static String configFileName = "config.yml", configVersion = "1.9";
+        public final static String configFileName = "config.yml", configVersion = "2.0";
         public static String storageFolder = "./plugins/WhackaMole",   PREFIX = ChatColor.translateAlternateColorCodes('&', "&e&l[&6&lWAM&e&l] &f> ");
 
 
@@ -62,16 +62,16 @@ public class Config {
         public static ItemStack PLAYER_AXE, TICKET;
 
         private static boolean LoadConfig(YMLFile configFile, Main main) {
-            PLAYERLOCK              = configFile.getBoolean("Player lock");
+            PLAYERLOCK              = configFile.getBoolean("Player Lock");
             HAMMER_ITEM             = configFile.getString("Hammer Item");
             HAMMER_CUSTOMMODELDATA  = configFile.getInt("Hammer customModelData");
             HAMMER_ITEMDAMAGE       = configFile.getInt("Hammer itemDamage");
 
-            FIELD_MAX_SIZE          = configFile.getInt("Max playfield");
-            FiELD_MARGIN_X          = configFile.getDouble("Field extension.width");
-            FiELD_MARGIN_Y          = configFile.getDouble("Field extension.height");
+            FIELD_MAX_SIZE          = configFile.getInt("Max Playfield");
+            FiELD_MARGIN_X          = configFile.getDouble("Field Extension.Width");
+            FiELD_MARGIN_Y          = configFile.getDouble("Field Extension.Height");
 
-            ENABLED_WOLRDS          = configFile.getList("Enabled worlds", new ArrayList<>());
+            ENABLED_WOLRDS          = configFile.getList("Enabled Worlds", new ArrayList<>());
             HITSOUND                = configFile.getSound("HitSound");
             MISSSOUND               = configFile.getSound("MissedSound");
 
