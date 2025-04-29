@@ -21,7 +21,8 @@ public class GameCMD extends SubCommand {
             new GameStartCMD(),
             new GameStopCMD(),
             new GameToggleCMD(),
-            new GameTopCMD()
+            new GameTopCMD(),
+            new GameEditGridCMD()
     };
   }
 }

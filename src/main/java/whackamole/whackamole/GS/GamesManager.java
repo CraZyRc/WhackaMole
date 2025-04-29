@@ -252,7 +252,7 @@ public final class GamesManager implements Listener {
     @EventHandler
     public void blockBreak(BlockBreakEvent e) {
         for (Game game : this.games) {
-            if (game.onGrid(e.getBlock().getLocation().add(0,1,0)) || game.getRunning().map(GameRunner::getPlayer).orElse(null) == e.getPlayer()) {
+            if ((game.onGrid(e.getBlock().getLocation().add(0,1,0)) || game.getRunning().map(GameRunner::getPlayer).orElse(null) == e.getPlayer()) && !e.getPlayer().getScoreboardTags().contains("wamEditGrid")) {
                 e.setCancelled(true);
             }
         }

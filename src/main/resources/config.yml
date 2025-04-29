@@ -126,6 +126,7 @@ Commands:
   wam.game.stop: Allows the user to force stop a game `/wam game stop <gameName>`
   wam.game.toggle: Allows the user to toggle the name visibility of a game `/wam game toggle <gameName>`
   wam.game.top: Allows the user to see the topscores of a game `/wam game top <gameName> <type>`
+  wam.game.edit: Allows the user to be able to edit the game grid and surrounding blocks `/wam game edit`
 
   wam.settings.*: Gives the user full access to the Settings commands (except for the Holo commands)
   wam.settings.get: Allows the user to get the settings of a game `/wam settings get <gameName> {setting}`

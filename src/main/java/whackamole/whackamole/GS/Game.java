@@ -84,7 +84,7 @@ public class Game {
       }
       case STOPPING -> this.game.Stop();
       case REWARDING -> RewardsManager.executeRewards(this);
-      case DISABLED -> Logger.error("fix this code"); // TODO: FIX ?
+      case DISABLED -> Logger.error("If you received this error message, then it means something prevents the plugin from working correctly, please submit a Ticket on Github for help: https://github.com/CraZyRc/WhackaMole/issues/new/choose");
     }
 
   }
@@ -414,6 +414,8 @@ public class Game {
     for (UUID player : this.currentyOnGird) {
       if (!Bukkit.getPlayer(player).hasPermission("wam.play")) {
         return;
+      } else if (Bukkit.getPlayer(player).getScoreboardTags().contains("wamEditGrid")) {
+        this.actionbarParse(player, Translator.GAME_ACTIONBAR_EDITMODE.Format());
       } else if (this.cooldown.contains(player) && this.State != gameState.REWARDING) {
         this.actionbarParse(player, Translator.GAME_ACTIONBAR_GAMEOVER, this.cooldown.getText(player));
       } else if (Bukkit.getPlayer(player).getInventory().firstEmpty() != -1 && Game.this.State != gameState.RUNNING && this.State != gameState.REWARDING) {

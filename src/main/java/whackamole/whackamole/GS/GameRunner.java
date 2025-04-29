@@ -37,21 +37,39 @@ public class GameRunner {
 
     public boolean Start(Player player) {
 
+        /*
+         * Check if player has cooldown/permission/Hammer is correct in config
+         */
         if (this.game.cooldown.contains(player)
                 || !player.hasPermission("wam.play")
                 || Config.Game.PLAYER_AXE == null
         ) {
+            this.player = null;
             return false;
         }
 
+
+        /*
+         * Check if player is in Edit mode
+         */
+        if (player.getScoreboardTags().contains("wamEditGrid")) {
+            return false;
+        }
+
+
+        /*
+         * Check if Scoreboard is valid
+         */
         if (!this.game.scoreboard.checkHolo()) {
-            Logger.info(String.valueOf(this.game.getScoreboard().holoScores.size()));
             Logger.error(Translator.GAME_INVALIDSCOREBOARD);
             this.game.actionbarParse(player.getUniqueId(), Translator.GAME_ACTIONBAR_ERROR.Format());
             return false;
         }
 
 
+        /*
+         * Check if Economy is correct
+         */
         if (Econ.currencyType == Econ.Currency.NULL) {
             Logger.error(Translator.GAME_INVALIDECONOMY);
             this.game.cooldown.add(player.getUniqueId(), 10000L);
@@ -60,6 +78,9 @@ public class GameRunner {
         }
 
 
+        /*
+         * Check is player can receive the Axe
+         */
         if (!givePlayerAxe(player)) {
             player.sendMessage(Config.AppConfig.PREFIX + Translator.GAME_START_FULLINVENTORY);
             this.game.actionbarParse(player.getUniqueId(), Translator.GAME_ACTIONBAR_FULLINVENTORY.Format());

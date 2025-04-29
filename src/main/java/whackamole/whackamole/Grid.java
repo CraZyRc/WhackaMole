@@ -123,12 +123,22 @@ public class Grid {
 
     public boolean onGrid(Location loc) {
         for (Block block : this.grid) {
-            Location blockLoc = block.getLocation().add(0.5, 0, 0.5);
+            Location blockLoc1 = block.getLocation().clone().add(0.5, 0, 0.5);
 
-            if ((Math.abs(blockLoc.getX() - loc.getX()) <= Config.Game.FiELD_MARGIN_X) // * X
-                    && (Math.abs(blockLoc.getY() - loc.getY()) <= Config.Game.FiELD_MARGIN_Y
-                            && blockLoc.getY() < loc.getY()) // * Y
-                    && (Math.abs(blockLoc.getZ() - loc.getZ()) <= Config.Game.FiELD_MARGIN_X) // * Z
+            if ((Math.abs(blockLoc1.getX() - loc.getX()) <= Config.Game.FiELD_MARGIN_X) // * X
+                    && (Math.abs(blockLoc1.getY() - loc.getY()) <= Config.Game.FiELD_MARGIN_Y
+                            && blockLoc1.getY() < loc.getY()) // * Y
+                    && (Math.abs(blockLoc1.getZ() - loc.getZ()) <= Config.Game.FiELD_MARGIN_X) // * Z
+            ) {
+                return true;
+            }
+
+            Location blockLoc2 = block.getLocation().clone().subtract(0.5, 0, 0.5);
+
+            if ((Math.abs(blockLoc2.getX() - loc.getX()) <= Config.Game.FiELD_MARGIN_X) // * X
+                    && (Math.abs(blockLoc2.getY() - loc.getY()) <= Config.Game.FiELD_MARGIN_Y
+                    && blockLoc2.getY() < loc.getY()) // * Y
+                    && (Math.abs(blockLoc2.getZ() - loc.getZ()) <= Config.Game.FiELD_MARGIN_X) // * Z
             ) {
                 return true;
             }

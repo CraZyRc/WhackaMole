@@ -53,6 +53,7 @@ permissions:
       wam.game.stop: true
       wam.game.toggle: true
       wam.game.top: true
+      wam.game.edit: true
 
   wam.game.create:
     description: Allows the user to create a game `/wam game create <gameName>`
@@ -77,6 +78,10 @@ permissions:
   wam.game.top:
     description: Allows the user to see the topscores of a game `/wam game top <gameName> <type>`
     default: true
+    children: {wam.game: true}
+  wam.game.edit:
+    description: Allows the user to be able to edit the game grid and surrounding blocks `/wam game edit`
+    default: op
     children: {wam.game: true}
 
   wam.settings.*:
