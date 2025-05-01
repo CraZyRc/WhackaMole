@@ -1,7 +1,7 @@
 # Welcome to Custom rewards.
 # Here you can add some special rewards if players hit a certain threshold of points.
-# You can create custom rewards bby duplicating the "Example" reward underneath it and then change the parameters.
-# More info and documentation can be found on the wiki: https://github.com/CraZyRc/Wiki
+# You can create custom rewards by duplicating the "Example" reward underneath it and then change the parameters.
+# More info and documentation can be found on the wiki: https://github.com/CraZyRc/Wiki/V3-Custom-Rewards
 
 Rewards:
   Example:
@@ -42,7 +42,7 @@ Rewards:
       - Type: Message
         Settings:
           RewardChance: 100
-          messageType: Json # Json or String
+          MessageType: Json # Json or String
           Message: '["",{"text":"! JACKPOT ! ","bold":true,"color":"gold"},{"text":"well played !"}]'
       - Type: Sound
         Settings:
@@ -70,5 +70,5 @@ Rewards:
       - Type: Message
         Settings:
           RewardChance: 100
-          messageType: String
+          MessageType: String
           Message: "&6&b!!!! JACKPOT !!!!"
