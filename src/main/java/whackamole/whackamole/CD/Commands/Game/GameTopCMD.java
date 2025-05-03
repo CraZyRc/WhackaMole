@@ -4,6 +4,7 @@ import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
+import dev.jorel.commandapi.executors.CommandExecutor;
 import dev.jorel.commandapi.executors.PlayerCommandExecutor;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.Nullable;
@@ -62,7 +63,7 @@ public class GameTopCMD extends SubCommand {
   }
 
   @Override
-  protected PlayerCommandExecutor ExecutesPlayer() {
+  protected CommandExecutor Executes() {
     return (sender, args) -> {
       sender.sendMessage((String) args.get(1));
     };

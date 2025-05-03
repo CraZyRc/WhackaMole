@@ -100,7 +100,7 @@ public class RewardExecutor {
             if (this.game.getRunning().get().score >= reward.getThreshold() && random <= reward.getRewardChance()) {
                 filterd_list.add(reward);
                 
-                if (reward instanceof IRewardInteractType) {
+                if (reward instanceof IRewardInteractType && ((IRewardInteractType) reward).getEnabled()) {
                     this.interactableRewardsCount += 1;
                 }
             }
@@ -193,11 +193,12 @@ public class RewardExecutor {
 
             reward.Execute(this.context);
 
-            if (reward instanceof IRewardWaitableType waitable) {
+
+            if (reward instanceof IRewardWaitableType waitable && ((IRewardInteractType) reward).getEnabled()) {
                 this.setTimer(waitable.getTimer());
                 this.state = State.Waiting;
             }
-            if (reward instanceof IRewardInteractType) {
+            if (reward instanceof IRewardInteractType && ((IRewardInteractType) reward).getEnabled()) {
                 this.interactableRewardCounter += 1;
                 this.entity = this.displayCount(this.interactableRewardCounter, this.interactableRewardsCount);
             }

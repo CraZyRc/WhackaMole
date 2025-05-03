@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class CurrencyType implements IRewardInteractType {
+    private boolean Enabled;
     private List<Entity> entities = new ArrayList<>();
     private Entity Interactable;
     private int quantity;
@@ -27,18 +28,20 @@ public class CurrencyType implements IRewardInteractType {
     private int Threshold;
     private Econ econ = new Econ();
 
-    private CurrencyType(int threshold, int quantity, int rewardChance)
+    private CurrencyType(int threshold, int quantity, int rewardChance, boolean enabled)
     {
-        this.Threshold = threshold;
-        this.quantity = quantity;
-        this.rewardChance = rewardChance;
+        this.Threshold      = threshold;
+        this.quantity       = quantity;
+        this.rewardChance   = rewardChance;
+        this.Enabled        = enabled;
     }
 
     public static IRewardType Load(int threshold, LinkedHashMap<String, ?> Settings) {
         var quantity = (int) Settings.get("Quantity");
         var rewardChance = (int) Settings.get("RewardChance");
+        var enabled = (boolean) Settings.get("DisplayAnimation");
         
-        return new CurrencyType(threshold, quantity, rewardChance);
+        return new CurrencyType(threshold, quantity, rewardChance, enabled);
     }
 
     @Override
@@ -59,11 +62,16 @@ public class CurrencyType implements IRewardInteractType {
     public int getThreshold() { return this.Threshold; }
 
     @Override
+    public boolean getEnabled() { return this.Enabled; }
+
+    @Override
     public int getTimer() { return 5; }
 
     @Override
     public void Execute(RewardExecutorContext ctx) {
-        this.displayType(ctx.plugin, ctx.location.clone());
+        if (this.Enabled) {
+            this.displayType(ctx.plugin, ctx.location.clone());
+        } else this.AfterExecute(ctx);
     }
     
     @Override

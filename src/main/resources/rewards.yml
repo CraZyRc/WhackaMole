@@ -12,23 +12,27 @@ Rewards:
     RewardTypes:
       - Type: Animation
         Settings:
+          DisplayAnimation: true
           RewardChance: 100
           Animation: Dragon_wings # See the example Animations in the animationfile
           Duration: 2 # in seconds
       - Type: Item # type of reward, possible reward types: Item, Effect, Teleport, Currency, Message, Sound.
         Settings:
+          DisplayAnimation: true
           RewardChance: 100
           Material: DIAMOND_AXE
           Amount: 1
           NBT: "[enchantments={levels:{looting:1}},unbreakable={},damage=31]"
       - Type: Effect
         Settings:
+          DisplayAnimation: true
           RewardChance: 100
           Effect: GLOWING
           Duration: 15 # in ticks
           Amplifier: 1
       - Type: Teleport
         Settings:
+          DisplayAnimation: true
           RewardChance: 100
           World: world
           Rotation: NORTH
@@ -37,15 +41,18 @@ Rewards:
           Z: 0.0
       - Type: Currency
         Settings:
+          DisplayAnimation: true
           RewardChance: 100
           Quantity: 60
       - Type: Message
         Settings:
+          DisplayAnimation: true
           RewardChance: 100
           MessageType: Json # Json or String
           Message: '["",{"text":"! JACKPOT ! ","bold":true,"color":"gold"},{"text":"well played !"}]'
       - Type: Sound
         Settings:
+          DisplayAnimation: true
           RewardChance: 100
           Sound: ENTITY_GENERIC_EXPLODE # A list of sounds can be found on: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
           Volume: 1.0F
@@ -59,16 +66,19 @@ Rewards:
     RewardTypes:
       - Type: Currency
         Settings:
+          DisplayAnimation: true
           RewardChance: 100
           Quantity: 1500
       - Type: Effect
         Settings:
+          DisplayAnimation: true
           RewardChance: 100
           Effect: GLOWING
           Duration: 30
           Amplifier: 1
       - Type: Message
         Settings:
+          DisplayAnimation: true
           RewardChance: 100
           MessageType: String
           Message: "&6&b!!!! JACKPOT !!!!"

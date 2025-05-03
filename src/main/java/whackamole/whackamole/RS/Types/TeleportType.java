@@ -19,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class TeleportType implements IRewardInteractType {
+    private boolean Enabled;
     private enum Directions {NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST}
     private String Rotation;
     private List<Entity> entities = new ArrayList<>();
@@ -32,26 +33,28 @@ public class TeleportType implements IRewardInteractType {
     private int Threshold;
     private boolean safeLoc = false;
 
-    private TeleportType(int threshold, String worldName, String rotation, double X, double Y, double Z, int rewardChance)
+    private TeleportType(int threshold, String worldName, String rotation, double X, double Y, double Z, int rewardChance, boolean enabled)
     {
-        this.Threshold = threshold;
-        this.World = Bukkit.getWorld(worldName);
-        this.X = X;
-        this.Y = Y;
-        this.Z = Z;
-        this.rewardChance = rewardChance;
-        this.Rotation = rotation;
+        this.Threshold      = threshold;
+        this.World          = Bukkit.getWorld(worldName);
+        this.X              = X;
+        this.Y              = Y;
+        this.Z              = Z;
+        this.rewardChance   = rewardChance;
+        this.Rotation       = rotation;
+        this.Enabled        = enabled;
     }
 
     public static IRewardType Load( int threshold, LinkedHashMap<String, ?> Settings) {
         var worldName = (String) Settings.get("World");
-        var Rotation = (String) Settings.get("Rotation");
+        var rotation = (String) Settings.get("Rotation");
         var X = (double) Settings.get("X");
         var Y = (double) Settings.get("Y");
         var Z = (double) Settings.get("Z");
         var rewardChance = (int) Settings.get("RewardChance");
+        var enabled = (boolean) Settings.get("DisplayAnimation");
 
-        return new TeleportType(threshold, worldName, Rotation, X, Y, Z, rewardChance);
+        return new TeleportType(threshold, worldName, rotation, X, Y, Z, rewardChance, enabled);
     }
 
 
@@ -93,12 +96,17 @@ public class TeleportType implements IRewardInteractType {
     public int getThreshold() { return this.Threshold; }
 
     @Override
+    public boolean getEnabled() { return this.Enabled; }
+
+    @Override
     public int getTimer() { return 5; }
 
     @Override
     public void Execute(RewardExecutorContext ctx) {
         if (this.Check()) {
-            this.displayType(ctx.plugin, ctx.location.clone());
+            if (this.Enabled) {
+                this.displayType(ctx.plugin, ctx.location.clone());
+            } else this.AfterExecute(ctx);
         }
     }
     
@@ -109,7 +117,8 @@ public class TeleportType implements IRewardInteractType {
     public void AfterExecute(RewardExecutorContext ctx) {
         if (this.safeLoc) {
             ctx.player.teleport(this.Loc);
-            ctx.location = this.Loc;
+            ctx.location = this.Loc.add(this.Loc.getDirection().multiply(2).setY(0)).add(0,1.63,0);
+            //player.getEyeLocation().add(player.getEyeLocation().getDirection().multiply(2).setY(0));
         }
     }
 

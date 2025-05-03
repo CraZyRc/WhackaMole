@@ -18,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class SoundType implements IRewardInteractType {
+    private boolean Enabled;
     private List<Entity> entities = new ArrayList<>();
     private Entity Interactable;
     private Sound Sound;
@@ -26,13 +27,14 @@ public class SoundType implements IRewardInteractType {
     private int rewardChance;
     private int Threshold;
 
-    private SoundType(int threshold, String soundName, float volume, float pitch, int rewardChance)
+    private SoundType(int threshold, String soundName, float volume, float pitch, int rewardChance, boolean enabled)
     {
-        this.Threshold = threshold;
-        this.Sound = org.bukkit.Sound.valueOf(soundName);
-        this.Volume = volume;
-        this.Pitch = pitch;
-        this.rewardChance = rewardChance;
+        this.Threshold      = threshold;
+        this.Sound          = org.bukkit.Sound.valueOf(soundName);
+        this.Volume         = volume;
+        this.Pitch          = pitch;
+        this.rewardChance   = rewardChance;
+        this.Enabled        = enabled;
     }
 
     public static IRewardType Load(int threshold, LinkedHashMap<String, ?> Settings) {
@@ -40,8 +42,9 @@ public class SoundType implements IRewardInteractType {
         var volume = Float.valueOf((String) Settings.get("Volume"));
         var pitch = Float.valueOf((String) Settings.get("Pitch"));
         var rewardChance = (int) Settings.get("RewardChance");
+        var enabled = (boolean) Settings.get("DisplayAnimation");
         
-        return new SoundType(threshold, soundName, volume, pitch, rewardChance);
+        return new SoundType(threshold, soundName, volume, pitch, rewardChance, enabled);
     }
 
     @Override
@@ -70,11 +73,16 @@ public class SoundType implements IRewardInteractType {
     public int getThreshold() { return this.Threshold; }
 
     @Override
+    public boolean getEnabled() { return this.Enabled; }
+
+    @Override
     public int getTimer() { return 5; }
 
     @Override
     public void Execute(RewardExecutorContext ctx) {
-        this.displayType(ctx.plugin, ctx.location.clone());
+        if (this.Enabled) {
+            this.displayType(ctx.plugin, ctx.location.clone());
+        } else this.AfterExecute(ctx);
     }
 
     @Override

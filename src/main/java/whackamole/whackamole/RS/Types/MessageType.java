@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class MessageType implements IRewardInteractType {
+    private boolean Enabled;
     private List<Entity> entities = new ArrayList<>();
     private Entity Interactable;
     private String Message;
@@ -30,20 +31,22 @@ public class MessageType implements IRewardInteractType {
     private int rewardChance;
     private int threshold;
 
-    private MessageType(int threshold, String messageType, String message, int rewardChance)
+    private MessageType(int threshold, String messageType, String message, int rewardChance, boolean enabled)
     {
-        this.threshold = threshold;
-        this.messageType = messageType;
-        this.Message = message;
-        this.rewardChance = rewardChance;
+        this.threshold      = threshold;
+        this.messageType    = messageType;
+        this.Message        = message;
+        this.rewardChance   = rewardChance;
+        this.Enabled        = enabled;
     }
 
     public static IRewardType Load(int threshold, LinkedHashMap<String, ?> Settings) {
         var messageType = (String) Settings.get("MessageType");
         var message = (String) Settings.get("Message");
         var rewardChance = (int) Settings.get("RewardChance");
+        var enabled = (boolean) Settings.get("DisplayAnimation");
         
-        return new MessageType(threshold, messageType, message, rewardChance);
+        return new MessageType(threshold, messageType, message, rewardChance, enabled);
     }
 
     @Override
@@ -69,11 +72,16 @@ public class MessageType implements IRewardInteractType {
     public int getThreshold() { return this.threshold; }
 
     @Override
+    public boolean getEnabled() { return this.Enabled; }
+
+    @Override
     public int getTimer() { return 5; }
 
     @Override
     public void Execute(RewardExecutorContext ctx) {
-        this.displayType(ctx.plugin, ctx.location.clone());
+        if (this.Enabled) {
+            this.displayType(ctx.plugin, ctx.location.clone());
+        } else this.AfterExecute(ctx);
     }
 
     @Override

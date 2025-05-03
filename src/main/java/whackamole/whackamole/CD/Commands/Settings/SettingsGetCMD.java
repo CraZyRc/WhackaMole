@@ -6,7 +6,6 @@ import org.bukkit.ChatColor;
 import org.jetbrains.annotations.Nullable;
 import whackamole.whackamole.CD.Arguments.Arguments;
 import whackamole.whackamole.CD.Commands.SubCommand;
-import whackamole.whackamole.Config;
 import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.Utils.Translator;
 

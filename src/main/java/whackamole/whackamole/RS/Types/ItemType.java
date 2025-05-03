@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class ItemType implements IRewardInteractType {
+    private boolean Enabled;
     private List<Entity> entities = new ArrayList<>();
     private Entity Interactable;
     private Material Material;
@@ -28,13 +29,14 @@ public class ItemType implements IRewardInteractType {
     private String NBT;
     private int Threshold;
 
-    private ItemType(int threshold, String materialName, int amount, String nbt, int rewardChance)
+    private ItemType(int threshold, String materialName, int amount, String nbt, int rewardChance, boolean enabled)
     {
-        this.Threshold = threshold;
-        this.Material = org.bukkit.Material.matchMaterial(materialName);
-        this.Amount = amount;
-        this.NBT = nbt;
-        this.rewardChance = rewardChance;
+        this.Threshold      = threshold;
+        this.Material       = org.bukkit.Material.matchMaterial(materialName);
+        this.Amount         = amount;
+        this.NBT            = nbt;
+        this.rewardChance   = rewardChance;
+        this.Enabled        = enabled;
     }
 
     public static IRewardType Load(int threshold, LinkedHashMap<String, ?> Settings) {
@@ -42,7 +44,9 @@ public class ItemType implements IRewardInteractType {
         var amount = (int) Settings.get("Amount");
         var nbt = (String) Settings.get("NBT");
         var rewardChance = (int) Settings.get("RewardChance");
-        return new ItemType(threshold, materialName, amount, nbt, rewardChance);
+        var enabled = (boolean) Settings.get("DisplayAnimation");
+
+        return new ItemType(threshold, materialName, amount, nbt, rewardChance, enabled);
     }
 
     @Override
@@ -67,12 +71,17 @@ public class ItemType implements IRewardInteractType {
     public int getThreshold() { return this.Threshold; }
 
     @Override
+    public boolean getEnabled() { return this.Enabled; }
+
+    @Override
     public int getTimer() { return 5; }
 
     
     @Override
     public void Execute(RewardExecutorContext ctx) {
-        this.displayType(ctx.plugin, ctx.location.clone());
+        if (this.Enabled) {
+            this.displayType(ctx.plugin, ctx.location.clone());
+        } else this.AfterExecute(ctx);
     }
     @Override
     public void TickExecute() {}

@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class EffectType implements IRewardInteractType {
+    private boolean Enabled;
     private List<Entity> entities = new ArrayList<>();
     private Entity Interactable;
     private PotionEffectType effect;
@@ -29,13 +30,14 @@ public class EffectType implements IRewardInteractType {
     public int Threshold;
 
     @SuppressWarnings("deprecation")
-    private EffectType(int threshold, String effectName, int duration, int amplifier, int rewardChance)
+    private EffectType(int threshold, String effectName, int duration, int amplifier, int rewardChance, boolean enabled)
     {
         this.Threshold      = threshold;
         this.effect         = PotionEffectType.getByName(effectName);
         this.Duration       = duration;
         this.Amplifier      = amplifier;
         this.rewardChance   = rewardChance;
+        this.Enabled        = enabled;
     }
 
     public static IRewardType Load(int threshold, LinkedHashMap<String, ?> Settings) {
@@ -43,8 +45,9 @@ public class EffectType implements IRewardInteractType {
         var duration = (int) Settings.get("Duration");
         var amplifier = (int) Settings.get("Amplifier");
         var rewardChance = (int) Settings.get("RewardChance");
+        var enabled = (boolean) Settings.get("DisplayAnimation");
 
-        return new EffectType(threshold, effectName, duration, amplifier, rewardChance);
+        return new EffectType(threshold, effectName, duration, amplifier, rewardChance, enabled);
     }
 
     @Override
@@ -73,11 +76,16 @@ public class EffectType implements IRewardInteractType {
     public int getThreshold() { return this.Threshold; }
 
     @Override
+    public boolean getEnabled() { return this.Enabled; }
+
+    @Override
     public int getTimer() { return 5; }
 
     @Override
     public void Execute(RewardExecutorContext ctx) {
-        this.displayType(ctx.plugin, ctx.location.clone());
+        if (this.Enabled) {
+            this.displayType(ctx.plugin, ctx.location.clone());
+        } else this.AfterExecute(ctx);
     }
 
     @Override

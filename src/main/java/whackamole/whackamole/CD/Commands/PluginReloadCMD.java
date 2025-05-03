@@ -1,5 +1,6 @@
 package whackamole.whackamole.CD.Commands;
 
+import dev.jorel.commandapi.executors.CommandExecutor;
 import dev.jorel.commandapi.executors.PlayerCommandExecutor;
 import org.bukkit.Bukkit;
 import whackamole.whackamole.Config;
@@ -23,7 +24,7 @@ public class PluginReloadCMD extends SubCommand {
   }
 
   @Override
-  protected PlayerCommandExecutor ExecutesPlayer() {
+  protected CommandExecutor Executes() {
     return (sender, args) -> {
       var plugin = (Main) Bukkit.getPluginManager().getPlugin("WhackaMole");
       boolean langChange = Config.languageLoad(plugin);
