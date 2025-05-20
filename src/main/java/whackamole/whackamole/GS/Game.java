@@ -480,9 +480,9 @@ public class Game {
         return false;
       }
     }
-    Hologram holo = new Hologram(this, holoID, loc);
+    Hologram holo = new Hologram(this, loc, type, topCount, holoID);
     this.holos.add(holo);
-    holo.Create(holoID, type, loc, topCount);
+    holo.Create();
     return true;
   }
 
@@ -490,6 +490,9 @@ public class Game {
     List<HologramRow> Holograms = SQLite.Hologram.Select(this.getID());
     List<Hologram> holos = new ArrayList<>();
     for (var h : Holograms) {
+      Logger.info("found");
+      Logger.info(h.holoID + "");
+      Logger.info(h.Location + "");
       holos.add(new Hologram(h, this));
     }
     return holos;

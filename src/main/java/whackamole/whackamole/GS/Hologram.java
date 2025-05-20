@@ -17,17 +17,21 @@ import java.util.List;
 
 public class Hologram extends HologramRow {
   public HologramDB db = SQLite.Hologram;
-  public List<HologramRow> holograms = new ArrayList<>();
+//  public List<HologramRow> holograms = new ArrayList<>();
   private List<ArmorStand> armorstandList = new ArrayList<>();
   private Game game;
   public int holoID;
   public boolean showID;
 
-  public Hologram(Game game, int holoID, Location loc) {
-    this.game = game;
+  public Hologram(Game game, Location loc, String type, int topCount, int holoID) {
+    double height = 1.75 + (0.25 * topCount);
     this.holoID = holoID;
-    this.Location = loc;
+    this.gameID = game.getID();
+    this.Type = type;
+    this.Location = loc.add(0, height, 0);
+    this.topCount = topCount;
     this.showID = false;
+    this.game = game;
   }
 
   public Hologram(HologramRow row, Game game) {
@@ -40,31 +44,21 @@ public class Hologram extends HologramRow {
     this.game = game;
 
 
-    this.holograms.add(this);
+//    this.holograms.add(this);
   }
 
-  public void Create(int holoID, String type, Location loc, int topCount) {
-    var hologram = new HologramRow();
-    double height = 1.75 + (0.25 * topCount);
-    hologram.holoID = holoID;
-    hologram.gameID = game.getID();
-    hologram.Type = type;
-    hologram.Location = loc.add(0, height, 0);
-    hologram.topCount = topCount;
-    hologram.showID = false;
+  public void Create() {
+//    this.holograms.add(hologram);
+    this.db.Insert(this);
 
-
-    this.holograms.add(hologram);
-    this.db.Insert(hologram);
-
-    this.summonHolos(hologram);
+    this.summonHolos(this);
   }
 
   public void Delete() {
     this.killHolos();
-    for (var row : holograms) {
-      this.db.Delete(row);
-    }
+//    for (var row : holograms) {
+//    }
+    this.db.Delete(this);
   }
 
   private void summonHolos(HologramRow hologram) {
@@ -246,9 +240,9 @@ public class Hologram extends HologramRow {
   }
 
   public void Update() {
-    for (var row : holograms) {
-      this.db.update(row);
-    }
+//    for (var row : holograms) {
+//    }
+    this.db.update(this);
   }
 
   private void killHolos() {
@@ -263,7 +257,7 @@ public class Hologram extends HologramRow {
 
 
   public void Teleport(Player player) {
-    double height = 1.75 + (0.25 * this.holograms.get(0).topCount);
+    double height = 1.75 + (0.25 * this.topCount);
     Location loc = player.getLocation().add(0, height, 0);
     this.Location = loc;
     this.Update();
@@ -290,7 +284,7 @@ public class Hologram extends HologramRow {
       return true;
     }
 
-    double height = 1.75 + (0.25 * this.topCount);
+    double height = (0.25 * this.topCount);
     Location loc;
     if (this.showID) {
       loc = this.Location.clone().add(0, height, 0).add(0, 0.5, 0);
