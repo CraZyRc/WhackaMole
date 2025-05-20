@@ -115,6 +115,7 @@ permissions:
       wam.settings.holo.remove: true
       wam.settings.holo.select: true
       wam.settings.holo.toggle: true
+      wam.settings.holo.teleport: true
       wam.settings.holo: true
 
   wam.settings.holo.create:
@@ -131,6 +132,10 @@ permissions:
     children: {wam.settings.holo: true}
   wam.settings.holo.toggle:
     description: Allows the user to toggle the ID visibility of all its holograms `/wam settings holo toggle <gameName>`
+    default: op
+    children: {wam.settings.holo: true}
+  wam.settings.holo.teleport:
+    description: Allows the user to teleport the hologram to the users location
     default: op
     children: {wam.settings.holo: true}
 

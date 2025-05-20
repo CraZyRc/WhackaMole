@@ -142,4 +142,5 @@ Commands:
   wam.settings.holo.remove: Allows the user to remove a hologram `/wam settings holo remove <gameName> <holoID>`
   wam.settings.holo.select: Allows the user to select a hologram `/wam settings holo select <gameName> <holoID>`
   wam.settings.holo.toggle: Allows the user to toggle the ID visibility of all its holograms `/wam settings holo toggle <gameName>`
+  wam.settings.holo.teleport: Allows the user to teleport the hologram to the users location
 

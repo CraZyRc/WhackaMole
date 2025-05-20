@@ -128,6 +128,8 @@ public enum Translator {
     ,   COMMANDS_HOLO_TOGGLEID_SUCCESS                      ("Commands.Holo.toggleID.Success")
     ,   COMMANDS_HOLO_SELECT                                ("Commands.Holo.Select")
     ,   COMMANDS_HOLO_SELECT_ERROR                          ("Commands.Holo.Select.Error")
+    ,   COMMANDS_HOLO_TELEPORT                              ("Commands.Holo.Teleport")
+    ,   COMMANDS_HOLO_TELEPORT_SUCCESS                      ("Commands.Holo.Teleport.Success")
     ,   COMMANDS_SETTINGS                                   ("Commands.Settings")
     ,   COMMANDS_SETTINGS_GET                               ("Commands.Settings.Get")
     ,   COMMANDS_SETTINGS_SET                               ("Commands.Settings.Set")

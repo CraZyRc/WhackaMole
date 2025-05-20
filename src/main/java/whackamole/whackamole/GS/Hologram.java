@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import whackamole.whackamole.DB.HologramDB;
 import whackamole.whackamole.DB.HologramRow;
 import whackamole.whackamole.DB.SQLite;
@@ -40,27 +41,6 @@ public class Hologram extends HologramRow {
 
 
     this.holograms.add(this);
-
-
-    /*
-     * Loads all the holos in order
-     * Adds the holos to the list in order from first (most upper) to last (lowest) hologram.
-     * This is to keep the list ordered and not random
-     */
-    Location loc;
-    if (this.showID) {
-      loc = row.Location.clone().add(0, 0.5, 0);
-    } else {
-      loc = row.Location.clone().add(0, 0.25, 0);
-    }
-
-    for (int i = (showID ? -3 : -2); i < row.topCount; i++) {
-      List<Entity> entities = (List<Entity>) loc.getWorld().getNearbyEntities(loc.subtract(0, 0.25, 0), 0.1, 0.1, 0.1);
-      if (!entities.isEmpty()) {
-        ArmorStand a = (ArmorStand) entities.get(0);
-        this.armorstandList.add(a);
-      }
-    }
   }
 
   public void Create(int holoID, String type, Location loc, int topCount) {
@@ -282,4 +262,49 @@ public class Hologram extends HologramRow {
   }
 
 
+  public void Teleport(Player player) {
+    double height = 1.75 + (0.25 * this.holograms.get(0).topCount);
+    Location loc = player.getLocation().add(0, height, 0);
+    this.Location = loc;
+    this.Update();
+
+    for (var H : this.armorstandList) {
+      if (H.getScoreboardTags().contains("Top:1")) {
+        H.teleport(loc);
+      } else {
+        H.teleport(loc.subtract(0, 0.25, 0));
+      }
+    }
+
+  }
+
+  /**
+   * Loads all the holos in order when executing a command
+   * Adds the holos to the list in order from first (most upper) to last (lowest) hologram.
+   * This is to keep the list ordered and not random
+   * @return true/false
+   */
+  // * This gets run everytime a holo command is executed. this because loading the holos during worldload gave errors (due to the armorstands not being loaded)
+  public boolean Check() {
+    if (!this.armorstandList.isEmpty()) {
+      return true;
+    }
+
+    double height = 1.75 + (0.25 * this.topCount);
+    Location loc;
+    if (this.showID) {
+      loc = this.Location.clone().add(0, height, 0).add(0, 0.5, 0);
+    } else {
+      loc = this.Location.clone().add(0, height, 0).add(0, 0.25, 0);
+    }
+    for (int i = (showID ? -3 : -2); i < this.topCount; i++) {
+      List<Entity> entities = (List<Entity>) loc.getWorld().getNearbyEntities(loc.subtract(0, 0.25, 0), 0.1, 0.1, 0.1);
+      if (!entities.isEmpty()) {
+        ArmorStand A = (ArmorStand) entities.get(0);
+        this.armorstandList.add(A);
+      }
+    }
+
+    return !this.armorstandList.isEmpty();
+  }
 }

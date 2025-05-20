@@ -10,13 +10,13 @@ Rewards:
       - Wam
       - WhackaMole
     RewardTypes:
-      - Type: Animation
+      - Type: Animation # type of reward, possible reward types: Animation, Item, Effect, Teleport, Currency, Message, Sound.
         Settings:
-          DisplayAnimation: true
+          DisplayAnimation: true # Whether you want the Reward to be given with the animation or instantaneously give the reward
           RewardChance: 100
-          Animation: Dragon_wings # See the example Animations in the animationfile
+          Animation: Dragon_wings # See the example Animations in the Animations folder
           Duration: 2 # in seconds
-      - Type: Item # type of reward, possible reward types: Item, Effect, Teleport, Currency, Message, Sound.
+      - Type: Item
         Settings:
           DisplayAnimation: true
           RewardChance: 100

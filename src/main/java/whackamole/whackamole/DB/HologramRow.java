@@ -15,7 +15,7 @@ public class HologramRow extends Row {
   public int gameID;
 
   /**
-   * the Type of topscore (Score/Streak/molesHit
+   * the Type of topscore (Score/Streak/molesHit)
    */
   public String Type;
 

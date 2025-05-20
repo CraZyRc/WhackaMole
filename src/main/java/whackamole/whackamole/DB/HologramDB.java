@@ -9,8 +9,8 @@ import java.util.List;
 public class HologramDB extends Table<HologramRow> {
   protected HologramDB(SQLite sql) {
     super(sql, "Hologram", new Column<?>[]{
-            new Column<>("gameID", Integer.class).IsPrimaryKey(true).AllowNull(false),
-            new Column<>("holoID", Integer.class).AllowNull(false),
+            new Column<>("gameID", Integer.class).AllowNull(false),
+            new Column<>("holoID", Integer.class).IsPrimaryKey(true).AllowNull(false),
             new Column<>("Type", String.class).AllowNull(false),
             new Column<>("Location", Location.class).AllowNull(false),
             new Column<>("topCount", Integer.class).Default(3),

@@ -500,8 +500,8 @@ public class Game {
     this.count2 = 0;
     boolean value = false;
     Hologram H = null;
-    for (var h : holos) {
-      if (h.holoID == holoID) {
+    for (var h : this.holos) {
+      if (h.holoID == holoID && h.Check()) {
         H = h;
         value = true;
         player.sendMessage(Config.AppConfig.PREFIX + Translator.Format(Translator.GAME_HOLO_SELECT, String.format("%.2f", h.Location.getX()), String.format("%.2f", h.Location.getY()), String.format("%.2f", h.Location.getZ()), String.valueOf(h.Location.getWorld())));
@@ -528,13 +528,26 @@ public class Game {
 
   public boolean holoSelect() {
     boolean value = false;
-    Hologram H;
     for (var h : this.holos) {
-      H = h;
-      value = true;
-      H.showID = !H.showID;
-      H.toggleHoloID();
-      H.Update();
+      if (h.Check()) {
+        value = true;
+        h.showID = !h.showID;
+        h.toggleHoloID();
+        h.Update();
+      }
+    }
+
+    return value;
+  }
+
+  public boolean holoTeleport(int holoID, Player player) {
+    boolean value = false;
+    for (var h : this.holos) {
+      if (h.holoID == holoID && h.Check()) {
+        value = true;
+        h.Teleport(player);
+        player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_TELEPORT_SUCCESS.Format());
+      }
     }
 
     return value;
@@ -542,7 +555,7 @@ public class Game {
 
   public boolean holoDelete(int holoID) {
     for (var h : this.holos) {
-      if (h.holoID == holoID) {
+      if (h.holoID == holoID && h.Check()) {
         h.Delete();
         this.holos.remove(h);
         return true;
