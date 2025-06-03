@@ -1,4 +1,5 @@
-package whackamole.whackamole.CD.Commands.Settings.Holo;
+package whackamole.whackamole.CD.Commands.Holo;
+
 
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.executors.PlayerCommandExecutor;
@@ -9,21 +10,20 @@ import whackamole.whackamole.Config;
 import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.Utils.Translator;
 
-public class HoloToggleCMD extends SubCommand {
+public class HoloSelectCMD extends SubCommand {
   @Override
-  protected String GetName() {
-    return Translator.COMMANDS_HOLO_TOGGLEID.Format();
-  }
+  protected String GetName() { return Translator.COMMANDS_HOLO_SELECT.Format(); }
 
   @Override
   protected @Nullable String Permission() {
-    return "wam.settings.holo.toggle";
+    return "wam.settings.holo.select";
   }
 
   @Override
   protected Argument<?>[] Arguments() {
-    return new Argument[]{
-            Arguments.Games()
+    return new Argument[] {
+            Arguments.Games(),
+            Arguments.holoIDArgument()
     };
   }
 
@@ -31,9 +31,9 @@ public class HoloToggleCMD extends SubCommand {
   protected @Nullable PlayerCommandExecutor ExecutesPlayer() {
     return ((sender, args) -> {
       Game game = (Game) args.get(0);
-      if (game.holoSelect()) {
-        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_TOGGLEID_SUCCESS.Format());
-      } else sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_SELECT_ERROR.Format());
+      if (!game.holoSelect((int) args.get(1), sender)) {
+        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_SELECT_ERROR.Format());
+      }
     });
   }
 

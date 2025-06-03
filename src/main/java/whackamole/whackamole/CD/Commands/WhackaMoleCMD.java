@@ -1,7 +1,6 @@
 package whackamole.whackamole.CD.Commands;
 
 
-import whackamole.whackamole.Config;
 
 public class WhackaMoleCMD extends SubCommand {
 
@@ -23,7 +22,8 @@ public class WhackaMoleCMD extends SubCommand {
             new GameCMD(),
             new SettingsCMD(),
             new TicketBuyCMD(),
-            new PluginReloadCMD()
+            new PluginReloadCMD(),
+            new HoloCMD()
     };
   }
 }

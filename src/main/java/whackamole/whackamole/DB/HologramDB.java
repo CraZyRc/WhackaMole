@@ -47,9 +47,5 @@ public class HologramDB extends Table<HologramRow> {
     row.holoID = holoID;
     this.Delete(row);
   }
-
-  public void Delete(HologramRow row) {
-    this.Delete("gameID = ? AND holoID = ?", row.gameID, row.holoID);
-  }
 }
 
