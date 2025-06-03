@@ -1,4 +1,4 @@
-package whackamole.whackamole.CD.Commands.Settings.Holo;
+package whackamole.whackamole.CD.Commands.Holo;
 
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.executors.PlayerCommandExecutor;
@@ -9,13 +9,13 @@ import whackamole.whackamole.Config;
 import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.Utils.Translator;
 
-public class HoloRemoveCMD extends SubCommand {
+public class HoloTeleportCMD extends SubCommand {
   @Override
-  protected String GetName() { return Translator.COMMANDS_HOLO_REMOVE.Format(); }
+  protected String GetName() { return Translator.COMMANDS_HOLO_TELEPORT.Format(); }
 
   @Override
   protected @Nullable String Permission() {
-    return "wam.settings.holo.remove";
+    return "wam.settings.holo.teleport";
   }
 
   @Override
@@ -30,13 +30,9 @@ public class HoloRemoveCMD extends SubCommand {
   protected @Nullable PlayerCommandExecutor ExecutesPlayer() {
     return ((sender, args) -> {
       Game game = (Game) args.get(0);
-      if (game.holoDelete((int) args.get(1))) {
-        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_REMOVE_SUCCESS.Format());
-      } else {
-        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_REMOVE_ERROR.Format());
+      if (!game.holoTeleport((int) args.get(1), sender)) {
+        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_SELECT_ERROR.Format());
       }
     });
   }
-
-
 }

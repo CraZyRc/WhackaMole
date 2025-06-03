@@ -119,9 +119,11 @@ public class Game {
   }
 
   public void Delete() {
-    for (var h : this.holos) {
+    if (!this.holos.isEmpty()) {
+      for (var h : this.holos) {
         h.Delete();
         this.holos.remove(h);
+      }
     }
     this.grid.Delete();
     this.cooldown.Delete();
@@ -490,9 +492,6 @@ public class Game {
     List<HologramRow> Holograms = SQLite.Hologram.Select(this.getID());
     List<Hologram> holos = new ArrayList<>();
     for (var h : Holograms) {
-      Logger.info("found");
-      Logger.info(h.holoID + "");
-      Logger.info(h.Location + "");
       holos.add(new Hologram(h, this));
     }
     return holos;
@@ -504,7 +503,7 @@ public class Game {
     boolean value = false;
     Hologram H = null;
     for (var h : this.holos) {
-      if (h.holoID == holoID && h.Check()) {
+      if (h.holoID == holoID && h.loadHolos()) {
         H = h;
         value = true;
         player.sendMessage(Config.AppConfig.PREFIX + Translator.Format(Translator.GAME_HOLO_SELECT, String.format("%.2f", h.Location.getX()), String.format("%.2f", h.Location.getY()), String.format("%.2f", h.Location.getZ()), String.valueOf(h.Location.getWorld())));
@@ -532,7 +531,7 @@ public class Game {
   public boolean holoSelect() {
     boolean value = false;
     for (var h : this.holos) {
-      if (h.Check()) {
+      if (h.loadHolos()) {
         value = true;
         h.showID = !h.showID;
         h.toggleHoloID();
@@ -546,7 +545,7 @@ public class Game {
   public boolean holoTeleport(int holoID, Player player) {
     boolean value = false;
     for (var h : this.holos) {
-      if (h.holoID == holoID && h.Check()) {
+      if (h.holoID == holoID && h.loadHolos()) {
         value = true;
         h.Teleport(player);
         player.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_TELEPORT_SUCCESS.Format());
@@ -558,7 +557,7 @@ public class Game {
 
   public boolean holoDelete(int holoID) {
     for (var h : this.holos) {
-      if (h.holoID == holoID && h.Check()) {
+      if (h.holoID == holoID && h.loadHolos()) {
         h.Delete();
         this.holos.remove(h);
         return true;

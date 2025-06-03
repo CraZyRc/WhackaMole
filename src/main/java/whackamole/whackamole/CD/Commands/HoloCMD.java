@@ -1,9 +1,7 @@
-package whackamole.whackamole.CD.Commands.Settings;
+package whackamole.whackamole.CD.Commands;
 
 import org.jetbrains.annotations.Nullable;
-import whackamole.whackamole.CD.Commands.Settings.Holo.*;
-import whackamole.whackamole.CD.Commands.SubCommand;
-import whackamole.whackamole.Config;
+import whackamole.whackamole.CD.Commands.Holo.*;
 import whackamole.whackamole.Utils.Translator;
 
 public class HoloCMD extends SubCommand {

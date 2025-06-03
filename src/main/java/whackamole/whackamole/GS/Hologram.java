@@ -17,7 +17,6 @@ import java.util.List;
 
 public class Hologram extends HologramRow {
   public HologramDB db = SQLite.Hologram;
-//  public List<HologramRow> holograms = new ArrayList<>();
   private List<ArmorStand> armorstandList = new ArrayList<>();
   private Game game;
   public int holoID;
@@ -44,47 +43,43 @@ public class Hologram extends HologramRow {
     this.game = game;
 
 
-//    this.holograms.add(this);
   }
 
   public void Create() {
-//    this.holograms.add(hologram);
     this.db.Insert(this);
 
     this.summonHolos(this);
   }
 
   public void Delete() {
-    this.killHolos();
-//    for (var row : holograms) {
-//    }
     this.db.Delete(this);
+    this.killHolos();
   }
 
   private void summonHolos(HologramRow hologram) {
+    Location loc = this.Location.clone();
     // Adding top hologram
-    ArmorStand armorstandMain = (ArmorStand) hologram.Location.getWorld().spawnEntity(hologram.Location, EntityType.ARMOR_STAND);
+    ArmorStand armorstandMain = (ArmorStand) loc.getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
     armorstandMain = Misc.addArmorStandSettings(armorstandMain, "Top:1");
     armorstandMain = this.nameHolos(armorstandMain, ChatColor.YELLOW, ChatColor.GOLD);
     this.armorstandList.add(armorstandMain);
 
     // Adding second line hologram
-    ArmorStand armorstandType = (ArmorStand) hologram.Location.getWorld().spawnEntity(hologram.Location.subtract(0, 0.25, 0), EntityType.ARMOR_STAND);
+    ArmorStand armorstandType = (ArmorStand) loc.getWorld().spawnEntity(loc.subtract(0, 0.25, 0), EntityType.ARMOR_STAND);
     armorstandType = Misc.addArmorStandSettings(armorstandType, hologram.Type);
     armorstandType.addScoreboardTag("Top:2");
     armorstandType = this.nameHolos(armorstandType, hologram.Type, ChatColor.YELLOW, ChatColor.GOLD);
-
+    this.armorstandList.add(armorstandType);
 
     // Adding ranks hologram
     for (int i = 0; i < hologram.topCount; i++) {
-      ArmorStand a = (ArmorStand) hologram.Location.getWorld().spawnEntity(hologram.Location.subtract(0, 0.25, 0), EntityType.ARMOR_STAND);
+      ArmorStand a = (ArmorStand) loc.getWorld().spawnEntity(loc.subtract(0, 0.25, 0), EntityType.ARMOR_STAND);
       a = Misc.addArmorStandSettings(a, hologram.Type);
       a.addScoreboardTag("Bottom");
       a = this.nameHolos(a, i, hologram.Type, ChatColor.DARK_AQUA, ChatColor.WHITE, ChatColor.AQUA, ChatColor.YELLOW);
 
       this.armorstandList.add(a);
     }
-    this.armorstandList.add(armorstandType);
 
   }
 
@@ -240,8 +235,6 @@ public class Hologram extends HologramRow {
   }
 
   public void Update() {
-//    for (var row : holograms) {
-//    }
     this.db.update(this);
   }
 
@@ -259,12 +252,15 @@ public class Hologram extends HologramRow {
   public void Teleport(Player player) {
     double height = 1.75 + (0.25 * this.topCount);
     Location loc = player.getLocation().add(0, height, 0);
+    Location showID = loc.clone().add(0, 0.25, 0);
     this.Location = loc;
     this.Update();
 
     for (var H : this.armorstandList) {
       if (H.getScoreboardTags().contains("Top:1")) {
         H.teleport(loc);
+      } else if (H.getScoreboardTags().contains("showID")) {
+        H.teleport(showID);
       } else {
         H.teleport(loc.subtract(0, 0.25, 0));
       }
@@ -279,19 +275,18 @@ public class Hologram extends HologramRow {
    * @return true/false
    */
   // * This gets run everytime a holo command is executed. this because loading the holos during worldload gave errors (due to the armorstands not being loaded)
-  public boolean Check() {
+  public boolean loadHolos() {
     if (!this.armorstandList.isEmpty()) {
       return true;
     }
 
-    double height = (0.25 * this.topCount);
     Location loc;
     if (this.showID) {
-      loc = this.Location.clone().add(0, height, 0).add(0, 0.5, 0);
+      loc = this.Location.clone().add(0, 0.5, 0);
     } else {
-      loc = this.Location.clone().add(0, height, 0).add(0, 0.25, 0);
+      loc = this.Location.clone().add(0, 0.25, 0);
     }
-    for (int i = (showID ? -3 : -2); i < this.topCount; i++) {
+    for (int i = (this.showID ? -3 : -2); i < this.topCount; i++) {
       List<Entity> entities = (List<Entity>) loc.getWorld().getNearbyEntities(loc.subtract(0, 0.25, 0), 0.1, 0.1, 0.1);
       if (!entities.isEmpty()) {
         ArmorStand A = (ArmorStand) entities.get(0);

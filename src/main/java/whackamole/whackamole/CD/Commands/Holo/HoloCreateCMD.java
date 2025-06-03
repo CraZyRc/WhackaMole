@@ -1,4 +1,4 @@
-package whackamole.whackamole.CD.Commands.Settings.Holo;
+package whackamole.whackamole.CD.Commands.Holo;
 
 import dev.jorel.commandapi.StringTooltip;
 import dev.jorel.commandapi.arguments.Argument;

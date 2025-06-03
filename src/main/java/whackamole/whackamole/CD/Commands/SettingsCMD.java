@@ -18,7 +18,6 @@ public class SettingsCMD extends SubCommand {
     return new SubCommand[] {
             new SettingsGetCMD(),
             new SettingsSetCMD(),
-            new HoloCMD(),
             new PositionsCMD()
     };
   }

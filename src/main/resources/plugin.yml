@@ -107,34 +107,34 @@ permissions:
     default: op
     children: {wam.settings: true}
 
-  wam.settings.holo.*:
+  wam.holo.*:
     description: Gives the user full access to the Holo commands
     default: op
     children:
-      wam.settings.holo.create: true
-      wam.settings.holo.remove: true
-      wam.settings.holo.select: true
-      wam.settings.holo.toggle: true
-      wam.settings.holo.teleport: true
-      wam.settings.holo: true
+      wam.holo.create: true
+      wam.holo.remove: true
+      wam.holo.select: true
+      wam.holo.toggle: true
+      wam.holo.teleport: true
+      wam.holo: true
 
-  wam.settings.holo.create:
+  wam.holo.create:
     description: Allows the user to create a hologram `/wam settings holo create <gameName> <holoID> <type> <amount of scoreboard rows>`
     default: op
     children: {wam.settings.holo: true}
-  wam.settings.holo.remove:
+  wam.holo.remove:
     description: Allows the user to remove a hologram `/wam settings holo remove <gameName> <holoID>`
     default: op
     children: {wam.settings.holo: true}
-  wam.settings.holo.select:
+  wam.holo.select:
     description: Allows the user to select a hologram `/wam settings holo select <gameName> <holoID>`
     default: op
     children: {wam.settings.holo: true}
-  wam.settings.holo.toggle:
+  wam.holo.toggle:
     description: Allows the user to toggle the ID visibility of all its holograms `/wam settings holo toggle <gameName>`
     default: op
     children: {wam.settings.holo: true}
-  wam.settings.holo.teleport:
+  wam.holo.teleport:
     description: Allows the user to teleport the hologram to the users location
     default: op
     children: {wam.settings.holo: true}
