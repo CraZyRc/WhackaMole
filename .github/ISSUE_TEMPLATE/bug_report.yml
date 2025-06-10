@@ -37,8 +37,7 @@ body:
         ----
         
         ### 2. Log and Configuration files
-        Provide your server's latest log file, the configuration file (`config.yml`) and the `<Gamename>.yml` file of The game that gave the error.
-        If the error wasn't produced by a specific game then you can leave this empty.
+        Provide your server's latest log file, the configuration file (`config.yml`).
         Paste your log/config/gamefile each in a seperate https://pastebin.com and paste the link in the fields below
   - type: 'input'
     attributes:
@@ -54,13 +53,6 @@ body:
       placeholder: 'https://pastebin.com/...'
     validations:
       required: true
-  - type: 'input'
-    attributes:
-      label: '<Gamename>.yml'
-      description: 'the gamefile, this is not needed if the error did not come from messing with a game'
-      placeholder: 'https://pastebin.com...'
-    validations:
-      required: false
   - type: 'markdown'
     attributes:
       value: |-
