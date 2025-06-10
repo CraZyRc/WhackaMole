@@ -22,11 +22,18 @@ public class Arguments {
     public static Argument<Game> Games() {
         return new CustomArgument<Game, String>(new StringArgument("Game"), info -> {
             for (var game : Manager.games) {
-                if (game.getName().equals(info.input())) 
+                if (game.getName().equals(info.input())) {
                     return game;
+                }
             }
-            throw InputError(Translator.COMMANDS_ARGUMENTS_UNKNOWNGAMENAME.Format(info.input()));
-        }).replaceSuggestions(ArgumentSuggestions.strings(Manager.games.stream().map(Game::getName).toList()));
+            throw CustomArgumentException.fromString(Translator.COMMANDS_ARGUMENTS_UNKNOWNGAMENAME.Format(info.input()));
+        }).replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(Info -> {
+            List<IStringTooltip> IDS = new ArrayList<>();
+            for (var game : Manager.games) {
+                IDS.add(StringTooltip.ofString(game.getName(), Translator.COMMANDS_TIPS_NAME.Format()));
+            }
+            return IDS.toArray(new IStringTooltip[0]);
+        }));
     }
 
     /**

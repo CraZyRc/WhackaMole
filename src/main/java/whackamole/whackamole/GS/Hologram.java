@@ -58,6 +58,7 @@ public class Hologram extends HologramRow {
 
   private void summonHolos(HologramRow hologram) {
     Location loc = this.Location.clone();
+
     // Adding top hologram
     ArmorStand armorstandMain = (ArmorStand) loc.getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
     armorstandMain = Misc.addArmorStandSettings(armorstandMain, "Top:1");
