@@ -21,6 +21,7 @@ public class Reward {
             case Invalid: return null;
             case Message: return new MessageReward(settings);
             case Teleport: return new TeleportReward(settings);
+            case Sound: return new SoundReward(settings);
         }
         return null;
     }
@@ -46,7 +47,7 @@ public class Reward {
         if (this.Chance <= 0 || this.Chance > 100) {
             throw new ValidationException(Translator.REWARDS_TYPE_INVALID_REWARDCHANCE);
         }
-        
+
         var minimalStepCount = 1;
         if (this.UseInteract) minimalStepCount += 1;
 
