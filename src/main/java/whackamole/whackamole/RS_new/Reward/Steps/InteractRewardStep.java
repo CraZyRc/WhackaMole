@@ -42,6 +42,7 @@ public class InteractRewardStep extends RewardStep implements IRewardStepInterac
             case Teleport: return;
             case Sound: return;
             case Effect: return;
+            case Currency: return;
             default: throw new ValidationException(Translator.REWARDS_INVALIDREWARDTYPE); // TODO: Translator message: Use Interact is not allowed for type X
         }
     }
@@ -53,6 +54,7 @@ public class InteractRewardStep extends RewardStep implements IRewardStepInterac
             case Teleport:  return Misc.getSkull("f41f1ef439f91069a43678d227ad458d663ec04363bce9c7c019c5679e8cf004");
             case Sound:     return Misc.getSkull("e82b0b7c68e88800030e674522aab40396fa543072b949c0600e66c2ed352ff0");
             case Effect:    return Misc.getSkull("6d4ead1efe0cf776015bfd2c236ddf7c0d3309eb599b39d6ac10d7fa11a3e075");
+            case Currency:  return Misc.getSkull("ebda5f31937b2ff755271d97f01be84d52a407b36ca77451856162ac6cfbb34f");
         }
         return null;
     }
@@ -65,10 +67,10 @@ public class InteractRewardStep extends RewardStep implements IRewardStepInterac
         display.setItemStack(this.getSkull());
         display.setTransformation(
             new Transformation(
-                new Vector3f(0f, 0f, 0f), 
-                new AxisAngle4f(0f, 0f, 0f, 1f), 
-                new Vector3f(0f, 0f, 0f), 
-                new AxisAngle4f(0f, 0f, 0f, 1f))); // Translation - leftrot - scale - rightrot
+                new Vector3f(0f, 0f, 0f),           // Translation
+                new AxisAngle4f(0f, 0f, 0f, 1f),    // Left Rotation
+                new Vector3f(0f, 0f, 0f),           // Scale
+                new AxisAngle4f(0f, 0f, 0f, 1f)));  // Right Rotation
         
         display.setBillboard(Display.Billboard.FIXED);
         display.setCustomName(Misc.Color("&fMessage"));

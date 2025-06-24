@@ -5,7 +5,8 @@ public enum StepType {
     Message("Message"),
     Teleport("Teleport"),
     Sound("Sound"),
-    Effect("Effect");
+    Effect("Effect"),
+    Currency("Currency");
 
     private String Value;
 
