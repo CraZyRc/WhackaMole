@@ -41,6 +41,7 @@ public class InteractRewardStep extends RewardStep implements IRewardStepInterac
             case Message: return;
             case Teleport: return;
             case Sound: return;
+            case Effect: return;
             default: throw new ValidationException(Translator.REWARDS_INVALIDREWARDTYPE); // TODO: Translator message: Use Interact is not allowed for type X
         }
     }
@@ -51,6 +52,7 @@ public class InteractRewardStep extends RewardStep implements IRewardStepInterac
             case Message:   return Misc.getSkull("a988419dd5b386f698a96913db1d97c2418e16d416d7f439d48acd41e3a436ce");
             case Teleport:  return Misc.getSkull("f41f1ef439f91069a43678d227ad458d663ec04363bce9c7c019c5679e8cf004");
             case Sound:     return Misc.getSkull("e82b0b7c68e88800030e674522aab40396fa543072b949c0600e66c2ed352ff0");
+            case Effect:    return Misc.getSkull("6d4ead1efe0cf776015bfd2c236ddf7c0d3309eb599b39d6ac10d7fa11a3e075");
         }
         return null;
     }

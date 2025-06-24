@@ -22,6 +22,7 @@ public class Reward {
             case Message: return new MessageReward(settings);
             case Teleport: return new TeleportReward(settings);
             case Sound: return new SoundReward(settings);
+            case Effect: return new EffectReward(settings);
         }
         return null;
     }
