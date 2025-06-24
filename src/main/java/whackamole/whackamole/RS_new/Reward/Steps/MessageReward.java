@@ -19,14 +19,14 @@ public class MessageReward extends RewardStep {
         String("String"),
         Json("Json");
 
-        private String Value;
-        MessageFormat(String value) {
-            this.Value = value;
+        private String name;
+        MessageFormat(String name) {
+            this.name = name;
         }
 
         static protected MessageFormat Parse(String type) {
             for (var format : values()) {
-                if (format.Value.toLowerCase().equals(type.toLowerCase())) {
+                if (format.name.toLowerCase().equals(type.toLowerCase())) {
                     return format;
                 }
             }
