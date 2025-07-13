@@ -24,6 +24,7 @@ public class Reward {
             case Sound: return new SoundReward(settings);
             case Effect: return new EffectReward(settings);
             case Currency: return new CurrencyReward(settings);
+            case Animation: return new AnimationReward(settings);
         }
         return null;
     }
