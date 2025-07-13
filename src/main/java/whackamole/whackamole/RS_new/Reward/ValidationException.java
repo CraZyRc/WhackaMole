@@ -31,7 +31,21 @@ public class ValidationException extends Exception {
         return this;
     }
 
-    public List<ValidationException> getCauses() {
-        return this.causes;
+    private String format(int ident) {
+        var output = " ".repeat(ident) + super.getMessage();
+        if (this.causes == null) {
+            return output;
+        }
+        
+        for (var ex : causes) {
+            output += "-" + " ".repeat(ident) + ex.format(ident + 1);
+        }
+
+        return output;
+    }
+
+    @Override
+    public String getMessage() {
+        return this.format(0);
     }
 }

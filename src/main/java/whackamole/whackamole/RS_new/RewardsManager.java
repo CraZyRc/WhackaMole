@@ -8,6 +8,7 @@ import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.RS_new.Reward.Reward;
 import whackamole.whackamole.RS_new.Reward.ValidationException;
 import whackamole.whackamole.Utils.Econ;
+import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
 import whackamole.whackamole.Utils.YMLFile;
 
@@ -101,7 +102,9 @@ public class RewardsManager {
             }
 
             if (errors.size() > 0) {
-                // TODO: Go over all errors and print it in the console.
+                for (var ex : errors) {
+                    Logger.error(ex.getMessage());
+                }
             }
         }
     }
