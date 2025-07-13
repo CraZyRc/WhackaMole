@@ -6,20 +6,25 @@ public enum StepType {
     Teleport("Teleport"),
     Sound("Sound"),
     Effect("Effect"),
-    Currency("Currency");
+    Currency("Currency"),
+    Animation("Animation");
 
-    private String Value;
+    private String value;
 
     StepType(String value) {
-        this.Value = value;
+        this.value = value;
     }
 
     static public StepType Parse(String type) {
         for (var step : values()) {
-            if (step.Value.toLowerCase().equals(type.toLowerCase())) {
+            if (step.value.toLowerCase().equals(type.toLowerCase())) {
                 return step;
             }
         }
         return Invalid;
+    }
+
+    public String toString() {
+        return this.value;
     }
 }

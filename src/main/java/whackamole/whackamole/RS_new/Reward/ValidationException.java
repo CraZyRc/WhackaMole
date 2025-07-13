@@ -1,6 +1,7 @@
 package whackamole.whackamole.RS_new.Reward;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import whackamole.whackamole.Utils.Translator;
@@ -21,6 +22,14 @@ public class ValidationException extends Exception {
         super("");
         this.causes = ex;
     } 
+
+    public ValidationException addCause(ValidationException ex) {
+        if (this.causes == null) {
+            this.causes = new ArrayList<>();
+        }
+        this.causes.add(ex);
+        return this;
+    }
 
     public List<ValidationException> getCauses() {
         return this.causes;
