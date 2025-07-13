@@ -17,7 +17,6 @@ import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
 
 public class SettingsSetCMD extends SubCommand {
-  private Settings settingType    = Settings.NULL;
   enum Settings {
     NULL,
     DIRECTION(Translator.COMMANDS_SETTINGS_DIRECTION),
@@ -69,82 +68,87 @@ public class SettingsSetCMD extends SubCommand {
   @Override
   protected @Nullable CommandExecutor Executes() {
     return ((sender, args) -> {
-      Game game = (Game) args.get(0);
-      switch (this.settingType) {
+      var game = args.<Game>getUnchecked(0);
+      var name = args.<Settings>getUnchecked(1);
+      var value = args.<String>getUnchecked(2);
+
+      if (game == null || name == null || value == null) { return; }
+
+      switch (name) {
         case NULL -> Logger.error(Translator.COMMANDS_ARGUMENTS_INVALIDSETTING);
         case DIRECTION -> {
-          game.setSpawnRotation(BlockFace.valueOf((String) args.get(2)));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIRECTION_SUCCESS.Format(args.get(2)));
+          game.setSpawnRotation(BlockFace.valueOf(value));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIRECTION_SUCCESS.Format(name));
         }
         case HASJACKPOT -> {
-          game.setJackpot(Boolean.parseBoolean((String) args.get(2)));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOT_SUCCESS.Format(args.get(2)));
+          game.setJackpot(Boolean.parseBoolean(value));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOT_SUCCESS.Format(name));
         }
         case JACKPOTSPAWNCHANCE -> {
-          if (Integer.parseInt((String) args.get(2)) <= 100) {
-            game.setJackpotSpawn(Integer.parseInt((String) args.get(2)));
-            sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_SUCCESS.Format(args.get(2).toString()));
+          if (Integer.parseInt(value) <= 100) {
+            game.setJackpotSpawn(Integer.parseInt(value));
+            sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_SUCCESS.Format(name));
           } else {
             sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR);
           }
         }
         case MISSCOUNT -> {
-          game.setMaxMissed(Integer.parseInt((String) args.get(2)));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MAXMISSED_SUCCESS.Format(args.get(2).toString()));
+          game.setMaxMissed(Integer.parseInt(value));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MAXMISSED_SUCCESS.Format(name));
         }
         case SCOREPOINTS -> {
-          game.setPointsPerKill (Integer.parseInt((String) args.get(2)));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SCOREPOINTS_SUCCESS.Format(args.get(2).toString()));
+          game.setPointsPerKill (Integer.parseInt(value));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SCOREPOINTS_SUCCESS.Format(name));
         }
         case SPAWNTIMER -> {
-          game.setInterval (Double.parseDouble((String) args.get(2)));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SPAWNRATE_SUCCESS.Format(args.get(2).toString()));
+          game.setInterval (Double.parseDouble(value));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SPAWNRATE_SUCCESS.Format(name));
         }
         case SPAWNCHANCE -> {
-          if (Double.parseDouble((String) args.get(2)) <= 100) {
-            game.setSpawnChance(Double.parseDouble((String) args.get(2)));
-            sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SPAWNCHANCE_SUCCESS.Format(args.get(2).toString()));
+          if (Double.parseDouble(value) <= 100) {
+            game.setSpawnChance(Double.parseDouble(value));
+            sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SPAWNCHANCE_SUCCESS.Format(name));
           } else {
             sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR);
           }
         }
         case MOLESPEED -> {
-          game.setMoleSpeed(Double.parseDouble((String) args.get(2)));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MOLESPEED_SUCCESS.Format(args.get(2).toString()));
+          game.setMoleSpeed(Double.parseDouble(value));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MOLESPEED_SUCCESS.Format(name));
         }
         case DIFFICULTYSCALE -> {
-          game.setDifficultyScale(Double.parseDouble((String) args.get(2)));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE_SUCCESS.Format(args.get(2).toString()));
+          game.setDifficultyScale(Double.parseDouble(value));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE_SUCCESS.Format(name));
         }
         case DIFFICULTYSCORE -> {
-          game.setDifficultyScore(Integer.parseInt((String) args.get(2)));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE_SUCCESS.Format(args.get(2).toString()));
+          game.setDifficultyScore(Integer.parseInt(value));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE_SUCCESS.Format(name));
         }
         case COOLDOWN -> {
-          game.setCooldown((String) args.get(2));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_COOLDOWN_SUCCESS.Format(args.get(2)));
+          game.setCooldown(value);
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_COOLDOWN_SUCCESS.Format(name));
         }
         case MUSIC -> {
-          game.setMusic((String) args.get(2));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MUSIC_SUCCESS.Format(args.get(2)));
+          game.setMusic(value);
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MUSIC_SUCCESS.Format(name));
         }
         case MOLEHEAD -> {
-          game.setMoleHead((String) args.get(2));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MOLEHEAD_SUCCESS.Format(args.get(2)));
+          game.setMoleHead(value);
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MOLEHEAD_SUCCESS.Format(name));
         }
         case JACKPOTHEAD -> {
-          game.setJackpotHead((String) args.get(2));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTHEAD_SUCCESS.Format(args.get(2)));
+          game.setJackpotHead(value);
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTHEAD_SUCCESS.Format(name));
         }
         case TOGGLESCOREBOARD -> {
-          game.setToggleScoreboard(Boolean.parseBoolean((String) args.get(2)));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_TOGGLESCOREBOARD_SUCCESS.Format(args.get(2)));
+          game.setToggleScoreboard(Boolean.parseBoolean(value));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_TOGGLESCOREBOARD_SUCCESS.Format(name));
         }
       }
     });
   }
 
-  private Argument<?> settingNameArgument() {
+  private Argument<Settings> settingNameArgument() {
     return new CustomArgument<>(new TextArgument("Settings"), Info -> {
       if (Settings.DIRECTION.toString().equals(Info.input()))                 return Settings.DIRECTION;
       if (Settings.HASJACKPOT.toString().equals(Info.input()))                return Settings.HASJACKPOT;
@@ -182,10 +186,12 @@ public class SettingsSetCMD extends SubCommand {
     ));
   }
 
-  private Argument<?> settingValueArgument() {
+  private Argument<String> settingValueArgument() {
     return new TextArgument("settingValue").replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(info -> {
-      this.settingType = (Settings) info.previousArgs().get(1);
-      switch (this.settingType) {
+      var settingType = (Settings) info.previousArgs().get(1);
+      if (settingType == null) { settingType = Settings.NULL; }
+
+      switch (settingType) {
         case NULL -> Logger.error(Translator.COMMANDS_ARGUMENTS_INVALIDSETTING);
         case DIRECTION -> {
           return new IStringTooltip[] {

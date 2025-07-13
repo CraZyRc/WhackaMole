@@ -29,8 +29,11 @@ public class HoloRemoveCMD extends SubCommand {
   @Override
   protected @Nullable PlayerCommandExecutor ExecutesPlayer() {
     return ((sender, args) -> {
-      Game game = (Game) args.get(0);
-      if (game.holoDelete((int) args.get(1))) {
+      var game = args.<Game>getUnchecked(0);
+      var id = args.<Integer>getUnchecked(1);
+      if (game == null || id == null) { return; }
+
+      if (game.holoDelete(id)) {
         sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_REMOVE_SUCCESS.Format());
       } else {
         sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_REMOVE_ERROR.Format());

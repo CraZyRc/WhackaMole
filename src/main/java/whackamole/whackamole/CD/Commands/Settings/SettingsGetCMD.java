@@ -29,7 +29,9 @@ public class SettingsGetCMD extends SubCommand {
   @Override
   protected @Nullable CommandExecutor Executes() {
     return ((sender, args) -> {
-      Game game = (Game) args.get(0);
+      var game = args.<Game>getUnchecked(0);
+      if (game == null) { return; }
+      
       var settings = game.getSettings();
       ChatColor w = ChatColor.WHITE;
       ChatColor a = ChatColor.AQUA;

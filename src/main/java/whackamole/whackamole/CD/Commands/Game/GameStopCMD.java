@@ -2,7 +2,6 @@ package whackamole.whackamole.CD.Commands.Game;
 
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.executors.CommandExecutor;
-import dev.jorel.commandapi.executors.PlayerCommandExecutor;
 import whackamole.whackamole.CD.Arguments.Arguments;
 import whackamole.whackamole.CD.Commands.SubCommand;
 import whackamole.whackamole.Config;

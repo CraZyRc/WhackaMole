@@ -26,7 +26,8 @@ public class GameToggleCMD extends SubCommand {
   @Override
   protected PlayerCommandExecutor ExecutesPlayer() {
     return (sender, args) -> {
-      Game game = (Game) args.get(0);
+      var game = args.<Game>getUnchecked("Game");
+      if (game == null) return;
 
       if (game.toggleDisplay()) {
         sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_TOGGLE_SUCCESS.Format());

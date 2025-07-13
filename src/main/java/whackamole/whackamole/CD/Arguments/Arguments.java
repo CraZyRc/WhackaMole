@@ -41,8 +41,10 @@ public class Arguments {
      * @return Argument<Integer>
      */
     public static Argument<Integer> holoIDArgument() {
-        return new IntegerArgument("holoID").replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(Info -> {
-            Game game = (Game) Info.previousArgs().get(0);
+        return new IntegerArgument("holoID").replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(info -> {
+            var game = info.previousArgs().<Game>getUnchecked(0);
+            if (game == null) { return new IStringTooltip[0]; }
+
             List<IStringTooltip> IDS = new ArrayList<>();
             for (var v : game.holos) {
                 IDS.add(StringTooltip.ofString(String.valueOf(v.holoID), Translator.COMMANDS_TIPS_HOLOID.Format()));
@@ -53,7 +55,6 @@ public class Arguments {
 
 
     protected static CustomArgumentException InputError(String message) {
-        String arg = new CustomArgument.MessageBuilder().appendArgInput().toString();
         return CustomArgument.CustomArgumentException.fromString(message);
     }
 }
