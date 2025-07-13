@@ -5,8 +5,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import whackamole.whackamole.Config;
 import whackamole.whackamole.GS.Game;
-import whackamole.whackamole.RS.Types.IRewardType;
+import whackamole.whackamole.RS.Reward.Reward;
+import whackamole.whackamole.RS.Reward.ValidationException;
 import whackamole.whackamole.Utils.Econ;
+import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Translator;
 import whackamole.whackamole.Utils.YMLFile;
 
@@ -17,7 +19,6 @@ public class RewardsManager {
     private static YMLFile rewardFile = new YMLFile(Config.AppConfig.storageFolder + "/rewards.yml");
     private static HashMap<String, GameRewards> gameRewards = new HashMap<>();
     private static Map<Player, RewardExecutor> executors = new HashMap<>();
-
 
     public static void sendScoreToPlayer(Player player, double score) {
         var message = "";
@@ -80,33 +81,45 @@ public class RewardsManager {
     }
 
 
-    @SuppressWarnings("unchecked")
     static void loadRewards()
     {
-        var data = (LinkedHashMap<String, ?>) rewardFile.getMap("Rewards");
-        for(var key : data.keySet()) {
-            var rewardData = (LinkedHashMap<String, ?>) rewardFile.getMap("Rewards." + key);
-            var threshold = (int) rewardData.get("Threshold");
-            var games = (List<String>) rewardData.get("Games");
+        for(var key : rewardFile.getMap("Rewards").keySet()) {
+            var data = rewardFile.getMap("Rewards." + key);
 
+            var games = RewardsManager.<String, List<String>>getOrDefault(data, "Games", null);
+            var rewardData = RewardsManager.<String, List<Map<String, ?>>>getOrDefault(data, "rewardTypes", null);
 
-            var rewardsData = (List<LinkedHashMap<String, ?>>) rewardData.get("RewardTypes"); 
-            loadRewardTypes(rewardsData, games, threshold);
+            var rewards = loadRewardTypes(rewardData);
+
+            var errors = new ArrayList<ValidationException>();
+            try {
+                for (Reward reward : rewards) {
+                    reward.Validate();
+                    addRewardToGames(games, reward);
+                }
+            } catch(ValidationException ex) {
+                errors.add(ex);
+            }
+
+            if (errors.size() > 0) {
+                for (var ex : errors) {
+                    Logger.error(ex.getMessage());
+                }
+            }
         }
     }
 
-    @SuppressWarnings("unchecked")
-    static void loadRewardTypes(List<LinkedHashMap<String, ?>> data, List<String> games, int threshold)
+    static Reward[] loadRewardTypes(List<Map<String, ?>> data)
     {
-        for (var rewardMap : data) {
-            var type = (String) rewardMap.get("Type");
-            var settings = (LinkedHashMap<String, ?>) rewardMap.get("Settings");
-            var reward = IRewardType.Factory(type, threshold, settings);
-            if (reward != null && reward.Check()) addRewardToGames(games, reward);
+        var rewards = new Reward[data.size()];
+        for (int i = 0; i < data.size(); i++) {
+            rewards[i] = new Reward(data.get(i));
         }
+
+        return rewards;
     }
 
-    private static void addRewardToGames(List<String> gameNames, IRewardType reward) {
+    private static void addRewardToGames(List<String> gameNames, Reward reward) {
         for (String gameName : gameNames) {
 
             if (! gameRewards.containsKey(gameName)) {
@@ -116,4 +129,14 @@ public class RewardsManager {
         }
     }
 
+
+
+    @SuppressWarnings("unchecked")
+    static public <T, V> V getOrDefault(Map<T, ?> hashmap, T key, V value) {
+        try {
+            return hashmap.containsKey(key) ? (V) hashmap.get(key) : value;
+        } catch(ClassCastException e) {
+            return value;
+        }
+    }
 }

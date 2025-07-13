@@ -1,6 +1,6 @@
-package whackamole.whackamole.RS_new.Reward.Steps;
+package whackamole.whackamole.RS.Reward.Steps;
 
-import whackamole.whackamole.RS_new.RewardExecutorContext;
+import whackamole.whackamole.RS.RewardExecutorContext;
 
 public interface IRewardStepTickable {
 

@@ -3,17 +3,16 @@ package whackamole.whackamole.RS;
 import java.util.ArrayList;
 import java.util.List;
 
-import whackamole.whackamole.RS.Types.IRewardType;
-
+import whackamole.whackamole.RS.Reward.Reward;
 
 public class GameRewards {
 
-    private List<IRewardType> Rewards = new ArrayList<>();
+    private List<Reward> Rewards = new ArrayList<>();
 
     GameRewards() {
     }
 
-    protected void addReward(IRewardType reward) {
+    protected void addReward(Reward reward) {
         this.Rewards.add(reward);
     }
 

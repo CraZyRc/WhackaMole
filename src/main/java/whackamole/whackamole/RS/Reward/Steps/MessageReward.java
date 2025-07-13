@@ -1,4 +1,4 @@
-package whackamole.whackamole.RS_new.Reward.Steps;
+package whackamole.whackamole.RS.Reward.Steps;
 
 import java.util.Map;
 
@@ -6,9 +6,9 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.chat.ComponentSerializer;
 import whackamole.whackamole.Config;
-import whackamole.whackamole.RS_new.RewardExecutorContext;
-import whackamole.whackamole.RS_new.RewardsManager;
-import whackamole.whackamole.RS_new.Reward.ValidationException;
+import whackamole.whackamole.RS.RewardExecutorContext;
+import whackamole.whackamole.RS.RewardsManager;
+import whackamole.whackamole.RS.Reward.ValidationException;
 import whackamole.whackamole.Utils.Misc;
 import whackamole.whackamole.Utils.Translator;
 

@@ -1,4 +1,4 @@
-package whackamole.whackamole.RS_new.Reward.Steps;
+package whackamole.whackamole.RS.Reward.Steps;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +19,8 @@ import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
-import whackamole.whackamole.RS_new.RewardExecutorContext;
-import whackamole.whackamole.RS_new.Reward.ValidationException;
+import whackamole.whackamole.RS.RewardExecutorContext;
+import whackamole.whackamole.RS.Reward.ValidationException;
 import whackamole.whackamole.Utils.Misc;
 import whackamole.whackamole.Utils.Translator;
 

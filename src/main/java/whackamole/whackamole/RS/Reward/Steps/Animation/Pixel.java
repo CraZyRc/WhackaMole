@@ -1,4 +1,4 @@
-package whackamole.whackamole.RS_new.Reward.Steps.Animation;
+package whackamole.whackamole.RS.Reward.Steps.Animation;
 
 
 import java.util.Arrays;
@@ -9,7 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.util.Vector;
 
-import whackamole.whackamole.RS_new.Reward.ValidationException;
+import whackamole.whackamole.RS.Reward.ValidationException;
 
 class Pixel {
     private static Particle particle = Particle.DUST;

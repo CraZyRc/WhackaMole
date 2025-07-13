@@ -1,7 +1,6 @@
 package whackamole.whackamole.CD.Commands;
 
 import dev.jorel.commandapi.executors.CommandExecutor;
-import dev.jorel.commandapi.executors.PlayerCommandExecutor;
 import org.bukkit.Bukkit;
 import whackamole.whackamole.Config;
 import whackamole.whackamole.Main;

@@ -1,12 +1,12 @@
-package whackamole.whackamole.RS_new.Reward.Steps;
+package whackamole.whackamole.RS.Reward.Steps;
 
 import java.util.Map;
 
 import org.bukkit.Sound;
 
-import whackamole.whackamole.RS_new.RewardExecutorContext;
-import whackamole.whackamole.RS_new.RewardsManager;
-import whackamole.whackamole.RS_new.Reward.ValidationException;
+import whackamole.whackamole.RS.RewardExecutorContext;
+import whackamole.whackamole.RS.RewardsManager;
+import whackamole.whackamole.RS.Reward.ValidationException;
 import whackamole.whackamole.Utils.Translator;
 
 public class SoundReward extends RewardStep {

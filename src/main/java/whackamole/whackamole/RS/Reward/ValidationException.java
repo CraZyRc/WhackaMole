@@ -1,4 +1,4 @@
-package whackamole.whackamole.RS_new.Reward;
+package whackamole.whackamole.RS.Reward;
 
 
 import java.util.ArrayList;

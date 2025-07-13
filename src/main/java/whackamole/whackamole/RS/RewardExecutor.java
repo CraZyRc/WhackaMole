@@ -15,10 +15,11 @@ import org.joml.Vector3f;
 import whackamole.whackamole.Config;
 import whackamole.whackamole.GS.Game;
 import whackamole.whackamole.GS.Game.gameState;
+import whackamole.whackamole.RS.Reward.Reward;
+import whackamole.whackamole.RS.Reward.Steps.IRewardStepInteractable;
+import whackamole.whackamole.RS.Reward.Steps.IRewardStepTickable;
+import whackamole.whackamole.RS.Reward.Steps.RewardStep;
 import whackamole.whackamole.Main;
-import whackamole.whackamole.RS.Types.IRewardInteractType;
-import whackamole.whackamole.RS.Types.IRewardType;
-import whackamole.whackamole.RS.Types.IRewardWaitableType;
 import whackamole.whackamole.Utils.Econ;
 
 import whackamole.whackamole.Utils.Misc;
@@ -40,19 +41,21 @@ public class RewardExecutor {
     }
 
     private State state;
-    private Queue<IRewardType> rewards;
-    private Optional<IRewardType> current;
+    private List<Reward> rewards;
+    private Queue<RewardStep> steps;
+    private Optional<RewardStep> current;
     private Player player;
     private Entity entity;
     private Game game;
     private Object _lock = new Object();
     private Location loc;
-    private int timer = 0;
+    private int timerTicksPassed = -1;
+    private int timerTicksLimit = 0;
     private int interactableRewardCounter = 0;
     private int interactableRewardsCount = 0;
     private RewardExecutorContext context = new RewardExecutorContext();
 
-    protected RewardExecutor(List<IRewardType> rewards) {
+    protected RewardExecutor(List<Reward> rewards) {
         this.rewards = new LinkedList<>(rewards);
         this.state = State.Ready;
         this.context.plugin = main;
@@ -89,23 +92,17 @@ public class RewardExecutor {
     }
 
     void FilterGameRewards() {
-        if (this.rewards.isEmpty())
-            return;
-        
-        var iter = this.rewards.iterator();
-        var filterd_list = new LinkedList<IRewardType>();
-        while (iter.hasNext()) {
-            int random = new Random().nextInt(100);
-            var reward = iter.next();
-            if (this.game.getRunning().get().score >= reward.getThreshold() && random <= reward.getRewardChance()) {
-                filterd_list.add(reward);
-                
-                if (reward instanceof IRewardInteractType && ((IRewardInteractType) reward).getEnabled()) {
-                    this.interactableRewardsCount += 1;
-                }
+        this.steps = new LinkedList<RewardStep>();
+        for(var reward : this.rewards) {
+            var steps = reward.getSteps(this.game.getRunning().get().score);
+            if (steps.size() > 0) {
+                steps.addAll(steps);
+            }
+
+            if (reward.UseInteract) {
+                this.interactableRewardsCount ++;
             }
         }
-        this.rewards = filterd_list;
     }
 
     /**
@@ -159,26 +156,27 @@ public class RewardExecutor {
     }
 
     boolean Has() {
-        if (this.rewards.isEmpty()) {
+        if (this.steps.isEmpty()) {
             this.state = State.Completed;
             return false;
         } else return true;
     }
 
     void setTimer(int seconds) {
-        this.timer = seconds * 20;
+        this.timerTicksPassed = 0;
+        this.timerTicksLimit = seconds * 20;
     }
+
     boolean stepTimer() {
-        this.timer -= 1;
-        if (this.timer < 1) {
-            this.timer = 0;
+        this.timerTicksPassed += 1;
+        if (this.timerTicksPassed > this.timerTicksLimit) {
             return true;
         }
         return false;
     }
 
     void Next() {
-        var next = this.rewards.poll();
+        var next = this.steps.poll();
         if (next == null) 
             this.state = State.Completed;
         
@@ -186,19 +184,18 @@ public class RewardExecutor {
     }
 
     void startExecution() {
-        this.current.ifPresent((reward) -> {
+        this.current.ifPresent((step) -> {
             if (Config.Game.PLAYERLOCK) {
                 this.loc = player.getEyeLocation().add(player.getEyeLocation().getDirection().multiply(2).setY(0));
             }
 
-            reward.Execute(this.context);
+            step.Execute(this.context);
 
-
-            if (reward instanceof IRewardWaitableType waitable && ((IRewardInteractType) reward).getEnabled()) {
-                this.setTimer(waitable.getTimer());
+            if (step instanceof IRewardStepTickable tickable) {
+                this.setTimer(tickable.getTimer());
                 this.state = State.Waiting;
             }
-            if (reward instanceof IRewardInteractType && ((IRewardInteractType) reward).getEnabled()) {
+            if (step instanceof IRewardStepInteractable) {
                 this.interactableRewardCounter += 1;
                 this.entity = this.displayCount(this.interactableRewardCounter, this.interactableRewardsCount);
             }
@@ -207,8 +204,8 @@ public class RewardExecutor {
 
     void TickExecute() {
         this.current.ifPresent((reward) -> {
-            if (reward instanceof IRewardWaitableType waitable) {
-                waitable.TickExecute();
+            if (reward instanceof IRewardStepTickable tickable) {
+                tickable.ExecuteTick(this.context, this.timerTicksPassed);
             }
         });
     }
@@ -217,12 +214,11 @@ public class RewardExecutor {
         synchronized (_lock) {
             if (this.state != State.Waiting) return;
             this.current.ifPresent((reward) -> {
-                if (reward instanceof IRewardWaitableType waitable) {
-                    waitable.AfterExecute(this.context);
+                if (reward instanceof IRewardStepTickable tickable) {
+                    tickable.ExecuteAfter(this.context);
                 }
-                if (reward instanceof IRewardInteractType interact) {
+                if (reward instanceof IRewardStepInteractable) {
                     this.entity.remove();
-                    interact.Remove(this.player);
                 }
                 this.state = State.Running;
             });
@@ -257,7 +253,7 @@ public class RewardExecutor {
         if (this.state != State.Waiting) return;
 
         this.current.ifPresent((reward) -> {
-            if (reward instanceof IRewardInteractType interact) {
+            if (reward instanceof IRewardStepInteractable interact) {
                 if (interact.getInteractable().equals(entity)) {
                     this.stopExecution();
                 }

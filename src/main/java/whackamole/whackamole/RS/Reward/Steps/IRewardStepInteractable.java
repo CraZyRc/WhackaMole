@@ -1,4 +1,4 @@
-package whackamole.whackamole.RS_new.Reward.Steps;
+package whackamole.whackamole.RS.Reward.Steps;
 
 import org.bukkit.entity.Interaction;
 

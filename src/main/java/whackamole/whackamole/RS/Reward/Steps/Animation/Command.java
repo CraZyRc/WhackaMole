@@ -1,10 +1,10 @@
-package whackamole.whackamole.RS_new.Reward.Steps.Animation;
+package whackamole.whackamole.RS.Reward.Steps.Animation;
 
 import java.util.List;
 
 import org.bukkit.Location;
 
-import whackamole.whackamole.RS_new.Reward.ValidationException;
+import whackamole.whackamole.RS.Reward.ValidationException;
 
 public class Command {
     private Pixel[] pixels;

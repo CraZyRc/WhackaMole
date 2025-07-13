@@ -1,11 +1,11 @@
-package whackamole.whackamole.RS_new.Reward;
+package whackamole.whackamole.RS.Reward;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 
-import whackamole.whackamole.RS_new.RewardsManager;
-import whackamole.whackamole.RS_new.Reward.Steps.*;
+import whackamole.whackamole.RS.RewardsManager;
+import whackamole.whackamole.RS.Reward.Steps.*;
 import whackamole.whackamole.Utils.Translator;
 
 public class Reward {
