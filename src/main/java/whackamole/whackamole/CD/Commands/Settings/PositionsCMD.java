@@ -35,14 +35,19 @@ public class PositionsCMD extends SubCommand {
   @Override
   protected @Nullable PlayerCommandExecutor ExecutesPlayer() {
     return (sender, args) -> {
-      if (!args.get(1).equals("failed")) sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_POSITIONS_SUCCESS.Format(args.get(1)));
+      var value = args.<String>getUnchecked(1);
+      if (value == null) { return; }
+
+      if (!value.equals("failed")) sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_POSITIONS_SUCCESS.Format(value));
     };
   }
 
   private Argument<String> positionArgument() {
     return new CustomArgument<>(new StringArgument("Positions"), Info -> {
-      Game game = (Game) Info.previousArgs().get(0);
+      Game game = Info.previousArgs().<Game>getUnchecked(0);
       Player player = (Player) Info.sender();
+
+      if (game == null) { return "failed"; }
 
       switch (Info.input()) {
         case "highscore" -> game.setHighScoreLocation(player.getLocation().add(0,2,0));

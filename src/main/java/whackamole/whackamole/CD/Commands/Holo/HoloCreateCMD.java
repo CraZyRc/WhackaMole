@@ -47,11 +47,17 @@ public class HoloCreateCMD extends SubCommand {
   @Override
   protected @Nullable PlayerCommandExecutor ExecutesPlayer() {
     return (sender, args) -> {
-      Game game = (Game) args.get(0);
-      if (game.holoCreate((int) args.get(1), (String) args.get(2), sender.getLocation() , (int) args.get(3))) {
+      Game game = args.<Game>getUnchecked(0);
+      var id    = args.<Integer>getUnchecked(1);
+      var type  = args.<String>getUnchecked(2);
+      var count = args.<Integer>getUnchecked(3);
+      
+      if (game == null || id == null || type == null || count == null) { return; }
+
+      if (game.holoCreate(id, type, sender.getLocation(), count)) {
         sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_CREATE_SUCCESS.Format());
       } else {
-        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_CREATE_ERROR.Format(String.valueOf(args.get(1))));
+        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_CREATE_ERROR.Format(String.valueOf(id)));
       }
     };
   }

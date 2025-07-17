@@ -30,8 +30,11 @@ public class HoloSelectCMD extends SubCommand {
   @Override
   protected @Nullable PlayerCommandExecutor ExecutesPlayer() {
     return ((sender, args) -> {
-      Game game = (Game) args.get(0);
-      if (!game.holoSelect((int) args.get(1), sender)) {
+      var game = args.<Game>getUnchecked(0);
+      var id = args.<Integer>getUnchecked(1);
+      if (game == null || id == null) { return; }
+
+      if (!game.holoSelect(id, sender)) {
         sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_SELECT_ERROR.Format());
       }
     });
