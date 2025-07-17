@@ -5,7 +5,6 @@ import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.executors.CommandExecutor;
-import dev.jorel.commandapi.executors.PlayerCommandExecutor;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.Nullable;
 import whackamole.whackamole.CD.Arguments.Arguments;
@@ -25,7 +24,9 @@ public class GameTopCMD extends SubCommand {
     return new Argument[] {
             Arguments.Games(),
             new CustomArgument<>(new StringArgument("Type"), Info -> {
-      Game game = (Game) Info.previousArgs().get(0);
+      Game game = (Game) Info.previousArgs().<Game>getUnchecked(0);
+      if (game == null) { return ""; }
+
       String line = ChatColor.YELLOW + "\n| ";
       StringBuilder outputString = new StringBuilder(ChatColor.YELLOW + "\n[>------------------------------------<]\n" +
               "|" + ChatColor.WHITE + " Game: " + ChatColor.AQUA + ChatColor.BOLD + game.getName());

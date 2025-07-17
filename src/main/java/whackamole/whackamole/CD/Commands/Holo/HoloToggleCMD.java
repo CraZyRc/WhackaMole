@@ -30,7 +30,9 @@ public class HoloToggleCMD extends SubCommand {
   @Override
   protected @Nullable PlayerCommandExecutor ExecutesPlayer() {
     return ((sender, args) -> {
-      Game game = (Game) args.get(0);
+      var game = args.<Game>getUnchecked(0);
+      if (game == null) { return; }
+
       if (game.holoSelect()) {
         sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_TOGGLEID_SUCCESS.Format());
       } else sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_SELECT_ERROR.Format());

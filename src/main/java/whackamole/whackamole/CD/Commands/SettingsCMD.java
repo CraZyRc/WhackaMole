@@ -2,7 +2,6 @@ package whackamole.whackamole.CD.Commands;
 
 import org.jetbrains.annotations.Nullable;
 import whackamole.whackamole.CD.Commands.Settings.*;
-import whackamole.whackamole.Config;
 import whackamole.whackamole.Utils.Translator;
 
 public class SettingsCMD extends SubCommand {
