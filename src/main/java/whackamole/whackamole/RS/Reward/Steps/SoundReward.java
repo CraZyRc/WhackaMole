@@ -17,8 +17,8 @@ public class SoundReward extends RewardStep {
 
     public SoundReward(Map<String, ?> settings) {
         this.soundName = RewardsManager.getOrDefault(settings, "Sound", "");
-        this.volume = RewardsManager.getOrDefault(settings, "Volume", 1F);
-        this.pitch = RewardsManager.getOrDefault(settings, "Pitch", 1F);
+        this.volume = Float.parseFloat(String.valueOf(RewardsManager.getOrDefault(settings, "Volume", 1F)));
+        this.pitch = Float.parseFloat(String.valueOf(RewardsManager.getOrDefault(settings, "Pitch", 1F)));
     }
     
     @Override

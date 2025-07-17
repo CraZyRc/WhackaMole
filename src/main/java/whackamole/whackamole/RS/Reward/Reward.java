@@ -17,16 +17,16 @@ public class Reward {
     protected ArrayList<RewardStep> Steps = new ArrayList<>();
 
     static private RewardStep GetStep(StepType type, Map<String, ?> settings) {
-        switch (type) {
-            case Invalid: return null;
-            case Message: return new MessageReward(settings);
-            case Teleport: return new TeleportReward(settings);
-            case Sound: return new SoundReward(settings);
-            case Effect: return new EffectReward(settings);
-            case Currency: return new CurrencyReward(settings);
-            case Animation: return new AnimationReward(settings);
-        }
-        return null;
+      return switch (type) {
+        case Invalid -> null;
+        case Message -> new MessageReward(settings);
+        case Item -> new ItemReward(settings);
+        case Teleport -> new TeleportReward(settings);
+        case Sound -> new SoundReward(settings);
+        case Effect -> new EffectReward(settings);
+        case Currency -> new CurrencyReward(settings);
+        case Animation -> new AnimationReward(settings);
+      };
     }
 
     public Reward(Map<String, ?> rewardMap) {
@@ -34,10 +34,10 @@ public class Reward {
 
         var settings = RewardsManager.<String, Map<String, ?>>getOrDefault(rewardMap, "Settings", null);
         
-        this.Enabled    = RewardsManager.getOrDefault(settings, "Enabeld", true);
-        this.UseInteract= RewardsManager.getOrDefault(settings, "useinteract", false);
+        this.Enabled    = RewardsManager.getOrDefault(settings, "Enabled", true);
+        this.UseInteract= RewardsManager.getOrDefault(settings, "UseInteract", false);
         this.Threshold  = RewardsManager.getOrDefault(settings, "Threshold", -1);
-        this.Chance     = RewardsManager.getOrDefault(settings, "Chance", 100);
+        this.Chance     = RewardsManager.getOrDefault(settings, "RewardChance", 100);
 
         if (this.UseInteract) {
             this.Steps.add(new InteractRewardStep(type, settings));

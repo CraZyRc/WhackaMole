@@ -87,7 +87,7 @@ public class RewardsManager {
             var data = rewardFile.getMap("Rewards." + key);
 
             var games = RewardsManager.<String, List<String>>getOrDefault(data, "Games", null);
-            var rewardData = RewardsManager.<String, List<Map<String, ?>>>getOrDefault(data, "rewardTypes", null);
+            var rewardData = RewardsManager.<String, List<Map<String, ?>>>getOrDefault(data, "RewardTypes", null);
 
             var rewards = loadRewardTypes(rewardData);
 

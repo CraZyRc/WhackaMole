@@ -275,7 +275,8 @@ public final class GamesManager implements Listener {
         Player player = e.getPlayer();
         for (Game game : this.games) {
             var gameRunner = game.getRunning().orElse(null);
-            if (e.getRightClicked().getType().equals(EntityType.INTERACTION) && gameRunner.player.equals(player)) {
+            if (gameRunner == null) continue;
+            if (e.getRightClicked().getType().equals(EntityType.INTERACTION) && gameRunner.player == player) {
                 RewardsManager.onInteractEvent(player, e.getRightClicked());
             }
         }

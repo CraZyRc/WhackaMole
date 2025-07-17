@@ -3,6 +3,7 @@ package whackamole.whackamole.RS.Reward.Steps;
 public enum StepType {
     Invalid(""),
     Message("Message"),
+    Item("Item"),
     Teleport("Teleport"),
     Sound("Sound"),
     Effect("Effect"),

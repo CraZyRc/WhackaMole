@@ -39,7 +39,7 @@ public class MessageReward extends RewardStep {
 
     public MessageReward(Map<String, ?> settings) {
         this.Message = RewardsManager.getOrDefault(settings, "Message", "");
-        this.Format = MessageFormat.Parse(RewardsManager.getOrDefault(settings, "Messageformat", ""));
+        this.Format = MessageFormat.Parse(RewardsManager.getOrDefault(settings, "MessageType", ""));
     }
     
     @Override

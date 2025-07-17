@@ -53,9 +53,9 @@ public class TeleportReward extends RewardStep {
 
     public TeleportReward(Map<String, ?> settings) {
         this.worldName = RewardsManager.<String, String>getOrDefault(settings, "World", null);
-        var x = (double) RewardsManager.getOrDefault(settings, "X", 0d);
-        var y = (double) RewardsManager.getOrDefault(settings, "Y", 0d);
-        var z = (double) RewardsManager.getOrDefault(settings, "Z", 0d);
+        var x = Double.parseDouble(String.valueOf(RewardsManager.getOrDefault(settings, "X", 0d)));
+        var y = Double.parseDouble(String.valueOf(RewardsManager.getOrDefault(settings, "Y", 0d)));
+        var z = Double.parseDouble(String.valueOf(RewardsManager.getOrDefault(settings, "Z", 0d)));
         this.direction = RotationDirection.parse(RewardsManager.<String, String>getOrDefault(settings, "Rotation", null));
         this.locationVector = new Vector3d(x, y, z);
     }

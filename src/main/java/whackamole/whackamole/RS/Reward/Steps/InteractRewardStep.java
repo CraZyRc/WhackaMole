@@ -39,6 +39,7 @@ public class InteractRewardStep extends RewardStep implements IRewardStepInterac
     public void Validate() throws ValidationException {
         switch (this.type) {
             case Message: return;
+            case Item: return;
             case Teleport: return;
             case Sound: return;
             case Effect: return;
@@ -52,6 +53,7 @@ public class InteractRewardStep extends RewardStep implements IRewardStepInterac
         switch (this.type) {
             case Invalid:   return null;
             case Message:   return Misc.getSkull("a988419dd5b386f698a96913db1d97c2418e16d416d7f439d48acd41e3a436ce");
+            case Item:      return Misc.getSkull("1ff041976a09dd053e3d1d4e611aac09594d74fc71a0ec4da0110416d317dba8");
             case Teleport:  return Misc.getSkull("f41f1ef439f91069a43678d227ad458d663ec04363bce9c7c019c5679e8cf004");
             case Sound:     return Misc.getSkull("e82b0b7c68e88800030e674522aab40396fa543072b949c0600e66c2ed352ff0");
             case Effect:    return Misc.getSkull("6d4ead1efe0cf776015bfd2c236ddf7c0d3309eb599b39d6ac10d7fa11a3e075");
@@ -86,7 +88,7 @@ public class InteractRewardStep extends RewardStep implements IRewardStepInterac
     private Interaction getInteraction(Location location) {
         if (this.key == null) return null;
 
-        var interaction = (Interaction) location.getWorld().spawnEntity(location.subtract(0, 0.48, 0), EntityType.INTERACTION);
+        var interaction = (Interaction) location.getWorld().spawnEntity(location.clone().subtract(0, 0.48, 0), EntityType.INTERACTION);
         interaction.setInteractionWidth(0.5F);
         interaction.setInteractionHeight(0.5F);
         interaction.setResponsive(true);

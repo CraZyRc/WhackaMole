@@ -22,6 +22,7 @@ import whackamole.whackamole.RS.Reward.Steps.RewardStep;
 import whackamole.whackamole.Main;
 import whackamole.whackamole.Utils.Econ;
 
+import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Misc;
 
 public class RewardExecutor {
@@ -94,9 +95,9 @@ public class RewardExecutor {
     void FilterGameRewards() {
         this.steps = new LinkedList<RewardStep>();
         for(var reward : this.rewards) {
-            var steps = reward.getSteps(this.game.getRunning().get().score);
-            if (steps.size() > 0) {
-                steps.addAll(steps);
+            var rewardSteps = reward.getSteps(this.game.getRunning().get().score);
+            if (rewardSteps != null && !rewardSteps.isEmpty()) {
+                this.steps.addAll(rewardSteps);
             }
 
             if (reward.UseInteract) {
@@ -121,7 +122,6 @@ public class RewardExecutor {
                 RewardsManager.sendScoreToPlayer(player, gameRunner.score);
             });
         }
-
     }
 
     /**
