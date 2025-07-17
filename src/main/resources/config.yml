@@ -111,7 +111,7 @@ Field Extension:
 
 # These are the permissions used for the plugin.
 # This section of the config file is purely Information, this part is not to be edited.
-# NOTE: Permission nodes inherit from the parent group. For example: the permission for Holo Create would be: "WAM.Settings.Holo.holoCreate"
+# NOTE: Permission nodes inherit from the parent group. For example: the permission for Holo Create would be: "wam.holo.create"
 General:
   wam.*: All the permissions
 

@@ -34,6 +34,11 @@ public class GameStopCMD extends SubCommand {
       var game = args.<Game>getUnchecked("Game");
       if (game == null) return;
 
+      if (game.game.player == null) {
+        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_START_ERROR_NOPLAYERFOUND.Format());
+        return;
+      }
+
       if (game.isRunning()) {
         game.Stop();
         sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_STOP_SUCCESS.Format(game));

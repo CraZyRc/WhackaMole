@@ -102,6 +102,9 @@ public class GameRunner {
     }
 
     public void Stop() {
+        if (this.player == null) {
+            return;
+        }
         if (this.game.settings.Music != null) {
             this.player.stopSound(this.game.settings.Music);
         }
