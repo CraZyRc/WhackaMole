@@ -6,6 +6,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import whackamole.whackamole.CD.Commands.WhackaMoleCMD;
 import whackamole.whackamole.DB.SQLite;
 import whackamole.whackamole.GS.GamesManager;
+import whackamole.whackamole.RS.Reward.Reward;
+import whackamole.whackamole.RS.Reward.Steps.AnimationReward;
+import whackamole.whackamole.RS.RewardFile;
 import whackamole.whackamole.RS.RewardsManager;
 import whackamole.whackamole.Utils.Econ;
 import whackamole.whackamole.Utils.Logger;
@@ -29,16 +32,8 @@ public final class Main extends JavaPlugin {
     ResourceManager.onLoad();
     Translator.onLoad();
     SQLite.onLoad();
-
-
-    /* Delete in next update */
-    File gamesFolder = new File(Config.AppConfig.storageFolder + "/Games");
-    if (gamesFolder.exists()) {
-      for (File f : gamesFolder.listFiles()) {
-        f.delete();
-      }
-      gamesFolder.delete();
-    }
+    AnimationReward.loadAnimationFiles(this);
+    RewardFile.loadFile(this);
 
 
   }

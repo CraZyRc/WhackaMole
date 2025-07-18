@@ -77,7 +77,7 @@ public class YMLFile {
     
     @SuppressWarnings("unchecked")
     public <T> Map<String, T> getMap(String path) {
-        return (Map<String, T>) this.FileConfig.getConfigurationSection(path).getValues(false);
+        return (Map<String, T>) Objects.requireNonNull(this.FileConfig.getConfigurationSection(path)).getValues(false);
     }
     
     @SuppressWarnings("unchecked")
