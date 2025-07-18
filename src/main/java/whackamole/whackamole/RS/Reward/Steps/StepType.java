@@ -18,7 +18,7 @@ public enum StepType {
 
     static public StepType Parse(String type) {
         for (var step : values()) {
-            if (step.value.toLowerCase().equals(type.toLowerCase())) {
+            if (step.value.equalsIgnoreCase(type)) {
                 return step;
             }
         }

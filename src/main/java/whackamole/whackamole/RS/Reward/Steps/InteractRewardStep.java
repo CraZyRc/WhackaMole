@@ -3,6 +3,7 @@ package whackamole.whackamole.RS.Reward.Steps;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -38,35 +39,28 @@ public class InteractRewardStep extends RewardStep implements IRewardStepInterac
     @Override
     public void Validate() throws ValidationException {
         switch (this.type) {
-            case Message: return;
-            case Item: return;
-            case Teleport: return;
-            case Sound: return;
-            case Effect: return;
-            case Currency: return;
-            case Animation: return;
-            default: throw new ValidationException(Translator.REWARDS_INVALIDREWARDTYPE); // TODO: Translator message: Use Interact is not allowed for type X
+            case Message, Teleport, Item, Sound, Effect, Currency, Animation: return;
+            default: throw new ValidationException(Translator.REWARDS_TYPE_INVALIDINTERACTSETTING.Format(this.type)); // ? Is this really necessary ?
         }
     }
 
     private ItemStack getSkull() {
-        switch (this.type) {
-            case Invalid:   return null;
-            case Message:   return Misc.getSkull("a988419dd5b386f698a96913db1d97c2418e16d416d7f439d48acd41e3a436ce");
-            case Item:      return Misc.getSkull("1ff041976a09dd053e3d1d4e611aac09594d74fc71a0ec4da0110416d317dba8");
-            case Teleport:  return Misc.getSkull("f41f1ef439f91069a43678d227ad458d663ec04363bce9c7c019c5679e8cf004");
-            case Sound:     return Misc.getSkull("e82b0b7c68e88800030e674522aab40396fa543072b949c0600e66c2ed352ff0");
-            case Effect:    return Misc.getSkull("6d4ead1efe0cf776015bfd2c236ddf7c0d3309eb599b39d6ac10d7fa11a3e075");
-            case Currency:  return Misc.getSkull("ebda5f31937b2ff755271d97f01be84d52a407b36ca77451856162ac6cfbb34f");
-            case Animation: return Misc.getSkull("c5e313e30c53de176e7f3cfcc27827fd45e17d0c4b99c6c1fb52a70ab2939324");
-        }
-        return null;
+      return switch (this.type) {
+        case Invalid -> null;
+        case Message -> Misc.getSkull("a988419dd5b386f698a96913db1d97c2418e16d416d7f439d48acd41e3a436ce");
+        case Item -> Misc.getSkull("1ff041976a09dd053e3d1d4e611aac09594d74fc71a0ec4da0110416d317dba8");
+        case Teleport -> Misc.getSkull("f41f1ef439f91069a43678d227ad458d663ec04363bce9c7c019c5679e8cf004");
+        case Sound -> Misc.getSkull("e82b0b7c68e88800030e674522aab40396fa543072b949c0600e66c2ed352ff0");
+        case Effect -> Misc.getSkull("6d4ead1efe0cf776015bfd2c236ddf7c0d3309eb599b39d6ac10d7fa11a3e075");
+        case Currency -> Misc.getSkull("ebda5f31937b2ff755271d97f01be84d52a407b36ca77451856162ac6cfbb34f");
+        case Animation -> Misc.getSkull("c5e313e30c53de176e7f3cfcc27827fd45e17d0c4b99c6c1fb52a70ab2939324");
+      };
     }
 
     private Display getDisplay(Location location) {
         if (this.key == null) return null;
 
-        var display = (ItemDisplay) location.getWorld().spawnEntity(location, EntityType.ITEM_DISPLAY);
+        var display = (ItemDisplay) Objects.requireNonNull(location.getWorld()).spawnEntity(location, EntityType.ITEM_DISPLAY);
         display.setRotation(location.getYaw(), 0);
         display.setItemStack(this.getSkull());
         display.setTransformation(
@@ -88,7 +82,7 @@ public class InteractRewardStep extends RewardStep implements IRewardStepInterac
     private Interaction getInteraction(Location location) {
         if (this.key == null) return null;
 
-        var interaction = (Interaction) location.getWorld().spawnEntity(location.clone().subtract(0, 0.48, 0), EntityType.INTERACTION);
+        var interaction = (Interaction) Objects.requireNonNull(location.getWorld()).spawnEntity(location.clone().subtract(0, 0.48, 0), EntityType.INTERACTION);
         interaction.setInteractionWidth(0.5F);
         interaction.setInteractionHeight(0.5F);
         interaction.setResponsive(true);

@@ -39,7 +39,7 @@ public class TeleportReward extends RewardStep {
 
         static RotationDirection parse(String name) {
             for (var direction : values()) {
-                if (direction.name.toLowerCase().equals(name.toLowerCase())) {
+                if (direction.name.equalsIgnoreCase(name)) {
                     return direction;
                 }
             }

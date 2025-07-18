@@ -24,9 +24,9 @@ public class MessageReward extends RewardStep {
             this.name = name;
         }
 
-        static protected MessageFormat Parse(String type) {
+        private static MessageFormat Parse(String type) {
             for (var format : values()) {
-                if (format.name.toLowerCase().equals(type.toLowerCase())) {
+                if (format.name.equalsIgnoreCase(type)) {
                     return format;
                 }
             }

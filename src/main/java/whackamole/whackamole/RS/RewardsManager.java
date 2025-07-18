@@ -101,7 +101,7 @@ public class RewardsManager {
                 errors.add(ex);
             }
 
-            if (errors.size() > 0) {
+            if (!errors.isEmpty()) {
                 for (var ex : errors) {
                     Logger.error(ex.getMessage());
                 }

@@ -22,7 +22,6 @@ import whackamole.whackamole.RS.Reward.Steps.RewardStep;
 import whackamole.whackamole.Main;
 import whackamole.whackamole.Utils.Econ;
 
-import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Misc;
 
 public class RewardExecutor {
@@ -188,7 +187,7 @@ public class RewardExecutor {
             if (Config.Game.PLAYERLOCK) {
                 this.loc = player.getEyeLocation().add(player.getEyeLocation().getDirection().multiply(2).setY(0));
             }
-
+            this.context.location = this.loc;
             step.Execute(this.context);
 
             if (step instanceof IRewardStepTickable tickable) {

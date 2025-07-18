@@ -32,18 +32,18 @@ public class AnimationReward extends RewardStep implements IRewardStepTickable {
         try {
             animationFile = new YMLFile(Config.AppConfig.storageFolder + "/animations", this.animationFileName + ".yml");
         } catch(FileNotFoundException ex) {
-            throw new ValidationException("Animation folder could not be created. Validate folder permissions.");
+            throw new ValidationException(Translator.YML_CREATEFAIL.Format(this.animationFileName));
         }
         
         var pixels = animationFile.getList("Animation");
-        if (pixels.size() == 0) {
+        if (pixels.isEmpty()) {
             throw new ValidationException(Translator.REWARDS_TYPE_INVALID_ANIMATIONFILE.Format(this.animationFileName));
         }
 
         try {
             this.command = new Command(pixels);
         } catch (ValidationException ex) {
-            throw new ValidationException(Translator.ANIMATIONCOMMAND_INVALID_COMMAND.Format(this.animationFileName)).addCause(ex);
+            throw new ValidationException(Translator.ANIMATIONREWARD_INVALID_COMMAND.Format(this.animationFileName)).addCause(ex);
         }
     }
     
@@ -54,7 +54,7 @@ public class AnimationReward extends RewardStep implements IRewardStepTickable {
 
     @Override
     public void Execute(RewardExecutorContext context) {
-        this.ExecuteTick(context, 0);
+        this.ExecuteTick(context, 0L);
     }
 
     @Override

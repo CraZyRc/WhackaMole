@@ -66,7 +66,7 @@ public class Reward {
             }
         }
 
-        if (errors.size() > 0) {
+        if (!errors.isEmpty()) {
             throw new ValidationException(errors);
         }
     }

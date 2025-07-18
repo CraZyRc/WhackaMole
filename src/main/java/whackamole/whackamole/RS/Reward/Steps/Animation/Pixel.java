@@ -3,6 +3,7 @@ package whackamole.whackamole.RS.Reward.Steps.Animation;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -31,7 +32,7 @@ class Pixel {
             this.delta  = this.parseVec(components.next(), components.next(), components.next());
             this.offset = this.parseVec(components.next(), components.next(), components.next());
             this.speed  = Float.valueOf(components.next());
-            this.count  = Integer.valueOf(components.next()); 
+            this.count  = Integer.parseInt(components.next());
         } catch(NoSuchElementException e) {
             throw new ValidationException("Command is missing items");
         } catch (NumberFormatException e) {
@@ -42,7 +43,7 @@ class Pixel {
     protected void render(Location center, double angle) {
         var location = center.add(this.delta.clone().rotateAroundY(angle));
         var options = new Particle.DustOptions(color, this.scale);
-        location.getWorld().spawnParticle(particle, 
+        Objects.requireNonNull(location.getWorld()).spawnParticle(particle,
                                             location, 
                                             this.count,
                                             this.offset.getX(),
@@ -54,17 +55,17 @@ class Pixel {
     }
 
     Vector parseVec(String a, String b, String c) throws NumberFormatException {
-        var x = Float.valueOf(a);
-        var y = Float.valueOf(b);
-        var z = Float.valueOf(c);
+        var x = Float.parseFloat(a);
+        var y = Float.parseFloat(b);
+        var z = Float.parseFloat(c);
 
         return new Vector(x, y, z);
     }
 
     Color parseColor(String x, String y, String z) {
-        var r = Float.valueOf(x);
-        var g = Float.valueOf(y);
-        var b = Float.valueOf(z);
+        var r = Float.parseFloat(x);
+        var g = Float.parseFloat(y);
+        var b = Float.parseFloat(z);
 
         return Color.fromRGB(Math.round(r*255.0F), Math.round(g*255.0F), Math.round(b*255.0F));
     }
