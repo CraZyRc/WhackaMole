@@ -78,71 +78,71 @@ public class SettingsSetCMD extends SubCommand {
         case NULL -> Logger.error(Translator.COMMANDS_ARGUMENTS_INVALIDSETTING);
         case DIRECTION -> {
           game.setSpawnRotation(BlockFace.valueOf(value));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIRECTION_SUCCESS.Format(name));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIRECTION_SUCCESS.Format(value));
         }
         case HASJACKPOT -> {
           game.setJackpot(Boolean.parseBoolean(value));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOT_SUCCESS.Format(name));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOT_SUCCESS.Format(value));
         }
         case JACKPOTSPAWNCHANCE -> {
           if (Integer.parseInt(value) <= 100) {
             game.setJackpotSpawn(Integer.parseInt(value));
-            sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_SUCCESS.Format(name));
+            sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_SUCCESS.Format(value));
           } else {
             sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR);
           }
         }
         case MISSCOUNT -> {
           game.setMaxMissed(Integer.parseInt(value));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MAXMISSED_SUCCESS.Format(name));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MAXMISSED_SUCCESS.Format(value));
         }
         case SCOREPOINTS -> {
           game.setPointsPerKill (Integer.parseInt(value));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SCOREPOINTS_SUCCESS.Format(name));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SCOREPOINTS_SUCCESS.Format(value));
         }
         case SPAWNTIMER -> {
           game.setInterval (Double.parseDouble(value));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SPAWNRATE_SUCCESS.Format(name));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SPAWNRATE_SUCCESS.Format(value));
         }
         case SPAWNCHANCE -> {
           if (Double.parseDouble(value) <= 100) {
             game.setSpawnChance(Double.parseDouble(value));
-            sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SPAWNCHANCE_SUCCESS.Format(name));
+            sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_SPAWNCHANCE_SUCCESS.Format(value));
           } else {
             sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTSPAWNCHANCE_ERROR);
           }
         }
         case MOLESPEED -> {
           game.setMoleSpeed(Double.parseDouble(value));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MOLESPEED_SUCCESS.Format(name));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MOLESPEED_SUCCESS.Format(value));
         }
         case DIFFICULTYSCALE -> {
           game.setDifficultyScale(Double.parseDouble(value));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE_SUCCESS.Format(name));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIFFICULTYSCALE_SUCCESS.Format(value));
         }
         case DIFFICULTYSCORE -> {
           game.setDifficultyScore(Integer.parseInt(value));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE_SUCCESS.Format(name));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_DIFFICULTYINCREASE_SUCCESS.Format(value));
         }
         case COOLDOWN -> {
           game.setCooldown(value);
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_COOLDOWN_SUCCESS.Format(name));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_COOLDOWN_SUCCESS.Format(value));
         }
         case MUSIC -> {
           game.setMusic(value);
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MUSIC_SUCCESS.Format(name));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MUSIC_SUCCESS.Format(value));
         }
         case MOLEHEAD -> {
           game.setMoleHead(value);
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MOLEHEAD_SUCCESS.Format(name));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_MOLEHEAD_SUCCESS.Format(value));
         }
         case JACKPOTHEAD -> {
           game.setJackpotHead(value);
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTHEAD_SUCCESS.Format(name));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_JACKPOTHEAD_SUCCESS.Format(value));
         }
         case TOGGLESCOREBOARD -> {
           game.setToggleScoreboard(Boolean.parseBoolean(value));
-          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_TOGGLESCOREBOARD_SUCCESS.Format(name));
+          sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_SETTINGS_TOGGLESCOREBOARD_SUCCESS.Format(value));
         }
       }
     });

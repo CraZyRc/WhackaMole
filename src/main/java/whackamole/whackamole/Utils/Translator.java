@@ -96,11 +96,11 @@ public enum Translator {
     ,   COMMANDS_CREATE_SUCCESS                             ("Commands.Create.Success")
     ,   COMMANDS_CREATE_EROR_WORLDNOTENABLED                ("Commands.Create.Error.worldNotEnabled")
     ,   COMMANDS_START                                      ("Commands.Start")
-    ,   COMMANDS_START_SUCCESS                              ("Commands.Start.Success", String.class)
+    ,   COMMANDS_START_SUCCESS                              ("Commands.Start.Success", Game.class)
     ,   COMMANDS_START_ERROR_TOOMANYPLAYERS                 ("Commands.Start.Error.tooManyPlayers")
     ,   COMMANDS_START_ERROR_NOPLAYERFOUND                  ("Commands.Start.Error.noPlayerFound")
     ,   COMMANDS_STOP                                       ("Commands.Stop")
-    ,   COMMANDS_STOP_SUCCESS                               ("Commands.Stop.Success", String.class)
+    ,   COMMANDS_STOP_SUCCESS                               ("Commands.Stop.Success", Game.class)
     ,   COMMANDS_STOP_ERROR_NOACTIVEGAME                    ("Commands.Stop.Error.noActiveGame")
     ,   COMMANDS_REMOVE                                     ("Commands.Remove")
     ,   COMMANDS_REMOVE_CONFIRM                             ("Commands.Remove.Confirm")
@@ -190,8 +190,12 @@ public enum Translator {
     ,   REWARDS_TYPE_INVALID_ANIMATIONFILE                  ("Rewards.Type.Invalid.animationFile", String.class)
     ,   REWARDS_TYPE_NOMESSAGESET                           ("Rewards.Type.noMessageSet")
     ,   REWARDS_TYPE_UNSAFETPLOCATION                       ("Rewards.Type.unSafeTpLocation")
+    ,   REWARDS_TYPE_INVALIDINTERACTSETTING                 ("Rewards.Type.invalidInteractSetting", String.class)
     ,   REWARDS_INVALIDREWARDTYPE                           ("Rewards.invalidRewardType", String.class)
-    ,   ANIMATIONCOMMAND_INVALID_COMMAND                    ("AnimationCommand.Invalid.Command", String.class);
+    ,   REWARDS_PIXEL_INVALIDCOMMANDROWS                    ("Rewards.Pixel.invalidCommandRows")
+    ,   REWARDS_PIXEL_INVALIDCOMMANDITEMS                   ("Rewards.Pixel.invalidCommandItems")
+    ,   REWARDS_PIXEL_INVALIDCOMMANDFORMAT                  ("Rewards.Pixel.invalidCommandFormat")
+    ,   ANIMATIONREWARD_INVALID_COMMAND                     ("AnimationReward.Invalid.Command", String.class);
 
   public String key;
   public String value = "";
