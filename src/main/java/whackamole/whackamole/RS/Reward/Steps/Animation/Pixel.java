@@ -11,6 +11,7 @@ import org.bukkit.Particle;
 import org.bukkit.util.Vector;
 
 import whackamole.whackamole.RS.Reward.ValidationException;
+import whackamole.whackamole.Utils.Translator;
 
 class Pixel {
     private static Particle particle = Particle.DUST;
@@ -23,7 +24,7 @@ class Pixel {
 
     protected Pixel(String frameString) throws ValidationException {
         if (! frameString.contains(" ")) {
-            throw new ValidationException("Command must not contain empty rows");
+            throw new ValidationException(Translator.REWARDS_PIXEL_INVALIDCOMMANDROWS);
         }
         var components = Arrays.asList(frameString.split(" ")).iterator();
         try {
@@ -34,9 +35,9 @@ class Pixel {
             this.speed  = Float.valueOf(components.next());
             this.count  = Integer.parseInt(components.next());
         } catch(NoSuchElementException e) {
-            throw new ValidationException("Command is missing items");
+            throw new ValidationException(Translator.REWARDS_PIXEL_INVALIDCOMMANDITEMS);
         } catch (NumberFormatException e) {
-            throw new ValidationException("Command format is invalid");
+            throw new ValidationException(Translator.REWARDS_PIXEL_INVALIDCOMMANDFORMAT);
         }
     }
 

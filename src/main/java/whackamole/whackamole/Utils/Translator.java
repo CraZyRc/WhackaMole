@@ -192,6 +192,9 @@ public enum Translator {
     ,   REWARDS_TYPE_UNSAFETPLOCATION                       ("Rewards.Type.unSafeTpLocation")
     ,   REWARDS_TYPE_INVALIDINTERACTSETTING                 ("Rewards.Type.invalidInteractSetting", String.class)
     ,   REWARDS_INVALIDREWARDTYPE                           ("Rewards.invalidRewardType", String.class)
+    ,   REWARDS_PIXEL_INVALIDCOMMANDROWS                    ("Rewards.Pixel.invalidCommandRows")
+    ,   REWARDS_PIXEL_INVALIDCOMMANDITEMS                   ("Rewards.Pixel.invalidCommandItems")
+    ,   REWARDS_PIXEL_INVALIDCOMMANDFORMAT                  ("Rewards.Pixel.invalidCommandFormat")
     ,   ANIMATIONREWARD_INVALID_COMMAND                     ("AnimationReward.Invalid.Command", String.class);
 
   public String key;

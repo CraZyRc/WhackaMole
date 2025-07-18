@@ -40,7 +40,7 @@ public class InteractRewardStep extends RewardStep implements IRewardStepInterac
     public void Validate() throws ValidationException {
         switch (this.type) {
             case Message, Teleport, Item, Sound, Effect, Currency, Animation: return;
-            default: throw new ValidationException(Translator.REWARDS_TYPE_INVALIDINTERACTSETTING.Format(this.type)); // ? Is this really necessary ?
+            default: throw new ValidationException(Translator.REWARDS_TYPE_INVALIDINTERACTSETTING.Format(this.type)); // For future types that may not include an Interactable
         }
     }
 
