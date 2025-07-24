@@ -150,7 +150,7 @@ public class Scoreboard {
         var StreakSTR = getTop(1, 1);
         var molesHitSTR = getTop(1, 2);
 
-        this.highScore.setCustomName(ChatColor.YELLOW + "" + ChatColor.BOLD + "[-> " + ChatColor.GOLD + ChatColor.BOLD + Translator.GAME_HOLO_HIGHSCORES.Format() + ChatColor.YELLOW + ChatColor.BOLD + " <-]");
+        this.highScore.setCustomName(Translator.GAME_HOLO_HIGHSCORES.Format());
         if (ScoreSTR.length > 0) this.Score.setCustomName(Translator.GAME_HOLO_SCORE1.Format(ScoreSTR[0].player.getName(), String.valueOf(ScoreSTR[0].Score)));
         else this.Score.setCustomName(Translator.GAME_HOLO_SCORE2.Format());
         if (StreakSTR.length > 0) this.Streak.setCustomName(Translator.GAME_HOLO_STREAK1.Format(StreakSTR[0].player.getName(), String.valueOf(StreakSTR[0].scoreStreak)));

@@ -36,7 +36,7 @@ public class HoloRemoveCMD extends SubCommand {
       if (game.holoDelete(id)) {
         sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_REMOVE_SUCCESS.Format());
       } else {
-        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_REMOVE_ERROR.Format());
+        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_HOLONOTFOUND.Format());
       }
     });
   }

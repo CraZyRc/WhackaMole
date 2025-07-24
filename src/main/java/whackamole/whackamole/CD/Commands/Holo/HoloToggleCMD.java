@@ -35,7 +35,7 @@ public class HoloToggleCMD extends SubCommand {
 
       if (game.holoSelect()) {
         sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_TOGGLEID_SUCCESS.Format());
-      } else sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_SELECT_ERROR.Format());
+      } else sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_HOLONOTFOUND.Format());
     });
   }
 

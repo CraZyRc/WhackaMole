@@ -34,7 +34,7 @@ public class HoloTeleportCMD extends SubCommand {
       if (game == null || id == null) { return; }
 
       if (!game.holoTeleport(id, sender)) {
-        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_SELECT_ERROR.Format());
+        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_HOLONOTFOUND.Format());
       }
     });
   }
