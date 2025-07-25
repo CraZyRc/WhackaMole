@@ -1,9 +1,10 @@
-package whackamole.whackamole.RS.Reward.Steps;
+package whackamole.whackamole.RS.Reward.Steps.Types;
 
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import whackamole.whackamole.RS.Reward.Steps.RewardStep;
 import whackamole.whackamole.RS.Reward.ValidationException;
 import whackamole.whackamole.RS.RewardExecutorContext;
 import whackamole.whackamole.RS.RewardsManager;

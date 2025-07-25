@@ -1,4 +1,4 @@
-package whackamole.whackamole.RS.Reward.Steps;
+package whackamole.whackamole.RS.Reward.Steps.Types;
 
 import java.io.FileNotFoundException;
 import java.util.Map;
@@ -6,6 +6,8 @@ import java.util.Map;
 import org.bukkit.plugin.Plugin;
 import whackamole.whackamole.Config;
 import whackamole.whackamole.RS.Reward.Steps.Animation.Command;
+import whackamole.whackamole.RS.Reward.Steps.IRewardStepTickable;
+import whackamole.whackamole.RS.Reward.Steps.RewardStep;
 import whackamole.whackamole.RS.RewardExecutorContext;
 import whackamole.whackamole.RS.RewardsManager;
 import whackamole.whackamole.RS.Reward.ValidationException;

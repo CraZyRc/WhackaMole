@@ -5,10 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Display;
@@ -16,10 +13,13 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Transformation;
+import org.checkerframework.checker.nullness.qual.RequiresNonNull;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
+import whackamole.whackamole.Main;
 import whackamole.whackamole.RS.RewardExecutorContext;
 import whackamole.whackamole.RS.Reward.ValidationException;
 import whackamole.whackamole.Utils.Misc;
@@ -75,6 +75,8 @@ public class InteractRewardStep extends RewardStep implements IRewardStepInterac
         display.setCustomNameVisible(true);
         display.setPersistent(true);
         display.getPersistentDataContainer().set(this.key, PersistentDataType.INTEGER, 1);
+        display.setInterpolationDelay(0);
+        display.setInterpolationDuration(15);
 
         return display;
     }
@@ -110,19 +112,22 @@ public class InteractRewardStep extends RewardStep implements IRewardStepInterac
         entities.add(this.interactable);
     }
 
+    private Display dp;
+
     @Override
     public void ExecuteTick(RewardExecutorContext context, long ticksPassed) {
+        if (ticksPassed == 1L) this.dp = this.getDisplay(context.location);
         if (ticksPassed == 10L) {
-            var display = this.getDisplay(context.location);
-            entities.add(display);
-            Transformation transformation = display.getTransformation();
-            display.setInterpolationDelay(0);
-            display.setInterpolationDuration(15);
+
+
+            Transformation transformation = this.dp.getTransformation();
             transformation.getTranslation().set(0f, 0f, 0f);
             transformation.getLeftRotation().set(0f, 1f, 0f, 0f);
             transformation.getScale().set(0.9f, 0.9f, 0.9f);
             transformation.getRightRotation().set(0f, 1f, 0f, 0f);
-            display.setTransformation(transformation);
+            this.dp.setTransformation(transformation);
+
+            entities.add(Objects.requireNonNull(this.dp));
         }
     }
 

@@ -1,4 +1,4 @@
-package whackamole.whackamole.RS.Reward.Steps;
+package whackamole.whackamole.RS.Reward.Steps.Types;
 
 import java.util.Map;
 
@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.joml.Vector3d;
 
+import whackamole.whackamole.RS.Reward.Steps.RewardStep;
 import whackamole.whackamole.RS.RewardExecutorContext;
 import whackamole.whackamole.RS.RewardsManager;
 import whackamole.whackamole.RS.Reward.ValidationException;

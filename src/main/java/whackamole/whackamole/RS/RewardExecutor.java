@@ -22,6 +22,7 @@ import whackamole.whackamole.RS.Reward.Steps.RewardStep;
 import whackamole.whackamole.Main;
 import whackamole.whackamole.Utils.Econ;
 
+import whackamole.whackamole.Utils.Logger;
 import whackamole.whackamole.Utils.Misc;
 
 public class RewardExecutor {
@@ -91,16 +92,22 @@ public class RewardExecutor {
         return this.state;
     }
 
-    void FilterGameRewards() {
+    void FilterGameRewards() { // TODO : Clean this mess
+        int random = new Random().nextInt(100);
         this.steps = new LinkedList<RewardStep>();
         for(var reward : this.rewards) {
-            var rewardSteps = reward.getSteps(this.game.getRunning().get().score);
-            if (rewardSteps != null && !rewardSteps.isEmpty()) {
-                this.steps.addAll(rewardSteps);
-            }
+            // Check if random chance is eligible
+            if (reward.Chance > random) {
+                var rewardSteps = reward.getSteps(this.game.getRunning().get().score);
+                if (rewardSteps != null && !rewardSteps.isEmpty()) {
+                    this.steps.addAll(rewardSteps);
+                }
 
-            if (reward.UseInteract) {
-                this.interactableRewardsCount ++;
+
+                // Check if the reward has an interactable, if the reward is enabled and if the player reached the Threshold score
+                if (reward.UseInteract && reward.Enabled && reward.getThreshold(this.game.getRunning().get().score)) {
+                    this.interactableRewardsCount ++;
+                }
             }
         }
     }

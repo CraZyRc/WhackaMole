@@ -1,9 +1,10 @@
-package whackamole.whackamole.RS.Reward.Steps;
+package whackamole.whackamole.RS.Reward.Steps.Types;
 
 import java.util.Map;
 
 import org.bukkit.Sound;
 
+import whackamole.whackamole.RS.Reward.Steps.RewardStep;
 import whackamole.whackamole.RS.RewardExecutorContext;
 import whackamole.whackamole.RS.RewardsManager;
 import whackamole.whackamole.RS.Reward.ValidationException;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 
+import whackamole.whackamole.RS.Reward.Steps.Types.*;
 import whackamole.whackamole.RS.RewardsManager;
 import whackamole.whackamole.RS.Reward.Steps.*;
 import whackamole.whackamole.Utils.Translator;
@@ -13,6 +14,7 @@ public class Reward {
     public boolean UseInteract;
     public int Threshold;
     public int Chance;
+    public String Name;
 
     protected ArrayList<RewardStep> Steps = new ArrayList<>();
 
@@ -38,6 +40,7 @@ public class Reward {
         this.UseInteract= RewardsManager.getOrDefault(settings, "UseInteract", false);
         this.Threshold  = RewardsManager.getOrDefault(settings, "Threshold", -1);
         this.Chance     = RewardsManager.getOrDefault(settings, "RewardChance", 100);
+        this.Name       = type.toString();
 
         if (this.UseInteract) {
             this.Steps.add(new InteractRewardStep(type, settings));
@@ -74,8 +77,11 @@ public class Reward {
     public ArrayList<RewardStep> getSteps(int score) {
         if (! this.Enabled) return null;
         if (this.Threshold > score) return null;
-        if (this.Chance < new Random().nextInt(100)) return null;
 
         return this.Steps;
+    }
+
+    public boolean getThreshold(int score) {
+        return this.Threshold <= score;
     }
 }

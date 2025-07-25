@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import whackamole.whackamole.RS.Reward.Steps.Types.TeleportReward;
 import whackamole.whackamole.RS.RewardExecutorContext;
 import whackamole.whackamole.RS.Reward.ValidationException;
 import whackamole.whackamole.Utils.SafeBlocks;
