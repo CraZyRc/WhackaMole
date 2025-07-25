@@ -92,13 +92,14 @@ public class RewardsManager {
             var rewards = loadRewardTypes(rewardData);
 
             var errors = new ArrayList<ValidationException>();
-            try {
-                for (Reward reward : rewards) {
+
+            for (Reward reward : rewards) {
+                try {
                     reward.Validate();
                     addRewardToGames(games, reward);
+                } catch (ValidationException ex) {
+                    errors.add(ex);
                 }
-            } catch(ValidationException ex) {
-                errors.add(ex);
             }
 
             if (!errors.isEmpty()) {
