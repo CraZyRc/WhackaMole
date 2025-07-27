@@ -19,7 +19,7 @@ public class SoundTest {
     static public final JUnitBDDSoftAssertions softly = new JUnitBDDSoftAssertions();
 
     @Test
-    public void SendJsonMessageToPlayer() throws ValidationException {
+    public void PlaySoundforPlayer() throws ValidationException {
         
         var reward = new SoundReward(new HashMap<String, Object>() {{
             put("Sound", "ENTITY_GENERIC_EXPLODE");
