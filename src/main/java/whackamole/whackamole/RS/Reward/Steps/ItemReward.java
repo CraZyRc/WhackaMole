@@ -13,39 +13,46 @@ import java.util.Map;
 
 public class ItemReward extends RewardStep {
   private String materialName;
-  private Material material;
   private int amount;
-  private String NBT;
+  private String NBTString;
+
+  private ItemStack item;
 
   public ItemReward(Map<String, ?> settings) {
     this.materialName = RewardsManager.getOrDefault(settings, "Material", "");
     this.amount = RewardsManager.getOrDefault(settings, "Amount", 0);
-    this.NBT = RewardsManager.getOrDefault(settings, "NBT", "");
+    this.NBTString = RewardsManager.getOrDefault(settings, "NBT", "");
   }
 
+  @SuppressWarnings("deprecation")
   @Override
   public void Validate() throws ValidationException {
-    try {
-      this.material = org.bukkit.Material.matchMaterial(this.materialName);
-    } catch (Exception ex) {
+    Material material = org.bukkit.Material.matchMaterial(this.materialName);
+    if (material == null) {
       throw new ValidationException(Translator.REWARDS_TYPE_INVALID_STRING.Format("Material"));
     }
 
     if (this.amount <= 0) {
       throw new ValidationException(Translator.REWARDS_TYPE_INVALID_INT.Format("Amount", "Amount"));
     }
+
+    this.item = new ItemStack(material, this.amount);
+
+    if (!this.NBTString.isEmpty()) {
+      try {
+        var nbtTags = this.NBTString.replace("[","").replace("]","");
+        this.item = Bukkit.getUnsafe().modifyItemStack(this.item, material.getKey().getKey() + "[" + nbtTags + "]"); //[enchantments={levels:{looting:1}},unbreakable={},damage=31]
+      } catch (Exception _error) {
+        throw new ValidationException("Invalid NBT");
+      }
+    }
   }
 
   @Override
   public void Execute(RewardExecutorContext context) {
-    ItemStack Item = new ItemStack(this.material, this.amount);
-    if (!this.NBT.isEmpty()) {
-      String nbtTags = this.NBT.replace("[","").replace("]","");
-      Item = Bukkit.getUnsafe().modifyItemStack(Item, this.material.getKey().getKey() + "[" + nbtTags + "]"); //[enchantments={levels:{looting:1}},unbreakable={},damage=31]
-    }
     PlayerInventory inv = context.player.getInventory();
     if (inv.firstEmpty() != -1) {
-      inv.setItem(inv.firstEmpty(), Item);
+      inv.setItem(inv.firstEmpty(), this.item);
     }
   }
 }
