@@ -93,12 +93,13 @@ public class RewardsManager {
 
             var errors = new ArrayList<ValidationException>();
 
-            for (Reward reward : rewards) {
+            for (var rewardIndex = 0; rewardIndex < rewardData.size(); rewardIndex ++) {
                 try {
+                    var reward = rewards[rewardIndex];
                     reward.Validate();
                     addRewardToGames(games, reward);
                 } catch (ValidationException ex) {
-                    errors.add(ex);
+                    errors.add(new ValidationException("Failed to load reward " + key + " [" + (rewardIndex + 1) + "] because:").addCause(ex));
                 }
             }
 
