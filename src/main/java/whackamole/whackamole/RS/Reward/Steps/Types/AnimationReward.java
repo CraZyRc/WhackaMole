@@ -41,7 +41,7 @@ public class AnimationReward extends RewardStep implements IRewardStepTickable {
         }
         
         var pixels = animationFile.getList("Animation");
-        if (pixels.isEmpty()) {
+        if (pixels == null || pixels.isEmpty()) {
             throw new ValidationException(Translator.REWARDS_TYPE_INVALID_ANIMATIONFILE.Format(this.animationFileName));
         }
 
