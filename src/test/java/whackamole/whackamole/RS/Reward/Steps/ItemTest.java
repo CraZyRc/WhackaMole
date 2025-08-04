@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import whackamole.whackamole.RS.Reward.Steps.Types.ItemReward;
 import whackamole.whackamole.RS.RewardExecutorContext;
 import whackamole.whackamole.RS.Reward.ValidationException;
 

@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
+import whackamole.whackamole.RS.Reward.Steps.Types.MessageReward;
 import whackamole.whackamole.RS.RewardExecutorContext;
 import whackamole.whackamole.RS.Reward.ValidationException;
 

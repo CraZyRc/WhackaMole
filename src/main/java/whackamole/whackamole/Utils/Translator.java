@@ -16,7 +16,7 @@ public enum Translator {
     ,   UPDATEFAIL                                          ("Update.updateFail", String.class)
     ,   LOGGER_WARNING                                      ("Logger.Warning", String.class)
     ,   LOGGER_ERROR                                        ("Logger.Error", String.class)
-    ,   YML_NOTFOUNDEXCEPTION                               ("YML.notFoundException", YMLFile.class)
+    // ? ,   YML_NOTFOUNDEXCEPTION                               ("YML.notFoundException", YMLFile.class)  Redundant ?
     ,   YML_SAVEDFILE                                       ("YML.savedFile", YMLFile.class)
     ,   YML_DELETEDFILE                                     ("YML.deletedFile", YMLFile.class)
     ,   YML_CREATEFILE                                      ("YML.createFile", YMLFile.class)

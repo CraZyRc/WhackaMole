@@ -133,7 +133,7 @@ Commands:
   wam.game.edit: Allows the user to be able to edit the game grid and surrounding blocks `/wam game edit`
 
   wam.settings.*: Gives the user full access to the Settings commands (except for the Holo commands)
-  wam.settings.get: Allows the user to get the settings of a game `/wam settings get <gameName> {setting}`
+  wam.settings.get: Allows the user to get the settings of a game `/wam settings get <gameName> <setting>`
   wam.settings.set: Allows the user to set the settings of a game `/wam settings set <gameName> <setting> <value>`
   wam.settings.positions: Allows the user to set the position for different commands `/wam settings positions <gameName> <highscore/teleport/streak>`
 

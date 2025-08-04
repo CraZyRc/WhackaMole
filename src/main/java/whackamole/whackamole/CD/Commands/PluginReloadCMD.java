@@ -42,7 +42,7 @@ public class PluginReloadCMD extends SubCommand {
       Manager.GameLoading(null);
       RewardsManager.onReload();
       if (langChange) {
-        Logger.info(Translator.COMMANDS_RELOAD_KNOWNBUG);
+        Logger.info(Translator.COMMANDS_RELOAD_KNOWNBUG.Format());
         var commandRoot = new WhackaMoleCMD();
         commandRoot.UnRegister();
         commandRoot.Register();

@@ -6,11 +6,11 @@ prefix: WAM
 authors: [ CraZy ]
 softdepend: [Vault, Multiverse-Core, My_Worlds]
 description: Whack a Mole plugin
-website: https://github.com/CraZyRc
+website: https://github.com/CraZyRc/WhackaMole
 
 permissions:
   wam.*:
-    description: Gives the user full access to the wam permissions
+    description: Gives the user full access to all the WAM permissions
     default: op
     children:
       wam.resetticket: true
@@ -38,9 +38,9 @@ permissions:
     default: op
     children: {wam: true}
 
-  wam.game: {description: The default permission to access the /wam game command, default: op, children: {wam: true }}
-  wam.settings: {description: The default permission to access the /wam settings command, default: op, children: {wam: true }}
-  wam.settings.holo: {description: The default permission to access the /wam settings holo command, default: op, children: {wam.settings: true }}
+  wam.game: {description: Allows the user to access the /wam game command, default: op, children: {wam: true }}
+  wam.settings: {description: Allows the user to access the /wam settings command, default: op, children: {wam: true }}
+  wam.settings.holo: {description: Allows the user to access the /wam settings holo command, default: op, children: {wam.settings: true }}
 
   wam.game.*:
     description: Gives the user full access to the Game commands
