@@ -8,7 +8,8 @@ public enum StepType {
     Sound("Sound"),
     Effect("Effect"),
     Currency("Currency"),
-    Animation("Animation");
+    Animation("Animation"),
+    Custom("Custom");
 
     private String value;
 

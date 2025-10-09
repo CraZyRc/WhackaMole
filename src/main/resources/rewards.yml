@@ -9,7 +9,7 @@ Rewards:
       - Wam
       - WhackaMole
     RewardTypes:
-      - Type: Animation # type of reward, possible reward types: Animation, Item, Effect, Teleport, Currency, Message, Sound.
+      - Type: Animation # type of reward, possible reward types: Animation, Item, Effect, Teleport, Currency, Message, Sound & Custom.
         Settings:
           Enabled: true # Enable/Disable this reward
           Threshold: 3 # amount of points to reach for this reward
@@ -70,6 +70,13 @@ Rewards:
           Sound: ENTITY_GENERIC_EXPLODE # A list of sounds can be found on: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
           Volume: 1.0F
           Pitch: 1.0F
+      - Type: Custom
+        Settings:
+          Enabled: true
+          Threshold: 6
+          RewardChance: 80
+          UseInteract: true
+          Command: minecraft:title @s title ["",{"text":"! JACKPOT ! ","bold":true,"color":"gold"},{"text":"well played !"}] # To target the playing player, you can use @s
 
   Jackpot:
     Threshold: 150

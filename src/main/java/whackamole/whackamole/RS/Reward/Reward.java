@@ -28,6 +28,7 @@ public class Reward {
         case Effect -> new EffectReward(settings);
         case Currency -> new CurrencyReward(settings);
         case Animation -> new AnimationReward(settings);
+          case Custom -> new CustomReward(settings);
       };
     }
 

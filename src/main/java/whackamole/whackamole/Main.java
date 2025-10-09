@@ -2,6 +2,7 @@ package whackamole.whackamole;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
+import dev.jorel.commandapi.CommandAPISpigotConfig;
 import org.bukkit.plugin.java.JavaPlugin;
 import whackamole.whackamole.CD.Commands.WhackaMoleCMD;
 import whackamole.whackamole.DB.SQLite;
@@ -20,7 +21,7 @@ public final class Main extends JavaPlugin {
 
   @Override
   public void onLoad() {
-    CommandAPI.onLoad(new CommandAPIBukkitConfig(this));
+    CommandAPI.onLoad(new CommandAPISpigotConfig(this));
 
     Logger.onLoad(this);
     valid_config = Config.onLoad(this);

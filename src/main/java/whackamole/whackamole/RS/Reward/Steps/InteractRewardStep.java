@@ -39,7 +39,7 @@ public class InteractRewardStep extends RewardStep implements IRewardStepInterac
     @Override
     public void Validate() throws ValidationException {
         switch (this.type) {
-            case Message, Teleport, Item, Sound, Effect, Currency, Animation: return;
+            case Message, Teleport, Item, Sound, Effect, Currency, Animation, Custom: return;
             default: throw new ValidationException(Translator.REWARDS_TYPE_INVALIDINTERACTSETTING.Format(this.type)); // For future types that may not include an Interactable
         }
     }
@@ -54,6 +54,7 @@ public class InteractRewardStep extends RewardStep implements IRewardStepInterac
         case Effect -> Misc.getSkull("6d4ead1efe0cf776015bfd2c236ddf7c0d3309eb599b39d6ac10d7fa11a3e075");
         case Currency -> Misc.getSkull("ebda5f31937b2ff755271d97f01be84d52a407b36ca77451856162ac6cfbb34f");
         case Animation -> Misc.getSkull("c5e313e30c53de176e7f3cfcc27827fd45e17d0c4b99c6c1fb52a70ab2939324");
+        case Custom -> Misc.getSkull("b4b78cb8f8322e743424269a86ed74372cbc252c6333abb95f68496435aa1e69");
       };
     }
 

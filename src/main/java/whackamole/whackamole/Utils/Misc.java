@@ -11,6 +11,8 @@ import org.bukkit.profile.PlayerTextures;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,7 +24,7 @@ public class Misc {
         if (url.isEmpty())
             return Head;
         SkullMeta moleMeta = (SkullMeta) Head.getItemMeta();
-        PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID());
+        PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID(), "mole");
         PlayerTextures textures = profile.getTextures();
 
         URL urlObject;
