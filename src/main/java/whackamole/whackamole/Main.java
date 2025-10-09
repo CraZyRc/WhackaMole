@@ -1,7 +1,6 @@
 package whackamole.whackamole;
 
 import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import dev.jorel.commandapi.CommandAPISpigotConfig;
 import org.bukkit.plugin.java.JavaPlugin;
 import whackamole.whackamole.CD.Commands.WhackaMoleCMD;
