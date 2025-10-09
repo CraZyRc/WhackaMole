@@ -30,11 +30,15 @@ public class Column<T> {
         this.Serializable = ISerializer.GetSerializer(type);
     }
 
+    protected String getType() {
+        return Serializable.GetType();
+    }
+
     /**
      * Returns the column type from the rawType
      * @return the sql column type (Ex. {@code TEXT})
      */
-    private String GetType() {
+    private String getColumnType() {
         String out = "";
         out += Serializable.GetType();
 
@@ -73,7 +77,7 @@ public class Column<T> {
      * @return The column name with type (Ex. {@code 'name TEXT'})
      */
     protected String GetCreateString() {
-        return this.Name + " " + this.GetType();
+        return this.Name + " " + this.getColumnType();
     }
 
     /**
@@ -140,7 +144,7 @@ public class Column<T> {
     }
     
     /**
-     * Set the AutoIncrement option
+     * Set the NOT NULL option
      * 
      * @param HasKey
      * @return The column
@@ -151,9 +155,9 @@ public class Column<T> {
     }
 
     /**
-     * Get the autoIncrement option
+     * Get the NOT NULL option
      * 
-     * @return The is autoincrement option
+     * @return The NOT NULL option (reversed)
      */
     protected boolean AllowNull() {
         return this.AllowNull;

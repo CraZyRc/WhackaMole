@@ -1,11 +1,10 @@
-package whackamole.whackamole;
+package whackamole.whackamole.GS;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.*;
 
-import com.mojang.logging.LogQueues;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -20,12 +19,17 @@ import org.bukkit.event.player.*;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
+import whackamole.whackamole.Config;
 import whackamole.whackamole.DB.GameRow;
 import whackamole.whackamole.DB.SQLite;
-import whackamole.whackamole.Game.GameRunner;
+import whackamole.whackamole.Grid;
+import whackamole.whackamole.RS.RewardsManager;
+import whackamole.whackamole.Utils.Logger;
+import whackamole.whackamole.Utils.Translator;
 
 public final class GamesManager implements Listener {
 
@@ -55,47 +59,8 @@ public final class GamesManager implements Listener {
 
     public boolean GameLoading(@Nullable World world) {
         List<GameRow> DBGameList;
-        if(world == null) { DBGameList = SQLite.getGameDB().Select(); }
-        else {              DBGameList = SQLite.getGameDB().Select(world); }
-
-
-        List<YMLFile> fileGameList = new ArrayList<YMLFile>();
-        if (Config.Game.ENABLE_GAMECONFIG) {
-            YMLFile GamesFolder;
-            try {
-                GamesFolder = new YMLFile(Config.AppConfig.storageFolder + "/Games", "");
-            } catch (FileNotFoundException e) {
-                Logger.error("Game folder could not be created");
-                Logger.error(e.getMessage());
-                e.printStackTrace();
-                return false;
-            }
-
-            file_loop: for (File i : GamesFolder.file.listFiles()) {
-                var yGame = new YMLFile(i);
-                var yWorld = yGame.getString("Field Data.World");
-                var yID = yGame.getInt("Properties.ID", -1);
-                var yGrid = yGame.getList("Field Data.Grid");
-
-                if(yGrid == null) {
-                    // * if file does not contain grid, then it souhld not be considerd a valid game file to load.
-                    continue;
-                }
-
-                if (world == null || yWorld.equals(world.getName())) {
-                    if(!Config.Game.ENABLED_WOLRDS.isEmpty() && ! Config.Game.ENABLED_WOLRDS.contains(yWorld)) {
-                        Logger.warning(String.format("Skipping game file %s since the world %s is not enabled in the config", i.getName(), yWorld));
-                        continue file_loop;
-                    }
-                    for (var game : DBGameList) {
-                        if(game.ID == yID) {
-                            continue file_loop;
-                        }
-                    }
-                    fileGameList.add(yGame);
-                }
-            }
-        }
+        if(world == null) { DBGameList = SQLite.Game.Select(); }
+        else {              DBGameList = SQLite.Game.Select(world); }
         
         for(var game : DBGameList) {
             if(!Config.Game.ENABLED_WOLRDS.isEmpty() && ! Config.Game.ENABLED_WOLRDS.contains(game.worldName)) {
@@ -104,11 +69,8 @@ public final class GamesManager implements Listener {
             }
             this.games.add(new Game(game));
         }
-        for(var game : fileGameList) {
-            this.games.add(new Game(game));
-        }
 
-        return DBGameList.size() > 0 || fileGameList.size() > 0;
+        return !DBGameList.isEmpty();
     }
 
     private boolean gameExists(String name) {
@@ -154,6 +116,7 @@ public final class GamesManager implements Listener {
             game.run();
             game.moleUpdater();
         }
+        RewardsManager.Tick();
 
         if (GamesManager.this.runnableTickCounter >= 20) {
             GamesManager.this.runnableTickCounter = 0;
@@ -208,15 +171,27 @@ public final class GamesManager implements Listener {
         Player player = e.getPlayer();
         for (Game game : games) {
             var gameRunner = game.getRunning().orElse(null);
+            if (game.State == Game.gameState.REWARDING && player == gameRunner.getPlayer() && Config.Game.PLAYERLOCK) {
+                Location loc = e.getFrom();
+                loc.setPitch(0F);
+                e.getPlayer().teleport(loc);
+            }
             if (game.onGrid(player)) {
-                if (gameRunner == null) continue;
-                if (gameRunner.player != player) {
+                if (!game.hasActionbar.contains(player)) {
+                    game.updateActionBar();
+                    game.hasActionbar.add(player);
+                }
+                if (game.State != Game.gameState.RUNNING) continue;
+                if (gameRunner.getPlayer() != player) {
                     gameRunner.RemovePlayerFromGame(e.getPlayer(), e.getFrom(), Objects.requireNonNull(e.getTo()));
                 }
                 break;
-            } else if (gameRunner != null && gameRunner.player == player) {
-                game.Stop();
-                break;
+            } else {
+                if (game.hasActionbar.contains(player)) game.hasActionbar.remove(player);
+                if (gameRunner != null && gameRunner.player == player && game.State == Game.gameState.RUNNING) {
+                    game.Stop();
+                    break;
+                }
             }
         }
     }
@@ -244,13 +219,17 @@ public final class GamesManager implements Listener {
         Player player = e.getPlayer();
         for (Game game : games) {
             var gameRunner = game.getRunning().orElse(null);
+            if (game.State == Game.gameState.REWARDING && gameRunner.player == player && !Config.Game.PLAYERLOCK) {
+                RewardsManager.onTeleportEvent(player, e.getTo());
+            }
+
             if (game.onGrid(player, e.getTo())) {
                 if (gameRunner == null) continue;
                 if (gameRunner.player != player) {
                     gameRunner.RemovePlayerFromGame(e.getPlayer(), e.getFrom(), Objects.requireNonNull(e.getTo()));
                 }
                 break;
-            } else if (gameRunner != null && gameRunner.player == player) {
+            } else if (gameRunner != null && gameRunner.player == player && game.State == Game.gameState.RUNNING) {
                 game.Stop();
                 break;
             }
@@ -270,7 +249,7 @@ public final class GamesManager implements Listener {
     @EventHandler
     public void blockBreak(BlockBreakEvent e) {
         for (Game game : this.games) {
-            if (game.onGrid(e.getBlock().getLocation().add(0,1,0)) || game.getRunning().map(GameRunner::getPlayer).orElse(null) == e.getPlayer()) {
+            if ((game.onGrid(e.getBlock().getLocation().add(0,1,0)) || game.getRunning().map(GameRunner::getPlayer).orElse(null) == e.getPlayer()) && !e.getPlayer().getScoreboardTags().contains("wamEditGrid")) {
                 e.setCancelled(true);
             }
         }
@@ -292,15 +271,28 @@ public final class GamesManager implements Listener {
     }
 
     @EventHandler
+    public void RewardInteraction(PlayerInteractEntityEvent e) {
+        Player player = e.getPlayer();
+        for (Game game : this.games) {
+            var gameRunner = game.getRunning().orElse(null);
+            if (gameRunner == null) continue;
+            if (e.getRightClicked().getType().equals(EntityType.INTERACTION) && gameRunner.player == player) {
+                RewardsManager.onInteractEvent(player, e.getRightClicked());
+            }
+        }
+    }
+
+    @EventHandler
     public void ticketUse(PlayerInteractEvent e) {
         Player player = e.getPlayer();
-
-        if (!player.getInventory().getItemInMainHand().isSimilar(Config.Game.TICKET))
-            return;
+        if (player.getInventory().getItemInMainHand().hasItemMeta()) {
+            if (!player.getInventory().getItemInMainHand().getItemMeta().getPersistentDataContainer().has(new NamespacedKey(Bukkit.getPluginManager().getPlugin("WhackaMole"), "Reset-Ticket"), PersistentDataType.DOUBLE))
+                return;
+        } else return;
         if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
 
-        if (!player.hasPermission(Config.Permissions.PERM_TICKET_USE)) {
+        if (!player.hasPermission("wam.resetticket")) {
             player.sendMessage(Config.AppConfig.PREFIX + Translator.MANAGER_TICKETUSE_NOPERMISSION);
             e.setCancelled(true);
             return;

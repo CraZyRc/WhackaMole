@@ -1,17 +1,22 @@
 package whackamole.whackamole.DB;
 
 import whackamole.whackamole.Config;
-import whackamole.whackamole.Logger;
+import whackamole.whackamole.Utils.Logger;
 
-import java.io.File;
 import java.sql.*;
 
 import org.codehaus.plexus.util.ExceptionUtils;
 import org.jetbrains.annotations.Nullable;
 
 public class SQLite {
-    private static String url = "jdbc:sqlite:" + Config.AppConfig.storageFolder+ "/Storage.db";
+    private String url = "jdbc:sqlite:" + Config.AppConfig.storageFolder+ "/Storage.db";
     
+    public static CooldownDB Cooldown; 
+    public static GameDB Game; 
+    public static GridDB Grid; 
+    public static HologramDB Hologram; 
+    public static ScoreboardDB Scoreboard; 
+
     private SQLite() {}
 
     private static SQLite Instance;
@@ -23,39 +28,42 @@ public class SQLite {
     }
     
     public static void onLoad() {
-        var dbFile = new File(Config.AppConfig.storageFolder + "/Storage.db");
-        if(!dbFile.exists()) {
-            getGameDB().Create();
-            getGridDB().Create();
-            getCooldownDB().Create();
-            getScoreboardDB().Create();
-        }
-        getGameDB().Alter("Game", "Music", "TEXT");
-        getGameDB().Alter("Game", "toggleScoreboard", "INTEGER");
-
+        SQLite.Cooldown    = new CooldownDB(getInstance());
+        SQLite.Game        = new GameDB(getInstance());
+        SQLite.Grid        = new GridDB(getInstance());
+        SQLite.Hologram    = new HologramDB(getInstance());
+        SQLite.Scoreboard  = new ScoreboardDB(getInstance());
     }
 
     public String getUrl() {
-        return SQLite.url;
+        return this.url;
     }
 
     public void setUrl(String url) {
-        SQLite.url = url;
+        this.url = url;
+        
+        try {
+            if (this.connection != null && ! this.connection.isClosed()) {
+                this.connection.close();
+            }
+        } catch (Exception _e) {}
+        
+        this.connection = null;
     }
 
-    private static Connection connection;
+    private Connection connection;
     @Nullable
-    private static Connection getConnection() {
-        if (SQLite.connection == null) {
+    private Connection getConnection() {
+        if (this.connection == null) {
             try {
-                SQLite.connection = DriverManager.getConnection(url);
+                this.connection = DriverManager.getConnection(url);
             } catch (SQLException e) {
                 Logger.error(e.getMessage());
                 Logger.error(e.getStackTrace().toString());
                 assert false : e.getMessage();
             }
         }
-        return SQLite.connection;
+        return this.connection;
     }
 
     private PreparedStatement getStatement(String query, Object... arguments) throws SQLException {
@@ -108,10 +116,4 @@ public class SQLite {
             return null;
         }
     }
-
-    public static ScoreboardDB getScoreboardDB() {  return new ScoreboardDB(getInstance()); }
-    public static CooldownDB getCooldownDB() {      return new CooldownDB(getInstance()); }
-    public static GridDB getGridDB() {              return new GridDB(getInstance()); }
-    public static GameDB getGameDB() {              return new GameDB(getInstance()); }
-
 }

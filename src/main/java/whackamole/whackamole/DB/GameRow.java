@@ -9,7 +9,12 @@ public class GameRow extends Row {
      * The game name
      */
     public String Name;
-    
+
+    /**
+     * If the gameName is displayed
+     */
+    public boolean displayName;
+
     /**
      * The name of the world the game is in
      */
@@ -70,16 +75,16 @@ public class GameRow extends Row {
      * The amount of moles allowed to be missed in a game
      */
     public int missCount = 3;
-    
-    /**
-     * The amount of point given for each mole hit
-     */
-    public int scorePoints = 1;
-    
+
     /**
      * The Amount of moles to be hit before a difficulty increase is aplied
      */
     public int difficultyScore = 1;
+
+    /**
+     * The amount of point given for each mole hit
+     */
+    public int scorePoints = 1;
 
     /**
      * The amount in seconds between each mole spawn attempt

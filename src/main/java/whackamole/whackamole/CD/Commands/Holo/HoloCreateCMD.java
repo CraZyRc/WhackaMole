@@ -1,0 +1,66 @@
+package whackamole.whackamole.CD.Commands.Holo;
+
+import dev.jorel.commandapi.StringTooltip;
+import dev.jorel.commandapi.arguments.Argument;
+import dev.jorel.commandapi.arguments.ArgumentSuggestions;
+import dev.jorel.commandapi.arguments.IntegerArgument;
+import dev.jorel.commandapi.arguments.StringArgument;
+import dev.jorel.commandapi.executors.PlayerCommandExecutor;
+import org.jetbrains.annotations.Nullable;
+import whackamole.whackamole.CD.Arguments.Arguments;
+import whackamole.whackamole.CD.Commands.SubCommand;
+import whackamole.whackamole.Config;
+import whackamole.whackamole.GS.Game;
+import whackamole.whackamole.Utils.Translator;
+
+public class HoloCreateCMD extends SubCommand {
+  @Override
+  protected String GetName() { return Translator.COMMANDS_HOLO_CREATE.Format(); }
+
+  @Override
+  protected @Nullable String Permission() {
+    return "wam.settings.holo.create";
+  }
+
+  @Override
+  protected Argument<?>[] Arguments() {
+    return new Argument[] {
+            Arguments.Games(),
+            new IntegerArgument(Translator.COMMANDS_HOLO_CREATE_HOLOID.Format()).replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(
+                            StringTooltip.ofString("1",                                           Translator.COMMANDS_TIPS_HOLO_CREATE_HOLOID.Format())
+                    ,       StringTooltip.ofString("2",                                           Translator.COMMANDS_TIPS_HOLO_CREATE_HOLOID.Format())
+                    ,       StringTooltip.ofString("3",                                           Translator.COMMANDS_TIPS_HOLO_CREATE_HOLOID.Format())
+            )),
+            new StringArgument(Translator.COMMANDS_HOLO_CREATE_TYPE.Format()).replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(
+                            StringTooltip.ofString(Translator.HOLOGRAM_ARMORSTANDTYPE_SCORE.Format(),      Translator.COMMANDS_TIPS_HOLO_CREATE_TYPE1.Format())
+                    ,       StringTooltip.ofString(Translator.HOLOGRAM_ARMORSTANDTYPE_STREAK.Format(),     Translator.COMMANDS_TIPS_HOLO_CREATE_TYPE2.Format())
+                    ,       StringTooltip.ofString(Translator.HOLOGRAM_ARMORSTANDTYPE_MOLESHIT.Format(),   Translator.COMMANDS_TIPS_HOLO_CREATE_TYPE3.Format())
+            )),
+            new IntegerArgument(Translator.COMMANDS_HOLO_CREATE_ROWNUMBERS.Format()).replaceSuggestions(ArgumentSuggestions.stringsWithTooltips(
+                            StringTooltip.ofString("3",                                           Translator.COMMANDS_TIPS_HOLOCREATEROW.Format())
+                    ,       StringTooltip.ofString("5",                                           Translator.COMMANDS_TIPS_HOLOCREATEROW.Format())
+                    ,       StringTooltip.ofString("10",                                          Translator.COMMANDS_TIPS_HOLOCREATEROW.Format())
+            ))
+    };
+  }
+
+  @Override
+  protected @Nullable PlayerCommandExecutor ExecutesPlayer() {
+    return (sender, args) -> {
+      Game game = args.<Game>getUnchecked(0);
+      var id    = args.<Integer>getUnchecked(1);
+      var type  = args.<String>getUnchecked(2);
+      var count = args.<Integer>getUnchecked(3);
+      
+      if (game == null || id == null || type == null || count == null) { return; }
+
+      if (game.holoCreate(id, type, sender.getLocation(), count)) {
+        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_CREATE_SUCCESS.Format());
+      } else {
+        sender.sendMessage(Config.AppConfig.PREFIX + Translator.COMMANDS_HOLO_CREATE_ERROR.Format(String.valueOf(id)));
+      }
+    };
+  }
+
+
+}

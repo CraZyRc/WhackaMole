@@ -11,10 +11,11 @@ public class SQLTestBase extends TestBase {
     
     final static File DBfile = new File("./test/Storage.db");
     final static SQLite SQL = SQLite.getInstance();
-    final static GameDB gameDB = SQLite.getGameDB();
-    final static GridDB gridDB = SQLite.getGridDB();
-    final static CooldownDB cooldownDB = SQLite.getCooldownDB();
-    final static ScoreboardDB scoreboardDB = SQLite.getScoreboardDB();
+    static GameDB gameDB; 
+    static GridDB gridDB;
+    static CooldownDB cooldownDB;
+    static ScoreboardDB scoreboardDB;
+    static HologramDB hologramDB;
 
     @BeforeAll
     public static void setupSQL() {
@@ -22,15 +23,23 @@ public class SQLTestBase extends TestBase {
             DBfile.delete();
         }
         SQL.setUrl("jdbc:sqlite:" + DBfile.getPath());
+        SQLite.onLoad();
+
+        gameDB = SQLite.Game;
+        gridDB = SQLite.Grid;
+        cooldownDB = SQLite.Cooldown;
+        scoreboardDB = SQLite.Scoreboard;
+        hologramDB = SQLite.Hologram;
 
         gameDB.Create();
         gridDB.Create();
         cooldownDB.Create();
         scoreboardDB.Create();
+        hologramDB.Create();
     }
 
     @AfterAll
     public static void CleanupSQL() {
-        // DBfile.delete();
+        DBfile.delete();
     }
 }

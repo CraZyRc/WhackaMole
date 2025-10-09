@@ -1,0 +1,110 @@
+# Welcome to Custom rewards.
+# Here you can add some special rewards if players hit a certain threshold of points.
+# You can create custom rewards by duplicating the "Example" reward underneath it and then change the parameters.
+# More info and documentation can be found on the wiki: https://github.com/CraZyRc/Wiki/V3-Custom-Rewards
+
+Rewards:
+  Example:
+    Games: # on what games is this reward achievable
+      - Wam
+      - WhackaMole
+    RewardTypes:
+      - Type: Animation # type of reward, possible reward types: Animation, Item, Effect, Teleport, Currency, Message, Sound & Custom.
+        Settings:
+          Enabled: true # Enable/Disable this reward
+          Threshold: 3 # amount of points to reach for this reward
+          RewardChance: 100 # On a scale from 1 to 100, the chance of receiving this reward
+          UseInteract: true # Whether you want the Reward to be given with the interactable animation or instantaneously give the reward
+          Animation: Dragon_wings # See the example Animations in the Animations folder
+          Duration: 2 # in seconds, how long the Animation will last
+      - Type: Item
+        Settings:
+          Enabled: true
+          Threshold: 3
+          RewardChance: 100
+          UseInteract: true
+          Material: DIAMOND_AXE # Which item you want to give
+          Amount: 1 # The amount of items you want to give
+          NBT: "[enchantments={looting:1},unbreakable={}]" # NBT data / Component Data (please refer to https://minecraft.wiki/w/Data_component_format for the correct format)
+      - Type: Effect
+        Settings:
+          Enabled: true
+          Threshold: 3
+          RewardChance: 100
+          UseInteract: true
+          Effect: GLOWING # The Effect you want to give (https://minecraft.fandom.com/wiki/Effect#:~:text=regeneration%20and%20poison.-,Effect%20list,-In%20Java%20Edition)
+          Duration: 15 # in ticks
+          Amplifier: 1
+      - Type: Teleport
+        Settings:
+          Enabled: true
+          Threshold: 3
+          RewardChance: 100
+          UseInteract: true
+          World: world
+          Rotation: NORTH
+          X: 0.0
+          Y: 0.0
+          Z: 0.0
+      - Type: Currency
+        Settings:
+          Enabled: true
+          Threshold: 3
+          RewardChance: 100
+          UseInteract: true
+          Quantity: 60 # The amount of currency you want to give
+      - Type: Message
+        Settings:
+          Enabled: true
+          Threshold: 3
+          RewardChance: 100
+          UseInteract: true
+          MessageType: Json # Json or String
+          Message: '["",{"text":"! JACKPOT ! ","bold":true,"color":"gold"},{"text":"well played !"}]'
+      - Type: Sound
+        Settings:
+          Enabled: true
+          Threshold: 3
+          RewardChance: 100
+          UseInteract: true
+          Sound: ENTITY_GENERIC_EXPLODE # A list of sounds can be found on: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
+          Volume: 1.0F
+          Pitch: 1.0F
+      - Type: Custom
+        Settings:
+          Enabled: true
+          Threshold: 6
+          RewardChance: 80
+          UseInteract: true
+          Command: minecraft:title @s title ["",{"text":"! JACKPOT ! ","bold":true,"color":"gold"},{"text":"well played !"}] # To target the playing player, you can use @s
+
+  Jackpot:
+    Threshold: 150
+    Games:
+      - WAM
+      - Spawn2
+    RewardTypes:
+      - Type: Currency
+        Settings:
+          Enabled: true
+          Threshold: 3
+          RewardChance: 100
+          UseInteract: true
+          Quantity: 1500
+      - Type: Effect
+        Settings:
+          Enabled: true
+          Threshold: 3
+          RewardChance: 100
+          UseInteract: true
+          Effect: GLOWING
+          Duration: 30
+          Amplifier: 1
+      - Type: Message
+        Settings:
+          Enabled: true
+          Threshold: 3
+          RewardChance: 100
+          UseInteract: true
+          MessageType: String
+          Message: "&6&b!!!! JACKPOT !!!!"

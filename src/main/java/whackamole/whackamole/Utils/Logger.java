@@ -1,4 +1,4 @@
-package whackamole.whackamole;
+package whackamole.whackamole.Utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,28 +28,24 @@ public final class Logger {
         sendConsoleMessage(ChatColor.WHITE + message);
     }
 
+    public static void info(Translator message) {
+        sendConsoleMessage(ChatColor.WHITE + message.toString());
+    }
+
     public static void warning(String message) {
         sendConsoleMessage(Translator.LOGGER_WARNING.Format(message));
     }
+
+    public static void warning(Translator message) { sendConsoleMessage(Translator.LOGGER_WARNING.Format(message.toString())); }
 
     public static void error(String message) {
         sendConsoleMessage(Translator.LOGGER_ERROR.Format(message));
     }
 
+    public static void error(Translator message) { sendConsoleMessage(Translator.LOGGER_ERROR.Format(message.toString())); }
+
     public static void success(String message) {
         sendConsoleMessage(ChatColor.GREEN + message);
-    }
-
-    public static void info(Translator message) {
-        sendConsoleMessage(ChatColor.WHITE + message.toString());
-    }
-
-    public static void warning(Translator message) {
-        sendConsoleMessage(Translator.LOGGER_WARNING.Format(message.toString()));
-    }
-
-    public static void error(Translator message) {
-        sendConsoleMessage(Translator.LOGGER_ERROR.Format(message.toString()));
     }
 
     public static void success(Translator message) {

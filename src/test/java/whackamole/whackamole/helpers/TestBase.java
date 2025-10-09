@@ -22,10 +22,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import whackamole.whackamole.Utils.YMLFile;
 
-import whackamole.whackamole.Game;
+import whackamole.whackamole.GS.*;
 import whackamole.whackamole.Grid;
-import whackamole.whackamole.YMLFile;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -34,14 +34,15 @@ public class TestBase {
     
     public static Grid gridMock = mock(Grid.class);
     public static Game gameMock = mock(Game.class);
-    public static Game.GameRunner gameRunnerMock = mock(Game.GameRunner.class);
-    public static Game.Settings gameSettingsMock = mock(Game.Settings.class);
+    public static GameRunner gameRunnerMock = mock(GameRunner.class);
+    public static Settings gameSettingsMock = mock(Settings.class);
 
     public static File fileMock = mock(File.class);
     public static YMLFile YMLfileMock = mock(YMLFile.class);
     
     public static Player playerMock = mock(Player.class);
     public static World worldMock = mock(World.class);
+    public static Location locationMock = mock(Location.class);
     public static BlockFace blockFaceMock = mock(BlockFace.class);
     public static Block blockMock = mock(Block.class);
     
@@ -57,6 +58,13 @@ public class TestBase {
         gameSettingsMock.missCount = 3;
         gameSettingsMock.world = worldMock;
         when(worldMock.getName()).thenReturn("Test World");
+
+        when(locationMock.getWorld()).thenReturn(worldMock);
+        when(locationMock.getX()).thenReturn(1d);
+        when(locationMock.getY()).thenReturn(1d);
+        when(locationMock.getZ()).thenReturn(1d);
+        when(locationMock.getYaw()).thenReturn(1f);
+        when(locationMock.getPitch()).thenReturn(1f);
 
         gameSettingsMock.spawnRotation = blockFaceMock;
         when(blockFaceMock.name()).thenReturn("WEST");

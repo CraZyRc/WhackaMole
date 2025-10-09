@@ -2,54 +2,66 @@ package whackamole.whackamole;
 
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
-import whackamole.whackamole.DB.SQLite;
-
+import dev.jorel.commandapi.CommandAPISpigotConfig;
 import org.bukkit.plugin.java.JavaPlugin;
+import whackamole.whackamole.CD.Commands.WhackaMoleCMD;
+import whackamole.whackamole.DB.SQLite;
+import whackamole.whackamole.GS.GamesManager;
+import whackamole.whackamole.RS.Reward.Steps.Types.AnimationReward;
+import whackamole.whackamole.RS.RewardFile;
+import whackamole.whackamole.RS.RewardsManager;
+import whackamole.whackamole.Utils.Econ;
+import whackamole.whackamole.Utils.Logger;
+import whackamole.whackamole.Utils.Translator;
+import whackamole.whackamole.Utils.Updater;
 
 public final class Main extends JavaPlugin {
-    public GamesManager manager = GamesManager.getInstance();
-    private boolean valid_config = false;
+  public GamesManager manager = GamesManager.getInstance();
+  private boolean valid_config = false;
 
-    @Override
-    public void onLoad() {
-            CommandAPI.onLoad(new CommandAPIBukkitConfig(this));
+  @Override
+  public void onLoad() {
+    CommandAPI.onLoad(new CommandAPISpigotConfig(this));
 
-        Logger.onLoad(this);
-        valid_config = Config.onLoad(this);
-        if (! valid_config) return;
+    Logger.onLoad(this);
+    valid_config = Config.onLoad(this);
+    if (!valid_config) return;
 
-        ResourceManager.onLoad();
-        Translator.onLoad();
+    ResourceManager.onLoad();
+    Translator.onLoad();
+    SQLite.onLoad();
+    AnimationReward.loadAnimationFiles(this);
+    RewardFile.loadFile(this);
 
-        SQLite.onLoad();
-        
+
+  }
+
+  @Override
+  public void onEnable() {
+    if (!valid_config) {
+      Logger.error(Translator.MAIN_CONFIGLOADFAIL);
+      this.getServer().getPluginManager().disablePlugin(this);
+      return;
     }
-
-    @Override
-    public void onEnable() {
-        if (!valid_config) {
-            Logger.error(Translator.MAIN_CONFIGLOADFAIL);
-            this.getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-        if (!Econ.onEnable()) {
-            this.getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-        this.manager.onLoad(this);
-        CommandAPI.onEnable();
-
-        new Commands(this);
-
-        this.getServer().getPluginManager().registerEvents(this.manager, this);
-        
-        new Updater(this, 106405);
-        Logger.success("Done! V" + getDescription().getVersion());
+    if (!Econ.onEnable()) {
+      this.getServer().getPluginManager().disablePlugin(this);
+      return;
     }
+    this.manager.onLoad(this);
 
-    @Override
-    public void onDisable() {
-        this.manager.onUnload();
-    }
+    RewardsManager.onLoad();
+    CommandAPI.onEnable();
+
+    new WhackaMoleCMD().Register();
+    this.getServer().getPluginManager().registerEvents(this.manager, this);
+
+    new Updater(this, 106405);
+    Logger.success("Done! V" + getDescription().getVersion());
+  }
+
+  @Override
+  public void onDisable() {
+    this.manager.onUnload();
+  }
 
 }
