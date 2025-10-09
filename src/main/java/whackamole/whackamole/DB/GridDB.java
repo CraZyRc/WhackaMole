@@ -11,7 +11,7 @@ import java.util.List;
 
 public class GridDB extends Table<GridRow> {
 
-    public GridDB(SQLite sql) {
+    protected GridDB(SQLite sql) {
         super(sql, "Grid", new Column<?>[] {
             new Column<>("worldName", String.class).AllowNull(false),
             new Column<>("gameID", Integer.class).AllowNull(false),

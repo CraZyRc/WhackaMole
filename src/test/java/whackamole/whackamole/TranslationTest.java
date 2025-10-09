@@ -15,6 +15,10 @@ import org.junit.Assert;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
+import whackamole.whackamole.GS.Game;
+import whackamole.whackamole.Utils.Logger;
+import whackamole.whackamole.Utils.Translator;
+import whackamole.whackamole.Utils.YMLFile;
 
 import whackamole.whackamole.helpers.TestBase;
 
@@ -74,7 +78,7 @@ public class TranslationTest extends TestBase {
                 var matcher = testPattern.matcher(result);
 
                 if (matcher.find()) {
-                    softly.fail("[%s : %s]: formatting Failed: %s", item.name(), item.key, matcher.group(1));
+                    softly.fail("[%s : %s]: formatting Failed: %s | raw: %s", item.name(), item.key, matcher.group(1), result);
                 }
             }
         }

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class CooldownDB extends Table<CooldownRow> {
-    public CooldownDB(SQLite sql) {
+    protected CooldownDB(SQLite sql) {
         super(sql, "Cooldown", new Column<?>[] {
             new Column<Integer>("gameID", Integer.class).IsPrimaryKey(true).AllowNull(false),
             new Column<UUID>("playerID", UUID.class).IsPrimaryKey(true).AllowNull(false),

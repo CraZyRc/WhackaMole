@@ -2,7 +2,7 @@ package whackamole.whackamole.DB.Model;
 
 import java.lang.reflect.Field;
 
-import whackamole.whackamole.Logger;
+import whackamole.whackamole.Utils.Logger;
 
 public class Row implements RowModel {
     public Row() {

@@ -1,11 +1,13 @@
-package whackamole.whackamole;
+package whackamole.whackamole.Utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -61,17 +63,31 @@ public class YMLFile {
         return this.FileConfig.getDouble(path);
     }
 
-    public List<?> getList(String path) {
-        return this.FileConfig.getList(path);
+    public float getFloat(String path) { return Float.parseFloat((String) this.FileConfig.get(path)); }
+
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getList(String path) {
+        return (List<T>) this.FileConfig.getList(path);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getList(String path, List<?> def) {
+        return (List<T>) this.FileConfig.getList(path, def);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public <T> Map<String, T> getMap(String path) {
+        return (Map<String, T>) Objects.requireNonNull(this.FileConfig.getConfigurationSection(path)).getValues(false);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public <T> T get(String path) {
+        return (T) this.FileConfig.get(path);
     }
 
-    public List<?> getList(String path, List<?> def) {
-        return this.FileConfig.getList(path, def);
-    }
+    public Sound getSound(String path) { return Sound.valueOf(this.FileConfig.getString(path)); }
 
-    public Sound getSound(String path) {
-        return Sound.valueOf(this.FileConfig.getString(path));
-    }
+    public World getWorld(String path) { return Bukkit.getWorld(this.FileConfig.getString(path));}
 
     public void set(String path, Object value) {
         this.FileConfig.set(path, value);
